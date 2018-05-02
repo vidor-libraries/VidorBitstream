@@ -1,6 +1,7 @@
 module SDRAM_ARBITER
 #(
 parameter pBURST_SIZE=64,
+parameter pCAM_OFFSET = 0,
 parameter pFB_OFFSET = 640*480,
 parameter pFB_SIZE = 640*480,
 parameter pADDRESS_BITS = 22
@@ -224,8 +225,8 @@ begin
     rBURSTCNT<=0;
     rREAD<=0;
     rWRITE <=0;
-    rREAD_ADDRESS<=0;
-    rWRITE_ADDRESS<=0;
+    rREAD_ADDRESS<=pCAM_OFFSET;
+    rWRITE_ADDRESS<=pCAM_OFFSET;
     rADDRESS<=0;
     rCURRENT_BURSTCNT<=0;
     rAVL_WAIT <=1;
@@ -249,7 +250,7 @@ begin
         rBURSTCNT <=pBURST_SIZE-1;
         if (wMIPI_FIFO_DATA[15]) begin
           rADDRESS<=0;
-          rWRITE_ADDRESS<=0;
+          rWRITE_ADDRESS<=pCAM_OFFSET;
           rMIPI_UNLOCK <=1;
         end else
           rADDRESS<=rWRITE_ADDRESS;
@@ -286,7 +287,7 @@ begin
       if (!rAVL_ACTIVE) rWRITE_ADDRESS<=rWRITE_ADDRESS+1;
       rADDRESS<=rADDRESS+1;
       if (rWRITE_ADDRESS==(pFB_SIZE-1))
-        rWRITE_ADDRESS<=0;
+        rWRITE_ADDRESS<=pCAM_OFFSET;
       if (rBURSTCNT==0) begin
         rWRITE <=0;
         rAVL_ACTIVE<=0;
@@ -307,7 +308,7 @@ begin
           rADDRESS<=rREAD_ADDRESS+pFB_OFFSET;
           rREAD_ADDRESS<=rREAD_ADDRESS+pBURST_SIZE;
           if (rREAD_ADDRESS==(pFB_SIZE-pBURST_SIZE)) begin
-            rREAD_ADDRESS<=0;
+            rREAD_ADDRESS<=pCAM_OFFSET;
             rFB_START <=1;
           end
         end 

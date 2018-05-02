@@ -161,6 +161,38 @@
          type = "String";
       }
    }
+   element memory
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element memory
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element memory
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element memory
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
    element nina_spi
    {
       datum _sortIndex
@@ -281,6 +313,22 @@
          type = "String";
       }
    }
+   element sam_pwm
+   {
+      datum _sortIndex
+      {
+         value = "20";
+         type = "int";
+      }
+   }
+   element sam_pwm.avalon_slave_0
+   {
+      datum baseAddress
+      {
+         value = "1879114496";
+         type = "String";
+      }
+   }
    element sdram
    {
       datum _sortIndex
@@ -377,6 +425,11 @@
  <interface name="pex_pio" internal="pex_pio.pio" type="conduit" dir="end" />
  <interface name="reset" internal="clk.clk_in_reset" type="reset" dir="end" />
  <interface name="sam_pio" internal="sam_pio.pio" type="conduit" dir="end" />
+ <interface
+   name="sam_pwm"
+   internal="sam_pwm.conduit_end"
+   type="conduit"
+   dir="end" />
  <interface name="sdram" internal="sdram.wire" type="conduit" dir="end" />
  <interface name="vid" internal="vid.in_clk" type="clock" dir="end" />
  <interface name="vport" internal="FB_0.vport" />
@@ -407,6 +460,7 @@
  <module name="SDRAM_ARBITER_0" kind="SDRAM_ARBITER" version="1.0" enabled="1">
   <parameter name="pADDRESS_BITS" value="22" />
   <parameter name="pBURST_SIZE" value="64" />
+  <parameter name="pCAM_OFFSET" value="0" />
   <parameter name="pFB_OFFSET" value="307200" />
   <parameter name="pFB_SIZE" value="307200" />
  </module>
@@ -518,7 +572,7 @@
   <parameter name="dataAddrWidth" value="31" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='SDRAM_ARBITER_0.avl' start='0x0' end='0x800000' type='SDRAM_ARBITER.avl' /><slave name='onchip_memory2_0.s1' start='0x70000000' end='0x70008000' type='altera_avalon_onchip_memory2.s1' /><slave name='flash_spi.spi_control_port' start='0x70010080' end='0x700100A0' type='altera_avalon_spi.spi_control_port' /><slave name='csi_i2c.avalon_slave_0' start='0x700100A0' end='0x700100C0' type='o_i2c_master.avalon_slave_0' /><slave name='nina_uart.avalon_rs232_slave' start='0x700100C0' end='0x700100C8' type='altera_up_avalon_rs232.avalon_rs232_slave' /><slave name='nina_spi.spi_control_port' start='0x700100E0' end='0x70010100' type='altera_avalon_spi.spi_control_port' /><slave name='dpram.s1' start='0x70010100' end='0x70010200' type='altera_avalon_onchip_memory2.s1' /><slave name='sam_pio.s1' start='0x70010200' end='0x70010220' type='PIO.s1' /><slave name='pex_pio.s1' start='0x70010220' end='0x70010240' type='PIO.s1' /><slave name='wm_pio.s1' start='0x70010240' end='0x70010260' type='PIO.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x7FFFF800' end='0x80000000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='SDRAM_ARBITER_0.avl' start='0x0' end='0x800000' type='SDRAM_ARBITER.avl' /><slave name='onchip_memory2_0.s1' start='0x70000000' end='0x70008000' type='altera_avalon_onchip_memory2.s1' /><slave name='flash_spi.spi_control_port' start='0x70010080' end='0x700100A0' type='altera_avalon_spi.spi_control_port' /><slave name='csi_i2c.avalon_slave_0' start='0x700100A0' end='0x700100C0' type='o_i2c_master.avalon_slave_0' /><slave name='nina_uart.avalon_rs232_slave' start='0x700100C0' end='0x700100C8' type='altera_up_avalon_rs232.avalon_rs232_slave' /><slave name='nina_spi.spi_control_port' start='0x700100E0' end='0x70010100' type='altera_avalon_spi.spi_control_port' /><slave name='dpram.s1' start='0x70010100' end='0x70010200' type='altera_avalon_onchip_memory2.s1' /><slave name='sam_pio.s1' start='0x70010200' end='0x70010220' type='PIO.s1' /><slave name='pex_pio.s1' start='0x70010220' end='0x70010240' type='PIO.s1' /><slave name='wm_pio.s1' start='0x70010240' end='0x70010260' type='PIO.s1' /><slave name='sam_pwm.avalon_slave_0' start='0x70010300' end='0x70010400' type='PWM.avalon_slave_0' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x7FFFF800' end='0x80000000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -725,6 +779,11 @@
   <parameter name="operation_mode" value="REMOTE" />
  </module>
  <module name="sam_pio" kind="PIO" version="1.0" enabled="1" />
+ <module name="sam_pwm" kind="PWM" version="1.0" enabled="1">
+  <parameter name="pCHANNELS" value="23" />
+  <parameter name="pMATCH_BITS" value="16" />
+  <parameter name="pPRESCALER_BITS" value="32" />
+ </module>
  <module
    name="sdram"
    kind="altera_avalon_new_sdram_controller"
@@ -785,6 +844,15 @@
    end="csi_i2c.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x700100a0" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="nios2_gen2_0.data_master"
+   end="sam_pwm.avalon_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x70010300" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -947,6 +1015,7 @@
    start="clk.clk"
    end="remote_update_0.clock" />
  <connection kind="clock" version="17.1" start="clk.clk" end="csi_i2c.clock_sink" />
+ <connection kind="clock" version="17.1" start="clk.clk" end="sam_pwm.clock_sink" />
  <connection kind="clock" version="17.1" start="clk.clk" end="FB_0.mem_clk" />
  <connection kind="clock" version="17.1" start="vid.out_clk" end="FB_0.vid_clk" />
  <connection kind="clock" version="17.1" start="vid.out_clk" end="FBST_0.vid_clk" />
@@ -1033,6 +1102,11 @@
    start="clk.clk_reset"
    end="onchip_memory2_0.reset2" />
  <connection kind="reset" version="17.1" start="clk.clk_reset" end="dpram.reset2" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="clk.clk_reset"
+   end="sam_pwm.reset_sink" />
  <connection
    kind="reset"
    version="17.1"

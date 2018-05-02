@@ -317,7 +317,9 @@ memory u0(
 		.pex_pio_in       (wPEX_PIO_IN),       //   pex_pio.in
 		.pex_pio_out      (wPEX_PIO_OUT),      //          .out
 		.pex_pio_dir      (wPEX_PIO_DIR),      //          .dir
-		.pex_pio_msel     (wPEX_PIO_MSEL)     //          .msel
+		.pex_pio_msel     (wPEX_PIO_MSEL),     //          .msel
+    
+    .sam_pwm_pwm      (wSAM_OUT1)
     
 	);
   
@@ -336,17 +338,17 @@ genvar i;
 generate
 
 for (i=0;i<31;i++) begin : genloop
-assign wSAM_PIN_OUT[i] =  wSAM_PIO_DIR[i] ? 1'bZ : 
+assign wSAM_PIN_OUT[i] =  !wSAM_PIO_DIR[i] ? 1'bZ : 
                           (wSAM_PIO_MSEL[i*2+1-:2] ==0) ? wSAM_PIO_OUT[i] : 
                           (wSAM_PIO_MSEL[i*2+1-:2] ==1) ? wSAM_OUT1[i] : 
                           (wSAM_PIO_MSEL[i*2+1-:2] ==2) ? wSAM_OUT2[i] : 
                           (wSAM_PIO_MSEL[i*2+1-:2] ==3) ? wSAM_OUT3[i] : 0;
-assign wWM_PIN_OUT[i] =    wWM_PIO_DIR[i] ? 1'bZ : 
+assign wWM_PIN_OUT[i] =   !wWM_PIO_DIR[i] ? 1'bZ : 
                           (wWM_PIO_MSEL[i*2+1-:2] ==0) ? wWM_PIO_OUT[i] : 
                           (wWM_PIO_MSEL[i*2+1-:2] ==1) ? wWM_OUT1[i] : 
                           (wWM_PIO_MSEL[i*2+1-:2] ==2) ? wWM_OUT2[i] : 
                           (wWM_PIO_MSEL[i*2+1-:2] ==3) ? wWM_OUT3[i] : 0;
-assign wPEX_PIN_OUT[i] =    wPEX_PIO_DIR[i] ? 1'bZ : 
+assign wPEX_PIN_OUT[i] =  !wPEX_PIO_DIR[i] ? 1'bZ : 
                           (wPEX_PIO_MSEL[i*2+1-:2] ==0) ? wPEX_PIO_OUT[i] : 
                           (wPEX_PIO_MSEL[i*2+1-:2] ==1) ? wPEX_OUT1[i] : 
                           (wPEX_PIO_MSEL[i*2+1-:2] ==2) ? wPEX_OUT2[i] : 
@@ -354,12 +356,12 @@ assign wPEX_PIN_OUT[i] =    wPEX_PIO_DIR[i] ? 1'bZ :
 
 end
 
-assign wWM_OUT1[21]=wNINA_RX;
-assign wWM_OUT1[12]= wNINA_MOSI;
-assign wWM_OUT1[9] =wNINA_SCLK;
-assign wWM_OUT1[17]=wNINA_SS;
+assign wWM_OUT2[21]=wNINA_RX;
+assign wWM_OUT2[12]= wNINA_MOSI;
+assign wWM_OUT2[9] =wNINA_SCLK;
+assign wWM_OUT2[17]=wNINA_SS;
 
-assign wSAM_OUT1[0] = wDAC;
+assign wSAM_OUT3[0] = wDAC;
 
 endgenerate
 

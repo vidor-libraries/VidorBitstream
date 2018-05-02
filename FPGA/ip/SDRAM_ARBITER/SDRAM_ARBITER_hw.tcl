@@ -31,6 +31,7 @@ set_module_property EDITABLE true
 set_module_property REPORT_TO_TALKBACK false
 set_module_property ALLOW_GREYBOX_GENERATION false
 set_module_property REPORT_HIERARCHY false
+set_module_property ELABORATION_CALLBACK elaborate
 
 
 # 
@@ -48,28 +49,35 @@ add_fileset_file SDRAM_ARBITER.v VERILOG PATH SDRAM_ARBITER.v TOP_LEVEL_FILE
 # 
 add_parameter pBURST_SIZE INTEGER 64
 set_parameter_property pBURST_SIZE DEFAULT_VALUE 64
-set_parameter_property pBURST_SIZE DISPLAY_NAME pBURST_SIZE
+set_parameter_property pBURST_SIZE DISPLAY_NAME BURST_SIZE
 set_parameter_property pBURST_SIZE TYPE INTEGER
 set_parameter_property pBURST_SIZE UNITS None
 set_parameter_property pBURST_SIZE ALLOWED_RANGES -2147483648:2147483647
 set_parameter_property pBURST_SIZE HDL_PARAMETER true
+add_parameter pCAM_OFFSET INTEGER 0
+set_parameter_property pCAM_OFFSET DEFAULT_VALUE 0
+set_parameter_property pCAM_OFFSET DISPLAY_NAME CAM_OFFSET
+set_parameter_property pCAM_OFFSET TYPE INTEGER
+set_parameter_property pCAM_OFFSET UNITS None
+set_parameter_property pCAM_OFFSET ALLOWED_RANGES -2147483648:2147483647
+set_parameter_property pCAM_OFFSET HDL_PARAMETER true
 add_parameter pFB_OFFSET INTEGER 307200
 set_parameter_property pFB_OFFSET DEFAULT_VALUE 307200
-set_parameter_property pFB_OFFSET DISPLAY_NAME pFB_OFFSET
+set_parameter_property pFB_OFFSET DISPLAY_NAME FB_OFFSET
 set_parameter_property pFB_OFFSET TYPE INTEGER
 set_parameter_property pFB_OFFSET UNITS None
 set_parameter_property pFB_OFFSET ALLOWED_RANGES -2147483648:2147483647
 set_parameter_property pFB_OFFSET HDL_PARAMETER true
 add_parameter pFB_SIZE INTEGER 307200
 set_parameter_property pFB_SIZE DEFAULT_VALUE 307200
-set_parameter_property pFB_SIZE DISPLAY_NAME pFB_SIZE
+set_parameter_property pFB_SIZE DISPLAY_NAME FB_SIZE
 set_parameter_property pFB_SIZE TYPE INTEGER
 set_parameter_property pFB_SIZE UNITS None
 set_parameter_property pFB_SIZE ALLOWED_RANGES -2147483648:2147483647
 set_parameter_property pFB_SIZE HDL_PARAMETER true
 add_parameter pADDRESS_BITS INTEGER 22
 set_parameter_property pADDRESS_BITS DEFAULT_VALUE 22
-set_parameter_property pADDRESS_BITS DISPLAY_NAME pADDRESS_BITS
+set_parameter_property pADDRESS_BITS DISPLAY_NAME ADDRESS_BITS
 set_parameter_property pADDRESS_BITS TYPE INTEGER
 set_parameter_property pADDRESS_BITS UNITS None
 set_parameter_property pADDRESS_BITS ALLOWED_RANGES -2147483648:2147483647
@@ -222,3 +230,9 @@ set_interface_assignment avl embeddedsw.configuration.isMemoryDevice 0
 set_interface_assignment avl embeddedsw.configuration.isNonVolatileStorage 0
 set_interface_assignment avl embeddedsw.configuration.isPrintableDevice 0
 
+
+proc elaborate {} {
+    set_module_assignment embeddedsw.CMacro.FB_OFFSET [get_parameter_value pFB_OFFSET]u
+    set_module_assignment embeddedsw.CMacro.CAM_OFFSET [get_parameter_value pCAM_OFFSET]u
+
+}

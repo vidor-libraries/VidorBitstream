@@ -159,3 +159,10 @@ add_interface_port stream iFB_START start Input 1
 add_interface_port stream iFB_DATA data Input 31
 add_interface_port stream iFB_DATAVALID dv Input 1
 add_interface_port stream oFB_READY ready Output 1
+
+set_module_property ELABORATION_CALLBACK elaborate
+proc elaborate {} {
+    set_module_assignment embeddedsw.CMacro.HRES [get_parameter_value pHRES]u
+    set_module_assignment embeddedsw.CMacro.VRES [get_parameter_value pVRES]u
+
+}
