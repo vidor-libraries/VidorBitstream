@@ -104,4 +104,67 @@ set_global_assignment -name QIP_FILE ip/SYSTEM_PLL/SYSTEM_PLL.qip
 set_global_assignment -name SIGNALTAP_FILE stp2.stp
 
 set_global_assignment -name SIGNALTAP_FILE stp1.stp
+set_global_assignment -name OPTIMIZATION_MODE "AGGRESSIVE PERFORMANCE"
+set_location_assignment PIN_H3 -to altera_reserved_tck
+set_location_assignment PIN_H4 -to altera_reserved_tdi
+set_location_assignment PIN_J4 -to altera_reserved_tdo
+set_location_assignment PIN_J5 -to altera_reserved_tms
+set_global_assignment -name DEVICE_MIGRATION_LIST "10CL016YU256C8G,10CL025YU256C8G"
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oSAM_INT
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iSAM_INT
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bWM_PIO36
+set_location_assignment PIN_N2 -to oSAM_INT
+set_location_assignment PIN_L16 -to iSAM_INT
+set_location_assignment PIN_N1 -to bWM_PIO36
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bHDMI_SCL
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bHDMI_SDA
+set_location_assignment PIN_K5 -to bHDMI_SCL
+set_location_assignment PIN_L4 -to bHDMI_SDA
+set_location_assignment PIN_M16 -to iHDMI_HPD
+set_location_assignment PIN_T4 -to bWM_PIO31
+set_location_assignment PIN_R4 -to bWM_PIO35
+set_location_assignment PIN_R6 -to bWM_PIO21
+set_location_assignment PIN_R5 -to bWM_PIO20
+set_location_assignment PIN_J13 -to iWM_PIO32
+set_location_assignment PIN_D16 -to bPEX_PIN49
+set_location_assignment PIN_C16 -to bMKR_D[11]
+set_location_assignment PIN_D15 -to bPEX_PIN51
+set_location_assignment PIN_C15 -to bMKR_D[10]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[14]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[13]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[12]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[11]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[10]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bSDRAM_DQ[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_ADDR[11]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_ADDR[10]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_ADDR[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_ADDR[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_ADDR[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_ADDR[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_ADDR[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_ADDR[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_ADDR[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_ADDR[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_ADDR[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_ADDR[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_BA[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_BA[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_CASn
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_CKE
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_CLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_CSn
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_DQM[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_DQM[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_RASn
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_WEn
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

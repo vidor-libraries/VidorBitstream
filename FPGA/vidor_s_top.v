@@ -3,6 +3,8 @@ module vidor_s_top
   // system signals
   input         iCLK,
   input         iRESETn,
+  input         iSAM_INT,
+  output        oSAM_INT,
   
   // SDRAM
   output        oSDRAM_CLK,
@@ -56,34 +58,38 @@ module vidor_s_top
   inout         bWM_PIO5,
   inout         bWM_PIO7,
   inout         bWM_PIO8,
-  inout         bWM_PIO16,
-  inout         bWM_PIO17,
   inout         bWM_PIO18,
+  inout         bWM_PIO20,
+  inout         bWM_PIO21,
   inout         bWM_PIO24,
   inout         bWM_PIO25,
   inout         bWM_PIO27,
   inout         bWM_PIO28,
   inout         bWM_PIO29,
+  inout         bWM_PIO31,
+  input         iWM_PIO32,
   inout         bWM_PIO34,
+  inout         bWM_PIO35,
+  inout         bWM_PIO36,
   input         iWM_TX,
-  output        oWM_RX,
-  input         iWM_RTS,
-  output        iWM_CTS,
-  output        oWM_RESET,
+  inout         oWM_RX,
+  inout         oWM_RESET,
 
   // HDMI output
   output [2:0]  oHDMI_TX,
   output        oHDMI_CLK,
 
+  inout         bHDMI_SDA,
+  inout         bHDMI_SCL,
+  
+  input         iHDMI_HPD,
+  
   // MIPI input
   input  [1:0]  iMIPI_D,
   input         iMIPI_CLK,
   inout         bMIPI_SDA,
   inout         bMIPI_SCL,
   inout  [1:0]  bMIPI_GP,
-
-  // misc pins
-  output        panel_en,
 
   // Flash interface
   output        oFLASH_MOSI,
@@ -97,7 +103,7 @@ module vidor_s_top
 
 wire        wOSC_CLK;
 
-wire        wCLK8,wCLK24, wCLK64, wCLK120, wCLK100;
+wire        wCLK8,wCLK24, wCLK64, wCLK120;
 
 wire [31:0] wJTAG_ADDRESS, wJTAG_READ_DATA, wJTAG_WRITE_DATA, wDPRAM_READ_DATA;
 wire        wJTAG_READ, wJTAG_WRITE, wJTAG_WAIT_REQUEST, wJTAG_READ_DATAVALID;
@@ -112,19 +118,18 @@ wire        wMEM_CLK;
 
 assign wVID_CLK   = wCLK24;
 assign wVID_CLKx5 = wCLK120;
-assign wMEM_CLK   = wCLK100;
 assign wCLK8      = iCLK;
 
 // NINA Bypass
                                             // SAM       NINA
-assign oWM_RX     = bMKR_D[14];             // TX     => RX
-assign bMKR_D[14] = iWM_TX;                 // RX     <= TX
-assign oWM_RESET  = bMKR_D[7] ? 1'bZ : 0;   // IO     => RESET
-assign bWM_PIO27  = bMKR_D[6];              // IO     => BOOT
-assign bMKR_D[10] = bWM_PIO1;               // MISO   => MOSI
-assign bWM_PIO28  = bMKR_D[9];              // SCK    => SCK
-assign bWM_PIO21  = bMKR_D[8];              // MOSI   => MISO
-assign bWM_PIO29  = bMKR_D[5];              // CS     => CS
+//assign oWM_RX     = bMKR_D[14];             // TX     => RX
+//assign bMKR_D[14] = iWM_TX;                 // RX     <= TX
+//assign oWM_RESET  = bMKR_D[7] ? 1'bZ : 0;   // IO     => RESET
+//assign bWM_PIO27  = bMKR_D[6];              // IO     => BOOT
+//assign bMKR_D[10] = bWM_PIO1;               // MISO   => MOSI
+//assign bWM_PIO28  = bMKR_D[9];              // SCK    => SCK
+//assign bWM_PIO21  = bMKR_D[8];              // MOSI   => MISO
+//assign bWM_PIO29  = bMKR_D[5];              // CS     => CS
 
 // internal oscillator
 cyclone10lp_oscillator   osc
@@ -138,7 +143,7 @@ SYSTEM_PLL (
 	.inclk0(wCLK8),
 	.c0(wCLK24),
 	.c1(wCLK120),
-	.c2(wCLK100),
+	.c2(wMEM_CLK),
   //.c3(oSDRAM_CLK),
 	.locked());
 
@@ -179,7 +184,7 @@ SD_MODULATOR #(
   .iCLK(wCLK24),
   .iDATA(wAUDIO_DATA),
   .oSTROBE(wAUDIO_STROBE),
-  .oDAC(bMKR_A[0])
+  .oDAC(wDAC)
 );
   
 always @(posedge wCLK24)
@@ -189,85 +194,6 @@ begin
   
 end
 /*
-// frame reader
-reg [21:0]  rFR_ADDR, rFR_RDADDR, rFR_WRADDR;
-reg         rFR_READ, rFR_WRITE;
-wire [15:0] wFR_DATA;
-wire        wFR_DATAVALID;
-wire        wFR_WAIT;
-wire [7:0]  wFR_FIFO_UDW;
-reg [7:0] rINITCNT;
-
-reg [21:0] wFR_NEXT_RDADDR,wFR_NEXT_WRADDR;
-
-  dcfifo #(
-    .intended_device_family     ("CYCLONE 10 LP"),
-    .lpm_type                   ("dcfifo"),
-    .add_usedw_msb_bit          ("ON"),
-    .overflow_checking          ("ON"),
-    .rdsync_delaypipe           (4),
-    .underflow_checking         ("ON"),
-    .use_eab                    ("ON"),
-    .write_aclr_synch           ("OFF"),
-    .add_ram_output_register    ("OFF"),
-    .lpm_numwords               (128),
-    .lpm_showahead              ("ON"),
-    .lpm_width                  (16),
-    .lpm_widthu                 (8),
-    .lpm_hint                   ("unused"),     
-    .wrsync_delaypipe           (4) 
-  )   
-  DmaBufferfifo(
-    .aclr         (1'b0),
-
-    .wrclk        (wMEM_CLK),   
-    .wrreq        (wFR_DATAVALID),              
-    .wrempty      (),     
-    .wrfull       (),               
-    .wrusedw      (wFR_FIFO_UDW),
-    .data         (wFR_DATA),   
- 
-    .rdclk        (wVID_CLK),     
-    .rdreq        (wTPG_DE&&!wFR_RD_EMPTY),
-    .rdempty      (wFR_RD_EMPTY),                                      
-    .rdusedw      (),
-    .rdfull       (),
-    .q            ({wTPG_BLU[7:3],wTPG_GRN[7:3],wTPG_RED[7:3]}) 
-  );
-
-
-assign   wFR_NEXT_RDADDR = (rFR_READ&&!wFR_WAIT) ? (rFR_RDADDR==640*480-1) ? 0 : rFR_RDADDR+1 : rFR_RDADDR;
-assign   wFR_NEXT_WRADDR = (rFR_WRITE&&!wFR_WAIT) ?(rFR_WRADDR==640*480-1) ? 0 : rFR_WRADDR+1 : rFR_WRADDR;
-
-always @(posedge wMEM_CLK)
-begin
-  if (rINITCNT[7]) begin
-    if (rFR_READ&&!wFR_WAIT)
-    begin
-      rFR_READ <=0;
-      rFR_RDADDR<= wFR_NEXT_RDADDR;
-    end
-    if (rFR_WRITE&&!wFR_WAIT)
-    begin
-      rFR_WRITE <=0;
-      rFR_WRADDR<= wFR_NEXT_WRADDR;
-    end
-    
-    if ((wFR_FIFO_UDW<64))
-    begin
-      rFR_WRITE<=0;
-      rFR_READ <=1;
-      rFR_ADDR <= wFR_NEXT_RDADDR;
-    end
-    else begin
-      rFR_READ  <=0;
-      rFR_WRITE <=1;
-      rFR_ADDR  <= wFR_NEXT_WRADDR;
-    end
-  end else begin
-    rINITCNT <=rINITCNT+1;
-  end 
-end
 
 // SDRAM controller
 
@@ -298,8 +224,31 @@ end
 	);
   */
 assign oSDRAM_CLK=wMEM_CLK;
+
+wire fb_st_start,fb_st_dv,fb_st_ready;
+wire [30:0] fb_st_data;
+
+wire [23:0] mipi_st_data;
+wire mipi_st_start,mipi_st_dv;
+
+wire [31:0] wSAM_PIO_IN;  
+wire [31:0] wSAM_PIO_OUT; 
+wire [31:0] wSAM_PIO_DIR; 
+wire [63:0] wSAM_PIO_MSEL;
+wire [31:0] wWM_PIO_IN;   
+wire [31:0] wWM_PIO_OUT;  
+wire [31:0] wWM_PIO_DIR; 
+wire [63:0] wWM_PIO_MSEL;
+wire [31:0] wPEX_PIO_IN;  
+wire [31:0] wPEX_PIO_OUT;
+wire [31:0] wPEX_PIO_DIR;
+wire [63:0] wPEX_PIO_MSEL; 
+
 memory u0(
 		.clk_clk                (wMEM_CLK),               //      clk.clk
+		.reset_reset_n          (1'b1), // reset.reset_n
+		.vid_clk                (wVID_CLK),        //   vid.clk
+
 		.sdram_addr             (oSDRAM_ADDR), //    sdram.addr
 		.sdram_ba               (oSDRAM_BA),   //         .ba
 		.sdram_cas_n            (oSDRAM_CASn), //         .cas_n
@@ -309,34 +258,145 @@ memory u0(
 		.sdram_dqm              (oSDRAM_DQM),  //         .dqm
 		.sdram_ras_n            (oSDRAM_RASn), //         .ras_n
 		.sdram_we_n             (oSDRAM_WEn),   //         .we_n
- 		.vport_blu              (wTPG_BLU),     // vport.blu
-		.vport_de               (wTPG_DE),      //      .de
-		.vport_grn              (wTPG_GRN),     //      .grn
-		.vport_hs               (wTPG_HS),      //      .hs
-		.vport_vs               (wTPG_VS),      //      .vs
-		.vport_red              (wTPG_RED),     //      .red
-		.reset_reset_n          (1'b1), // reset.reset_n
-		.vid_clk                (wVID_CLK),        //   vid.clk
+ 		.fb_vport_blu              (wTPG_BLU),     // vport.blu
+		.fb_vport_de               (wTPG_DE),      //      .de
+		.fb_vport_grn              (wTPG_GRN),     //      .grn
+		.fb_vport_hs               (wTPG_HS),      //      .hs
+		.fb_vport_vs               (wTPG_VS),      //      .vs
+		.fb_vport_red              (wTPG_RED),     //      .red
+
 		.flash_spi_MISO         (iFLASH_MISO),   // flash_spi.MISO
 		.flash_spi_MOSI         (oFLASH_MOSI),   //          .MOSI
 		.flash_spi_SCLK         (oFLASH_SCK),   //          .SCLK
 		.flash_spi_SS_n         (oFLASH_CS),   //          .SS_n
+
 		.csi_i2c_scl            (bMIPI_SCL),      //   csi_i2c.scl
 		.csi_i2c_sda            (bMIPI_SDA),      //          .sda
-		.dpram_address          (wJTAG_ADDRESS[7:0]),    //     dpram.address
-		.dpram_chipselect       (wDPRAM_CS), //          .chipselect
-		.dpram_clken            (1'b1),      //          .clken
-		.dpram_write            (wJTAG_WRITE),      //          .write
-		.dpram_readdata         (wDPRAM_READ_DATA),   //          .readdata
-		.dpram_writedata        (wJTAG_WRITE_DATA),  //          .writedata
-		.dpram_byteenable       (4'b1111)  //          .byteenable
 
+    .mipi_rx_clk               (iMIPI_CLK),
+    .mipi_rx_data              (iMIPI_D),
+
+		.arb_fb_clk       (wVID_CLK),       //    arb_fb.clk
+		.arb_fb_rdy       (fb_st_ready),       //          .rdy
+		.arb_fb_data      (fb_st_data),      //          .data
+		.arb_fb_dv        (fb_st_dv),        //          .dv
+		.arb_fb_start     (fb_st_start),     //          .start
+
+		.fb_st_start      (fb_st_start),      //     fb_st.start
+		.fb_st_data       (fb_st_data),       //          .data
+		.fb_st_dv         (fb_st_dv),         //          .dv
+		.fb_st_ready      (fb_st_ready),       //          .ready
+
+		.arb_mipi_clk     (iMIPI_CLK),     //  arb_mipi.clk
+		.arb_mipi_data    ({mipi_st_data[23-:5],mipi_st_data[15-:5],mipi_st_data[7-:5]}),    //          .data
+		.arb_mipi_start   (mipi_st_start),    //          .data
+		.arb_mipi_dv      (mipi_st_dv),      //          .dv
+
+		.mipi_st_data     (mipi_st_data),     //   mipi_st.data
+		.mipi_st_start    (mipi_st_start),    //          .start
+		.mipi_st_dv       (mipi_st_dv),       //          .dv
+
+		.nina_uart_RXD    (iWM_TX),    // nina_uart.RXD
+		.nina_uart_TXD    (wNINA_RX),    //          .TXD
+
+		.nina_spi_MISO    (bWM_PIO1),    //  nina_spi.MISO
+		.nina_spi_MOSI    (wNINA_MOSI),    //          .MOSI
+		.nina_spi_SCLK    (wNINA_SCLK),    //          .SCLK
+		.nina_spi_SS_n    (wNINA_SS),     //          .SS_n
+
+		.sam_pio_in       (wSAM_PIO_IN),       //   sam_pio.in
+		.sam_pio_out      (wSAM_PIO_OUT),      //          .out
+		.sam_pio_dir      (wSAM_PIO_DIR),      //          .dir
+		.sam_pio_msel     (wSAM_PIO_MSEL),     //          .msel
+
+		.wm_pio_in        (wWM_PIO_IN),        //    wm_pio.in
+		.wm_pio_out       (wWM_PIO_OUT),       //          .out
+		.wm_pio_dir       (wWM_PIO_DIR),       //          .dir
+		.wm_pio_msel      (wWM_PIO_MSEL),       //          .msel
+
+		.pex_pio_in       (wPEX_PIO_IN),       //   pex_pio.in
+		.pex_pio_out      (wPEX_PIO_OUT),      //          .out
+		.pex_pio_dir      (wPEX_PIO_DIR),      //          .dir
+		.pex_pio_msel     (wPEX_PIO_MSEL)     //          .msel
+    
 	);
   
+wire [31:0] wSAM_PIN_OUT,wSAM_OUT1,wSAM_OUT2,wSAM_OUT3;
+wire [31:0] wWM_PIN_OUT,wWM_OUT1,wWM_OUT2,wWM_OUT3;
+wire [31:0] wPEX_PIN_OUT,wPEX_OUT1,wPEX_OUT2,wPEX_OUT3;
 
+assign wSAM_PIO_IN = {bMKR_D,bMKR_A,bMKR_AREF};
+assign wWM_PIO_IN = {iWM_PIO32,iWM_TX,oWM_RX,bWM_PIO36,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO29,bWM_PIO28,bWM_PIO27,bWM_PIO25,bWM_PIO24,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,bWM_PIO1,oWM_RESET};
+assign wPEX_PIO_IN = {iPEX_PIN33,iPEX_PIN31,iPEX_PIN25,iPEX_PIN23,iPEX_PIN13,iPEX_PIN11,bPEX_PIN51,bPEX_PIN49,bPEX_PIN48,bPEX_PIN47,bPEX_PIN46,bPEX_PIN45,bPEX_PIN44,bPEX_PIN42,bPEX_PIN32,bPEX_PIN30,bPEX_PIN28,bPEX_PIN20,bPEX_PIN16,bPEX_PIN14,bPEX_PIN12,bPEX_PIN10,bPEX_PIN8,bPEX_PIN6,bPEX_RST};
+
+assign {bMKR_D,bMKR_A,bMKR_AREF}= wSAM_PIN_OUT;
+assign {oWM_RX,bWM_PIO36,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO29,bWM_PIO28,bWM_PIO27,bWM_PIO25,bWM_PIO24,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,bWM_PIO1,oWM_RESET} = wWM_PIN_OUT;
+assign {bPEX_PIN51,bPEX_PIN49,bPEX_PIN48,bPEX_PIN47,bPEX_PIN46,bPEX_PIN45,bPEX_PIN44,bPEX_PIN42,bPEX_PIN32,bPEX_PIN30,bPEX_PIN28,bPEX_PIN20,bPEX_PIN16,bPEX_PIN14,bPEX_PIN12,bPEX_PIN10,bPEX_PIN8,bPEX_PIN6,bPEX_RST} = wPEX_PIN_OUT;
+genvar i;
+generate
+
+for (i=0;i<31;i++) begin : genloop
+assign wSAM_PIN_OUT[i] =  wSAM_PIO_DIR[i] ? 1'bZ : 
+                          (wSAM_PIO_MSEL[i*2+1-:2] ==0) ? wSAM_PIO_OUT[i] : 
+                          (wSAM_PIO_MSEL[i*2+1-:2] ==1) ? wSAM_OUT1[i] : 
+                          (wSAM_PIO_MSEL[i*2+1-:2] ==2) ? wSAM_OUT2[i] : 
+                          (wSAM_PIO_MSEL[i*2+1-:2] ==3) ? wSAM_OUT3[i] : 0;
+assign wWM_PIN_OUT[i] =    wWM_PIO_DIR[i] ? 1'bZ : 
+                          (wWM_PIO_MSEL[i*2+1-:2] ==0) ? wWM_PIO_OUT[i] : 
+                          (wWM_PIO_MSEL[i*2+1-:2] ==1) ? wWM_OUT1[i] : 
+                          (wWM_PIO_MSEL[i*2+1-:2] ==2) ? wWM_OUT2[i] : 
+                          (wWM_PIO_MSEL[i*2+1-:2] ==3) ? wWM_OUT3[i] : 0;
+assign wPEX_PIN_OUT[i] =    wPEX_PIO_DIR[i] ? 1'bZ : 
+                          (wPEX_PIO_MSEL[i*2+1-:2] ==0) ? wPEX_PIO_OUT[i] : 
+                          (wPEX_PIO_MSEL[i*2+1-:2] ==1) ? wPEX_OUT1[i] : 
+                          (wPEX_PIO_MSEL[i*2+1-:2] ==2) ? wPEX_OUT2[i] : 
+                          (wPEX_PIO_MSEL[i*2+1-:2] ==3) ? wPEX_OUT3[i] : 0;
+
+end
+
+assign wWM_OUT1[21]=wNINA_RX;
+assign wWM_OUT1[12]= wNINA_MOSI;
+assign wWM_OUT1[9] =wNINA_SCLK;
+assign wWM_OUT1[17]=wNINA_SS;
+
+assign wSAM_OUT1[0] = wDAC;
+
+endgenerate
+
+  
+  // Mini PCIe
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // NINA interface
+  
+  
+  
+  
+  
+  
+  
+  
 // Quadrature DECODER
 
-
+/*
 parameter pENCODERS=2;
 wire [pENCODERS-1:0] wENCODER_A,wENCODER_B;
 
@@ -369,9 +429,9 @@ begin
     end
   end
 end
-
+*/
 // JTAG Bridge
-
+/*
 assign wDPRAM_CS=wJTAG_ADDRESS[8];
 
 JTAG_BRIDGE (
@@ -409,5 +469,14 @@ begin
     rCLIENTID <= wDPRAM_CS;
   end
 end
+
+*/
+// MIPI input
+assign bMIPI_GP[0]=1'b1;
+assign bMIPI_GP[1]=1'b1;
+
+
+
+
 
 endmodule

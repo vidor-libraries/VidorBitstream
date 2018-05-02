@@ -9,11 +9,51 @@
    categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
+   element FBST_0
+   {
+      datum _sortIndex
+      {
+         value = "13";
+         type = "int";
+      }
+   }
    element FB_0
    {
       datum _sortIndex
       {
-         value = "4";
+         value = "5";
+         type = "int";
+      }
+   }
+   element JTAG_BRIDGE_0
+   {
+      datum _sortIndex
+      {
+         value = "10";
+         type = "int";
+      }
+   }
+   element MIPI_RX_0
+   {
+      datum _sortIndex
+      {
+         value = "9";
+         type = "int";
+      }
+   }
+   element MIPI_RX_ST_0
+   {
+      datum _sortIndex
+      {
+         value = "12";
+         type = "int";
+      }
+   }
+   element SDRAM_ARBITER_0
+   {
+      datum _sortIndex
+      {
+         value = "11";
          type = "int";
       }
    }
@@ -37,7 +77,7 @@
    {
       datum baseAddress
       {
-         value = "36896";
+         value = "1879113888";
          type = "String";
       }
    }
@@ -53,7 +93,7 @@
    {
       datum baseAddress
       {
-         value = "34816";
+         value = "1879113984";
          type = "String";
       }
    }
@@ -69,7 +109,7 @@
    {
       datum baseAddress
       {
-         value = "36864";
+         value = "1879113856";
          type = "String";
       }
    }
@@ -81,23 +121,79 @@
          type = "String";
       }
    }
-   element nios2_gen2_0
+   element memory
    {
-      datum _sortIndex
+      datum _originalDeviceFamily
       {
-         value = "2";
-         type = "int";
-      }
-   }
-   element nios2_gen2_0.debug_mem_slave
-   {
-      datum baseAddress
-      {
-         value = "32768";
+         value = "Cyclone 10 LP";
          type = "String";
       }
    }
-   element onchip_memory2_0
+   element memory
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element memory
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element memory
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element memory
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element nina_spi
+   {
+      datum _sortIndex
+      {
+         value = "16";
+         type = "int";
+      }
+   }
+   element nina_spi.spi_control_port
+   {
+      datum baseAddress
+      {
+         value = "1879113952";
+         type = "String";
+      }
+   }
+   element nina_uart
+   {
+      datum _sortIndex
+      {
+         value = "15";
+         type = "int";
+      }
+   }
+   element nina_uart.avalon_rs232_slave
+   {
+      datum baseAddress
+      {
+         value = "1879113920";
+         type = "String";
+      }
+   }
+   element nios2_gen2_0
    {
       datum _sortIndex
       {
@@ -105,11 +201,91 @@
          type = "int";
       }
    }
+   element nios2_gen2_0.debug_mem_slave
+   {
+      datum baseAddress
+      {
+         value = "2147481600";
+         type = "String";
+      }
+   }
+   element onchip_memory2_0
+   {
+      datum _sortIndex
+      {
+         value = "4";
+         type = "int";
+      }
+   }
+   element onchip_memory2_0.s1
+   {
+      datum baseAddress
+      {
+         value = "1879048192";
+         type = "String";
+      }
+   }
+   element onchip_memory2_0.s2
+   {
+      datum baseAddress
+      {
+         value = "1879048192";
+         type = "String";
+      }
+   }
+   element pex_pio
+   {
+      datum _sortIndex
+      {
+         value = "18";
+         type = "int";
+      }
+   }
+   element pex_pio.s1
+   {
+      datum baseAddress
+      {
+         value = "1879114272";
+         type = "String";
+      }
+   }
+   element remote_update_0
+   {
+      datum _sortIndex
+      {
+         value = "14";
+         type = "int";
+      }
+   }
+   element remote_update_0.avl_csr
+   {
+      datum baseAddress
+      {
+         value = "1879113728";
+         type = "String";
+      }
+   }
+   element sam_pio
+   {
+      datum _sortIndex
+      {
+         value = "17";
+         type = "int";
+      }
+   }
+   element sam_pio.s1
+   {
+      datum baseAddress
+      {
+         value = "1879114240";
+         type = "String";
+      }
+   }
    element sdram
    {
       datum _sortIndex
       {
-         value = "1";
+         value = "2";
          type = "int";
       }
    }
@@ -117,7 +293,7 @@
    {
       datum baseAddress
       {
-         value = "8388608";
+         value = "0";
          type = "String";
       }
    }
@@ -125,8 +301,24 @@
    {
       datum _sortIndex
       {
-         value = "5";
+         value = "1";
          type = "int";
+      }
+   }
+   element wm_pio
+   {
+      datum _sortIndex
+      {
+         value = "19";
+         type = "int";
+      }
+   }
+   element wm_pio.s1
+   {
+      datum baseAddress
+      {
+         value = "1879114304";
+         type = "String";
       }
    }
 }
@@ -150,23 +342,46 @@
  <parameter name="timeStamp" value="0" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
+ <interface name="arb_fb" internal="SDRAM_ARBITER_0.fb" type="conduit" dir="end" />
+ <interface
+   name="arb_mipi"
+   internal="SDRAM_ARBITER_0.mipi"
+   type="conduit"
+   dir="end" />
  <interface name="clk" internal="clk.clk_in" type="clock" dir="end" />
  <interface
    name="csi_i2c"
    internal="csi_i2c.conduit_start"
    type="conduit"
    dir="end" />
- <interface name="dpram" internal="dpram.s2" type="avalon" dir="end" />
+ <interface name="fb_st" internal="FBST_0.stream" type="conduit" dir="end" />
+ <interface name="fb_vport" internal="FBST_0.vport" type="conduit" dir="end" />
  <interface
    name="flash_spi"
    internal="flash_spi.external"
    type="conduit"
    dir="end" />
+ <interface name="mipi" internal="MIPI_RX_0.mipi" />
+ <interface name="mipi_rx" internal="MIPI_RX_ST_0.mipi" type="conduit" dir="end" />
+ <interface
+   name="mipi_st"
+   internal="MIPI_RX_ST_0.mipi_st"
+   type="conduit"
+   dir="end" />
+ <interface name="nina_spi" internal="nina_spi.external" type="conduit" dir="end" />
+ <interface
+   name="nina_uart"
+   internal="nina_uart.external_interface"
+   type="conduit"
+   dir="end" />
+ <interface name="pex_pio" internal="pex_pio.pio" type="conduit" dir="end" />
  <interface name="reset" internal="clk.clk_in_reset" type="reset" dir="end" />
+ <interface name="sam_pio" internal="sam_pio.pio" type="conduit" dir="end" />
  <interface name="sdram" internal="sdram.wire" type="conduit" dir="end" />
  <interface name="vid" internal="vid.in_clk" type="clock" dir="end" />
- <interface name="vport" internal="FB_0.vport" type="conduit" dir="end" />
- <module name="FB_0" kind="FB" version="1.0" enabled="1">
+ <interface name="vport" internal="FB_0.vport" />
+ <interface name="wm_pio" internal="wm_pio.pio" type="conduit" dir="end" />
+ <module name="FBST_0" kind="FBST" version="1.0" enabled="1">
   <parameter name="pHRES" value="640" />
   <parameter name="pHSE" value="752" />
   <parameter name="pHSS" value="656" />
@@ -175,6 +390,25 @@
   <parameter name="pVSE" value="492" />
   <parameter name="pVSS" value="490" />
   <parameter name="pVTOTAL" value="525" />
+ </module>
+ <module name="FB_0" kind="FB" version="1.0" enabled="0">
+  <parameter name="pHRES" value="640" />
+  <parameter name="pHSE" value="752" />
+  <parameter name="pHSS" value="656" />
+  <parameter name="pHTOTAL" value="762" />
+  <parameter name="pVRES" value="480" />
+  <parameter name="pVSE" value="492" />
+  <parameter name="pVSS" value="490" />
+  <parameter name="pVTOTAL" value="525" />
+ </module>
+ <module name="JTAG_BRIDGE_0" kind="JTAG_BRIDGE" version="1.0" enabled="1" />
+ <module name="MIPI_RX_0" kind="MIPI_RX" version="1.0" enabled="0" />
+ <module name="MIPI_RX_ST_0" kind="MIPI_RX_ST" version="1.0" enabled="1" />
+ <module name="SDRAM_ARBITER_0" kind="SDRAM_ARBITER" version="1.0" enabled="1">
+  <parameter name="pADDRESS_BITS" value="22" />
+  <parameter name="pBURST_SIZE" value="64" />
+  <parameter name="pFB_OFFSET" value="307200" />
+  <parameter name="pFB_SIZE" value="307200" />
  </module>
  <module name="clk" kind="clock_source" version="17.1" enabled="1">
   <parameter name="clockFrequency" value="100000000" />
@@ -231,6 +465,35 @@
   <parameter name="targetClockRate" value="50000000" />
   <parameter name="targetSlaveSelectToSClkDelay" value="0.0" />
  </module>
+ <module name="nina_spi" kind="altera_avalon_spi" version="17.1" enabled="1">
+  <parameter name="avalonSpec" value="2.0" />
+  <parameter name="clockPhase" value="0" />
+  <parameter name="clockPolarity" value="0" />
+  <parameter name="dataWidth" value="8" />
+  <parameter name="disableAvalonFlowControl" value="false" />
+  <parameter name="inputClockRate" value="100000000" />
+  <parameter name="insertDelayBetweenSlaveSelectAndSClk" value="false" />
+  <parameter name="insertSync" value="false" />
+  <parameter name="lsbOrderedFirst" value="false" />
+  <parameter name="masterSPI" value="true" />
+  <parameter name="numberOfSlaves" value="1" />
+  <parameter name="syncRegDepth" value="2" />
+  <parameter name="targetClockRate" value="50000000" />
+  <parameter name="targetSlaveSelectToSClkDelay" value="0.0" />
+ </module>
+ <module
+   name="nina_uart"
+   kind="altera_up_avalon_rs232"
+   version="17.1"
+   enabled="1">
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
+  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone 10 LP" />
+  <parameter name="avalon_bus_type" value="Memory Mapped" />
+  <parameter name="baud" value="115200" />
+  <parameter name="data_bits" value="8" />
+  <parameter name="parity" value="None" />
+  <parameter name="stop_bits" value="1" />
+ </module>
  <module
    name="nios2_gen2_0"
    kind="altera_nios2_gen2"
@@ -252,10 +515,10 @@
   <parameter name="customInstSlavesSystemInfo_nios_a" value="&lt;info/&gt;" />
   <parameter name="customInstSlavesSystemInfo_nios_b" value="&lt;info/&gt;" />
   <parameter name="customInstSlavesSystemInfo_nios_c" value="&lt;info/&gt;" />
-  <parameter name="dataAddrWidth" value="24" />
+  <parameter name="dataAddrWidth" value="31" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x0' end='0x8000' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x8000' end='0x8800' type='altera_nios2_gen2.debug_mem_slave' /><slave name='dpram.s1' start='0x8800' end='0x8900' type='altera_avalon_onchip_memory2.s1' /><slave name='flash_spi.spi_control_port' start='0x9000' end='0x9020' type='altera_avalon_spi.spi_control_port' /><slave name='csi_i2c.avalon_slave_0' start='0x9020' end='0x9040' type='o_i2c_master.avalon_slave_0' /><slave name='sdram.s1' start='0x800000' end='0x1000000' type='altera_avalon_new_sdram_controller.s1' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='SDRAM_ARBITER_0.avl' start='0x0' end='0x800000' type='SDRAM_ARBITER.avl' /><slave name='onchip_memory2_0.s1' start='0x70000000' end='0x70008000' type='altera_avalon_onchip_memory2.s1' /><slave name='flash_spi.spi_control_port' start='0x70010080' end='0x700100A0' type='altera_avalon_spi.spi_control_port' /><slave name='csi_i2c.avalon_slave_0' start='0x700100A0' end='0x700100C0' type='o_i2c_master.avalon_slave_0' /><slave name='nina_uart.avalon_rs232_slave' start='0x700100C0' end='0x700100C8' type='altera_up_avalon_rs232.avalon_rs232_slave' /><slave name='nina_spi.spi_control_port' start='0x700100E0' end='0x70010100' type='altera_avalon_spi.spi_control_port' /><slave name='dpram.s1' start='0x70010100' end='0x70010200' type='altera_avalon_onchip_memory2.s1' /><slave name='sam_pio.s1' start='0x70010200' end='0x70010220' type='PIO.s1' /><slave name='pex_pio.s1' start='0x70010220' end='0x70010240' type='PIO.s1' /><slave name='wm_pio.s1' start='0x70010240' end='0x70010260' type='PIO.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x7FFFF800' end='0x80000000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -293,15 +556,15 @@
   <parameter name="icache_size" value="4096" />
   <parameter name="icache_tagramBlockType" value="Automatic" />
   <parameter name="impl" value="Tiny" />
-  <parameter name="instAddrWidth" value="16" />
-  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s2' start='0x0' end='0x8000' type='altera_avalon_onchip_memory2.s2' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x8000' end='0x8800' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
+  <parameter name="instAddrWidth" value="31" />
+  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s2' start='0x70000000' end='0x70008000' type='altera_avalon_onchip_memory2.s2' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x7FFFF800' end='0x80000000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
   <parameter name="instructionMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="instructionMasterHighPerformanceMapParam" value="" />
   <parameter name="instruction_master_high_performance_paddr_base" value="0" />
   <parameter name="instruction_master_high_performance_paddr_size" value="0" />
   <parameter name="instruction_master_paddr_base" value="0" />
   <parameter name="instruction_master_paddr_size" value="0" />
-  <parameter name="internalIrqMaskSystemInfo" value="0" />
+  <parameter name="internalIrqMaskSystemInfo" value="7" />
   <parameter name="io_regionbase" value="0" />
   <parameter name="io_regionsize" value="0" />
   <parameter name="master_addr_map" value="false" />
@@ -445,6 +708,23 @@
   <parameter name="useShallowMemBlocks" value="false" />
   <parameter name="writable" value="true" />
  </module>
+ <module name="pex_pio" kind="PIO" version="1.0" enabled="1" />
+ <module
+   name="remote_update_0"
+   kind="altera_remote_update"
+   version="17.1"
+   enabled="0">
+  <parameter name="AUTO_DEVICE_SPEEDGRADE" value="8" />
+  <parameter name="CBX_AUTO_BLACKBOX" value="ALL" />
+  <parameter name="DEVICE" value="10CL016YU256C8G" />
+  <parameter name="DEVICE_FAMILY" value="Cyclone 10 LP" />
+  <parameter name="GUI_config_device" value="EPCS16" />
+  <parameter name="check_app_pof" value="false" />
+  <parameter name="check_avalon_interface" value="true" />
+  <parameter name="m_support_write_config_check" value="false" />
+  <parameter name="operation_mode" value="REMOTE" />
+ </module>
+ <module name="sam_pio" kind="PIO" version="1.0" enabled="1" />
  <module
    name="sdram"
    kind="altera_avalon_new_sdram_controller"
@@ -456,7 +736,7 @@
   <parameter name="TRFC" value="70.0" />
   <parameter name="TRP" value="21.0" />
   <parameter name="TWR" value="14.0" />
-  <parameter name="casLatency" value="2" />
+  <parameter name="casLatency" value="3" />
   <parameter name="clockRate" value="100000000" />
   <parameter name="columnWidth" value="8" />
   <parameter name="componentName" value="$${FILENAME}_sdram" />
@@ -479,13 +759,50 @@
   <parameter name="EXPLICIT_CLOCK_RATE" value="0" />
   <parameter name="NUM_CLOCK_OUTPUTS" value="1" />
  </module>
+ <module name="wm_pio" kind="PIO" version="1.0" enabled="1" />
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="JTAG_BRIDGE_0.avalon_master"
+   end="dpram.s2">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="nios2_gen2_0.data_master"
+   end="nina_uart.avalon_rs232_slave">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x700100c0" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
  <connection
    kind="avalon"
    version="17.1"
    start="nios2_gen2_0.data_master"
    end="csi_i2c.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x9020" />
+  <parameter name="baseAddress" value="0x700100a0" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="nios2_gen2_0.data_master"
+   end="SDRAM_ARBITER_0.avl">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="nios2_gen2_0.data_master"
+   end="remote_update_0.avl_csr">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x70010000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -494,7 +811,7 @@
    start="nios2_gen2_0.data_master"
    end="nios2_gen2_0.debug_mem_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x8000" />
+  <parameter name="baseAddress" value="0x7ffff800" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -503,16 +820,7 @@
    start="nios2_gen2_0.data_master"
    end="onchip_memory2_0.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="17.1"
-   start="nios2_gen2_0.data_master"
-   end="sdram.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00800000" />
+  <parameter name="baseAddress" value="0x70000000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -521,7 +829,34 @@
    start="nios2_gen2_0.data_master"
    end="dpram.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x8800" />
+  <parameter name="baseAddress" value="0x70010100" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="nios2_gen2_0.data_master"
+   end="sam_pio.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x70010200" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="nios2_gen2_0.data_master"
+   end="pex_pio.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x70010220" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="nios2_gen2_0.data_master"
+   end="wm_pio.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x70010240" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -530,7 +865,16 @@
    start="nios2_gen2_0.data_master"
    end="flash_spi.spi_control_port">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x9000" />
+  <parameter name="baseAddress" value="0x70010080" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="nios2_gen2_0.data_master"
+   end="nina_spi.spi_control_port">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x700100e0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -539,7 +883,7 @@
    start="nios2_gen2_0.instruction_master"
    end="nios2_gen2_0.debug_mem_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x8000" />
+  <parameter name="baseAddress" value="0x7ffff800" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -548,17 +892,36 @@
    start="nios2_gen2_0.instruction_master"
    end="onchip_memory2_0.s2">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="baseAddress" value="0x70000000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection kind="avalon" version="17.1" start="FB_0.m1" end="sdram.s1">
   <parameter name="arbitrationPriority" value="16" />
-  <parameter name="baseAddress" value="0x00800000" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="17.1" start="MIPI_RX_0.mem" end="sdram.s1">
+  <parameter name="arbitrationPriority" value="16" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="SDRAM_ARBITER_0.sdram"
+   end="sdram.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection kind="clock" version="17.1" start="clk.clk" end="sdram.clk" />
  <connection kind="clock" version="17.1" start="clk.clk" end="nios2_gen2_0.clk" />
  <connection kind="clock" version="17.1" start="clk.clk" end="flash_spi.clk" />
+ <connection kind="clock" version="17.1" start="clk.clk" end="nina_uart.clk" />
+ <connection kind="clock" version="17.1" start="clk.clk" end="nina_spi.clk" />
+ <connection kind="clock" version="17.1" start="clk.clk" end="sam_pio.clk" />
+ <connection kind="clock" version="17.1" start="clk.clk" end="pex_pio.clk" />
+ <connection kind="clock" version="17.1" start="clk.clk" end="wm_pio.clk" />
  <connection
    kind="clock"
    version="17.1"
@@ -571,9 +934,43 @@
    start="clk.clk"
    end="onchip_memory2_0.clk2" />
  <connection kind="clock" version="17.1" start="clk.clk" end="dpram.clk2" />
+ <connection kind="clock" version="17.1" start="clk.clk" end="MIPI_RX_0.clock" />
+ <connection kind="clock" version="17.1" start="clk.clk" end="JTAG_BRIDGE_0.clock" />
+ <connection
+   kind="clock"
+   version="17.1"
+   start="clk.clk"
+   end="SDRAM_ARBITER_0.clock" />
+ <connection
+   kind="clock"
+   version="17.1"
+   start="clk.clk"
+   end="remote_update_0.clock" />
  <connection kind="clock" version="17.1" start="clk.clk" end="csi_i2c.clock_sink" />
  <connection kind="clock" version="17.1" start="clk.clk" end="FB_0.mem_clk" />
  <connection kind="clock" version="17.1" start="vid.out_clk" end="FB_0.vid_clk" />
+ <connection kind="clock" version="17.1" start="vid.out_clk" end="FBST_0.vid_clk" />
+ <connection
+   kind="interrupt"
+   version="17.1"
+   start="nios2_gen2_0.irq"
+   end="nina_uart.interrupt">
+  <parameter name="irqNumber" value="1" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="17.1"
+   start="nios2_gen2_0.irq"
+   end="flash_spi.irq">
+  <parameter name="irqNumber" value="0" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="17.1"
+   start="nios2_gen2_0.irq"
+   end="nina_spi.irq">
+  <parameter name="irqNumber" value="2" />
+ </connection>
  <connection
    kind="reset"
    version="17.1"
@@ -591,6 +988,39 @@
    version="17.1"
    start="clk.clk_reset"
    end="flash_spi.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="clk.clk_reset"
+   end="MIPI_RX_0.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="clk.clk_reset"
+   end="JTAG_BRIDGE_0.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="clk.clk_reset"
+   end="SDRAM_ARBITER_0.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="clk.clk_reset"
+   end="remote_update_0.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="clk.clk_reset"
+   end="nina_uart.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="clk.clk_reset"
+   end="nina_spi.reset" />
+ <connection kind="reset" version="17.1" start="clk.clk_reset" end="sam_pio.reset" />
+ <connection kind="reset" version="17.1" start="clk.clk_reset" end="pex_pio.reset" />
+ <connection kind="reset" version="17.1" start="clk.clk_reset" end="wm_pio.reset" />
  <connection
    kind="reset"
    version="17.1"

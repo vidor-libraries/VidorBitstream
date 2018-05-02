@@ -67,7 +67,7 @@ begin
 end
 
 // frame reader
-wire [7:0]  wFR_FIFO_UDW;
+wire [8:0]  wFR_FIFO_UDW;
 
 reg [21:0] wFR_NEXT_RDADDR;
 
@@ -81,10 +81,10 @@ reg [21:0] wFR_NEXT_RDADDR;
     .use_eab                    ("ON"),
     .write_aclr_synch           ("OFF"),
     .add_ram_output_register    ("OFF"),
-    .lpm_numwords               (128),
+    .lpm_numwords               (511),
     .lpm_showahead              ("ON"),
     .lpm_width                  (16),
-    .lpm_widthu                 (8),
+    .lpm_widthu                 (9),
     .lpm_hint                   ("unused"),     
     .wrsync_delaypipe           (4) 
   )   
@@ -118,7 +118,7 @@ begin
     oMEM_ADDR<= oMEM_ADDR+1;
   end
   
-  if ((wFR_FIFO_UDW<64)&&!rFLUSH_RESYNC[2]&&!(oMEM_ADDR==(pHRES*pVRES-1)))
+  if ((wFR_FIFO_UDW<500)&&!rFLUSH_RESYNC[2]&&!(oMEM_ADDR==(pHRES*pVRES-1)))
   begin
     oMEM_READ <=1;
   end
