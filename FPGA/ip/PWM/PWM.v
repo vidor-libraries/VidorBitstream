@@ -53,12 +53,15 @@ integer i;
 always @(posedge iCLK)
 begin
   if (iWRITE) begin
-    if (iADDRESS>2) case (iADDRESS[0])
+    if (iADDRESS>=2) case (iADDRESS[0])
       0: rMATCH_H[iADDRESS[CLogB2(pCHANNELS):1]-1]<= iDATA;
       1: rMATCH_L[iADDRESS[CLogB2(pCHANNELS):1]-1]<= iDATA;
     endcase
     else begin
-      rPRESCALER_MAX<=iDATA;
+	   case (iADDRESS[0])
+		  0: rPRESCALER_MAX<=iDATA;
+		  1: rPERIOD_MAX<=iDATA;
+		endcase
     end
   end
         
