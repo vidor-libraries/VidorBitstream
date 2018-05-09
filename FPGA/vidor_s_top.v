@@ -138,7 +138,7 @@ cyclone10lp_oscillator   osc
 	.oscena(1'b1));
 
 // system PLL
-SYSTEM_PLL (
+SYSTEM_PLL PLL_inst(
 	.areset(1'b0),
 	.inclk0(wCLK8),
 	.c0(wCLK24),
@@ -231,6 +231,9 @@ wire [30:0] fb_st_data;
 wire [23:0] mipi_st_data;
 wire mipi_st_start,mipi_st_dv;
 
+wire [23:0] mipi_ste_data;
+wire mipi_ste_start,mipi_ste_dv;
+
 wire [31:0] wSAM_PIO_IN;  
 wire [31:0] wSAM_PIO_OUT; 
 wire [31:0] wSAM_PIO_DIR; 
@@ -243,6 +246,21 @@ wire [31:0] wPEX_PIO_IN;
 wire [31:0] wPEX_PIO_OUT;
 wire [31:0] wPEX_PIO_DIR;
 wire [63:0] wPEX_PIO_MSEL; 
+
+/*
+edgedetect ed_inst(
+ .iCLK(iMIPI_CLK),
+ .iRESET(1'b0),
+ .iVID_CLK(iMIPI_CLK),
+ .iVID_RESET(1'b0),
+ .iVID_DATA(mipi_st_data),
+ .iVID_START(mipi_st_start),
+ .iVID_DATAVALID(mipi_st_dv),
+ .oVID_DATA(mipi_ste_data),
+ .oVID_START(mipi_ste_start),
+ .oVID_DATAVALID(mipi_ste_dv)
+);
+*/
 
 memory u0(
 		.clk_clk                (wMEM_CLK),               //      clk.clk
@@ -258,6 +276,7 @@ memory u0(
 		.sdram_dqm              (oSDRAM_DQM),  //         .dqm
 		.sdram_ras_n            (oSDRAM_RASn), //         .ras_n
 		.sdram_we_n             (oSDRAM_WEn),   //         .we_n
+
  		.fb_vport_blu              (wTPG_BLU),     // vport.blu
 		.fb_vport_de               (wTPG_DE),      //      .de
 		.fb_vport_grn              (wTPG_GRN),     //      .grn
@@ -287,14 +306,23 @@ memory u0(
 		.fb_st_dv         (fb_st_dv),         //          .dv
 		.fb_st_ready      (fb_st_ready),       //          .ready
 
-		.arb_mipi_clk     (iMIPI_CLK),     //  arb_mipi.clk
-		.arb_mipi_data    ({mipi_st_data[23-:5],mipi_st_data[15-:5],mipi_st_data[7-:5]}),    //          .data
-		.arb_mipi_start   (mipi_st_start),    //          .data
-		.arb_mipi_dv      (mipi_st_dv),      //          .dv
-
 		.mipi_st_data     (mipi_st_data),     //   mipi_st.data
 		.mipi_st_start    (mipi_st_start),    //          .start
 		.mipi_st_dv       (mipi_st_dv),       //          .dv
+
+		.qr_vid_in_reset  (0),  //           .reset
+		.qr_vid_in_clk    (iMIPI_CLK),    //           .clk
+		.qr_vid_in_data   (mipi_st_data),   //  qr_vid_in.data
+		.qr_vid_in_dv     (mipi_st_dv),     //           .dv
+		.qr_vid_in_start  (mipi_st_start),  //           .start
+		.qr_vid_out_data  (mipi_ste_data),  // qr_vid_out.data
+		.qr_vid_out_dv    (mipi_ste_dv),    //           .dv
+		.qr_vid_out_start (mipi_ste_start),  //           .start
+    
+		.arb_mipi_clk     (iMIPI_CLK),     //  arb_mipi.clk
+		.arb_mipi_data    ({mipi_ste_data[23-:5],mipi_ste_data[15-:5],mipi_ste_data[7-:5]}),    //          .data
+		.arb_mipi_start   (mipi_ste_start),    //          .data
+		.arb_mipi_dv      (mipi_ste_dv),      //          .dv
 
 		.nina_uart_RXD    (iWM_TX),    // nina_uart.RXD
 		.nina_uart_TXD    (wNINA_RX),    //          .TXD
@@ -319,7 +347,7 @@ memory u0(
 		.pex_pio_dir      (wPEX_PIO_DIR),      //          .dir
 		.pex_pio_msel     (wPEX_PIO_MSEL),     //          .msel
     
-      .sam_pwm_pwm      (wSAM_OUT1)
+    .sam_pwm_pwm      (wSAM_OUT1)
     
 	);
   

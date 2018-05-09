@@ -13,7 +13,7 @@
    {
       datum _sortIndex
       {
-         value = "13";
+         value = "14";
          type = "int";
       }
    }
@@ -47,6 +47,22 @@
       {
          value = "12";
          type = "int";
+      }
+   }
+   element QRCODE_FINDER_0
+   {
+      datum _sortIndex
+      {
+         value = "13";
+         type = "int";
+      }
+   }
+   element QRCODE_FINDER_0.ctrl
+   {
+      datum baseAddress
+      {
+         value = "1879115776";
+         type = "String";
       }
    }
    element SDRAM_ARBITER
@@ -193,11 +209,27 @@
          type = "String";
       }
    }
+   element memory
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element memory
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
    element nina_spi
    {
       datum _sortIndex
       {
-         value = "16";
+         value = "17";
          type = "int";
       }
    }
@@ -213,7 +245,7 @@
    {
       datum _sortIndex
       {
-         value = "15";
+         value = "16";
          type = "int";
       }
    }
@@ -269,7 +301,7 @@
    {
       datum _sortIndex
       {
-         value = "18";
+         value = "19";
          type = "int";
       }
    }
@@ -285,7 +317,7 @@
    {
       datum _sortIndex
       {
-         value = "14";
+         value = "15";
          type = "int";
       }
    }
@@ -301,7 +333,7 @@
    {
       datum _sortIndex
       {
-         value = "17";
+         value = "18";
          type = "int";
       }
    }
@@ -317,7 +349,7 @@
    {
       datum _sortIndex
       {
-         value = "20";
+         value = "21";
          type = "int";
       }
    }
@@ -357,7 +389,7 @@
    {
       datum _sortIndex
       {
-         value = "19";
+         value = "20";
          type = "int";
       }
    }
@@ -423,6 +455,17 @@
    type="conduit"
    dir="end" />
  <interface name="pex_pio" internal="pex_pio.pio" type="conduit" dir="end" />
+ <interface name="qr_vid" internal="QRCODE_FINDER_0.vid_clk" />
+ <interface
+   name="qr_vid_in"
+   internal="QRCODE_FINDER_0.vid_in"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="qr_vid_out"
+   internal="QRCODE_FINDER_0.vid_out"
+   type="conduit"
+   dir="end" />
  <interface name="reset" internal="clk.clk_in_reset" type="reset" dir="end" />
  <interface name="sam_pio" internal="sam_pio.pio" type="conduit" dir="end" />
  <interface
@@ -457,6 +500,14 @@
  <module name="JTAG_BRIDGE" kind="JTAG_BRIDGE" version="1.0" enabled="1" />
  <module name="MIPI_RX_0" kind="MIPI_RX" version="1.0" enabled="0" />
  <module name="MIPI_RX_ST_0" kind="MIPI_RX_ST" version="1.0" enabled="1" />
+ <module name="QRCODE_FINDER_0" kind="QRCODE_FINDER" version="1.0" enabled="1">
+  <parameter name="pFIXED" value="5" />
+  <parameter name="pHRES" value="640" />
+  <parameter name="pPIPE_DEPTH" value="3" />
+  <parameter name="pTHRESHOLD" value="60" />
+  <parameter name="pTHRESH_MIN" value="4" />
+  <parameter name="pVRES" value="480" />
+ </module>
  <module name="SDRAM_ARBITER" kind="SDRAM_ARBITER" version="1.0" enabled="1">
   <parameter name="pADDRESS_BITS" value="22" />
   <parameter name="pBURST_SIZE" value="64" />
@@ -572,7 +623,7 @@
   <parameter name="dataAddrWidth" value="31" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='SDRAM_ARBITER.avl' start='0x0' end='0x800000' type='SDRAM_ARBITER.avl' /><slave name='onchip_memory2_0.s1' start='0x70000000' end='0x70008000' type='altera_avalon_onchip_memory2.s1' /><slave name='flash_spi.spi_control_port' start='0x70010080' end='0x700100A0' type='altera_avalon_spi.spi_control_port' /><slave name='csi_i2c.avalon_slave_0' start='0x700100A0' end='0x700100C0' type='o_i2c_master.avalon_slave_0' /><slave name='nina_uart.avalon_rs232_slave' start='0x700100C0' end='0x700100C8' type='altera_up_avalon_rs232.avalon_rs232_slave' /><slave name='nina_spi.spi_control_port' start='0x700100E0' end='0x70010100' type='altera_avalon_spi.spi_control_port' /><slave name='dpram.s1' start='0x70010100' end='0x70010200' type='altera_avalon_onchip_memory2.s1' /><slave name='sam_pio.s1' start='0x70010200' end='0x70010220' type='PIO.s1' /><slave name='pex_pio.s1' start='0x70010220' end='0x70010240' type='PIO.s1' /><slave name='wm_pio.s1' start='0x70010240' end='0x70010260' type='PIO.s1' /><slave name='sam_pwm.avalon_slave_0' start='0x70010300' end='0x70010380' type='PWM.avalon_slave_0' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x7FFFF800' end='0x80000000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='SDRAM_ARBITER.avl' start='0x0' end='0x800000' type='SDRAM_ARBITER.avl' /><slave name='onchip_memory2_0.s1' start='0x70000000' end='0x70008000' type='altera_avalon_onchip_memory2.s1' /><slave name='flash_spi.spi_control_port' start='0x70010080' end='0x700100A0' type='altera_avalon_spi.spi_control_port' /><slave name='csi_i2c.avalon_slave_0' start='0x700100A0' end='0x700100C0' type='o_i2c_master.avalon_slave_0' /><slave name='nina_uart.avalon_rs232_slave' start='0x700100C0' end='0x700100C8' type='altera_up_avalon_rs232.avalon_rs232_slave' /><slave name='nina_spi.spi_control_port' start='0x700100E0' end='0x70010100' type='altera_avalon_spi.spi_control_port' /><slave name='dpram.s1' start='0x70010100' end='0x70010200' type='altera_avalon_onchip_memory2.s1' /><slave name='sam_pio.s1' start='0x70010200' end='0x70010220' type='PIO.s1' /><slave name='pex_pio.s1' start='0x70010220' end='0x70010240' type='PIO.s1' /><slave name='wm_pio.s1' start='0x70010240' end='0x70010260' type='PIO.s1' /><slave name='sam_pwm.avalon_slave_0' start='0x70010300' end='0x70010380' type='PWM.avalon_slave_0' /><slave name='QRCODE_FINDER_0.ctrl' start='0x70010800' end='0x70010840' type='QRCODE_FINDER.ctrl' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x7FFFF800' end='0x80000000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -877,6 +928,15 @@
    kind="avalon"
    version="17.1"
    start="nios2_gen2_0.data_master"
+   end="QRCODE_FINDER_0.ctrl">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x70010800" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="nios2_gen2_0.data_master"
    end="nios2_gen2_0.debug_mem_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x7ffff800" />
@@ -1010,6 +1070,11 @@
    version="17.1"
    start="clk.clk"
    end="remote_update_0.clock" />
+ <connection
+   kind="clock"
+   version="17.1"
+   start="clk.clk"
+   end="QRCODE_FINDER_0.clock" />
  <connection kind="clock" version="17.1" start="clk.clk" end="csi_i2c.clock_sink" />
  <connection kind="clock" version="17.1" start="clk.clk" end="sam_pwm.clock_sink" />
  <connection kind="clock" version="17.1" start="clk.clk" end="FB_0.mem_clk" />
@@ -1086,6 +1151,11 @@
  <connection kind="reset" version="17.1" start="clk.clk_reset" end="sam_pio.reset" />
  <connection kind="reset" version="17.1" start="clk.clk_reset" end="pex_pio.reset" />
  <connection kind="reset" version="17.1" start="clk.clk_reset" end="wm_pio.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="clk.clk_reset"
+   end="QRCODE_FINDER_0.reset" />
  <connection
    kind="reset"
    version="17.1"
