@@ -9,8 +9,8 @@
 #define UART_H_
 
 
-
-int uartCmd(void);
+void uartInit(int devs);
+void uartCmd(void);
 
 
 #endif /* UART_H_ */

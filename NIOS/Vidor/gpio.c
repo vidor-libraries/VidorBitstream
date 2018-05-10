@@ -50,7 +50,7 @@ alt_u32 pwmWrite(alt_u32 pin, alt_u16 mh, alt_u16 ml);
 /**
  *
  */
-int gpioCmd(void)
+void gpioCmd(void)
 {
 	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
 	alt_u32 ret;
@@ -64,7 +64,6 @@ int gpioCmd(void)
 	case 5: ret = pwmWrite(rpc[1], rpc[2], rpc[3]); break;
 	}
 	rpc[1] = ret;
-	return 0;
 }
 
 /**

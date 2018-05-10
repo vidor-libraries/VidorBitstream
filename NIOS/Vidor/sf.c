@@ -9,16 +9,71 @@
 #include <system.h>
 #include <altera_avalon_spi.h>
 
-#include "sf.h"
+#include "mb.h"
 #include "fnc.h"
 
 #define SF_FAST_RD
 
 /**
+ *
  */
-int sfCmd(void)
+alt_u32 sfJedecId(void);
+alt_u32 sfUniqueId(alt_u8* id);
+alt_u32 sfErase(alt_u32 mode, alt_u32 adr);
+alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len);
+alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len);
+
+/**
+ * Security Register
+ */
+alt_u32 sfSRErase(alt_u8 reg);
+alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
+alt_u32 sfSRLock(alt_u8 reg);
+alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
+
+/**
+ *
+ */
+#define SF_WRFLG_ERASE    0x00000001
+#define SF_WRFLG_PROGRAM  0x00000002
+#define SF_WRFLG_VERIFY   0x00000004
+alt_u32 sfWrite(alt_u8* data, alt_u32 len, alt_u32 flg);
+alt_u32 sfProtect(void);
+
+
+/**
+ *
+ */
+void sfInit(int devs)
 {
-	return 0;
+}
+
+/**
+ */
+void sfCmd(void)
+{
+	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+	alt_u32 ret;
+
+	ret = -1;
+	switch(MB_CMD(rpc[0])){
+	case 1:
+		ret = sfJedecId();
+		break;
+	case 2:
+		ret = sfUniqueId((alt_u8*)rpc[2]);
+		break;
+	case 3:
+		ret = sfErase(rpc[0], rpc[1]);
+		break;
+	case 4:
+		ret = sfProgram(rpc[1], (alt_u8*)&rpc[3], rpc[2]);
+		break;
+	case 5:
+		ret = sfRead(rpc[1], (alt_u8*)&rpc[3], rpc[2]);
+		break;
+	}
+	rpc[1] = ret;
 }
 
 /**
@@ -28,7 +83,7 @@ int sfCmd(void)
  * DEVICE ID BYTE2 0x01
  * @return for AT25SF081 0x001F8501
  */
-alt_u32 sfDetect(void)
+alt_u32 sfJedecId(void)
 {
 	alt_u8  txb[]={0x9f};
 	alt_u8  rxb[4];
@@ -41,7 +96,7 @@ alt_u32 sfDetect(void)
 /**
  *
  */
-int sfReadId(alt_u8* id)
+alt_u32 sfUniqueId(alt_u8* id)
 {
 	alt_u8  txb[1+4];
 
@@ -67,18 +122,50 @@ int sfReadId(alt_u8* id)
  * tCHPE Chip Erase Time Typ: 12 sec, Max: 20 sec, 30 sec
  *
  */
-int sfErase(void)
+alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 {
-	alt_u8 txb[1];
+	alt_u8 txb[4];
+	alt_u8 txl;
 	alt_u8 rxb[1];
 
 	//write enable 0x06
 	txb[0] = 0x06;
 	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
 
-	//chip erase   0x60 or 0xC7
-	txb[0] = 0xC7;
-	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
+	switch(mode){
+	case 0:
+		// Sector Erase   	 4K sector address  0x020
+		txb[0] = 0x020;
+		txb[1] = adr>>16;
+		txb[2] = adr>>8;
+		txb[3] = adr;
+		txl = 4;
+		break;
+	case 1:
+		// 32KB Block Erase	32K Block address   0x52
+		txb[0] = 0x52;
+		txb[1] = adr>>16;
+		txb[2] = adr>>8;
+		txb[3] = adr;
+		txl = 4;
+		break;
+	case 2:
+		// 64KB Block Erase 64K Block address    0xD8
+		txb[0] = 0xD8;
+		txb[1] = adr>>16;
+		txb[2] = adr>>8;
+		txb[3] = adr;
+		txl = 4;
+		break;
+	case 3:
+		// Chip Erase       Not used            0x60 or 0xC7
+		txb[0] = 0xC7;
+		txl = 1;
+		break;
+	default:
+		return -1;
+	}
+	alt_avalon_spi_command(FLASH_SPI_BASE, 0, txl, txb, 0, rxb, 0);
 
 	// wait tCHPE 12/20/30 sec
 	txb[0] = 0x05;
@@ -89,7 +176,7 @@ int sfErase(void)
 
 /**
  */
-int sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
+alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
 {
 	alt_u8  txb[1+3+256];
 	alt_u8  rxb[1];
@@ -134,7 +221,7 @@ int sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
  * operations up to the maximum specified by fRDLF.
  *
  */
-int sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
+alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
 {
 	alt_u8  txb[1+3+1];
 
@@ -158,60 +245,9 @@ int sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
 }
 
 /**
- *
- */
-int sfWrite(alt_u8* data, alt_u32 len, alt_u32 flg)
-{
-	if (flg & SF_WRFLG_ERASE) {
-		sfErase();
-	}
-
-	if (flg & SF_WRFLG_PROGRAM) {
-		sfProgram(0x00000000, data, len);
-	}
-
-	if (flg & SF_WRFLG_VERIFY) {
-		alt_u8 *buf = (alt_u8*)(0x00800000 + 0x00040000);
-		int     ret;
-
-		sfRead(0x00000000, buf, len);
-
-		ret = memcmpr((char*)buf, (char*)data, len);
-		if(ret){
-			return -1;
-		}
-
-#if 0
-		alt_u32 ptr;
-		alt_u32 adr;
-		alt_u32 cnt;
-		alt_u8  buf[256];
-		int     ret;
-
-		ptr = 0x00000000;
-		adr = (alt_u32)data;
-		do{
-			cnt = len>256? 256: len;
-			sfRead(ptr, buf, cnt);
-
-			ret = memcmpr((char*)buf, (char*)adr, cnt);
-			if(ret){
-				return -1;
-			}
-
-			len -= cnt;
-			adr += cnt;
-			ptr += cnt;
-		}while(len>0);
-#endif
-	}
-	return 0;
-}
-
-/**
  * @param reg Security Register index 0-2
  */
-int sfSRErase(alt_u8 reg)
+alt_u32 sfSRErase(alt_u8 reg)
 {
 	if (reg>2) {
 		return -1;
@@ -243,7 +279,7 @@ int sfSRErase(alt_u8 reg)
  * @param data
  * @param len
  */
-int sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
+alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
 {
 	if (reg>2) {
 		return -1;
@@ -288,7 +324,7 @@ int sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
  * corresponding 256-Byte Security Register will become read-only permanently.
  *
  */
-int sfSRLock(alt_u8 reg)
+alt_u32 sfSRLock(alt_u8 reg)
 {
 	if (reg>2) {
 		return -1;
@@ -330,7 +366,7 @@ int sfSRLock(alt_u8 reg)
 /**
  *
  */
-int sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
+alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
 {
 	if (reg>2) {
 		return -1;
@@ -346,4 +382,70 @@ int sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
 
 	return 0;
 
+}
+
+/**
+ *
+ */
+alt_u32 sfWrite(alt_u8* data, alt_u32 len, alt_u32 flg)
+{
+	if (flg & SF_WRFLG_ERASE) {
+		sfErase(3, 0);
+	}
+
+	if (flg & SF_WRFLG_PROGRAM) {
+		sfProgram(0x00000000, data, len);
+	}
+
+	if (flg & SF_WRFLG_VERIFY) {
+		alt_u8 *buf = (alt_u8*)(0x00800000 + 0x00040000);
+		int     ret;
+
+		sfRead(0x00000000, buf, len);
+
+		ret = memcmpr((char*)buf, (char*)data, len);
+		if(ret){
+			return -1;
+		}
+	}
+	return 0;
+}
+
+/**
+ * Protect first 512KB
+ */
+alt_u32 sfProtect(void)
+{
+	alt_u8  txb[1+3+2];
+	alt_u8  rxb[1];
+	alt_u8  sts1;
+	alt_u8  sts2;
+
+	// Read Status Register 1
+	txb[0] = 0x05;
+	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);
+	sts1 = rxb[0];
+
+	// Read Status Register 2
+	txb[0] = 0x35;
+	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);
+	sts2 = rxb[0];
+
+	// set SEC(6)=0 TB(5)=1 BP(4-2)=100
+	sts1 &= ~0x7C;
+	sts1 |= 0x30;
+
+	// write enable 0x06
+	txb[0] = 0x06;
+	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
+
+	// Write Status Register 1 and 2 (0x01)
+	txb[0] = 0x01;
+	txb[1] = sts1;
+	txb[2] = sts2;
+	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 3, txb, 0, rxb, 0);
+
+	txb[0] = 0x05;
+	do { alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);} while (rxb[0]&1);
+	return 0;
 }

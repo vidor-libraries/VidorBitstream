@@ -8,13 +8,6 @@
 #include "i2c.h"
 #include "mb.h"
 
-#define DEBUG_PRINT_ENABLED 0
-#if DEBUG_PRINT_ENABLED
-#define DGB_PRINTF printf
-#else
-#define DGB_PRINTF(format, args...) ((void)0)
-#endif
-
 // Overall status and control
 #define IOWR_I2C_PRERLO(port,data)  IOWR(port, 0, data)
 #define IOWR_I2C_PRERHI(port,data)  IOWR(port, 1, data)
@@ -26,7 +19,6 @@
 #define IORD_I2C_CTR(port)          IORD(port, 2)
 #define IORD_I2C_RXR(port)          IORD(port, 3)
 #define IORD_I2C_SR(port)           IORD(port, 4)
-
 
 /* ----- Control register */
 #define OC_I2C_EN (1<<7) /* Core enable bit core is: 1: enabled, 0: disabled */
@@ -54,59 +46,66 @@
 #define I2C_FLAG_WR    0
 
 
-#define I2C_DEV_NUM	1
-
-alt_u32 i2c_baseaddr[I2C_DEV_NUM] = {
+alt_u32 i2c_baseaddr[] = {
 	CSI_I2C_BASE,
 };
-
+alt_u32 i2c_dev_num;
 
 void _i2c_wait_tip(alt_u32 base);
 
-void i2c_enable(alt_u32 index);
-void i2c_clock_set(alt_u32 index, alt_u32 baud);
-void i2c_disable(alt_u32 index);
-alt_u32 i2c_write(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len);
-alt_u32 i2c_read(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len);
+alt_u32 i2cEnable(alt_u32 index);
+alt_u32 i2cClockSet(alt_u32 index, alt_u32 baud);
+alt_u32 i2cDisable(alt_u32 index);
+alt_u32 i2cWrite(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len);
+alt_u32 i2cRead(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len);
 
 /**
  *
  */
-int i2cCmd(void)
+void i2cInit(int devs)
 {
-	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
-
-	switch(MB_CMD(rpc[0])){
-	case 1:
-		/* enableI2C(int index) */
-		i2c_enable(MB_SUB(rpc[0]));
-		break;
-	case 2:
-		/* setI2CClock(int index, int baud) */
-		i2c_clock_set(MB_SUB(rpc[0]), rpc[1]);
-		break;
-	case 3:
-		/* disableI2C(int index) */
-		i2c_disable(MB_SUB(rpc[0]));
-		break;
-	case 5:
-		rpc[1] = i2c_read(MB_SUB(rpc[0]), rpc[1], (alt_u8*)&rpc[3], rpc[2]);
-		break;
-	case 8:
-		rpc[1] = i2c_write(MB_SUB(rpc[0]), rpc[1], (alt_u8*)&rpc[3], rpc[2]);
-		break;
-	}
-
-	return 0;
+	i2c_dev_num = devs;
 }
 
 /**
  *
  */
-void i2c_enable(alt_u32 index)
+void i2cCmd(void)
 {
-	if(index >= I2C_DEV_NUM){
-		return;
+	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+	alt_u32 ret;
+
+	ret = -1;
+	switch(MB_CMD(rpc[0])){
+	case 1:
+		/* enableI2C(int index) */
+		ret = i2cEnable(MB_SUB(rpc[0]));
+		break;
+	case 2:
+		/* setI2CClock(int index, int baud) */
+		ret = i2cClockSet(MB_SUB(rpc[0]), rpc[1]);
+		break;
+	case 3:
+		/* disableI2C(int index) */
+		ret = i2cDisable(MB_SUB(rpc[0]));
+		break;
+	case 5:
+		ret = i2cRead(MB_SUB(rpc[0]), rpc[1], (alt_u8*)&rpc[3], rpc[2]);
+		break;
+	case 8:
+		ret = i2cWrite(MB_SUB(rpc[0]), rpc[1], (alt_u8*)&rpc[3], rpc[2]);
+		break;
+	}
+	rpc[1] = ret;
+}
+
+/**
+ *
+ */
+alt_u32 i2cEnable(alt_u32 index)
+{
+	if(index >= i2c_dev_num){
+		return -1;
 	}
 	alt_u32 baseaddr = i2c_baseaddr[index];
 
@@ -119,15 +118,16 @@ void i2c_enable(alt_u32 index)
 	IOWR_I2C_PRERHI(baseaddr, (prescale & 0xff00)>>8);
 
 	IOWR_I2C_CTR(baseaddr, OC_I2C_EN); /* Enable core */
+	return 0;
 }
 
 /**
  *
  */
-void i2c_clock_set(alt_u32 index, alt_u32 baud)
+alt_u32 i2cClockSet(alt_u32 index, alt_u32 baud)
 {
-	if(index >= I2C_DEV_NUM){
-		return;
+	if(index >= i2c_dev_num){
+		return -1;
 	}
 	alt_u32 baseaddr = i2c_baseaddr[index];
 	int prescale = 154000000/(5*baud);	/* Setup prescaler for baud with sysclk of 154MHz */
@@ -140,29 +140,31 @@ void i2c_clock_set(alt_u32 index, alt_u32 baud)
 
 	/* enable core */
 	IOWR_I2C_CTR(baseaddr, OC_I2C_EN);
+	return 0;
 }
 
 /**
  *
  */
-void i2c_disable(alt_u32 index)
+alt_u32 i2cDisable(alt_u32 index)
 {
-	if(index >= I2C_DEV_NUM){
-		return;
+	if(index >= i2c_dev_num){
+		return -1;
 	}
 	alt_u32 baseaddr = i2c_baseaddr[index];
 
 	/* disable core */
 	IOWR_I2C_CTR(baseaddr, I2C_CR_STO);
+	return 0;
 }
 
 
 /**
  *
  */
-alt_u32 i2c_read(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
+alt_u32 i2cRead(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
 {
-	if(index >= I2C_DEV_NUM){
+	if(index >= i2c_dev_num){
 		return 0xFF;
 	}
 	alt_u32 baseaddr = i2c_baseaddr[index];
@@ -195,9 +197,9 @@ alt_u32 i2c_read(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
 /**
  *
  */
-alt_u32 i2c_write(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
+alt_u32 i2cWrite(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
 {
-	if(index >= I2C_DEV_NUM){
+	if(index >= i2c_dev_num){
 		return -1;
 	}
 	alt_u32 baseaddr = i2c_baseaddr[index];

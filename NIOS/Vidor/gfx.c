@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <alt_types.h>
 #include <system.h>
 
 #include "gfx.h"
@@ -17,10 +18,31 @@
 #define FB_WIDTH  640
 #define FB_HEIGHT 480
 
-#define SHARED_MEM (void*)DPRAM_BASE
-
 #define _swap_int16_t(a,b) {int16_t t=a; a=b; b=t;}
 
+typedef struct { // Data stored PER GLYPH
+	alt_u16  bitmapOffset;     // Pointer into GFXfont->bitmap
+	alt_u8   width, height;    // Bitmap dimensions in pixels
+	alt_u8   xAdvance;         // Distance to advance cursor (x axis)
+	alt_8    xOffset, yOffset; // Dist from cursor pos to UL corner
+} GFXglyph;
+
+typedef struct { // Data stored for FONT AS A WHOLE:
+	alt_u8   *bitmap;      // Glyph bitmaps, concatenated
+	GFXglyph *glyph;       // Glyph array
+	alt_u8    first, last; // ASCII extents
+	alt_u8    yAdvance;    // Newline distance (y axis)
+} GFXfont;
+
+
+alt_u32 writePixel(alt_u16 x, alt_u16 y, alt_u16 color);
+alt_u32 writeLine (alt_u16 x0, alt_u16 y0, alt_u16 x1, alt_u16 y1, alt_u16 color);
+alt_u32 drawRect  (alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u16 color);
+alt_u32 fillRect  (alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u16 color);
+alt_u32 drawCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u16 color);
+alt_u32 fillCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u16 color);
+alt_u32  drawChar  (alt_u16 x, alt_u16 y, alt_u16 color, alt_u8 size, alt_u8 c);
+alt_u32  drawTxt   (alt_u16 x, alt_u16 y, alt_u16 color, alt_u8* txt);
 typedef void (*pfv3)(alt_u32, alt_u32, alt_u32);
 typedef void (*pfv4)(alt_u32, alt_u32, alt_u32, alt_u32);
 typedef void (*pfv5)(alt_u32, alt_u32, alt_u32, alt_u32, alt_u32);
@@ -48,7 +70,7 @@ GFXfont *gfxFont = (GFXfont*)&FreeMono12pt7b;
 
 /**
  */
-int gfxInit(void)
+void gfxInit(int devs)
 {
 	int x;
 	int i;
@@ -98,7 +120,7 @@ int gfxInit(void)
 	fillRect(0x0150, 0x0140, 0x0040, 0x0040, 0xFFFF);
 	drawTxt(50, 200, 0x7FFF, (alt_u8*)"Test draw text");
 
-	alt_u32 volatile *rpc = (alt_u32*)SHARED_MEM;
+	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
 
 	rpc[0] = 1;
 	rpc[1] = 0x0150;
@@ -117,19 +139,18 @@ int gfxInit(void)
 	rpc[6] = 0;
 	gfxCmd();
 
-	return 0;
 }
 
 /**
  *
  */
-int gfxCmd(void)
+void gfxCmd(void)
 {
-	alt_u32 volatile *rpc = (alt_u32*)SHARED_MEM;
-	int ret = 0;
+	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+	int ret = -1;
 
 	if (rpc[0] >= sizeof(fncTbl)/sizeof(sFncTbl)) {
-		return 0;
+		return;
 	}
 	switch (fncTbl[rpc[0]].ret_prm) {
 	case 0x03:
@@ -148,46 +169,49 @@ int gfxCmd(void)
 		ret = ((pfi5)fncTbl[rpc[0]].fnc)(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
 		break;
 	}
-	return ret;
+	rpc[1] = ret;
 }
 
 /**
  * Draw a Point of color at x, y
  */
-void writePixel(alt_u16 x, alt_u16 y, uint16_t color)
+alt_u32 writePixel(alt_u16 x, alt_u16 y, uint16_t color)
 {
 	alt_u16 *p;
 
 	p = FB_BASE + (x + y*FB_WIDTH);
 	*p = color;
+	return 0;
 }
 
 /**
  */
-void writeHLine(alt_u16 x, alt_u16 y, alt_u16 l, uint16_t color)
+alt_u32 writeHLine(alt_u16 x, alt_u16 y, alt_u16 l, uint16_t color)
 {
 	alt_u32 i;
 
 	for(i=x; i<x+l; i++){
 		writePixel(i, y, color);
 	}
+	return 0;
 }
 
 /**
  */
-void writeVLine(alt_u16 x, alt_u16 y, alt_u16 l, alt_u16 color)
+alt_u32 writeVLine(alt_u16 x, alt_u16 y, alt_u16 l, alt_u16 color)
 {
 	alt_u32 i;
 
 	for(i=y; i<y+l; i++){
 		writePixel(x, i, color);
 	}
+	return 0;
 }
 
 /**
  *
  */
-void writeLine(alt_u16 x0, alt_u16 y0, alt_u16 x1, alt_u16 y1, alt_u16 color)
+alt_u32 writeLine(alt_u16 x0, alt_u16 y0, alt_u16 x1, alt_u16 y1, alt_u16 color)
 {
 	alt_16 steep = abs(y1 - y0) > abs(x1 - x0);
 	alt_16 dx, dy;
@@ -226,32 +250,35 @@ void writeLine(alt_u16 x0, alt_u16 y0, alt_u16 x1, alt_u16 y1, alt_u16 color)
 			err += dx;
 		}
 	}
+	return 0;
 }
 
 /**
  * Draw a rectangle
  */
-void drawRect(alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u16 color)
+alt_u32 drawRect(alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u16 color)
 {
 	writeHLine(x, y, w, color);
 	writeHLine(x, y+h-1, w, color);
 	writeVLine(x, y, h, color);
 	writeVLine(x+w-1, y, h, color);
+	return 0;
 }
 /**
  */
-void fillRect(alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u16 color)
+alt_u32 fillRect(alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u16 color)
 {
 	alt_u32 i;
 	for (i=x; i<x+w; i++) {
 		writeVLine(i, y, h, color);
 	}
+	return 0;
 }
 
 /**
  *
  */
-void drawCircleHelper(alt_16 x0, alt_16 y0, alt_16 r, alt_u8 cornername, alt_u16 color)
+alt_u32 drawCircleHelper(alt_16 x0, alt_16 y0, alt_16 r, alt_u8 cornername, alt_u16 color)
 {
 	alt_16 f     = 1 - r;
 	alt_16 ddF_x = 1;
@@ -285,12 +312,13 @@ void drawCircleHelper(alt_16 x0, alt_16 y0, alt_16 r, alt_u8 cornername, alt_u16
             writePixel(x0 - x, y0 - y, color);
         }
     }
+	return 0;
 }
 
 /**
  * Draw a circle outline
  */
-void drawCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u16 color)
+alt_u32 drawCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u16 color)
 {
 	alt_16 f     =  1 - r;
 	alt_16 ddF_x =  1;
@@ -322,13 +350,14 @@ void drawCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u16 color)
 		writePixel(x0 + y, y0 - x, color);
 		writePixel(x0 - y, y0 - x, color);
 	}
+	return 0;
 }
 
 /**
  * Used to do circles and roundrects
  *
  */
-void fillCircleHelper(alt_u16 x0, alt_u16 y0, alt_u16 r, uint8_t cornername, alt_u16 delta, alt_u16 color)
+alt_u32 fillCircleHelper(alt_u16 x0, alt_u16 y0, alt_u16 r, uint8_t cornername, alt_u16 delta, alt_u16 color)
 {
 	alt_16 f     =  1 - r;
 	alt_16 ddF_x =  1;
@@ -355,20 +384,22 @@ void fillCircleHelper(alt_u16 x0, alt_u16 y0, alt_u16 r, uint8_t cornername, alt
 			writeVLine(x0-y, y0-x, 2*x+1+delta, color);
 		}
 	}
+	return 0;
 }
 
 /**
  */
-void fillCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u16 color)
+alt_u32 fillCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u16 color)
 {
 	writeVLine(x0, y0-r, 2*r+1, color);
 	fillCircleHelper(x0, y0, r, 3, 0, color);
+	return 0;
 }
 
 /**
  * Draw a rounded rectangle
  */
-void drawRoundRect(int16_t x, int16_t y, int16_t w,
+alt_u32 drawRoundRect(int16_t x, int16_t y, int16_t w,
         int16_t h, int16_t r, uint16_t color) {
     // smarter version
     writeHLine(x+r  , y    , w-2*r, color); // Top
@@ -380,12 +411,13 @@ void drawRoundRect(int16_t x, int16_t y, int16_t w,
     drawCircleHelper(x+w-r-1, y+r    , r, 2, color);
     drawCircleHelper(x+w-r-1, y+h-r-1, r, 4, color);
     drawCircleHelper(x+r    , y+h-r-1, r, 8, color);
+	return 0;
 }
 
 /**
  * Fill a rounded rectangle
  */
-void fillRoundRect(int16_t x, int16_t y, int16_t w,
+alt_u32 fillRoundRect(int16_t x, int16_t y, int16_t w,
         int16_t h, int16_t r, uint16_t color) {
     // smarter version
     fillRect(x+r, y, w-2*r, h, color);
@@ -393,6 +425,7 @@ void fillRoundRect(int16_t x, int16_t y, int16_t w,
     // draw four corners
     fillCircleHelper(x+w-r-1, y+r, r, 1, h-2*r-1, color);
     fillCircleHelper(x+r    , y+r, r, 2, h-2*r-1, color);
+	return 0;
 }
 
 // TEXT- AND CHARACTER-HANDLING FUNCTIONS ----------------------------------
@@ -400,7 +433,7 @@ void fillRoundRect(int16_t x, int16_t y, int16_t w,
 /**
  * Draw a character
  */
-int drawChar(alt_u16 x, alt_u16 y, alt_u16 color, uint8_t size, alt_u8 c)
+alt_u32 drawChar(alt_u16 x, alt_u16 y, alt_u16 color, uint8_t size, alt_u8 c)
 {
 	// Custom font
 
@@ -464,7 +497,7 @@ int drawChar(alt_u16 x, alt_u16 y, alt_u16 color, uint8_t size, alt_u8 c)
 /**
  *
  */
-int drawTxt(alt_u16 x, alt_u16 y, alt_u16 color, alt_u8* txt)
+alt_u32 drawTxt(alt_u16 x, alt_u16 y, alt_u16 color, alt_u8* txt)
 {
 	int size;
 	int i;

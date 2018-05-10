@@ -11,7 +11,7 @@
 
 
 
-int gpioCmd(void);
+void gpioCmd(void);
 
 
 #endif /* GPIO_H_ */

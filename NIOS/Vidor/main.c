@@ -91,35 +91,13 @@
 #include "spi.h"
 #include "uart.h"
 
-#define DEBUG_PRINT_ENABLED 0
-#if DEBUG_PRINT_ENABLED
-#define DGB_PRINTF printf
-#else
-#define DGB_PRINTF(format, args...) ((void)0)
-#endif
-
-void rxCmd(alt_u32 cmd);
+void platformSetup(void);
+void platformCmd(void);
+void platformLoop(void);
 
 /**
  * TODO togliere, solo per debug
  */
-void loop(void)
-{
-	volatile alt_u32 cmd;
-	int ret;
-	cmd = *(volatile alt_u32*)DPRAM_BASE;
-	if (cmd) {
-		switch (cmd & MB_DEV_MSK){
-		case MB_DEV_SF  : ret = sfCmd(); break;
-		case MB_DEV_GPIO: ret = gpioCmd(); break;
-		case MB_DEV_GFX : ret = gfxCmd(); break;
-		case MB_DEV_I2C : ret = i2cCmd(); break;
-		case MB_DEV_SPI : ret = spiCmd(); break;
-		case MB_DEV_UART: ret = uartCmd(); break;
-		}
-		*(volatile alt_u32*)DPRAM_BASE = 0;
-	}
-}
 
 #if 0
 void i2cTest(void)
@@ -129,30 +107,30 @@ void i2cTest(void)
 
 	// enable I2C index 0 - CSI_I2C_BASE
 	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x01;
-	loop();
+	platformLoop();
 
 	// start transmission
 	rpc[1] = 0x36;
 	rpc[2] = 0x00;
 	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x04;
-	loop();
+	platformLoop();
 
 	// write
 	rpc[1] = 0x01;
 	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
-	loop();
+	platformLoop();
 
 	rpc[1] = 0x03;
 	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
-	loop();
+	platformLoop();
 
 	rpc[1] = 0x01;
 	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
-	loop();
+	platformLoop();
 
 	// stop
 	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x07;
-	loop();
+	platformLoop();
 }
 #endif
 void gpioTest(void)
@@ -168,26 +146,26 @@ void gpioTest(void)
 	rpc[1] = pin;
 	rpc[2] = mode;
 	rpc[0] = MB_DEV_GPIO | 0x01;
-	loop();
+	platformLoop();
 
 	/* write */
 	val = 0;
 	rpc[1] = pin;
 	rpc[2] = val;
 	rpc[0] = MB_DEV_GPIO | 0x02;
-	loop();
+	platformLoop();
 
 	/* write */
 	val = 1;
 	rpc[1] = pin;
 	rpc[2] = val;
 	rpc[0] = MB_DEV_GPIO | 0x02;
-	loop();
+	platformLoop();
 
 	/* read */
 	rpc[1] = pin;
 	rpc[0] = MB_DEV_GPIO | 0x03;
-	loop();
+	platformLoop();
 #endif
 
 	/* pwm */
@@ -196,18 +174,18 @@ void gpioTest(void)
 	rpc[1] = pin;
 	rpc[2] = mode;
 	rpc[0] = MB_DEV_GPIO | 0x01;
-	loop();
+	platformLoop();
 
 	rpc[1] = 1000;//prescaler
 	rpc[2] = 120;//period
 	rpc[0] = MB_DEV_GPIO | 0x04;
-	loop();
+	platformLoop();
 
 	rpc[1] = pin;
 	rpc[2] = 60;
 	rpc[3] = 40;
 	rpc[0] = MB_DEV_GPIO | 0x05;
-	loop();
+	platformLoop();
 
 }
 
@@ -216,7 +194,8 @@ void gpioTest(void)
  */
 int main()
 {
-	int ret;
+	platformSetup();
+	//int ret;
 
 	// update serial flash with FPGA binary
 	//ret = sfWrite(0x00800000, 181344, SF_WRFLG_ERASE | SF_WRFLG_PROGRAM | SF_WRFLG_VERIFY);
@@ -252,11 +231,12 @@ int main()
 
 	sfSRLock(alt_u8 reg);
 */
+	aesTest();
 
 //	i2cTest();
 	gpioTest();
 
-//	mbInit(rxCmd);
+// TODO	mbInit(rxCmd);
 
 	//gfxInit();
 
@@ -264,42 +244,10 @@ int main()
 //	i2c_init(CSI_I2C_BASE);
 
 	/* Event loop never exits. */
-//	alt_u32 cmd;
 	while (1) {
-		/*
-		cmd = mbPoll();
-		if (cmd) {
-			switch (cmd & MB_DEV_MSK){
-			case MB_DEV_SF  : ret = sfCmd(); break;
-			case MB_DEV_GPIO: ret = gpioCmd(); break;
-			case MB_DEV_GFX : ret = gfxCmd(); break;
-			case MB_DEV_I2C : ret = i2cCmd(); break;
-			case MB_DEV_SPI: break;
-			case MB_DEV_UART: break;
-			}
-			mbDone();
-		}
-		*/
+		platformCmd();
+		platformLoop();
 	};
 
 	return 0;
-}
-
-/**
- *
- */
-void rxCmd(alt_u32 cmd)
-{
-	int ret;
-
-	switch (cmd & MB_DEV_MSK){
-	case MB_DEV_SF  : ret = sfCmd(); break;
-	case MB_DEV_GPIO: ret = gpioCmd(); break;
-	case MB_DEV_GFX : ret = gfxCmd(); break;
-	case MB_DEV_I2C : ret = i2cCmd(); break;
-	case MB_DEV_SPI : ret = spiCmd(); break;
-	case MB_DEV_UART: ret = uartCmd(); break;
-	}
-	mbDone();
-	//mbTxSend(0x00000001, ret);
 }

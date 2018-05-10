@@ -2,10 +2,10 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>May 8, 2018 3:15:51 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1525785351574</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>May 10, 2018 11:58:44 AM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1525946324990</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/media/max/storage/vidor/vidor_s/NIOS/Vidor_bsp</BspGeneratedLocation>
-        <BspSettingsFile>./settings.bsp</BspSettingsFile>
+        <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>/media/max/storage/vidor/vidor_s/FPGA/memory.sopcinfo</SopcDesignFile>
         <JdiFile>default</JdiFile>
         <Cpu>nios2_gen2_0</Cpu>
@@ -938,6 +938,18 @@
                 <slaveDescriptor>sam_pwm</slaveDescriptor>
                 <addressRange>0x70010300 - 0x7001037F</addressRange>
                 <addressSpan>128</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>AES_0</slaveDescriptor>
+                <addressRange>0x70010380 - 0x700103BF</addressRange>
+                <addressSpan>64</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>QRCODE_FINDER_0</slaveDescriptor>
+                <addressRange>0x70010800 - 0x7001083F</addressRange>
+                <addressSpan>64</addressSpan>
                 <attributes/>
         </MemoryMap>
         <LinkerSection>
