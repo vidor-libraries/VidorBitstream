@@ -165,15 +165,15 @@ alt_u32 aesTest(void)
 	alt_u8 enc[16];
 	alt_u8 new[16];
 
-	aesConfig(AES_CFG_KEY_128, AES_CFG_ENCODE);
 	aesKeyWr((alt_u32*)key);
 	aesDataWr((alt_u32*)plain);
 	aesDataRd((alt_u32*)enc);
+	aesConfig(AES_CFG_KEY_128, AES_CFG_ENCODE);
 
-	aesConfig(AES_CFG_KEY_128, AES_CFG_DECODE);
 	aesKeyWr((alt_u32*)key);
 	aesDataWr((alt_u32*)enc);
 	aesDataRd((alt_u32*)new);
+	aesConfig(AES_CFG_KEY_128, AES_CFG_DECODE);
 	return 0;
 }
 
