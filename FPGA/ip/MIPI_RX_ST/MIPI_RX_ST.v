@@ -40,10 +40,12 @@ reg [15:0] rMIPI_LINEMEM [639:0];
 reg rMIPI_PIXELVALID/* synthesis noprune */;
 reg rMIPI_PIXELVALID2/* synthesis noprune */;
 reg rMIPI_DATAVALID/* synthesis noprune */;
-reg [7:0] rMIPI_R/* synthesis noprune */;
+reg [7:0] rMIPI_R0/* synthesis noprune */;
 reg [7:0] rMIPI_G0 /* synthesis noprune */;
-reg [7:0] rMIPI_B /* synthesis noprune */;
+reg [7:0] rMIPI_B0 /* synthesis noprune */;
+reg [7:0] rMIPI_R1/* synthesis noprune */;
 reg [7:0] rMIPI_G1 /* synthesis noprune */;
+reg [7:0] rMIPI_B1 /* synthesis noprune */;
 localparam cMIPI_HT_VSTART = 0;
 localparam cMIPI_HT_VEND = 1;
 localparam cMIPI_HT_HSTART = 2;
@@ -53,16 +55,19 @@ reg [2:0] rPRESCALE /* synthesis noprune */;
 reg [15:0] rWC      /* synthesis noprune */;
 reg rPHASE /* synthesis noprune */;
 wire [15:0] wMIPI_DATA      /* synthesis noprune */;
-wire [15:0] wMIPI_LB_DATA;
+wire [31:0] wMIPI_LB_RAM_DATA;
+wire [31:0] wMIPI_LB_DATA;
+reg  [47:0] rPREV_MIPI_DATA;
+reg rFIRST_LINE;
 
-
+assign wMIPI_LB_DATA= rFIRST_LINE ? 0: wMIPI_LB_RAM_DATA;
 	altsyncram	altsyncram_component (
 				.address_a (rWC),
 				.address_b (rWC),
 				.clock0 (iMIPI_CLK),
-				.data_a (wMIPI_DATA),
+				.data_a ({wMIPI_LB_DATA[15:0],wMIPI_DATA}),
 				.wren_a (rMIPI_DATAVALID&rMIPI_VDATA),
-				.q_b (wMIPI_LB_DATA),
+				.q_b (wMIPI_LB_RAM_DATA),
 				.aclr0 (1'b0),
 				.aclr1 (1'b0),
 				.addressstall_a (1'b0),
@@ -74,7 +79,7 @@ wire [15:0] wMIPI_LB_DATA;
 				.clocken1 (1'b1),
 				.clocken2 (1'b1),
 				.clocken3 (1'b1),
-				.data_b ({16{1'b1}}),
+				.data_b ({32{1'b1}}),
 				.eccstatus (),
 				.q_a (),
 				.rden_a (1'b1),
@@ -97,8 +102,8 @@ wire [15:0] wMIPI_LB_DATA;
 		altsyncram_component.read_during_write_mode_mixed_ports = "DONT_CARE",
 		altsyncram_component.widthad_a = 10,
 		altsyncram_component.widthad_b = 10,
-		altsyncram_component.width_a = 16,
-		altsyncram_component.width_b = 16,
+		altsyncram_component.width_a = 32,
+		altsyncram_component.width_b = 32,
 		altsyncram_component.width_byteena_a = 1;
 
     
@@ -160,19 +165,49 @@ begin
     else if (rMIPI_HDR2) begin
       rMIPI_HDR2 <=0;
       rMIPI_VSTART <=0;
+      rFIRST_LINE<=0;
+      if (rMIPI_VSTART) rFIRST_LINE<=1;
       if (rMIPI_VDATA) rWC[15:0] <= {wMIPI_DATA[7:0],rWC[7:0]}-2;
+      rPREV_MIPI_DATA<=0;
     end
     else if (rMIPI_VDATA) begin
+      rPREV_MIPI_DATA<={wMIPI_LB_DATA,wMIPI_DATA};
       if (rMIPI_BAYERPOL) begin
-        rMIPI_R  <= wMIPI_DATA[15:8];
-        rMIPI_G0 <= wMIPI_DATA[7:0];
-        rMIPI_B  <= wMIPI_LB_DATA[7:0];
-        rMIPI_G1 <= wMIPI_LB_DATA[15:8];
+        rMIPI_R0 <= ({1'b0,rPREV_MIPI_DATA[47:40]}+{1'b0,rPREV_MIPI_DATA[15:8]})>>1;
+        rMIPI_G0 <= ({1'b0,rPREV_MIPI_DATA[31:24],2'b0}+
+                     {3'b0,wMIPI_DATA[7:0]}+
+                     {3'b0,rPREV_MIPI_DATA[7:0]}+
+                     {3'b0,rPREV_MIPI_DATA[39:32]}+
+                     {3'b0,wMIPI_LB_DATA[23:16]})>>3;
+        rMIPI_B0 <= ({1'b0,rPREV_MIPI_DATA[23:16]}+{1'b0,wMIPI_LB_DATA[7:0]})>>1;
+
+        rMIPI_R1 <= ({2'b0,rPREV_MIPI_DATA[47:40]}+
+                     {2'b0,wMIPI_LB_DATA[31:24]}     +
+                     {2'b0,rPREV_MIPI_DATA[15:8]} +
+                     {2'b0,wMIPI_DATA[15:8]}         )>>2;
+        rMIPI_G1 <= ({2'b0,rPREV_MIPI_DATA[31:24]}+
+                     {2'b0,wMIPI_LB_DATA[15:8]}      +
+                     {2'b0,wMIPI_LB_DATA[23:16]}     +
+                     {2'b0,wMIPI_DATA[7:0]}          )>>2;
+        rMIPI_B1 <= wMIPI_LB_DATA[7:0];
       end else begin
-        rMIPI_R  <= wMIPI_LB_DATA[15:8];
-        rMIPI_G0 <= wMIPI_LB_DATA[7:0]; 
-        rMIPI_B  <= wMIPI_DATA[7:0];
-        rMIPI_G1 <= wMIPI_DATA[15:8];     
+        rMIPI_R0 <= rPREV_MIPI_DATA[31:24];
+        rMIPI_G0 <= ({2'b0,rPREV_MIPI_DATA[47:40]}+
+                     {2'b0,wMIPI_LB_DATA[7:0]}       +
+                     {2'b0,rPREV_MIPI_DATA[15:8]} +
+                     {2'b0,rPREV_MIPI_DATA[23:16]})>>2;
+        rMIPI_B0 <= ({2'b0,rPREV_MIPI_DATA[39:32]}+
+                     {2'b0,wMIPI_LB_DATA[23:16]}     +
+                     {2'b0,rPREV_MIPI_DATA[7:0]}  +
+                     {2'b0,wMIPI_DATA[7:0]}          )>>2;
+
+        rMIPI_R1 <= ({1'b0,rPREV_MIPI_DATA[31:24]}+{1'b0,wMIPI_LB_DATA[15:8]})>>1;
+        rMIPI_G1 <= ({1'b0,wMIPI_LB_DATA[7:0], 2'b0}+
+                     {3'b0,wMIPI_DATA[15:8]}+
+                     {3'b0,rPREV_MIPI_DATA[15:8]}+
+                     {3'b0,rPREV_MIPI_DATA[47:40]}+
+                     {3'b0,wMIPI_LB_DATA[31:24]})>>3;
+        rMIPI_B1 <= ({1'b0,wMIPI_LB_DATA[23:16]}+{1'b0,wMIPI_DATA[7:0]})>>1;
       end
       rMIPI_PIXELVALID <=1;
       rWC<=rWC-2;
@@ -190,9 +225,9 @@ begin
   end
 end
 
-assign   oMIPI_DATA = rMIPI_PIXELVALID ? {rMIPI_R,rMIPI_G0, rMIPI_B} : {rMIPI_R,rMIPI_G1, rMIPI_B};
+assign   oMIPI_DATA = rMIPI_PIXELVALID ? {rMIPI_R0,rMIPI_G0, rMIPI_B0} : {rMIPI_R1,rMIPI_G1, rMIPI_B1};
 assign   oMIPI_START = rMIPI_VSTART;
-assign   oMIPI_DATAVALID = rMIPI_PIXELVALID|rMIPI_PIXELVALID2;
+assign   oMIPI_DATAVALID = rFIRST_LINE ? 0 : rMIPI_PIXELVALID|rMIPI_PIXELVALID2;
   
 endmodule
 
