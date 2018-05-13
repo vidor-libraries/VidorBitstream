@@ -123,6 +123,7 @@ add_interface_port sdram oSDRAM_WRITEDATA writedata Output 16
 add_interface_port sdram iSDRAM_READ_DATA readdata Input 16
 add_interface_port sdram iSDRAM_WAITREQUEST waitrequest Input 1
 add_interface_port sdram iSDRAM_READ_DATAVALID readdatavalid Input 1
+add_interface_port sdram oSDRAM_BYTEENABLE byteenable Output 2
 
 
 # 
@@ -199,15 +200,15 @@ set_interface_property avl addressUnits WORDS
 set_interface_property avl associatedClock clock
 set_interface_property avl associatedReset reset
 set_interface_property avl bitsPerSymbol 8
-set_interface_property avl burstOnBurstBoundariesOnly false
-set_interface_property avl burstcountUnits WORDS
+#set_interface_property avl burstOnBurstBoundariesOnly false
+#set_interface_property avl burstcountUnits WORDS
 set_interface_property avl explicitAddressSpan 0
 set_interface_property avl holdTime 0
-set_interface_property avl linewrapBursts false
+#set_interface_property avl linewrapBursts false
 set_interface_property avl maximumPendingReadTransactions 1
 set_interface_property avl maximumPendingWriteTransactions 0
 set_interface_property avl readLatency 0
-set_interface_property avl readWaitTime 1
+set_interface_property avl readWaitTime 0
 set_interface_property avl setupTime 0
 set_interface_property avl timingUnits Cycles
 set_interface_property avl writeWaitTime 0
@@ -222,9 +223,10 @@ add_interface_port avl oAVL_READ_DATAVALID readdatavalid Output 1
 add_interface_port avl iAVL_WRITE_DATA writedata Input 16
 add_interface_port avl oAVL_WAITREQUEST waitrequest Output 1
 add_interface_port avl iAVL_ADDRESS address Input pADDRESS_BITS
-add_interface_port avl iAVL_BURSTCOUNT burstcount Input 6
+#add_interface_port avl iAVL_BURSTCOUNT burstcount Input 6
 add_interface_port avl iAVL_READ read Input 1
 add_interface_port avl iAVL_WRITE write Input 1
+add_interface_port avl iAVL_BYTEENABLE byteenable Input 2
 set_interface_assignment avl embeddedsw.configuration.isFlash 0
 set_interface_assignment avl embeddedsw.configuration.isMemoryDevice 0
 set_interface_assignment avl embeddedsw.configuration.isNonVolatileStorage 0
