@@ -81,13 +81,6 @@ set_parameter_property pTHRESHOLD TYPE INTEGER
 set_parameter_property pTHRESHOLD UNITS None
 set_parameter_property pTHRESHOLD ALLOWED_RANGES -2147483648:2147483647
 set_parameter_property pTHRESHOLD HDL_PARAMETER true
-add_parameter pPIPE_DEPTH INTEGER 3
-set_parameter_property pPIPE_DEPTH DEFAULT_VALUE 3
-set_parameter_property pPIPE_DEPTH DISPLAY_NAME pPIPE_DEPTH
-set_parameter_property pPIPE_DEPTH TYPE INTEGER
-set_parameter_property pPIPE_DEPTH UNITS None
-set_parameter_property pPIPE_DEPTH ALLOWED_RANGES -2147483648:2147483647
-set_parameter_property pPIPE_DEPTH HDL_PARAMETER true
 
 
 # 

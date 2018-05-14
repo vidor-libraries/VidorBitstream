@@ -24,20 +24,20 @@ parameter pVRES=480;
 parameter pTHRESH_MIN=4;
 parameter pFIXED=5;
 parameter pTHRESHOLD=60;
-parameter pPIPE_DEPTH=3;
+localparam cPIPE_DEPTH=4;
 
 reg [9:0] rHCNT;
 reg [9:0] rVCNT /*synthesis noprune */;
-reg [pPIPE_DEPTH-1:0] rVALID_PIPE;
-reg [pPIPE_DEPTH-1:0] rSTART_PIPE;
-reg [pPIPE_DEPTH-1:0] rDSTART_PIPE;
-reg [pPIPE_DEPTH-1:0][23:0] rDATA_PIPE;
-reg [pPIPE_DEPTH-1:0][9:0] rHCNT_PIPE;
+reg [cPIPE_DEPTH-1:0] rVALID_PIPE;
+reg [cPIPE_DEPTH-1:0] rSTART_PIPE;
+reg [cPIPE_DEPTH-1:0] rDSTART_PIPE;
+reg [cPIPE_DEPTH-1:0][23:0] rDATA_PIPE;
+reg [cPIPE_DEPTH-1:0][9:0] rHCNT_PIPE;
 reg rDSTART;
 reg [9:0] rLUM;
 wire [9:0] wLUM;
 wire [9:0] wLUM_NORM;
-reg [pPIPE_DEPTH-2:0][9:0] rLUM_HIST;
+reg [cPIPE_DEPTH-1:0][9:0] rLUM_HIST;
 reg [1:0] rSTATE;
 reg [9:0] rPREV_CHANGE;
 reg [1:0] rPREV_STATE;
@@ -64,6 +64,10 @@ reg [9:0] rREG_HST1 /*synthesis noprune */, rREG_HED1/*synthesis noprune */, rRE
 reg [9:0] rREG_VST1 /*synthesis noprune */, rREG_VED1/*synthesis noprune */, rREG_VST2/*synthesis noprune */, rREG_VED2/*synthesis noprune */, rREG_VST3/*synthesis noprune */, rREG_VED3/*synthesis noprune */;
 reg       rREG_FND1/*synthesis noprune */,rREG_FND2/*synthesis noprune */,rREG_FND3/*synthesis noprune */;
 reg rUPDATE, rREFRESH;
+wire signed [12:0] wLUM_DIFF;
+
+assign wLUM_DIFF = {3'b0,rLUM_HIST[0]}+{3'b0,rLUM_HIST[1]}-{3'b0,rLUM_HIST[2]}-{3'b0,rLUM_HIST[3]};
+
 
 typedef enum {
   stNONE,
@@ -174,7 +178,7 @@ begin
   if (rVALID_PIPE[0]) begin
     rLUM_HIST<= {rLUM_HIST,wLUM_NORM};
     if (rDSTART_PIPE[0]) begin
-      rLUM_HIST<={pPIPE_DEPTH-1{wLUM_NORM}};
+      rLUM_HIST<={cPIPE_DEPTH-1{wLUM_NORM}};
     end
   end
   //third pipeline stage
@@ -187,34 +191,34 @@ begin
                               0;
 
     //  check for rising edge
-    if (rLUM_HIST[0]>rLUM_HIST[1] && ((rLUM_HIST[0]-rLUM_HIST[1]) > pTHRESHOLD ) ) begin
-      if ((rSTATE==stWHITE && rPREV_CHANGE<(rLUM_HIST[0]-rLUM_HIST[1])) || 
+    if ((wLUM_DIFF>0) && (wLUM_DIFF > pTHRESHOLD ) ) begin
+      if ((rSTATE==stWHITE && rPREV_CHANGE<wLUM_DIFF) || 
           (rSTATE!=stWHITE) ) begin
         rHSTART<= rHCNT_PIPE[1];
-        rPREV_CHANGE<= rLUM_HIST[0]-rLUM_HIST[1];
+        rPREV_CHANGE<= wLUM_DIFF;
         if (rSTATE!=stWHITE) begin
           rSTATE <= stWHITE;
           rPREV_STATE <= rSTATE;
           rPREV_HSTART <= rHSTART;
           rCHANGE<=1;
-          oVID_DATA<= 24'hff0000;
+          if (rOUTMODE!=0) oVID_DATA<= 24'hff0000;
           rPREV_DUR<=rHCNT_PIPE[0]-rHSTART;
         end
       end
     end
 
     //  check for falling edge
-    if (rLUM_HIST[0]<rLUM_HIST[1] && ((rLUM_HIST[1]-rLUM_HIST[0]) > pTHRESHOLD ) ) begin
-      if ((rSTATE==stBLACK && rPREV_CHANGE<(rLUM_HIST[1]-rLUM_HIST[0])) || 
+    if ((wLUM_DIFF<0) && ((-wLUM_DIFF) > pTHRESHOLD ) ) begin
+      if ((rSTATE==stBLACK && rPREV_CHANGE<(-wLUM_DIFF)) || 
           (rSTATE!=stBLACK) ) begin
         rHSTART<= rHCNT_PIPE[1];
-        rPREV_CHANGE<= rLUM_HIST[1]-rLUM_HIST[0];
+        rPREV_CHANGE<= -wLUM_DIFF;
         if (rSTATE!=stBLACK) begin
           rSTATE <= stBLACK;
           rPREV_STATE <= rSTATE;
           rPREV_HSTART <= rHSTART;
           rCHANGE<=1;
-          oVID_DATA<= 24'h0000ff;
+          if (rOUTMODE!=0) oVID_DATA<= 24'h0000ff;
           rPREV_DUR<=rHCNT_PIPE[0]-rHSTART;
         end
       end
@@ -225,7 +229,7 @@ begin
       rCHANGE<=0;
     end
     rFOUND<=0;
-    if (rFOUND)
+    if (rFOUND && rOUTMODE!=0)
       oVID_DATA<= 24'h00FF00;
   end
   //fourth pipeline stage
@@ -238,8 +242,8 @@ begin
           if (rPREV_STATE==stBLACK) begin
             rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>2)+1;
             rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>2)-1;
-            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>2)+(rPREV_DUR>>2)+3;
-            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>2)-(rPREV_DUR>>2)-1;
+            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>2)+3;
+            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>2)-3;
             rDECODE_STATE<=dsFIRST;
             rREFBIT_HSTART<= rPREV_HSTART;
           end
@@ -261,10 +265,10 @@ begin
             rPREV_CENT_HSTART<= rPREV_HSTART;
           end
           else begin
-            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>4);
-            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>4);
-            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>4);
-            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>4);
+            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>2)+1;
+            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>2)-1;
+            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>2)+3;
+            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>2)-3;
             rDECODE_STATE<=dsFIRST;
             rREFBIT_HSTART<= rPREV_HSTART;
           end
@@ -309,7 +313,7 @@ begin
                       {rHST1[9:1]+rHED1[9:1]}<rHCNT_PIPE[1] ) begin
                 rVED1<=rVCNT;
             end
-            else if (!rFND2) begin
+            else if (!rFND2 && ((rPREV_CENT_HEND-rPREV_CENT_HSTART)>((rHED1-rHST1)/2))) begin
               rFND2<=1;
               rHST2<=rPREV_CENT_HSTART;
               rHED2<=rPREV_CENT_HEND;
@@ -322,7 +326,7 @@ begin
                     {rHST2[9:1]+rHED2[9:1]}<rHCNT_PIPE[1] ) begin
                 rVED2<=rVCNT;
             end
-            else if (!rFND3) begin
+            else if (!rFND3 && ((rPREV_CENT_HEND-rPREV_CENT_HSTART)>((rHED1-rHST1)/2))) begin
               rFND3<=1;
               rHST3<=rPREV_CENT_HSTART;
               rHED3<=rPREV_CENT_HEND;
@@ -337,10 +341,10 @@ begin
             end
           end
           else begin
-            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>4);
-            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>4);
-            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>4);
-            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>4);
+            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>2)+1;
+            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>2)-1;
+            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>2)+3;
+            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>2)-3;
             rDECODE_STATE<=dsFIRST;
             rREFBIT_HSTART<= rPREV_HSTART;
           end
