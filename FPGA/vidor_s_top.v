@@ -61,8 +61,6 @@ module vidor_s_top
   inout         bWM_PIO18,
   inout         bWM_PIO20,
   inout         bWM_PIO21,
-  inout         bWM_PIO24,
-  inout         bWM_PIO25,
   inout         bWM_PIO27,
   inout         bWM_PIO28,
   inout         bWM_PIO29,
@@ -95,7 +93,9 @@ module vidor_s_top
   output        oFLASH_MOSI,
   input         iFLASH_MISO,
   output        oFLASH_SCK,
-  output        oFLASH_CS
+  output        oFLASH_CS,
+  output        oFLASH_WP,
+  output        oFLASH_HOLD
   
 );
 
@@ -110,8 +110,8 @@ wire        wJTAG_READ, wJTAG_WRITE, wJTAG_WAIT_REQUEST, wJTAG_READ_DATAVALID;
 wire [4:0]  wJTAG_BURST_COUNT;
 wire        wDPRAM_CS;
 
-wire [7:0]  wTPG_RED,wTPG_GRN,wTPG_BLU;
-wire        wTPG_HS,wTPG_VS,wTPG_DE;
+wire [7:0]  wDVI_RED,wDVI_GRN,wDVI_BLU;
+wire        wDVI_HS, wDVI_VS, wDVI_DE;
 
 wire        wVID_CLK, wVID_CLKx5;
 wire        wMEM_CLK;
@@ -144,21 +144,21 @@ SYSTEM_PLL PLL_inst(
 	.c0(wCLK24),
 	.c1(wCLK120),
 	.c2(wMEM_CLK),
-  //.c3(oSDRAM_CLK),
+  .c3(oSDRAM_CLK),
 	.locked());
 
-  // DVI output
+// DVI output
 DVI_OUT
 (
   .iPCLK(wVID_CLK),
   .iSCLK(wVID_CLKx5),
 
-  .iRED(wTPG_RED),
-  .iGRN(wTPG_GRN),
-  .iBLU(wTPG_BLU),
-  .iHS(wTPG_HS),
-  .iVS(wTPG_VS),
-  .iDE(wTPG_DE),
+  .iRED(wDVI_RED),
+  .iGRN(wDVI_GRN),
+  .iBLU(wDVI_BLU),
+  .iHS (wDVI_HS),
+  .iVS (wDVI_VS),
+  .iDE (wDVI_DE),
 
   .oDVI_DATA(oHDMI_TX),
   .oDVI_CLK(oHDMI_CLK)
@@ -223,7 +223,7 @@ end
 		.zs_we_n        (oSDRAM_WEn)                       //      .export
 	);
   */
-assign oSDRAM_CLK=wMEM_CLK;
+//assign oSDRAM_CLK=wMEM_CLK;
 
 wire fb_st_start,fb_st_dv,fb_st_ready;
 wire [30:0] fb_st_data;
@@ -247,6 +247,7 @@ wire [31:0] wPEX_PIO_OUT;
 wire [31:0] wPEX_PIO_DIR;
 wire [63:0] wPEX_PIO_MSEL; 
 
+wire [1:0] wIRQ_OUT;
 /*
 edgedetect ed_inst(
  .iCLK(iMIPI_CLK),
@@ -262,9 +263,19 @@ edgedetect ed_inst(
 );
 */
 
+reg [5:0] rRESETCNT;
+
+always @(posedge wMEM_CLK)
+begin
+  if (!rRESETCNT[5])
+  begin
+  rRESETCNT<=rRESETCNT+1;
+  end
+end
+
 memory u0(
 		.clk_clk                (wMEM_CLK),               //      clk.clk
-		.reset_reset_n          (1'b1), // reset.reset_n
+		.reset_reset_n          (rRESETCNT[5]), // reset.reset_n
 		.vid_clk                (wVID_CLK),        //   vid.clk
 
 		.sdram_addr             (oSDRAM_ADDR), //    sdram.addr
@@ -277,12 +288,12 @@ memory u0(
 		.sdram_ras_n            (oSDRAM_RASn), //         .ras_n
 		.sdram_we_n             (oSDRAM_WEn),   //         .we_n
 
- 		.fb_vport_blu              (wTPG_BLU),     // vport.blu
-		.fb_vport_de               (wTPG_DE),      //      .de
-		.fb_vport_grn              (wTPG_GRN),     //      .grn
-		.fb_vport_hs               (wTPG_HS),      //      .hs
-		.fb_vport_vs               (wTPG_VS),      //      .vs
-		.fb_vport_red              (wTPG_RED),     //      .red
+ 		.fb_vport_blu           (wDVI_BLU),     // vport.blu
+		.fb_vport_de            (wDVI_DE),      //      .de
+		.fb_vport_grn           (wDVI_GRN),     //      .grn
+		.fb_vport_hs            (wDVI_HS),      //      .hs
+		.fb_vport_vs            (wDVI_VS),      //      .vs
+		.fb_vport_red           (wDVI_RED),     //      .red
 
 		.flash_spi_MISO         (iFLASH_MISO),   // flash_spi.MISO
 		.flash_spi_MOSI         (oFLASH_MOSI),   //          .MOSI
@@ -292,75 +303,79 @@ memory u0(
 		.csi_i2c_scl            (bMIPI_SCL),      //   csi_i2c.scl
 		.csi_i2c_sda            (bMIPI_SDA),      //          .sda
 
-    .mipi_rx_clk               (iMIPI_CLK),
-    .mipi_rx_data              (iMIPI_D),
+    .mipi_rx_clk            (iMIPI_CLK),
+    .mipi_rx_data           (iMIPI_D),
 
-		.arb_fb_clk       (wVID_CLK),       //    arb_fb.clk
-		.arb_fb_rdy       (fb_st_ready),       //          .rdy
-		.arb_fb_data      (fb_st_data),      //          .data
-		.arb_fb_dv        (fb_st_dv),        //          .dv
-		.arb_fb_start     (fb_st_start),     //          .start
+		.arb_fb_clk             (wVID_CLK),       //    arb_fb.clk
+		.arb_fb_rdy             (fb_st_ready),       //          .rdy
+		.arb_fb_data            (fb_st_data),      //          .data
+		.arb_fb_dv              (fb_st_dv),        //          .dv
+		.arb_fb_start           (fb_st_start),     //          .start
 
-		.fb_st_start      (fb_st_start),      //     fb_st.start
-		.fb_st_data       (fb_st_data),       //          .data
-		.fb_st_dv         (fb_st_dv),         //          .dv
-		.fb_st_ready      (fb_st_ready),       //          .ready
-
-		.mipi_st_data     (mipi_st_data),     //   mipi_st.data
-		.mipi_st_start    (mipi_st_start),    //          .start
-		.mipi_st_dv       (mipi_st_dv),       //          .dv
-
-		.qr_vid_in_reset  (0),  //           .reset
-		.qr_vid_in_clk    (iMIPI_CLK),    //           .clk
-		.qr_vid_in_data   (mipi_st_data),   //  qr_vid_in.data
-		.qr_vid_in_dv     (mipi_st_dv),     //           .dv
-		.qr_vid_in_start  (mipi_st_start),  //           .start
-		.qr_vid_out_data  (mipi_ste_data),  // qr_vid_out.data
-		.qr_vid_out_dv    (mipi_ste_dv),    //           .dv
-		.qr_vid_out_start (mipi_ste_start),  //           .start
-    
-		.arb_mipi_clk     (iMIPI_CLK),     //  arb_mipi.clk
-		.arb_mipi_data    ({mipi_ste_data[23-:5],mipi_ste_data[15-:5],mipi_ste_data[7-:5]}),    //          .data
-		.arb_mipi_start   (mipi_ste_start),    //          .data
-		.arb_mipi_dv      (mipi_ste_dv),      //          .dv
-
-		.nina_uart_RXD    (iWM_TX),    // nina_uart.RXD
-		.nina_uart_TXD    (wNINA_RX),    //          .TXD
-
-		.nina_spi_MISO    (bWM_PIO1),    //  nina_spi.MISO
-		.nina_spi_MOSI    (wNINA_MOSI),    //          .MOSI
-		.nina_spi_SCLK    (wNINA_SCLK),    //          .SCLK
-		.nina_spi_SS_n    (wNINA_SS),     //          .SS_n
-
-		.sam_pio_in       (wSAM_PIO_IN),       //   sam_pio.in
-		.sam_pio_out      (wSAM_PIO_OUT),      //          .out
-		.sam_pio_dir      (wSAM_PIO_DIR),      //          .dir
-		.sam_pio_msel     (wSAM_PIO_MSEL),     //          .msel
-
-		.wm_pio_in        (wWM_PIO_IN),        //    wm_pio.in
-		.wm_pio_out       (wWM_PIO_OUT),       //          .out
-		.wm_pio_dir       (wWM_PIO_DIR),       //          .dir
-		.wm_pio_msel      (wWM_PIO_MSEL),       //          .msel
-
-		.pex_pio_in       (wPEX_PIO_IN),       //   pex_pio.in
-		.pex_pio_out      (wPEX_PIO_OUT),      //          .out
-		.pex_pio_dir      (wPEX_PIO_DIR),      //          .dir
-		.pex_pio_msel     (wPEX_PIO_MSEL),     //          .msel
-    
-    .sam_pwm_pwm      (wSAM_OUT1)
+		.fb_st_start            (fb_st_start),      //     fb_st.start
+		.fb_st_data             (fb_st_data),       //          .data
+		.fb_st_dv               (fb_st_dv),         //          .dv
+		.fb_st_ready            (fb_st_ready),       //          .ready
+      
+		.mipi_st_data           (mipi_st_data),     //   mipi_st.data
+		.mipi_st_start          (mipi_st_start),    //          .start
+		.mipi_st_dv             (mipi_st_dv),       //          .dv
+      
+		.qr_vid_in_reset        (0),  //           .reset
+		.qr_vid_in_clk          (iMIPI_CLK),    //           .clk
+		.qr_vid_in_data         (mipi_st_data),   //  qr_vid_in.data
+		.qr_vid_in_dv           (mipi_st_dv),     //           .dv
+		.qr_vid_in_start        (mipi_st_start),  //           .start
+		.qr_vid_out_data        (mipi_ste_data),  // qr_vid_out.data
+		.qr_vid_out_dv          (mipi_ste_dv),    //           .dv
+		.qr_vid_out_start       (mipi_ste_start),  //           .start
+          
+		.arb_mipi_clk           (iMIPI_CLK),     //  arb_mipi.clk
+		.arb_mipi_data          ({mipi_ste_data[23-:5],mipi_ste_data[15-:5],mipi_ste_data[7-:5]}),    //          .data
+		.arb_mipi_start         (mipi_ste_start),    //          .data
+		.arb_mipi_dv            (mipi_ste_dv),      //          .dv
+      
+		.nina_uart_RXD          (iWM_TX),    // nina_uart.RXD
+		.nina_uart_TXD          (wNINA_RX),    //          .TXD
+      
+		.nina_spi_MISO          (bWM_PIO1),    //  nina_spi.MISO
+		.nina_spi_MOSI          (wNINA_MOSI),    //          .MOSI
+		.nina_spi_SCLK          (wNINA_SCLK),    //          .SCLK
+		.nina_spi_SS_n          (wNINA_SS),     //          .SS_n
+      
+		.sam_pio_in             (wSAM_PIO_IN),       //   sam_pio.in
+		.sam_pio_out            (wSAM_PIO_OUT),      //          .out
+		.sam_pio_dir            (wSAM_PIO_DIR),      //          .dir
+		.sam_pio_msel           (wSAM_PIO_MSEL),     //          .msel
+      
+		.wm_pio_in              (wWM_PIO_IN),        //    wm_pio.in
+		.wm_pio_out             (wWM_PIO_OUT),       //          .out
+		.wm_pio_dir             (wWM_PIO_DIR),       //          .dir
+		.wm_pio_msel            (wWM_PIO_MSEL),       //          .msel
+      
+		.pex_pio_in             (wPEX_PIO_IN),       //   pex_pio.in
+		.pex_pio_out            (wPEX_PIO_OUT),      //          .out
+		.pex_pio_dir            (wPEX_PIO_DIR),      //          .dir
+		.pex_pio_msel           (wPEX_PIO_MSEL),     //          .msel
+		.irq_in_port            (iSAM_INT),      //        irq.in_port
+		.irq_out_port           (wIRQ_OUT),     //           .out_port
+          
+    .sam_pwm_pwm            (wSAM_OUT1)
     
 	);
+
+assign oSAM_INT = wIRQ_OUT[1];
   
 wire [31:0] wSAM_PIN_OUT,wSAM_OUT1,wSAM_OUT2,wSAM_OUT3;
 wire [31:0] wWM_PIN_OUT,wWM_OUT1,wWM_OUT2,wWM_OUT3;
 wire [31:0] wPEX_PIN_OUT,wPEX_OUT1,wPEX_OUT2,wPEX_OUT3;
 
 assign wSAM_PIO_IN = {bMKR_D,bMKR_A,bMKR_AREF};
-assign wWM_PIO_IN = {iWM_PIO32,iWM_TX,oWM_RX,bWM_PIO36,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO29,bWM_PIO28,bWM_PIO27,bWM_PIO25,bWM_PIO24,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,bWM_PIO1,oWM_RESET};
+assign wWM_PIO_IN = {iWM_PIO32,iWM_TX,oWM_RX,bWM_PIO36,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO29,bWM_PIO28,bWM_PIO27,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,bWM_PIO1,oWM_RESET};
 assign wPEX_PIO_IN = {iPEX_PIN33,iPEX_PIN31,iPEX_PIN25,iPEX_PIN23,iPEX_PIN13,iPEX_PIN11,bPEX_PIN51,bPEX_PIN49,bPEX_PIN48,bPEX_PIN47,bPEX_PIN46,bPEX_PIN45,bPEX_PIN44,bPEX_PIN42,bPEX_PIN32,bPEX_PIN30,bPEX_PIN28,bPEX_PIN20,bPEX_PIN16,bPEX_PIN14,bPEX_PIN12,bPEX_PIN10,bPEX_PIN8,bPEX_PIN6,bPEX_RST};
 
 assign {bMKR_D,bMKR_A,bMKR_AREF}= wSAM_PIN_OUT;
-assign {oWM_RX,bWM_PIO36,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO29,bWM_PIO28,bWM_PIO27,bWM_PIO25,bWM_PIO24,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,bWM_PIO1,oWM_RESET} = wWM_PIN_OUT;
+assign {oWM_RX,bWM_PIO36,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO29,bWM_PIO28,bWM_PIO27,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,bWM_PIO1,oWM_RESET} = wWM_PIN_OUT;
 assign {bPEX_PIN51,bPEX_PIN49,bPEX_PIN48,bPEX_PIN47,bPEX_PIN46,bPEX_PIN45,bPEX_PIN44,bPEX_PIN42,bPEX_PIN32,bPEX_PIN30,bPEX_PIN28,bPEX_PIN20,bPEX_PIN16,bPEX_PIN14,bPEX_PIN12,bPEX_PIN10,bPEX_PIN8,bPEX_PIN6,bPEX_RST} = wPEX_PIN_OUT;
 genvar i;
 generate
@@ -503,9 +518,7 @@ end
 // MIPI input
 assign bMIPI_GP[0]=1'b1;
 assign bMIPI_GP[1]=1'b1;
-
-
-
-
+assign oFLASH_WP=1;
+assign oFLASH_HOLD=1;
 
 endmodule

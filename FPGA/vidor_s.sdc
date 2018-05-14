@@ -48,6 +48,7 @@ derive_pll_clocks
 # Create Generated Clock
 #**************************************************************
 
+create_generated_clock -name oSDRAM_CLK -source [get_pins PLL_inst|altpll_component|auto_generated|pll1|clk[3]] [get_ports {oSDRAM_CLK}]
 
 
 #**************************************************************
@@ -72,6 +73,25 @@ derive_pll_clocks
 # Set Output Delay
 #**************************************************************
 
+set_output_delay -max 1.5 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_A*]
+set_output_delay -max 1.5 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_D*]
+set_output_delay -max 1.5 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_R*]
+set_output_delay -max 1.5 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_CA*]
+set_output_delay -max 1.5 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_CK*]
+set_output_delay -max 1.5 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_CS*]
+set_output_delay -max 1.5 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_W*]
+set_output_delay -max 1.5 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_BA*]
+set_output_delay -max 1.5 -clock [get_clocks oSDRAM_CLK]  [get_ports bSDRAM_D*]
+
+set_output_delay -min -0.8 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_A*]
+set_output_delay -min -0.8 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_D*]
+set_output_delay -min -0.8 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_R*]
+set_output_delay -min -0.8 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_CA*]
+set_output_delay -min -0.8 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_CK*]
+set_output_delay -min -0.8 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_CS*]
+set_output_delay -min -0.8 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_W*]
+set_output_delay -min -0.8 -clock [get_clocks oSDRAM_CLK]  [get_ports oSDRAM_BA*]
+set_output_delay -min -0.8 -clock [get_clocks oSDRAM_CLK]  [get_ports bSDRAM_D*]
 
 
 #**************************************************************

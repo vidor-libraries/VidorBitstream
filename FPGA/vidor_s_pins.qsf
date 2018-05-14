@@ -79,6 +79,28 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_DQM[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_DQM[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_RASn
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to oSDRAM_WEn
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM*
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_ADDR[11]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_ADDR[10]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_ADDR[9]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_ADDR[8]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_ADDR[7]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_ADDR[6]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_ADDR[5]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_ADDR[4]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_ADDR[3]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_ADDR[2]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_ADDR[1]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_ADDR[0]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_BA[1]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_BA[0]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_DQM[1]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_DQM[0]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_RASn
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_CASn
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_WEn
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_CSn
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oSDRAM_CKE
 
 # SAM D21 PINS
 set_location_assignment PIN_B1  -to bMKR_AREF
@@ -167,12 +189,12 @@ set_location_assignment PIN_R1  -to oWM_RESET
 # HDMI output
 set_instance_assignment -name IO_STANDARD LVDS -to oHDMI_TX*
 set_instance_assignment -name IO_STANDARD LVDS -to oHDMI_CLK
-set_location_assignment PIN_J15 -to oHDMI_TX[0]
+set_location_assignment PIN_R16 -to oHDMI_TX[0]
 set_location_assignment PIN_K15 -to oHDMI_TX[1]
-set_location_assignment PIN_R16 -to oHDMI_TX[2]
-set_location_assignment PIN_J16 -to oHDMI_TX[0](n)
+set_location_assignment PIN_J15 -to oHDMI_TX[2]
+set_location_assignment PIN_P16 -to oHDMI_TX[0](n)
 set_location_assignment PIN_K16 -to oHDMI_TX[1](n)
-set_location_assignment PIN_P16 -to oHDMI_TX[2](n)
+set_location_assignment PIN_J16 -to oHDMI_TX[2](n)
 set_location_assignment PIN_N15 -to oHDMI_CLK
 set_location_assignment PIN_N16 -to oHDMI_CLK(n)
 set_instance_assignment -name IO_STANDARD "2.5 V" -to bHDMI_SCL
@@ -207,6 +229,8 @@ set_location_assignment PIN_C1  -to oFLASH_MOSI
 set_location_assignment PIN_H2  -to iFLASH_MISO
 set_location_assignment PIN_H1  -to oFLASH_SCK
 set_location_assignment PIN_D2  -to oFLASH_CS
+set_location_assignment PIN_R7 -to oFLASH_HOLD
+set_location_assignment PIN_T7 -to oFLASH_WP
 
 # interrupt pins
 set_location_assignment PIN_N2 -to oSAM_INT
