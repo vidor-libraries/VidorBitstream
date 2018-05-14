@@ -107,30 +107,30 @@ void i2cTest(void)
 
 	// enable I2C index 0 - CSI_I2C_BASE
 	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x01;
-	platformLoop();
+	platformCmd();
 
 	// start transmission
 	rpc[1] = 0x36;
 	rpc[2] = 0x00;
 	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x04;
-	platformLoop();
+	platformCmd();
 
 	// write
 	rpc[1] = 0x01;
 	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
-	platformLoop();
+	platformCmd();
 
 	rpc[1] = 0x03;
 	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
-	platformLoop();
+	platformCmd();
 
 	rpc[1] = 0x01;
 	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
-	platformLoop();
+	platformCmd();
 
 	// stop
 	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x07;
-	platformLoop();
+	platformCmd();
 }
 #endif
 void gpioTest(void)
@@ -146,26 +146,26 @@ void gpioTest(void)
 	rpc[1] = pin;
 	rpc[2] = mode;
 	rpc[0] = MB_DEV_GPIO | 0x01;
-	platformLoop();
+	platformCmd();
 
 	/* write */
 	val = 0;
 	rpc[1] = pin;
 	rpc[2] = val;
 	rpc[0] = MB_DEV_GPIO | 0x02;
-	platformLoop();
+	platformCmd();
 
 	/* write */
 	val = 1;
 	rpc[1] = pin;
 	rpc[2] = val;
 	rpc[0] = MB_DEV_GPIO | 0x02;
-	platformLoop();
+	platformCmd();
 
 	/* read */
 	rpc[1] = pin;
 	rpc[0] = MB_DEV_GPIO | 0x03;
-	platformLoop();
+	platformCmd();
 #endif
 
 	/* pwm */
@@ -174,21 +174,70 @@ void gpioTest(void)
 	rpc[1] = pin;
 	rpc[2] = mode;
 	rpc[0] = MB_DEV_GPIO | 0x01;
-	platformLoop();
+	platformCmd();
 
 	rpc[1] = 1000;//prescaler
 	rpc[2] = 120;//period
 	rpc[0] = MB_DEV_GPIO | 0x04;
-	platformLoop();
+	platformCmd();
 
 	rpc[1] = pin;
 	rpc[2] = 60;
 	rpc[3] = 40;
 	rpc[0] = MB_DEV_GPIO | 0x05;
-	platformLoop();
+	platformCmd();
 
 }
 
+void sfTest(void)
+{
+	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+
+	// JedecId
+	rpc[0] = MB_DEV_SF | 0x01;
+	platformCmd();
+
+	// UniqueId
+	memset(rpc, 0, 32);
+	rpc[0] = MB_DEV_SF | 0x02;
+	platformCmd();
+
+	// read
+	memset(rpc, 0, 32);
+	rpc[1] = 0;
+	rpc[2] = 16;
+	rpc[0] = MB_DEV_SF | 0x05;
+	platformCmd();
+
+	// erase first 64K
+	rpc[1] = 2;
+	rpc[2] = 0;
+	rpc[0] = MB_DEV_SF | 0x03;
+	platformCmd();
+
+	// read
+	memset(rpc, 0, 32);
+	rpc[1] = 0;
+	rpc[2] = 16;
+	rpc[0] = MB_DEV_SF | 0x05;
+	platformCmd();
+
+	// program
+	rpc[1] = 0;
+	rpc[2] = 16;
+	strcpy(&rpc[3], "01234567890abcdef");
+	rpc[0] = MB_DEV_SF | 0x04;
+	platformCmd();
+
+	// read
+	memset(rpc, 0, 32);
+	rpc[1] = 0;
+	rpc[2] = 16;
+	rpc[0] = MB_DEV_SF | 0x05;
+	platformCmd();
+
+
+}
 /**
  *
  */
@@ -231,10 +280,10 @@ int main()
 
 	sfSRLock(alt_u8 reg);
 */
-	aesTest();
-
-//	i2cTest();
-	gpioTest();
+	//aesTest();
+	//i2cTest();
+	//gpioTest();
+	sfTest();
 
 // TODO	mbInit(rxCmd);
 

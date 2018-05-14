@@ -19,8 +19,8 @@
  */
 typedef struct {
 	void(*setup)(int);
-	void(*loop)(void);
 	void(*cmd)(void);
+	void(*loop)(void);
 	int sub_devs;
 }sDevHnd, *psDevHnd;
 

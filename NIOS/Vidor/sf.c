@@ -61,10 +61,10 @@ void sfCmd(void)
 		ret = sfJedecId();
 		break;
 	case 2:
-		ret = sfUniqueId((alt_u8*)rpc[2]);
+		ret = sfUniqueId((alt_u8*)&rpc[2]);
 		break;
 	case 3:
-		ret = sfErase(rpc[0], rpc[1]);
+		ret = sfErase(rpc[1], rpc[2]);
 		break;
 	case 4:
 		ret = sfProgram(rpc[1], (alt_u8*)&rpc[3], rpc[2]);
