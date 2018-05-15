@@ -39,8 +39,8 @@ set_time_format -unit ns -decimal_places 3
 #**************************************************************
 
 create_clock -name {altera_reserved_tck} -period 100.000 -waveform { 0.000 50.000 } [get_ports {altera_reserved_tck}]
-create_clock -name {mipi_clk} -period 2.500 -waveform { 0.000 1.250 } [get_ports {mipi_clk}]
-create_clock -name iCLK -period 20.83 [get_ports {iCLK}]
+create_clock -name mipi_clk -period 2.500 -waveform { 0.000 1.250 } [get_ports {iMIPI_CLK}]
+create_clock -name iCLK -period 20.833 [get_ports {iCLK}]
 
 derive_pll_clocks
 
