@@ -12,11 +12,12 @@
 #include <alt_types.h>
 #include <system.h>
 
-#include "gfx.h"
+#include "mb.h"
 
 #define FB_BASE (alt_u16*)(SDRAM_ARBITER_BASE + SDRAM_ARBITER_FB_OFFSET*sizeof(short))
 #define FB_WIDTH  640
 #define FB_HEIGHT 480
+#define CAM_BASE (alt_u16*)(SDRAM_ARBITER_BASE)
 
 #define _swap_int16_t(a,b) {int16_t t=a; a=b; b=t;}
 
@@ -43,6 +44,8 @@ alt_u32 drawCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u16 color);
 alt_u32 fillCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u16 color);
 alt_u32  drawChar  (alt_u16 x, alt_u16 y, alt_u16 color, alt_u8 size, alt_u8 c);
 alt_u32  drawTxt   (alt_u16 x, alt_u16 y, alt_u16 color, alt_u8* txt);
+
+
 typedef void (*pfv3)(alt_u32, alt_u32, alt_u32);
 typedef void (*pfv4)(alt_u32, alt_u32, alt_u32, alt_u32);
 typedef void (*pfv5)(alt_u32, alt_u32, alt_u32, alt_u32, alt_u32);
@@ -76,49 +79,50 @@ void gfxInit(int devs)
 	int i;
 	char txt[] = {"Hello World"};
 
+    memset(CAM_BASE, 0, FB_WIDTH*FB_HEIGHT*2);
     memset(FB_BASE, 0, FB_WIDTH*FB_HEIGHT*2);
 
-	writePixel(10, 10, 0x7C00);
-	writePixel(10, 11, 0x03E0);
-	writePixel(10, 12, 0x001F);
+	writePixel(10, 10, 0xFC00);
+	writePixel(10, 11, 0x83E0);
+	writePixel(10, 12, 0x801F);
 
-	writeLine( 0, 0, 10, 20, 0x7C00);
-	writeLine(10, 0, 00, 20, 0x7C00);
-	writeLine( 0, 0, 20, 10, 0x03E0);
-	writeLine(20, 0, 00, 10, 0x03E0);
+	writeLine( 0, 0, 10, 20, 0xFC00);
+	writeLine(10, 0, 00, 20, 0xFC00);
+	writeLine( 0, 0, 20, 10, 0x83E0);
+	writeLine(20, 0, 00, 10, 0x83E0);
 
-	drawRect(20, 20, 20, 20, 0x7C00);
-	drawRect(40, 20, 20, 20, 0x03E0);
-	drawRect(60, 20, 20, 20, 0x001F);
+	drawRect(20, 20, 20, 20, 0xFC00);
+	drawRect(40, 20, 20, 20, 0x83E0);
+	drawRect(60, 20, 20, 20, 0x801F);
 
-	fillRect(20, 40, 20, 20, 0x7C00);
-	fillRect(40, 40, 20, 20, 0x03E0);
-	fillRect(60, 40, 20, 20, 0x001F);
+	fillRect(20, 40, 20, 20, 0xFC00);
+	fillRect(40, 40, 20, 20, 0x83E0);
+	fillRect(60, 40, 20, 20, 0x801F);
 
-	drawCircle(100, 40, 15, 0x7C00);
-	drawCircle(100, 40, 10, 0x03E0);
-	drawCircle(100, 40,  5, 0x001F);
+	drawCircle(100, 40, 15, 0xFC00);
+	drawCircle(100, 40, 10, 0x83E0);
+	drawCircle(100, 40,  5, 0x801F);
 
-	fillCircle(150, 40, 15, 0x7C00);
-	fillCircle(150, 40, 10, 0x03E0);
-	fillCircle(150, 40,  5, 0x001F);
+	fillCircle(150, 40, 15, 0xFC00);
+	fillCircle(150, 40, 10, 0x83E0);
+	fillCircle(150, 40,  5, 0x801F);
 
 	x = 10;
-	x+=drawChar(x, 100, 0x7C00, 2, 'A');
-	x+=drawChar(x, 100, 0x7C00, 2, 'a');
-	x+=drawChar(x, 100, 0x7C00, 2, 'B');
-	x+=drawChar(x, 100, 0x7C00, 2, 'b');
+	x+=drawChar(x, 100, 0xFC00, 2, 'A');
+	x+=drawChar(x, 100, 0xFC00, 2, 'a');
+	x+=drawChar(x, 100, 0xFC00, 2, 'B');
+	x+=drawChar(x, 100, 0xFC00, 2, 'b');
 
 	x = 10;
 	for(i=0; txt[i]; i++){
-		x += drawChar(x, 150, 0x03ff, 1, txt[i]);
+		x += drawChar(x, 150, 0x83ff, 1, txt[i]);
 	}
 
 
 	writeLine(0x0100, 0x0100, 0x0140, 0x0140, 0xFFFF);
 	drawRect(0x0100, 0x0140, 0x0040, 0x0040, 0xFFFF);
 	fillRect(0x0150, 0x0140, 0x0040, 0x0040, 0xFFFF);
-	drawTxt(50, 200, 0x7FFF, (alt_u8*)"Test draw text");
+	drawTxt(50, 200, 0xFFFF, (alt_u8*)"Test draw text");
 
 	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
 
@@ -133,7 +137,7 @@ void gfxInit(int devs)
 	rpc[0] = 7;
 	rpc[1] = 20;
 	rpc[2] = 100;
-	rpc[3] = 0x7FE;
+	rpc[3] = 0xFFE;
 	rpc[4] = 0x30313233;
 	rpc[5] = 0x34353637;
 	rpc[6] = 0;
@@ -148,25 +152,28 @@ void gfxCmd(void)
 {
 	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
 	int ret = -1;
+	int idx = MB_CMD(rpc[0]);
 
-	if (rpc[0] >= sizeof(fncTbl)/sizeof(sFncTbl)) {
+	if (idx >= sizeof(fncTbl)/sizeof(sFncTbl)) {
+		rpc[1] = -1;
 		return;
 	}
-	switch (fncTbl[rpc[0]].ret_prm) {
+
+	switch (fncTbl[idx].ret_prm) {
 	case 0x03:
-		((pfv3)fncTbl[rpc[0]].fnc)(rpc[1], rpc[2], rpc[3]);
+		((pfv3)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3]);
 		break;
 	case 0x04:
-		((pfv4)fncTbl[rpc[0]].fnc)(rpc[1], rpc[2], rpc[3], rpc[4]);
+		((pfv4)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], rpc[4]);
 		break;
 	case 0x05:
-		((pfv5)fncTbl[rpc[0]].fnc)(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
+		((pfv5)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
 		break;
 	case 0x14:
-		ret = ((pfi4)fncTbl[rpc[0]].fnc)(rpc[1], rpc[2], rpc[3], (alt_u8*)&rpc[4]);
+		ret = ((pfi4)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], (alt_u8*)&rpc[4]);
 		break;
 	case 0x15:
-		ret = ((pfi5)fncTbl[rpc[0]].fnc)(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
+		ret = ((pfi5)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
 		break;
 	}
 	rpc[1] = ret;

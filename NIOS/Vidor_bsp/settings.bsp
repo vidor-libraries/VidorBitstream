@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>May 10, 2018 11:58:44 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1525946324990</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>May 15, 2018 12:47:26 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1526381246716</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/media/max/storage/vidor/vidor_s/NIOS/Vidor_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>/media/max/storage/vidor/vidor_s/FPGA/memory.sopcinfo</SopcDesignFile>
@@ -881,6 +881,12 @@
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
+                <slaveDescriptor>generic_quad_spi_controller2_0_avl_mem</slaveDescriptor>
+                <addressRange>0x10000000 - 0x101FFFFF</addressRange>
+                <addressSpan>2097152</addressSpan>
+                <attributes>flash, memory, non-volatile</attributes>
+        </MemoryMap>
+        <MemoryMap>
                 <slaveDescriptor>onchip_memory2_0</slaveDescriptor>
                 <addressRange>0x70000000 - 0x70007FFF</addressRange>
                 <addressSpan>32768</addressSpan>
@@ -905,16 +911,22 @@
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
+                <slaveDescriptor>irq</slaveDescriptor>
+                <addressRange>0x700100D0 - 0x700100DF</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
                 <slaveDescriptor>nina_spi</slaveDescriptor>
                 <addressRange>0x700100E0 - 0x700100FF</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>dpram</slaveDescriptor>
-                <addressRange>0x70010100 - 0x700101FF</addressRange>
-                <addressSpan>256</addressSpan>
-                <attributes>memory</attributes>
+                <slaveDescriptor>hdmi_i2c</slaveDescriptor>
+                <addressRange>0x70010100 - 0x7001011F</addressRange>
+                <addressSpan>32</addressSpan>
+                <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>sam_pio</slaveDescriptor>
@@ -941,8 +953,8 @@
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>AES_0</slaveDescriptor>
-                <addressRange>0x70010380 - 0x700103BF</addressRange>
+                <slaveDescriptor>generic_quad_spi_controller2_0_avl_csr</slaveDescriptor>
+                <addressRange>0x70010400 - 0x7001043F</addressRange>
                 <addressSpan>64</addressSpan>
                 <attributes/>
         </MemoryMap>
@@ -951,6 +963,12 @@
                 <addressRange>0x70010800 - 0x7001083F</addressRange>
                 <addressSpan>64</addressSpan>
                 <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>dpram</slaveDescriptor>
+                <addressRange>0x7001F000 - 0x7001F3FF</addressRange>
+                <addressSpan>1024</addressSpan>
+                <attributes>memory</attributes>
         </MemoryMap>
         <LinkerSection>
                 <sectionName>.text</sectionName>
@@ -976,4 +994,8 @@
                 <sectionName>.stack</sectionName>
                 <regionName>onchip_memory2_0</regionName>
         </LinkerSection>
+        <DriverPackageInfo>
+                <name>none</name>
+                <moduleName>generic_quad_spi_controller2_0</moduleName>
+        </DriverPackageInfo>
 </sch:Settings>

@@ -135,6 +135,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 	switch(mode){
 	case 0:
 		// Sector Erase   	 4K sector address  0x020
+		adr >>= 12;
 		txb[0] = 0x020;
 		txb[1] = adr>>16;
 		txb[2] = adr>>8;
@@ -143,6 +144,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 		break;
 	case 1:
 		// 32KB Block Erase	32K Block address   0x52
+		adr >>= 15;
 		txb[0] = 0x52;
 		txb[1] = adr>>16;
 		txb[2] = adr>>8;
@@ -151,6 +153,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 		break;
 	case 2:
 		// 64KB Block Erase 64K Block address    0xD8
+		adr >>= 16;
 		txb[0] = 0xD8;
 		txb[1] = adr>>16;
 		txb[2] = adr>>8;

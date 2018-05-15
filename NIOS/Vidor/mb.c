@@ -12,7 +12,7 @@
 
 // Interupt pin from SAM
 // SAM_PORTS.PB10 IO_B3_R3
-#define MB_IRQ 0
+#define MB_IRQ IRQ_IRQ
 
 // Interupt pin to SAM
 // SAM_PORTS.PB11 IO_B3_T3

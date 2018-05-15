@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <io.h>
 #include <system.h>
+#include <sys/alt_irq.h>
 
 #include "mb.h"
 
@@ -32,15 +33,17 @@
 #define PWM_MATCH_H(i)  (2 + (i<<1))
 #define PWM_MATCH_L(i)  (2 + (i<<1) + 1)
 
-#if 0
-#define PEX_PIO_BASE 0x70010220
-#define SAM_PIO_BASE 0x70010200
-#define WM_PIO_BASE  0x70010240
+/* PIO registers */
+#define PIO_DATA  0x00		// data value
+#define PIO_DIR   0x01		// direction
+#define PIO_IMSK  0x02		// interrupt mask
+#define PIO_EDET  0x03		// edge detection
+#define PIO_SET   0x04		// bit of output port to set
+#define PIO_CLR   0x05		// bit of output port to clear
 
-#define SAM_PWM_BASE 0x70010300
-#endif
-
-
+/**
+ *
+ */
 alt_u32 gpioPinMode(alt_u32 pin, alt_u32 mode);
 alt_u32 gpioWrite(alt_u32 pin, alt_u32 val);
 alt_u32 gpioRead(alt_u32 pin);
@@ -201,5 +204,35 @@ alt_u32 pwmWrite(alt_u32 pin, alt_u16 mh, alt_u16 ml)
 	pad = pin & 0x1F;
 	IOWR(SAM_PWM_BASE, PWM_MATCH_H(pad), mh);
 	IOWR(SAM_PWM_BASE, PWM_MATCH_L(pad), ml);
+	return 0;
+}
+
+/**
+ *
+ */
+alt_u32 irqPinSet(alt_u32 pin)
+{
+	alt_u32 reg;
+
+	reg = IORD(IRQ_BASE, PIO_DIR);
+	reg &=~(1 << pin);
+	IOWR(IRQ_BASE, PIO_DIR , reg);
+
+	IOWR(IRQ_BASE, PIO_IMSK, 1 << pin);
+
+	IOWR(IRQ_BASE, PIO_EDET, 1 << pin);
+
+	/*
+	void* context = 0;
+	int ret;
+
+	ret = alt_irq_register(MB_IRQ, context, mbIsr);
+	if (ret) {
+		return -1;
+	}
+
+	mbHook = hook;
+
+	 */
 	return 0;
 }

@@ -60,7 +60,7 @@ Non mettere polling perché in caso facciamo una cosa diversa.
 #define AES_CFG_ENCODE      0x00
 #define AES_CFG_DECODE      0x04
 
-alt_u32 alt_base = AES_0_BASE;
+alt_u32 alt_base = 0;//AES_0_BASE;
 
 alt_u32 aesEncode(alt_u32* key, alt_u32* data);
 alt_u32 aesDecode(alt_u32* key, alt_u32* data);
