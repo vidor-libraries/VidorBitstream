@@ -65,8 +65,8 @@ reg [9:0] rREG_VST1 /*synthesis noprune */, rREG_VED1/*synthesis noprune */, rRE
 reg       rREG_FND1/*synthesis noprune */,rREG_FND2/*synthesis noprune */,rREG_FND3/*synthesis noprune */;
 reg rUPDATE, rREFRESH;
 wire signed [12:0] wLUM_DIFF;
+reg signed [12:0] rLUM_DIFF;
 
-assign wLUM_DIFF = {3'b0,rLUM_HIST[0]}+{3'b0,rLUM_HIST[1]}-{3'b0,rLUM_HIST[2]}-{3'b0,rLUM_HIST[3]};
 
 
 typedef enum {
@@ -176,9 +176,11 @@ begin
   end
   //second pipeline stage
   if (rVALID_PIPE[0]) begin
-    rLUM_HIST<= {rLUM_HIST,wLUM_NORM};
+    rLUM_DIFF <= {3'b0,rLUM_HIST[0]}+{3'b0,rLUM_HIST[1]}-{3'b0,rLUM_HIST[2]}-{3'b0,rLUM_HIST[3]};
+    rLUM_HIST <= {rLUM_HIST,wLUM_NORM};
     if (rDSTART_PIPE[0]) begin
       rLUM_HIST<={cPIPE_DEPTH-1{wLUM_NORM}};
+      rLUM_DIFF<=0;
     end
   end
   //third pipeline stage
