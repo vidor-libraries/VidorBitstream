@@ -14,7 +14,9 @@
 
 #include "mb.h"
 
-#define FB_BASE (alt_u16*)(SDRAM_ARBITER_BASE + SDRAM_ARBITER_FB_OFFSET*sizeof(short))
+#define FB_BASE (alt_u16*)(SDRAM_ARBITER_BASE + \
+		                   SDRAM_ARBITER_CAM_OFFSET*sizeof(short) + \
+		                   SDRAM_ARBITER_FB_OFFSET*sizeof(short))
 #define FB_WIDTH  640
 #define FB_HEIGHT 480
 #define CAM_BASE (alt_u16*)(SDRAM_ARBITER_BASE)
@@ -135,9 +137,9 @@ void gfxInit(int devs)
 	gfxCmd();
 
 	rpc[0] = 7;
-	rpc[1] = 20;
-	rpc[2] = 100;
-	rpc[3] = 0xFFE;
+	rpc[1] = 100;
+	rpc[2] = 300;
+	rpc[3] = 0x8FFE;
 	rpc[4] = 0x30313233;
 	rpc[5] = 0x34353637;
 	rpc[6] = 0;

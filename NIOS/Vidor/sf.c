@@ -227,22 +227,34 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
 alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
 {
 	alt_u8  txb[1+3+1];
+	alt_u32 ptr;
+	alt_u32 cnt;
+
+	ptr = 0;
+	do{
+		//max data length is 256 byte
+		cnt = (len+(adr&255))>256? (256-(adr&0xff)): len;
 
 #ifdef SF_FAST_RD
-	txb[0] = 0x0B;
-	txb[4] = 0x00;
+		txb[0] = 0x0B;
+		txb[4] = 0x00;
 #else
-	txb[0] = 0x03;
+		txb[0] = 0x03;
 #endif
-	txb[1] = adr>>16;
-	txb[2] = adr>>8;
-	txb[3] = adr;
+		txb[1] = adr>>16;
+		txb[2] = adr>>8;
+		txb[3] = adr;
 
 #ifdef SF_FAST_RD
-	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+3+1, txb, len, data, 0);
+		alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+3+1, txb, cnt, data+ptr, 0);
 #else
-	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+3, txb, len, data, 0);
+		alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+3, txb, cnt, data+ptr, 0);
 #endif
+
+		len -= cnt;
+		adr += cnt;
+		ptr += cnt;
+	}while(len>0);
 
 	return 0;
 }

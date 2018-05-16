@@ -2,12 +2,6 @@
  *
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <alt_types.h>
-#include <sys/alt_stdio.h>
-#include <system.h>
-
 #include "gpio.h"
 
 void platformSetup(void);
@@ -21,9 +15,6 @@ void cmdRx(alt_u32 cmd);
  */
 int main()
 {
-	//alt_u32 ret;
-
-	//ret =
 	irqPinSet(0, cmdRx);
 
 	platformSetup();
@@ -33,7 +24,7 @@ int main()
 	//sfTest();
 
 	while (1) {
-		//platformCmd();
+		platformCmd();
 		platformLoop();
 	};
 

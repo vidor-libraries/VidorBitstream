@@ -8,10 +8,7 @@
 #ifndef MB_H_
 #define MB_H_
 
-
-
 #include <alt_types.h>
-
 
 //Device, Subdev, Command
 #define MB_DEV_MSK  0xFF000000
@@ -25,20 +22,12 @@
 #define MB_SUB(a) ((a & MB_SUB_MSK) >> MB_SUB_OFS)
 #define MB_CMD(a) ((a & MB_CMD_MSK) >> MB_CMD_OFS)
 
-
 #define MB_DEV_SF   (1<<MB_DEV_OFS)
 #define MB_DEV_GPIO (2<<MB_DEV_OFS)
 #define MB_DEV_GFX  (3<<MB_DEV_OFS)
 #define MB_DEV_I2C  (4<<MB_DEV_OFS)
 #define MB_DEV_SPI  (5<<MB_DEV_OFS)
 #define MB_DEV_UART (6<<MB_DEV_OFS)
-
-
-
-int mbInit(void (*hook)(alt_u32));
-int mbTxSend(alt_u32 cmd, alt_u32 ptr);
-alt_u32 mbPoll(void);
-void mbDone(void);
-
+#define MB_DEV_QR   (7<<MB_DEV_OFS)
 
 #endif /* MB_H_ */

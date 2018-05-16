@@ -14,6 +14,7 @@
 #include "gfx.h"
 #include "spi.h"
 #include "uart.h"
+#include "qr.h"
 
 /**
  */
@@ -35,8 +36,8 @@ sDevHnd devHnd[] = {
 	{i2cInit, i2cCmd, NULL, 1},
 	{spiInit, spiCmd, NULL, 1},
 	{uartInit, uartCmd, NULL, 1},
+	{qrInit, qrCmd, qrLoop, 1},
 };
-
 
 /**
  */
@@ -59,8 +60,12 @@ void platformCmd(void)
 
 	cmd = *(volatile alt_u32*)DPRAM_BASE;
 	if (cmd) {
-		if (devHnd[MB_DEV(cmd)].cmd) {
-			devHnd[MB_DEV(cmd)].cmd();
+		int dev;
+		dev = MB_DEV(cmd);
+		if (dev < sizeof(devHnd)/sizeof(sDevHnd)) {
+			if (devHnd[dev].cmd) {
+				devHnd[dev].cmd();
+			}
 		}
 		*(volatile alt_u32*)DPRAM_BASE = 0;
 	}
@@ -78,20 +83,3 @@ void platformLoop(void)
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
