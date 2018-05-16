@@ -54,15 +54,22 @@ set_parameter_property pBURST_SIZE TYPE INTEGER
 set_parameter_property pBURST_SIZE UNITS None
 set_parameter_property pBURST_SIZE ALLOWED_RANGES -2147483648:2147483647
 set_parameter_property pBURST_SIZE HDL_PARAMETER true
-add_parameter pCAM_OFFSET INTEGER 0
-set_parameter_property pCAM_OFFSET DEFAULT_VALUE 0
-set_parameter_property pCAM_OFFSET DISPLAY_NAME CAM_OFFSET
-set_parameter_property pCAM_OFFSET TYPE INTEGER
-set_parameter_property pCAM_OFFSET UNITS None
-set_parameter_property pCAM_OFFSET ALLOWED_RANGES -2147483648:2147483647
-set_parameter_property pCAM_OFFSET HDL_PARAMETER true
-add_parameter pFB_OFFSET INTEGER 307200
-set_parameter_property pFB_OFFSET DEFAULT_VALUE 307200
+add_parameter pCAM_OFFSET_A INTEGER 0
+set_parameter_property pCAM_OFFSET_A DEFAULT_VALUE 0
+set_parameter_property pCAM_OFFSET_A DISPLAY_NAME CAM_OFFSET
+set_parameter_property pCAM_OFFSET_A TYPE INTEGER
+set_parameter_property pCAM_OFFSET_A UNITS None
+set_parameter_property pCAM_OFFSET_A ALLOWED_RANGES -2147483648:2147483647
+set_parameter_property pCAM_OFFSET_A HDL_PARAMETER true
+add_parameter pCAM_OFFSET_B INTEGER 307200
+set_parameter_property pCAM_OFFSET_B DEFAULT_VALUE 307200
+set_parameter_property pCAM_OFFSET_B DISPLAY_NAME CAM_OFFSET
+set_parameter_property pCAM_OFFSET_B TYPE INTEGER
+set_parameter_property pCAM_OFFSET_B UNITS None
+set_parameter_property pCAM_OFFSET_B ALLOWED_RANGES -2147483648:2147483647
+set_parameter_property pCAM_OFFSET_B HDL_PARAMETER true
+add_parameter pFB_OFFSET INTEGER 614400
+set_parameter_property pFB_OFFSET DEFAULT_VALUE 614400
 set_parameter_property pFB_OFFSET DISPLAY_NAME FB_OFFSET
 set_parameter_property pFB_OFFSET TYPE INTEGER
 set_parameter_property pFB_OFFSET UNITS None
@@ -235,6 +242,7 @@ set_interface_assignment avl embeddedsw.configuration.isPrintableDevice 0
 
 proc elaborate {} {
     set_module_assignment embeddedsw.CMacro.FB_OFFSET [get_parameter_value pFB_OFFSET]u
-    set_module_assignment embeddedsw.CMacro.CAM_OFFSET [get_parameter_value pCAM_OFFSET]u
+    set_module_assignment embeddedsw.CMacro.CAM_OFFSET_A [get_parameter_value pCAM_OFFSET_A]u
+    set_module_assignment embeddedsw.CMacro.CAM_OFFSET_B [get_parameter_value pCAM_OFFSET_B]u
 
 }
