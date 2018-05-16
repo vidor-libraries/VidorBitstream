@@ -53,6 +53,14 @@ alt_u32 pwmWrite(alt_u32 pin, alt_u16 mh, alt_u16 ml);
 /**
  *
  */
+alt_u32 irqPin;
+void (*irqHook)(alt_u32);
+
+void irqIsr(void* isr_context, alt_u32 id);
+
+/**
+ *
+ */
 void gpioCmd(void)
 {
 	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
@@ -210,29 +218,38 @@ alt_u32 pwmWrite(alt_u32 pin, alt_u16 mh, alt_u16 ml)
 /**
  *
  */
-alt_u32 irqPinSet(alt_u32 pin)
+alt_u32 irqPinSet(alt_u32 pin, void (*hook)(alt_u32))
 {
 	alt_u32 reg;
+	void* context = 0;
+	int ret;
+
+	ret = alt_irq_register(IRQ_IRQ, context, irqIsr);
+	if (ret) {
+		return -1;
+	}
 
 	reg = IORD(IRQ_BASE, PIO_DIR);
 	reg &=~(1 << pin);
 	IOWR(IRQ_BASE, PIO_DIR , reg);
 
+	IOWR(IRQ_BASE, PIO_EDET, 0);
+
 	IOWR(IRQ_BASE, PIO_IMSK, 1 << pin);
 
-	IOWR(IRQ_BASE, PIO_EDET, 1 << pin);
-
-	/*
-	void* context = 0;
-	int ret;
-
-	ret = alt_irq_register(MB_IRQ, context, mbIsr);
-	if (ret) {
-		return -1;
-	}
-
-	mbHook = hook;
-
-	 */
+	irqPin = pin;
+	irqHook = hook;
 	return 0;
 }
+
+/**
+ *
+ */
+void irqIsr(void* isr_context, alt_u32 id)
+{
+	if (irqHook) {
+		irqHook(0);//*(volatile alt_u32*)DPRAM_BASE);
+	}
+	IOWR(IRQ_BASE, PIO_EDET, 0);
+}
+

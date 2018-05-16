@@ -58,10 +58,12 @@ void platformCmd(void)
 	volatile alt_u32 cmd;
 
 	cmd = *(volatile alt_u32*)DPRAM_BASE;
-	if (devHnd[MB_DEV(cmd)].cmd) {
-		devHnd[MB_DEV(cmd)].cmd();
+	if (cmd) {
+		if (devHnd[MB_DEV(cmd)].cmd) {
+			devHnd[MB_DEV(cmd)].cmd();
+		}
+		*(volatile alt_u32*)DPRAM_BASE = 0;
 	}
-	*(volatile alt_u32*)DPRAM_BASE = 0;
 }
 
 /**

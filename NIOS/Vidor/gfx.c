@@ -170,7 +170,8 @@ void gfxCmd(void)
 		((pfv5)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
 		break;
 	case 0x14:
-		ret = ((pfi4)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], (alt_u8*)&rpc[4]);
+//		ret = ((pfi4)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], (alt_u8*)&rpc[4]);
+		ret = ((pfi4)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], (alt_u32)&rpc[4]);
 		break;
 	case 0x15:
 		ret = ((pfi5)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);

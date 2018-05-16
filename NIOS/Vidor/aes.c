@@ -32,6 +32,8 @@ Non mettere polling perché in caso facciamo una cosa diversa.
 #define ALT_MODULE_CLASS_AES_0 AES
  */
 
+#ifdef AES
+
 #include <stdio.h>
 #include <io.h>
 #include <system.h>
@@ -114,75 +116,6 @@ alt_u32 aesDecode(alt_u32* key, alt_u32* data)
 }
 
 
-
-
-alt_u32 aesTest(void)
-{
-	/*
-	alt_u32 key[8] = {0x12345678, 0x12345678, 0x12345678, 0x12345678,
-			          0x12345678, 0x12345678, 0x12345678, 0x12345678};
-	alt_u32 dec[4] = {0x12345678, 0x12345678, 0x12345678, 0x12345678};
-	alt_u32 enc[4] = {0, 0, 0, 0};
-*/
-#if 0
-	alt_u8 key[32] = {"1234567890123456790123465798012"};
-	alt_u8 plain[16] = {"12345678abcdfegh"};
-#endif
-#if 0
-	alt_u8 key[32] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-	alt_u8 plain[16] = {0x01, 0x47, 0x30, 0xf8, 0x0a, 0xc6, 0x25, 0xfe,
-			            0x84, 0xf0, 0x26, 0xc6, 0x0b, 0xfd, 0x54, 0x7d};
-#endif
-
-
-#if 1
-/*
-	KEY = 8d2e60365f17c7df1040d7501b4a7b5a
-	PLAINTEXT = 59b5088e6dadc3ad5f27a460872d5929
-	CIPHERTEXT = a02600ecb8ea77625bba6641ed5f5920
-*/
-	alt_u8 key[32] = {0x8d, 0x2e, 0x60, 0x36, 0x5f, 0x17, 0xc7, 0xdf,
-			          0x10, 0x40, 0xd7, 0x50, 0x1b, 0x4a, 0x7b, 0x5a};
-	alt_u8 plain[16] = {0x59, 0xb5, 0x08, 0x8e, 0x6d, 0xad, 0xc3, 0xad,
-			            0x5f, 0x27, 0xa4, 0x60, 0x87, 0x2d, 0x59, 0x29};
-#endif
-/*
-	KEY = 2d0860dae7fdb0bd4bfab111f615227a
-	PLAINTEXT = a02600ecb8ea77625bba6641ed5f5920
-	CIPHERTEXT = 5241ead9a89ca31a7147f53a5bf6d96a
-*/
-/*
-	KEY = 7f498a034f6113a73abd442bade3fb10
-	PLAINTEXT = 5241ead9a89ca31a7147f53a5bf6d96a
-	CIPHERTEXT = 22f09171bc67d0661d1c25f181a69f33
-*/
-
-
-
-	alt_u8 enc[16];
-	alt_u8 new[16];
-
-	aesKeyWr((alt_u32*)key);
-	aesDataWr((alt_u32*)plain);
-	aesDataRd((alt_u32*)enc);
-	aesConfig(AES_CFG_KEY_128, AES_CFG_ENCODE);
-
-	aesKeyWr((alt_u32*)key);
-	aesDataWr((alt_u32*)enc);
-	aesDataRd((alt_u32*)new);
-	aesConfig(AES_CFG_KEY_128, AES_CFG_DECODE);
-	return 0;
-}
-
-
-
-
-
-
-
 void aesConfig(int key_mode, int inc_dec)
 {
 	IOWR(alt_base, AES_CFG, key_mode | inc_dec);
@@ -215,3 +148,4 @@ void aesDataRd(alt_u32* data)
 	data[2] = IORD(alt_base, AES_DATA+3);
 	data[3] = IORD(alt_base, AES_DATA+4);
 }
+#endif  // AES
