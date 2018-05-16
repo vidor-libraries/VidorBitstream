@@ -194,7 +194,7 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
 
 		//program      0x02 address (3 byte) data (1-256)
 		//max data length is 256 byte
-		cnt = (len+(adr&255))>256? (256-(adr&0xff)): len;
+		cnt = (len+(adr & 0xFF))>256? (256-(adr & 0xFF)): len;
 
 		txb[0] = 0x02;
 		txb[1] = adr>>16;
@@ -233,7 +233,7 @@ alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
 	ptr = 0;
 	do{
 		//max data length is 256 byte
-		cnt = (len+(adr&255))>256? (256-(adr&0xff)): len;
+		cnt = (len+(adr & 0xFF))>256? (256-(adr & 0xFF)): len;
 
 #ifdef SF_FAST_RD
 		txb[0] = 0x0B;
