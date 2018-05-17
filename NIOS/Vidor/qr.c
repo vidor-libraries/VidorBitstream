@@ -124,7 +124,6 @@ void qrLoop(void)
 		}
 		qrCnt++;
 		if (qrCnt > QR_CNT_MAX) {
-			memset(&qr, 0, sizeof(qr));
 			qr.sts = QR_STS_NOQR;
 			qrCnt = QR_CNT_MAX;
 		}
