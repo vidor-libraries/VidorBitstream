@@ -22,6 +22,7 @@ int main()
 	//i2cTest();
 	//gpioTest();
 	//sfTest();
+	//i2c1Test();
 
 	while (1) {
 		platformCmd();

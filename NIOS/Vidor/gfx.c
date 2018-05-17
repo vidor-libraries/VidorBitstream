@@ -83,7 +83,7 @@ void gfxInit(int devs)
 
     memset(CAM_BASE, 0, FB_WIDTH*FB_HEIGHT*2);
     memset(FB_BASE, 0, FB_WIDTH*FB_HEIGHT*2);
-
+/*
 	writePixel(10, 10, 0xFC00);
 	writePixel(10, 11, 0x83E0);
 	writePixel(10, 12, 0x801F);
@@ -144,7 +144,7 @@ void gfxInit(int devs)
 	rpc[5] = 0x34353637;
 	rpc[6] = 0;
 	gfxCmd();
-
+*/
 }
 
 /**

@@ -57,7 +57,7 @@ void qrInit(int devs)
 		*ptr++ = 0;
 	}
 #endif
-	qrEnable = 0;
+	qrEnable = 1;
 	qrCnt = 0;
 }
 
@@ -109,12 +109,13 @@ void qrLoop(void)
 					qr.pt[i].xe = IORD(QRCODE_FINDER_0_BASE, 3+4*i);
 					qr.pt[i].ys = IORD(QRCODE_FINDER_0_BASE, 4+4*i);
 					qr.pt[i].ye = IORD(QRCODE_FINDER_0_BASE, 5+4*i);
-
+/*
 					int *ptr;
 					ptr = (int*)(640*480*2);
 					ptr[ofs[i]] = 0;
 					ofs[i] = ((qr.pt[i].xs+qr.pt[i].xe)/2 + (qr.pt[i].ys+qr.pt[i].ye)/2*640)/2;
 					ptr[ofs[i]] = 0xffffffff;
+*/
 				}
 				qr.sts = QR_STS_READY;
 				qrCnt = 0;

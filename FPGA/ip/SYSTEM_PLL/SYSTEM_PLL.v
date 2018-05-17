@@ -60,26 +60,26 @@ module SYSTEM_PLL (
 // synopsys translate_on
 `endif
 
-	wire [0:0] sub_wire2 = 1'h0;
-	wire [4:0] sub_wire3;
-	wire  sub_wire8;
-	wire  sub_wire0 = inclk0;
-	wire [1:0] sub_wire1 = {sub_wire2, sub_wire0};
-	wire [3:3] sub_wire7 = sub_wire3[3:3];
-	wire [2:2] sub_wire6 = sub_wire3[2:2];
-	wire [1:1] sub_wire5 = sub_wire3[1:1];
-	wire [0:0] sub_wire4 = sub_wire3[0:0];
-	wire  c0 = sub_wire4;
-	wire  c1 = sub_wire5;
-	wire  c2 = sub_wire6;
-	wire  c3 = sub_wire7;
-	wire  locked = sub_wire8;
+	wire [4:0] sub_wire0;
+	wire  sub_wire5;
+	wire [0:0] sub_wire8 = 1'h0;
+	wire [3:3] sub_wire4 = sub_wire0[3:3];
+	wire [2:2] sub_wire3 = sub_wire0[2:2];
+	wire [1:1] sub_wire2 = sub_wire0[1:1];
+	wire [0:0] sub_wire1 = sub_wire0[0:0];
+	wire  c0 = sub_wire1;
+	wire  c1 = sub_wire2;
+	wire  c2 = sub_wire3;
+	wire  c3 = sub_wire4;
+	wire  locked = sub_wire5;
+	wire  sub_wire6 = inclk0;
+	wire [1:0] sub_wire7 = {sub_wire8, sub_wire6};
 
 	altpll	altpll_component (
 				.areset (areset),
-				.inclk (sub_wire1),
-				.clk (sub_wire3),
-				.locked (sub_wire8),
+				.inclk (sub_wire7),
+				.clk (sub_wire0),
+				.locked (sub_wire5),
 				.activeclock (),
 				.clkbad (),
 				.clkena ({6{1'b1}}),
@@ -130,7 +130,7 @@ module SYSTEM_PLL (
 		altpll_component.clk3_divide_by = 12,
 		altpll_component.clk3_duty_cycle = 50,
 		altpll_component.clk3_multiply_by = 25,
-		altpll_component.clk3_phase_shift = "7500",
+		altpll_component.clk3_phase_shift = "5000",
 		altpll_component.compensate_clock = "CLK0",
 		altpll_component.inclk0_input_frequency = 20833,
 		altpll_component.intended_device_family = "Cyclone 10 LP",
@@ -266,7 +266,7 @@ endmodule
 // Retrieval info: PRIVATE: PHASE_SHIFT0 STRING "0.00000000"
 // Retrieval info: PRIVATE: PHASE_SHIFT1 STRING "0.00000000"
 // Retrieval info: PRIVATE: PHASE_SHIFT2 STRING "0.00000000"
-// Retrieval info: PRIVATE: PHASE_SHIFT3 STRING "270.00000000"
+// Retrieval info: PRIVATE: PHASE_SHIFT3 STRING "180.00000000"
 // Retrieval info: PRIVATE: PHASE_SHIFT_STEP_ENABLED_CHECK STRING "0"
 // Retrieval info: PRIVATE: PHASE_SHIFT_UNIT0 STRING "deg"
 // Retrieval info: PRIVATE: PHASE_SHIFT_UNIT1 STRING "deg"
@@ -327,7 +327,7 @@ endmodule
 // Retrieval info: CONSTANT: CLK3_DIVIDE_BY NUMERIC "12"
 // Retrieval info: CONSTANT: CLK3_DUTY_CYCLE NUMERIC "50"
 // Retrieval info: CONSTANT: CLK3_MULTIPLY_BY NUMERIC "25"
-// Retrieval info: CONSTANT: CLK3_PHASE_SHIFT STRING "7500"
+// Retrieval info: CONSTANT: CLK3_PHASE_SHIFT STRING "5000"
 // Retrieval info: CONSTANT: COMPENSATE_CLOCK STRING "CLK0"
 // Retrieval info: CONSTANT: INCLK0_INPUT_FREQUENCY NUMERIC "20833"
 // Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Cyclone 10 LP"

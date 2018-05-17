@@ -33,7 +33,7 @@ sDevHnd devHnd[] = {
 	{NULL, sfCmd, NULL, 1},
 	{NULL, gpioCmd, NULL, 1},
 	{gfxInit, gfxCmd, NULL, 1},
-	{i2cInit, i2cCmd, NULL, 1},
+	{i2cInit, i2cCmd, NULL, 2},
 	{spiInit, spiCmd, NULL, 1},
 	{uartInit, uartCmd, NULL, 1},
 	{qrInit, qrCmd, qrLoop, 1},

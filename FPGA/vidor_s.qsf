@@ -39,7 +39,6 @@
 
 set_global_assignment -name FAMILY "Cyclone 10 LP"
 set_global_assignment -name DEVICE 10CL016YU256C8G
-set_global_assignment -name TOP_LEVEL_ENTITY vidor_s_top
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 17.0.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "13:50:11  FEBRUARY 05, 2018"
 set_global_assignment -name LAST_QUARTUS_VERSION "18.0.0 Standard Edition"

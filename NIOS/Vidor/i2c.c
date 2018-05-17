@@ -48,6 +48,7 @@
 
 alt_u32 i2c_baseaddr[] = {
 	CSI_I2C_BASE,
+	HDMI_I2C_BASE,
 };
 alt_u32 i2c_dev_num;
 
@@ -165,7 +166,7 @@ alt_u32 i2cDisable(alt_u32 index)
 alt_u32 i2cRead(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
 {
 	if(index >= i2c_dev_num){
-		return 0xFF;
+		return -1;
 	}
 	alt_u32 baseaddr = i2c_baseaddr[index];
 	int i;
