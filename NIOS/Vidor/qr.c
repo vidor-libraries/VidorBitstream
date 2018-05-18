@@ -85,7 +85,6 @@ void qrCmd(void)
 		break;
 	}
 	rpc[1] = ret;
-
 }
 
 /**

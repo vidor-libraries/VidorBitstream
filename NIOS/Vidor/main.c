@@ -15,14 +15,13 @@ void cmdRx(alt_u32 cmd);
  */
 int main()
 {
-	irqPinSet(0, cmdRx);
-
 	platformSetup();
 	//aesTest();
 	//i2cTest();
 	//gpioTest();
 	//sfTest();
 	//i2c1Test();
+	irqPinSet(0, cmdRx);
 
 	while (1) {
 		platformCmd();

@@ -7,9 +7,9 @@
 #include <stdio.h>
 #include <system.h>
 
+#include "mb.h"
 #include "i2c.h"
 #include "gpio.h"
-#include "mb.h"
 #include "sf.h"
 #include "gfx.h"
 #include "spi.h"
@@ -17,26 +17,37 @@
 #include "qr.h"
 
 /**
+ *
+ */
+#define FPGA_VERSION 0x01010100
+
+/**
  */
 typedef struct {
 	void(*setup)(int);
 	void(*cmd)(void);
 	void(*loop)(void);
-	int sub_devs;
+	alt_u32 dev_cod;
+	alt_u32 sub_devs;
 }sDevHnd, *psDevHnd;
 
 /**
  *
  */
+void pltCmd(void);
+
+/**
+ *
+ */
 sDevHnd devHnd[] = {
-	{NULL, NULL, NULL, 0},
-	{NULL, sfCmd, NULL, 1},
-	{NULL, gpioCmd, NULL, 1},
-	{gfxInit, gfxCmd, NULL, 1},
-	{i2cInit, i2cCmd, NULL, 2},
-	{spiInit, spiCmd, NULL, 1},
-	{uartInit, uartCmd, NULL, 1},
-	{qrInit, qrCmd, qrLoop, 1},
+	{NULL, pltCmd, NULL, 0, 0},
+	{NULL, sfCmd, NULL, MB_DEV_SF, 1},
+	{NULL, gpioCmd, NULL, MB_DEV_GPIO, 1},
+	{gfxInit, gfxCmd, NULL, MB_DEV_GFX, 1},
+	{i2cInit, i2cCmd, NULL, MB_DEV_I2C, 2},
+	{spiInit, spiCmd, NULL, MB_DEV_SPI, 1},
+	{uartInit, uartCmd, NULL, MB_DEV_UART, 1},
+	{qrInit, qrCmd, qrLoop, MB_DEV_QR, 1},
 };
 
 /**
@@ -82,4 +93,32 @@ void platformLoop(void)
 			devHnd[i].loop();
 		}
 	}
+}
+
+/**
+ *
+ */
+void pltCmd(void)
+{
+	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+	alt_u32 ret;
+	int i;
+
+	ret = -1;
+	switch(MB_CMD(rpc[0])){
+	case 1:
+		/* get version */
+		ret = FPGA_VERSION;
+		break;
+	case 2:
+		/* get IP list and number of instances for each device */
+		rpc[1] = sizeof(devHnd)/sizeof(sDevHnd) -1;
+		for (i=1; i<sizeof(devHnd)/sizeof(sDevHnd); i++) {
+			rpc[i*2+0] = devHnd[i].dev_cod;
+			rpc[i*2+1] = devHnd[i].sub_devs;
+		}
+		ret = rpc[1];
+		break;
+	}
+	rpc[1] = ret;
 }
