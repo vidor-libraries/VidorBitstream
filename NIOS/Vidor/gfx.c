@@ -15,7 +15,6 @@
 #include "mb.h"
 
 #define FB_BASE (alt_u16*)(SDRAM_ARBITER_BASE + \
-		                   SDRAM_ARBITER_CAM_OFFSET*sizeof(short) + \
 		                   SDRAM_ARBITER_FB_OFFSET*sizeof(short))
 #define FB_WIDTH  640
 #define FB_HEIGHT 480
