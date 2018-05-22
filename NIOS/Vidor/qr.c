@@ -59,6 +59,7 @@ void qrInit(int devs)
 	}
 #endif
 	//qrThrSet(120);
+	qr.sts = QR_STS_NOQR;
 	qrEnable = 1;
 	qrCnt = 0;
 }
@@ -94,7 +95,7 @@ void qrCmd(void)
 }
 
 
-
+/*
 void qrCross(alt_u32 x, alt_u32 y, alt_u32 c)
 {
    if (x<4) x=4;
@@ -102,7 +103,7 @@ void qrCross(alt_u32 x, alt_u32 y, alt_u32 c)
    writeLine(x-4, y, x+4, y, c);
    writeLine(x, y-4, x, y+4, c);
 }
-
+*/
 /**
  */
 void qrLoop(void)
@@ -132,10 +133,10 @@ void qrLoop(void)
 				tc = (txs+txe)/2;
 				for (j=0; j<20; j++) {
 					if (pt[j].valid) {
-						if ((tc >=pt[j].xs) && (tc <=pt[j].xe) && ((ty-pt[j].ye)<4)) {
+						if ((tc >= pt[j].xs) && (tc <= pt[j].xe) && ((ty-pt[j].ye)<4)) {
 							pt[j].ye = ty;
 							if (tmaxy < (pt[j].ye-pt[j].ys)) {
-								tmaxy=(pt[j].ye-pt[j].ys);
+								tmaxy = (pt[j].ye-pt[j].ys);
 							}
 							break;
 						}
@@ -153,9 +154,9 @@ void qrLoop(void)
 			}
 
 			for (i=0; i<3; i++) {
-				if (qr.pt[i].valid==1) {
-                  qrCross((qr.pt[i].xe+qr.pt[i].xs)/2,(qr.pt[i].ye+qr.pt[i].ys)/2,0);
-				}
+				//if (qr.pt[i].valid==1) {
+                //  qrCross((qr.pt[i].xe+qr.pt[i].xs)/2,(qr.pt[i].ye+qr.pt[i].ys)/2,0);
+				//}
 				qr.pt[i].valid = 0;
 			}
 
@@ -171,7 +172,7 @@ void qrLoop(void)
 					qr.pt[j].ye = pt[i].ye;
 					pt[i].valid = 0;
 					qr.pt[j].valid = 1;
-					qrCross((qr.pt[j].xe+qr.pt[j].xs)/2, (qr.pt[j].ye+qr.pt[j].ys)/2, 0xffff);
+					//qrCross((qr.pt[j].xe+qr.pt[j].xs)/2, (qr.pt[j].ye+qr.pt[j].ys)/2, 0xffff);
 					j++;
 					if (j==3) {
 						break;

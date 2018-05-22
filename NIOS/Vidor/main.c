@@ -25,6 +25,7 @@ int main()
 	//intPinInit(1, 0);
 
 	while (1) {
+		platformCmd();
 		platformLoop();
 	};
 	return 0;
