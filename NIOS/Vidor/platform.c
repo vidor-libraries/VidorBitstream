@@ -19,7 +19,7 @@
 /**
  *
  */
-#define FPGA_VERSION 0x01010100
+#define FPGA_VERSION 0x01010101
 
 /**
  */
@@ -79,6 +79,8 @@ void platformCmd(void)
 			}
 		}
 		*(volatile alt_u32*)DPRAM_BASE = 0;
+		//intPinSet(1, 1);
+		//intPinSet(1, 0);
 	}
 }
 

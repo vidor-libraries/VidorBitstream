@@ -248,8 +248,33 @@ alt_u32 irqPinSet(alt_u32 pin, void (*hook)(alt_u32))
 void irqIsr(void* isr_context, alt_u32 id)
 {
 	if (irqHook) {
-		irqHook(0);//*(volatile alt_u32*)DPRAM_BASE);
+		irqHook(0);
 	}
 	IOWR(IRQ_BASE, PIO_EDET, 0);
 }
 
+int intPinInit(alt_u32 pin, int val)
+{
+	alt_u32 reg;
+
+	reg = IORD(IRQ_BASE, PIO_DIR);
+	reg |= (1 << pin);
+	IOWR(IRQ_BASE, PIO_DIR , reg);
+
+	if (val) {
+		IOWR(IRQ_BASE, PIO_SET, (1 << pin));
+	}else{
+		IOWR(IRQ_BASE, PIO_CLR, (1 << pin));
+
+	}
+}
+
+int intPinSet(alt_u32 pin, int val)
+{
+	if (val) {
+		IOWR(IRQ_BASE, PIO_SET, (1 << pin));
+	}else{
+		IOWR(IRQ_BASE, PIO_CLR, (1 << pin));
+
+	}
+}

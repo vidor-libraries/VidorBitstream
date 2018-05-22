@@ -22,12 +22,11 @@ int main()
 	//sfTest();
 	//i2c1Test();
 	irqPinSet(0, cmdRx);
+	//intPinInit(1, 0);
 
 	while (1) {
-		platformCmd();
 		platformLoop();
 	};
-
 	return 0;
 }
 
