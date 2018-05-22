@@ -38,6 +38,7 @@ reg rMIPI_VDATA/* synthesis noprune */;
 reg rMIPI_BAYERPOL /* synthesis noprune */;
 reg [15:0] rMIPI_LINEMEM [639:0];
 reg rMIPI_PIXELVALID/* synthesis noprune */;
+reg rDMIPI_PIXELVALID/* synthesis noprune */;
 reg rMIPI_PIXELVALID2/* synthesis noprune */;
 reg rMIPI_DATAVALID/* synthesis noprune */;
 reg [7:0] rMIPI_R0[1:0] /* synthesis noprune */;
@@ -171,10 +172,17 @@ begin
       rPREV_MIPI_DATA<=0;
     end
     else if (rMIPI_VDATA) begin
+// data is as follows
+
+// G00 R10 G20 R30          rPREV_MIPI_DATA[39:32] rPREV_MIPI_DATA[47:40] wMIPI_LB_DATA[23:16] wMIPI_LB_DATA[31:24]
+// B01 G11 B21 G31          rPREV_MIPI_DATA[23:16] rPREV_MIPI_DATA[31:24] wMIPI_LB_DATA[7:0]   wMIPI_LB_DATA[15:9]
+// G02 R12 G22 R32          rPREV_MIPI_DATA[7:0]   rPREV_MIPI_DATA[15:8]  wMIPI_DATA[7:0]      wMIPI_DATA[15:8]
+   
       rPREV_MIPI_DATA<={wMIPI_LB_DATA,wMIPI_DATA};
       if (rMIPI_BAYERPOL) begin
         rMIPI_R0[1] <= ({1'b0,rPREV_MIPI_DATA[47:40]}+{1'b0,rPREV_MIPI_DATA[15:8]})>>1;
-        rMIPI_G0[1] <= ({1'b0,rPREV_MIPI_DATA[31:24],2'b0}+
+        rMIPI_G0[1] <= //rPREV_MIPI_DATA[31:24];
+                    ({1'b0,rPREV_MIPI_DATA[31:24],2'b0}+
                      {3'b0,wMIPI_DATA[7:0]}+
                      {3'b0,rPREV_MIPI_DATA[7:0]}+
                      {3'b0,rPREV_MIPI_DATA[39:32]}+
@@ -202,7 +210,8 @@ begin
                      {2'b0,wMIPI_DATA[7:0]}          )>>2;
 
         rMIPI_R1[0] <= ({1'b0,rPREV_MIPI_DATA[31:24]}+{1'b0,wMIPI_LB_DATA[15:8]})>>1;
-        rMIPI_G1[0] <= ({1'b0,wMIPI_LB_DATA[7:0], 2'b0}+
+        rMIPI_G1[0] <= //wMIPI_LB_DATA[7:0];
+                    ({1'b0,wMIPI_LB_DATA[7:0], 2'b0}+
                      {3'b0,wMIPI_DATA[15:8]}+
                      {3'b0,rPREV_MIPI_DATA[15:8]}+
                      {3'b0,rPREV_MIPI_DATA[47:40]}+
@@ -219,7 +228,8 @@ begin
         rWC<=rWC-2;
     end
   end
-  if (rMIPI_PIXELVALID&&!rMIPI_VSTART)
+  rDMIPI_PIXELVALID<=rMIPI_PIXELVALID;
+  if (rDMIPI_PIXELVALID&&!rMIPI_VSTART)
   begin
     rMIPI_PIXELVALID2 <=1;
   end
