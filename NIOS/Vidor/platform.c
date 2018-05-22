@@ -15,6 +15,7 @@
 #include "spi.h"
 #include "uart.h"
 #include "qr.h"
+#include "sdram.h"
 
 /**
  *
@@ -48,6 +49,7 @@ sDevHnd devHnd[] = {
 	{spiInit, spiCmd, NULL, MB_DEV_SPI, 1},
 	{uartInit, uartCmd, NULL, MB_DEV_UART, 1},
 	{qrInit, qrCmd, qrLoop, MB_DEV_QR, 1},
+	{sdramInit, sdramCmd, NULL, MB_DEV_SDRAM, 1},
 };
 
 /**
