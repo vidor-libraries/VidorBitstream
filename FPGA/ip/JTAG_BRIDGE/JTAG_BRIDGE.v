@@ -15,7 +15,7 @@ reg [31:0] rBUFFER, rADDRESS, rDATA;
 reg        rCDR,rSDR,rUIR,rUDR,rADDRESS_PHASE,rADDRESS_PHASED/* synthesis noprune */;
 reg [1:0]  rIR;
 reg [4:0]  rBITCNT;
-reg        rWRITE_PHASE,rWR_STROBE, rRD_STROBE;
+reg        rWR_STROBE, rRD_STROBE;
 wire       wWRITE_PHASE, wRD_EMPTY,wWR_EMPTY;
 wire [31:0] wREAD_DATA;
 wire [1:0] wIR_OUT, wIR_IN;
@@ -106,12 +106,10 @@ begin
       if (rCDR)
       begin
         rADDRESS_PHASE<=1;
-        rWRITE_PHASE<=0;
       end
       if (rUDR)
       begin
         rADDRESS_PHASE<=0;
-        rWRITE_PHASE<=0;
         if (rBITCNT==3)
         begin
           rDATA_CNT<={1'b0,wTDI,rBUFFER[31-:3]}+1;
@@ -127,25 +125,21 @@ begin
                rADDRESS[5:0]<={wTDI,rBUFFER[31-:5]};
                rBITCNT<=0;
                rADDRESS_PHASE<=0;
-               rWRITE_PHASE<=1;
              end
           15:if (rADDR_BITS==1) begin
                rADDRESS[13:0]<={wTDI,rBUFFER[31-:13]};
                rBITCNT<=0;
                rADDRESS_PHASE<=0;
-               rWRITE_PHASE<=1;
              end
           23:if (rADDR_BITS==2) begin
                rADDRESS[21:0]<={wTDI,rBUFFER[31-:21]};
                rBITCNT<=0;
                rADDRESS_PHASE<=0;
-               rWRITE_PHASE<=1;
              end
           31:if (rADDR_BITS==3) begin
                rADDRESS[29:0]<={wTDI,rBUFFER[31-:29]};
                rBITCNT<=0;
                rADDRESS_PHASE<=0;
-               rWRITE_PHASE<=1;
              end
           endcase
         end
@@ -235,11 +229,11 @@ end
     .rdsync_delaypipe(5),
     .read_aclr_synch("ON"),
     .underflow_checking("ON"),
-    .use_eab("OFF"),
+    .use_eab("ON"),
     .write_aclr_synch("OFF"),
     .wrsync_delaypipe(5)
   ) fifowr_inst (
-    .data       ({rADDRESS,rDATA,rDATA_CNT,rWRITE_PHASE}),
+    .data       ({rADDRESS,rDATA,rDATA_CNT,rWR_STROBE}),
     .rdclk      (iCLK),
     .rdreq      (!wWR_EMPTY&&!iWAIT_REQUEST),
     .wrclk      (wTCK),
@@ -270,7 +264,7 @@ assign oREAD  = !wWR_EMPTY&!wWRITE_PHASE;
     .rdsync_delaypipe(5),
     .read_aclr_synch("ON"),
     .underflow_checking("ON"),
-    .use_eab("OFF"),
+    .use_eab("ON"),
     .write_aclr_synch("OFF"),
     .wrsync_delaypipe(5)
   ) fiford_inst (
