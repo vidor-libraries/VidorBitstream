@@ -8,11 +8,11 @@ input [23:0]      iVID_DATA,
 input             iVID_START,
 input             iVID_DATAVALID,
 
-input [3:0]       iADDRESS,
+input [10:0]      iADDRESS,
 input [31:0]      iWRITEDATA,
 input             iWRITE,
 input             iREAD,
-output reg [31:0] oREADDATA,
+output  [31:0]    oREADDATA,
 
 output reg [23:0] oVID_DATA,
 output            oVID_START,
@@ -64,10 +64,12 @@ reg [9:0] rREG_HST1 /*synthesis noprune */, rREG_HED1/*synthesis noprune */, rRE
 reg [9:0] rREG_VST1 /*synthesis noprune */, rREG_VED1/*synthesis noprune */, rREG_VST2/*synthesis noprune */, rREG_VED2/*synthesis noprune */, rREG_VST3/*synthesis noprune */, rREG_VED3/*synthesis noprune */;
 reg       rREG_FND1/*synthesis noprune */,rREG_FND2/*synthesis noprune */,rREG_FND3/*synthesis noprune */;
 reg rUPDATE, rREFRESH;
-wire signed [12:0] wLUM_DIFF;
-reg signed [12:0] rLUM_DIFF;
-
-
+wire signed [11:0] wLUM_DIFF;
+reg signed [10:0] rLUM_DIFF;
+reg signed [12:0] rTHRESHOLD;
+wire [19:0] wLB_RAM_DATA;
+reg [10:0] rAVL_ADDRESS;
+reg [31:0] rREADDATA;
 
 typedef enum {
   stNONE,
@@ -92,18 +94,146 @@ assign wLUM_NORM = rLUM+rLUM[9:2]+rLUM[9:4]+rLUM[9:6]+rLUM[9:8];
 assign oVID_START=rSTART_PIPE[2];
 assign oVID_DATAVALID=rVALID_PIPE[2];
 
+initial rTHRESHOLD<=pTHRESHOLD;
+
+	altsyncram	altsyncram_component (
+				.address_a (rHCNT), //write
+				.address_b (rHCNT), //read
+				.clock0 (iVID_CLK),
+				.data_a ({wLB_RAM_DATA,rLUM_DIFF[10:1]}),
+				.wren_a (rVALID_PIPE[1]),
+				.q_b (wLB_RAM_DATA),
+				.aclr0 (1'b0),
+				.aclr1 (1'b0),
+				.addressstall_a (1'b0),
+				.addressstall_b (1'b0),
+				.byteena_a (1'b1),
+				.byteena_b (1'b1),
+				.clock1 (1'b1),
+				.clocken0 (1'b1),
+				.clocken1 (1'b1),
+				.clocken2 (1'b1),
+				.clocken3 (1'b1),
+				.data_b ({32{1'b1}}),
+				.eccstatus (),
+				.q_a (),
+				.rden_a (1'b1),
+				.rden_b (1'b1),
+				.wren_b (1'b0));
+	defparam
+		altsyncram_component.address_aclr_b = "NONE",
+		altsyncram_component.address_reg_b = "CLOCK0",
+		altsyncram_component.clock_enable_input_a = "BYPASS",
+		altsyncram_component.clock_enable_input_b = "BYPASS",
+		altsyncram_component.clock_enable_output_b = "BYPASS",
+		altsyncram_component.intended_device_family = "Cyclone 10 LP",
+		altsyncram_component.lpm_type = "altsyncram",
+		altsyncram_component.numwords_a = 1024,
+		altsyncram_component.numwords_b = 1024,
+		altsyncram_component.operation_mode = "DUAL_PORT",
+		altsyncram_component.outdata_aclr_b = "NONE",
+		altsyncram_component.outdata_reg_b = "UNREGISTERED",
+		altsyncram_component.power_up_uninitialized = "FALSE",
+		altsyncram_component.read_during_write_mode_mixed_ports = "DONT_CARE",
+		altsyncram_component.widthad_a = 10,
+		altsyncram_component.widthad_b = 10,
+		altsyncram_component.width_a = 20,
+		altsyncram_component.width_b = 20,
+		altsyncram_component.width_byteena_a = 1;
+
 reg [1:0] rOUTMODE;
+reg [9:0] rDETECT_ADDR;
+wire [31:0] wDETECT_DATA;
+reg         rDETECT_WRITE;
+
+  altsyncram the_altsyncram
+    (
+      .address_a (address),
+      .address_b (address2),
+      .byteena_a (byteenable),
+      .byteena_b (byteenable2),
+      .clock0 (clk),
+      .clock1 (clk2),
+      .clocken0 (clocken0),
+      .clocken1 (clocken1),
+      .data_a (writedata),
+      .data_b (writedata2),
+      .q_a (readdata),
+      .q_b (readdata2),
+      .wren_a (wren),
+      .wren_b (wren2)
+    );
+
+  defparam the_altsyncram.address_reg_b = "CLOCK1",
+           the_altsyncram.byte_size = 8,
+           the_altsyncram.byteena_reg_b = "CLOCK1",
+           the_altsyncram.indata_reg_b = "CLOCK1",
+           the_altsyncram.lpm_type = "altsyncram",
+           the_altsyncram.maximum_depth = 256,
+           the_altsyncram.numwords_a = 256,
+           the_altsyncram.numwords_b = 256,
+           the_altsyncram.operation_mode = "BIDIR_DUAL_PORT",
+           the_altsyncram.outdata_reg_a = "UNREGISTERED",
+           the_altsyncram.outdata_reg_b = "UNREGISTERED",
+           the_altsyncram.ram_block_type = "AUTO",
+           the_altsyncram.read_during_write_mode_mixed_ports = "DONT_CARE",
+           the_altsyncram.width_a = 32,
+           the_altsyncram.width_b = 32,
+           the_altsyncram.width_byteena_a = 4,
+           the_altsyncram.width_byteena_b = 4,
+           the_altsyncram.widthad_a = 8,
+           the_altsyncram.widthad_b = 8,
+           the_altsyncram.wrcontrol_wraddress_reg_b = "CLOCK1";
+
+           
+	altsyncram	results (
+				.address_a (rDETECT_ADDR), //write
+				.address_b (iADDRESS), //read
+				.clock0 (iVID_CLK),
+        .clock1 (iCLK),
+				.data_a (rUPDATE? {32{1'b1}} : {rVCNT,rPREV_CENT_HSTART,rPREV_CENT_HEND}),
+				.wren_a (rDETECT_WRITE),
+				.q_b (wDETECT_DATA),
+				.data_b ({32{1'b1}}),
+        .byteena_a (4'b1111),
+        .byteena_b (4'b1111),
+				.rden_a (1'b1),
+				.rden_b (1'b1),
+				.wren_b (1'b0));
+  defparam results.address_reg_b = "CLOCK1",
+           results.byte_size = 8,
+           results.byteena_reg_b = "CLOCK1",
+           results.indata_reg_b = "CLOCK1",
+           results.lpm_type = "altsyncram",
+           results.maximum_depth = 1024,
+           results.numwords_a = 1024,
+           results.numwords_b = 1024,
+           results.operation_mode = "BIDIR_DUAL_PORT",
+           results.outdata_reg_a = "UNREGISTERED",
+           results.outdata_reg_b = "UNREGISTERED",
+           results.ram_block_type = "AUTO",
+           results.read_during_write_mode_mixed_ports = "DONT_CARE",
+           results.width_a = 32,
+           results.width_b = 32,
+           results.width_byteena_a = 4,
+           results.width_byteena_b = 4,
+           results.widthad_a = 10,
+           results.widthad_b = 10,
+           results.wrcontrol_wraddress_reg_b = "CLOCK1";
+
 always @(posedge iCLK)
 begin
   if (iWRITE) begin
     case (iADDRESS)
       0: {rOUTMODE,rREFRESH}<= iWRITEDATA;
+      1: rTHRESHOLD <= iWRITEDATA;
     endcase
   end
+  rAVL_ADDRESS <= iADDRESS;
   if (iREAD) begin
     case (iADDRESS)
-      0 : oREADDATA<= {rOUTMODE,rUPDATE}; //control
-      1 : oREADDATA<= {rREG_FND3,rREG_FND2,rREG_FND1};
+      0 : rREADDATA<= {rOUTMODE,rUPDATE}; //control
+/*      1 : oREADDATA<= {rREG_FND3,rREG_FND2,rREG_FND1};
       2 : oREADDATA<= rREG_HST1;
       6 : oREADDATA<= rREG_HST2;
       10: oREADDATA<= rREG_HST3;
@@ -115,18 +245,22 @@ begin
       12: oREADDATA<= rREG_VST3;
       5 : oREADDATA<= rREG_VED1;
       9 : oREADDATA<= rREG_VED2;
-      13: oREADDATA<= rREG_VED3;
-      default: oREADDATA<=0;
+      13: oREADDATA<= rREG_VED3;*/
+      default: rREADDATA<=0;
     endcase
   end
   if (rREFRESH&!rUPDATE)
     rREFRESH<=0;
 end
 
+assign oREADDATA = rAVL_ADDRESS[10] ? wDETECT_DATA : rREADDATA;
+assign wLUM_DIFF = { {2{rLUM_DIFF[10]}},rLUM_DIFF[10:1]} + { {1{wLB_RAM_DATA[9]}},wLB_RAM_DATA[9:0],1'b0} + {{2{wLB_RAM_DATA[19]}},wLB_RAM_DATA[19:10]};
 always @(posedge iVID_CLK)
 begin
-  if (rUPDATE&&rREFRESH)
-    rUPDATE<=0;
+  rDETECT_WRITE<=0;
+  if (rDETECT_WRITE)
+    rDETECT_ADDR<=rDETECT_ADDR+1;
+    
   rDATA_PIPE  <= {rDATA_PIPE,iVID_DATA};
   rVALID_PIPE <= {rVALID_PIPE,iVID_DATAVALID};
   rSTART_PIPE <= {rSTART_PIPE,iVID_START};
@@ -146,15 +280,19 @@ begin
     if (rDSTART) begin
       rHCNT<=0;
       rVCNT<=0;
-      rOPN1<=0;
+/*      rOPN1<=0;
       rOPN2<=0;
       rOPN3<=0;
       rFND1<=0;
       rFND2<=0;
       rFND3<=0;
-      
+*/      
+      if (rUPDATE&&rREFRESH) begin
+        rUPDATE<=0;
+        rDETECT_ADDR<=0;
+      end
       if (!rUPDATE) begin
-        rREG_FND1<=rFND1;
+/*        rREG_FND1<=rFND1;
         rREG_FND2<=rFND2;
         rREG_FND3<=rFND3;
         rREG_HST1<=rFND1 ? rHST1 : 0;
@@ -168,15 +306,17 @@ begin
         rREG_VST3<=rFND3 ? rVST3 : 0;
         rREG_VED1<=rFND1 ? rVED1 : 0;
         rREG_VED2<=rFND2 ? rVED2 : 0;
-        rREG_VED3<=rFND3 ? rVED3 : 0;
+        rREG_VED3<=rFND3 ? rVED3 : 0;*/
         rUPDATE <=1;
+        rDETECT_WRITE<=1;
+        
       end
       rSTATE<=stNONE;
     end
   end
   //second pipeline stage
   if (rVALID_PIPE[0]) begin
-    rLUM_DIFF <= {3'b0,rLUM_HIST[0]}+{3'b0,rLUM_HIST[1]}-{3'b0,rLUM_HIST[2]}-{3'b0,rLUM_HIST[3]};
+    rLUM_DIFF <= {1'b0,rLUM_HIST[0]}-{1'b0,rLUM_HIST[2]};
     rLUM_HIST <= {rLUM_HIST,wLUM_NORM};
     if (rDSTART_PIPE[0]) begin
       rLUM_HIST<={cPIPE_DEPTH-1{wLUM_NORM}};
@@ -193,7 +333,7 @@ begin
                               0;
 
     //  check for rising edge
-    if ((wLUM_DIFF>0) && (wLUM_DIFF > pTHRESHOLD ) ) begin
+    if ((wLUM_DIFF>0) && (wLUM_DIFF > rTHRESHOLD ) ) begin
       if ((rSTATE==stWHITE && rPREV_CHANGE<wLUM_DIFF) || 
           (rSTATE!=stWHITE) ) begin
         rHSTART<= rHCNT_PIPE[1];
@@ -210,7 +350,7 @@ begin
     end
 
     //  check for falling edge
-    if ((wLUM_DIFF<0) && ((-wLUM_DIFF) > pTHRESHOLD ) ) begin
+    if ((wLUM_DIFF<0) && ((-wLUM_DIFF) > rTHRESHOLD ) ) begin
       if ((rSTATE==stBLACK && rPREV_CHANGE<(-wLUM_DIFF)) || 
           (rSTATE!=stBLACK) ) begin
         rHSTART<= rHCNT_PIPE[1];
@@ -242,10 +382,10 @@ begin
       case (rDECODE_STATE)
         dsIDLE: begin
           if (rPREV_STATE==stBLACK) begin
-            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>2)+1;
-            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>2)-1;
-            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>2)+3;
-            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>2)-3;
+            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>4)+1;
+            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>4)-1;
+            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>4)+3;
+            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>4)-3;
             rDECODE_STATE<=dsFIRST;
             rREFBIT_HSTART<= rPREV_HSTART;
           end
@@ -267,10 +407,10 @@ begin
             rPREV_CENT_HSTART<= rPREV_HSTART;
           end
           else begin
-            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>2)+1;
-            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>2)-1;
-            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>2)+3;
-            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>2)-3;
+            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>4)+1;
+            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>4)-1;
+            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>4)+3;
+            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>4)-3;
             rDECODE_STATE<=dsFIRST;
             rREFBIT_HSTART<= rPREV_HSTART;
           end
@@ -290,6 +430,10 @@ begin
             rDECODE_STATE<= dsIDLE;
             // pattern found!!!
             rFOUND<=1;
+            rDETECT_WRITE<=!rUPDATE;
+
+/*
+
             if ((rVCNT-rVED1)>10) begin
               rOPN1<=0;
               if ((rVED1-rVST1)<3) rFND1 <=0;
@@ -341,12 +485,13 @@ begin
                     {rHST3[9:1]+rHED2[9:1]}<rHCNT_PIPE[1] ) begin
                 rVED3<=rVCNT;
             end
+            */
           end
           else begin
-            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>2)+1;
-            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>2)-1;
-            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>2)+3;
-            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>2)-3;
+            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>4)+1;
+            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>4)-1;
+            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>4)+3;
+            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>4)-3;
             rDECODE_STATE<=dsFIRST;
             rREFBIT_HSTART<= rPREV_HSTART;
           end

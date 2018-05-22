@@ -115,7 +115,7 @@ set_interface_property ctrl PORT_NAME_MAP ""
 set_interface_property ctrl CMSIS_SVD_VARIABLES ""
 set_interface_property ctrl SVD_ADDRESS_GROUP ""
 
-add_interface_port ctrl iADDRESS address Input 4
+add_interface_port ctrl iADDRESS address Input 11
 add_interface_port ctrl iWRITEDATA writedata Input 32
 add_interface_port ctrl iWRITE write Input 1
 add_interface_port ctrl iREAD read Input 1
