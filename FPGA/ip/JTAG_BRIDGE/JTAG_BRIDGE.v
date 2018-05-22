@@ -229,7 +229,7 @@ end
     .rdsync_delaypipe(5),
     .read_aclr_synch("ON"),
     .underflow_checking("ON"),
-    .use_eab("ON"),
+    .use_eab("OFF"),
     .write_aclr_synch("OFF"),
     .wrsync_delaypipe(5)
   ) fifowr_inst (
@@ -264,7 +264,7 @@ assign oREAD  = !wWR_EMPTY&!wWRITE_PHASE;
     .rdsync_delaypipe(5),
     .read_aclr_synch("ON"),
     .underflow_checking("ON"),
-    .use_eab("ON"),
+    .use_eab("OFF"),
     .write_aclr_synch("OFF"),
     .wrsync_delaypipe(5)
   ) fiford_inst (
