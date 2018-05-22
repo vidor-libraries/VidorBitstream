@@ -314,7 +314,7 @@ begin
         rWRITE_ADDRESS<=rWRITE_ADDRESS+1;
       rADDRESS<=rADDRESS+1;
       if (rWRITE_ADDRESS==(pFB_SIZE-1)) begin
-        rBUFFER<=!rBUFFER;
+        //rBUFFER<=!rBUFFER;
         rWRITE_ADDRESS<=0;
       end
       if (rBURSTCNT==0||wMIPI_FIFO_DATA[15]) begin
