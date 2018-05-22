@@ -43,6 +43,7 @@ alt_u32 qrCnt;
 
 alt_u32 qrMode(alt_u32 mode);
 alt_u32 qrGet(alt_u32* data);
+alt_u32 qrThrSet(alt_u32 data);
 
 /**
  */
@@ -57,6 +58,7 @@ void qrInit(int devs)
 		*ptr++ = 0;
 	}
 #endif
+	//qrThrSet(120);
 	qrEnable = 1;
 	qrCnt = 0;
 }
@@ -83,42 +85,101 @@ void qrCmd(void)
 		/* get qr detect */
 		ret = qrGet((alt_u32*)&rpc[2]);
 		break;
+	case 4:
+		/* set qr threshold */
+		ret = qrThrSet(rpc[1]);
+		break;
 	}
 	rpc[1] = ret;
+}
+
+
+
+void qrCross(alt_u32 x, alt_u32 y, alt_u32 c)
+{
+   if (x<4) x=4;
+   if (y<4) y=4;
+   writeLine(x-4, y, x+4, y, c);
+   writeLine(x, y-4, x, y+4, c);
 }
 
 /**
  */
 void qrLoop(void)
 {
-	static int ofs[3] = {0, 0, 0};
+	alt_u32 temp, ty, txs, txe, tc, tmaxy;
+	sQrPnt  pt[20];
 
 	if (qrEnable) {
 		int ctrl;
-		int stat;
-		int i;
+		int i, j;
 
 		ctrl = IORD(QRCODE_FINDER_0_BASE, 0);
 		if (ctrl & 1) {
-			stat = IORD(QRCODE_FINDER_0_BASE, 1);
-			if (stat == 7) {
-				qr.sts = QR_STS_BUSY;
-				for (i=0; i<3; i++) {
-					qr.pt[i].xs = IORD(QRCODE_FINDER_0_BASE, 2+4*i);
-					qr.pt[i].xe = IORD(QRCODE_FINDER_0_BASE, 3+4*i);
-					qr.pt[i].ys = IORD(QRCODE_FINDER_0_BASE, 4+4*i);
-					qr.pt[i].ye = IORD(QRCODE_FINDER_0_BASE, 5+4*i);
-/*
-					int *ptr;
-					ptr = (int*)(640*480*2);
-					ptr[ofs[i]] = 0;
-					ofs[i] = ((qr.pt[i].xs+qr.pt[i].xe)/2 + (qr.pt[i].ys+qr.pt[i].ye)/2*640)/2;
-					ptr[ofs[i]] = 0xffffffff;
-*/
-				}
-				qr.sts = QR_STS_READY;
-				qrCnt = 0;
+			qr.sts = QR_STS_BUSY;
+			tmaxy = 0;
+			for(i=0; i<20; i++){
+				pt[i].valid = 0;
 			}
+			for(i=0; i<1024; i++){
+				temp = IORD(QRCODE_FINDER_0_BASE, 1024+i);
+				if (temp==0xffffffff){
+					break;
+				}
+				txe =  temp      & 0x3ff;
+				txs = (temp>>10) & 0x3ff;
+				ty  = (temp>>20) & 0x3ff;
+				tc = (txs+txe)/2;
+				for (j=0; j<20; j++) {
+					if (pt[j].valid) {
+						if ((tc >=pt[j].xs) && (tc <=pt[j].xe) && ((ty-pt[j].ye)<4)) {
+							pt[j].ye = ty;
+							if (tmaxy < (pt[j].ye-pt[j].ys)) {
+								tmaxy=(pt[j].ye-pt[j].ys);
+							}
+							break;
+						}
+					} else {
+						break;
+					}
+				}
+				if (j<20 && !pt[j].valid) {
+					pt[j].valid = 1;
+					pt[j].xs = txs;
+					pt[j].xe = txe;
+					pt[j].ys = ty;
+					pt[j].ye = ty;
+				}
+			}
+
+			for (i=0; i<3; i++) {
+				if (qr.pt[i].valid==1) {
+                  qrCross((qr.pt[i].xe+qr.pt[i].xs)/2,(qr.pt[i].ye+qr.pt[i].ys)/2,0);
+				}
+				qr.pt[i].valid = 0;
+			}
+
+			j = 0;
+			for (i=0; i<20; i++) {
+
+				if (pt[i].valid && (pt[i].ye-pt[i].ys)<(tmaxy/2)) {
+					pt[i].valid = 0;
+				} else if (pt[i].valid) {
+					qr.pt[j].xs = pt[i].xs;
+					qr.pt[j].xe = pt[i].xe;
+					qr.pt[j].ys = pt[i].ys;
+					qr.pt[j].ye = pt[i].ye;
+					pt[i].valid = 0;
+					qr.pt[j].valid = 1;
+					qrCross((qr.pt[j].xe+qr.pt[j].xs)/2, (qr.pt[j].ye+qr.pt[j].ys)/2, 0xffff);
+					j++;
+					if (j==3) {
+						break;
+					}
+				}
+			}
+			qr.sts = QR_STS_READY;
+			qrCnt = 0;
 			IOWR(QRCODE_FINDER_0_BASE, 0, ctrl);
 		}
 		qrCnt++;
@@ -156,5 +217,14 @@ alt_u32 qrGet(alt_u32* data)
 {
 	while(qr.sts == QR_STS_BUSY);
 	memcpy(data, &qr, sizeof(sQrDet));
+	return 0;
+}
+
+/**
+ *
+ */
+alt_u32 qrThrSet(alt_u32 data)
+{
+	IOWR(QRCODE_FINDER_0_BASE, 1, data);
 	return 0;
 }
