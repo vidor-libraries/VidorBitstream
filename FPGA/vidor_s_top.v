@@ -294,6 +294,8 @@ memory u0(
 		.fb_vport_hs            (wDVI_HS),      //      .hs
 		.fb_vport_vs            (wDVI_VS),      //      .vs
 		.fb_vport_red           (wDVI_RED),     //      .red
+		.hdmi_i2c_scl           (bHDMI_SCL),     //   hdmi_i2c.scl
+		.hdmi_i2c_sda           (bHDMI_SDA),     //           .sda
 
 		.flash_spi_MISO         (iFLASH_MISO),   // flash_spi.MISO
 		.flash_spi_MOSI         (oFLASH_MOSI),   //          .MOSI
@@ -398,7 +400,7 @@ assign wPEX_PIN_OUT[i] =
 
 end
 
-assign wWM_OUT2[21]=wNINA_RX;
+assign wWM_OUT2[18]=wNINA_RX;
 assign wWM_OUT2[12]= wNINA_MOSI;
 assign wWM_OUT2[9] =wNINA_SCLK;
 assign wWM_OUT2[17]=wNINA_SS;
