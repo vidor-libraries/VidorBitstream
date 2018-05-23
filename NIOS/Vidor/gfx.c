@@ -233,9 +233,9 @@ void gfxInit(int devs)
 	char txt[] = {"Hello World"};
 
     memset(CAM_BASE, 0, FB_WIDTH*FB_HEIGHT*2);
-    memset(FB_BASE, 0, FB_WIDTH*FB_HEIGHT*2);
+    memset(FB_BASE, 0xFF, FB_WIDTH*FB_HEIGHT*2);
 
-    drawBmp(&arduinoLogo, 640-160, 480-110, 33396);
+    drawBmp(&arduinoLogo, (640-160)/2, (480-110)/2, 33396);
 }
 
 /**
