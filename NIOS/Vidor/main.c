@@ -21,8 +21,12 @@ int main()
 	//gpioTest();
 	//sfTest();
 	//i2c1Test();
+	//uartTest();
+
+
 	irqPinSet(0, cmdRx);
 	//intPinInit(1, 0);
+
 
 	while (1) {
 		platformCmd();

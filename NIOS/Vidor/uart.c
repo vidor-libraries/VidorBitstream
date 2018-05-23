@@ -77,7 +77,7 @@ void uartCmd(void)
 		ret = uartGet(MB_SUB(rpc[0]));
 		break;
 	case 5:
-		ret = uartRead(MB_SUB(rpc[0]), (alt_u8*)rpc[2], rpc[1]);
+		ret = uartRead(MB_SUB(rpc[0]), (alt_u8*)&rpc[2], rpc[1]);
 		break;
 	case 6:
 		ret = uartAvail(MB_SUB(rpc[0]));
@@ -86,7 +86,7 @@ void uartCmd(void)
 		ret = uartPut(MB_SUB(rpc[0]), rpc[1]);
 		break;
 	case 8:
-		ret = uartWrite(MB_SUB(rpc[0]), (alt_u8*)rpc[2], rpc[1]);
+		ret = uartWrite(MB_SUB(rpc[0]), (alt_u8*)&rpc[2], rpc[1]);
 		break;
 	case 9:
 		ret = uartFlush(MB_SUB(rpc[0]));

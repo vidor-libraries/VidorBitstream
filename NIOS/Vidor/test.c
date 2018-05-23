@@ -5,7 +5,7 @@
  *      Author: max
  */
 
-//#define TEST
+#define TEST
 
 #ifdef TEST
 
@@ -13,9 +13,11 @@
 #include "mb.h"
 
 //#define I2C_0_TEST
-#define I2C_1_TEST
+//#define I2C_1_TEST
 //#define GPIO_TEST
 //#define SF_TEST
+
+#define UART_TEST
 
 #ifdef I2C_0_TEST
 void i2c0Test(void)
@@ -250,7 +252,7 @@ void sfTest(void)
 #ifdef AES_TEST
 
 
-alt_u32 aesTest(void)
+void aesTest(void)
 {
 	/*
 	alt_u32 key[8] = {0x12345678, 0x12345678, 0x12345678, 0x12345678,
@@ -306,10 +308,37 @@ alt_u32 aesTest(void)
 	aesDataWr((alt_u32*)enc);
 	aesDataRd((alt_u32*)new);
 	aesConfig(AES_CFG_KEY_128, AES_CFG_DECODE);
-	return 0;
 }
 
 #endif // AES_TEST
+
+
+#ifdef UART_TEST
+void uartTest(void)
+{
+#if 0
+	gpioPinMode(64+18, 4);
+
+	for(;;){
+		uartWrite(0, "123", 3);
+	}
+#endif
+	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+
+	rpc[0] = MB_DEV_GPIO | 0x01;
+	rpc[1] = 64+18;
+	rpc[2] = 4;
+	platformCmd();
+for(;;){
+	rpc[0] = MB_DEV_UART | 0x08;
+	rpc[1] = 4;
+	rpc[2] = 0x33323130;
+	platformCmd();
+}
+#define MB_DEV_UART   (6<<MB_DEV_OFS)
+
+}
+#endif
 
 #endif
 

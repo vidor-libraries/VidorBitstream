@@ -100,10 +100,10 @@ alt_u32 gpioPinMode(alt_u32 pin, alt_u32 mode)
 	switch(mode){
 	case GPIO_NC:
 	case GPIO_IO_I:
-		reg = GPIO_MUX0 + (port>>1) + (pad>>4);
+		reg = GPIO_MUX0 + (pad>>4);
 		val = IORD(base, reg);
-		val &=~ 0x3 << (pad & 0x0F);
-		//val |= mode << (pad & 0x0F);
+		val &=~ 0x3 << ((pad & 0x0F) << 1);
+		//val |= mode << ((pad & 0x0F) << 1);
 		IOWR(base, reg, val);
 
 		val = IORD(base, GPIO_DIR);
@@ -112,10 +112,10 @@ alt_u32 gpioPinMode(alt_u32 pin, alt_u32 mode)
 		break;
 
 	case GPIO_IO_O:
-		reg = GPIO_MUX0 + (port>>1) + (pad>>4);
+		reg = GPIO_MUX0 + (pad>>4);
 		val = IORD(base, reg);
-		val &=~ 0x3 << (pad & 0x0F);
-		//val |= mode << (pad & 0x0F);
+		val &=~ 0x3 << ((pad & 0x0F) << 1);
+		//val |= mode << ((pad & 0x0F) << 1);
 		IOWR(base, reg, val);
 
 		val = IORD(base, GPIO_DIR);
@@ -124,18 +124,18 @@ alt_u32 gpioPinMode(alt_u32 pin, alt_u32 mode)
 		break;
 
 	case GPIO_PWM:
-		reg = GPIO_MUX0 + (port>>1) + (pad>>4);
+		reg = GPIO_MUX0 + (pad>>4);
 		val = IORD(base, reg);
-		val &=~ 0x3 << (pad & 0x0F);
-		val |= 1 << (pad & 0x0F);
+		val &=~ 0x3 << ((pad & 0x0F) << 1);
+		val |= 1 << ((pad & 0x0F) << 1);
 		IOWR(base, reg, val);
 		break;
 
 	case GPIO_AUX:
-		reg = GPIO_MUX0 + (port>>1) + (pad>>4);
+		reg = GPIO_MUX0 + (pad>>4);
 		val = IORD(base, reg);
-		val &=~ 0x3 << (pad & 0x0F);
-		val |= 2 << (pad & 0x0F);
+		val &=~ 0x3 << ((pad & 0x0F) << 1);
+		val |= 2 << ((pad & 0x0F) << 1);
 		IOWR(base, reg, val);
 		break;
 	}
