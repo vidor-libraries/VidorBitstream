@@ -5,7 +5,7 @@
  *      Author: max
  */
 
-#define TEST
+//#define TEST
 
 #ifdef TEST
 
@@ -329,12 +329,19 @@ void uartTest(void)
 	rpc[1] = 64+18;
 	rpc[2] = 4;
 	platformCmd();
+/*
 for(;;){
 	rpc[0] = MB_DEV_UART | 0x08;
 	rpc[1] = 4;
 	rpc[2] = 0x33323130;
 	platformCmd();
 }
+*/
+	for(;;){
+		rpc[0] = MB_DEV_UART | 0x07;
+		rpc[1] = 0x40;
+		platformCmd();
+	}
 #define MB_DEV_UART   (6<<MB_DEV_OFS)
 
 }

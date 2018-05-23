@@ -195,10 +195,9 @@ alt_u32 uartPut(alt_u32 index, alt_u8 data)
 	unsigned avail;
 	int status;
 
-	avail = alt_up_rs232_get_available_space_in_write_FIFO(dev);
-	if(!avail == 0){
-		return -1;
-	}
+	do {
+		avail = alt_up_rs232_get_available_space_in_write_FIFO(dev);
+	} while(avail == 0);
 	status = alt_up_rs232_write_data(dev, data);
 	if (status) {
 		return -1;
