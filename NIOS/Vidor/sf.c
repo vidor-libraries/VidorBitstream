@@ -13,6 +13,7 @@
 #include "fnc.h"
 
 #define SF_FAST_RD
+//#define SF_SECURITY
 
 /**
  *
@@ -23,6 +24,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr);
 alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len);
 
+#ifdef SF_SECURITY
 /**
  * Security Register
  */
@@ -31,6 +33,10 @@ alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfSRLock(alt_u8 reg);
 alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
 
+alt_u32 sfProtect(void);
+#endif  /* SF_SECURITY */
+
+
 /**
  *
  */
@@ -38,7 +44,6 @@ alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
 #define SF_WRFLG_PROGRAM  0x00000002
 #define SF_WRFLG_VERIFY   0x00000004
 alt_u32 sfWrite(alt_u8* data, alt_u32 len, alt_u32 flg);
-alt_u32 sfProtect(void);
 
 
 /**
@@ -72,6 +77,23 @@ void sfCmd(void)
 	case 5:
 		ret = sfRead(rpc[1], (alt_u8*)&rpc[3], rpc[2]);
 		break;
+#ifdef SF_SECURITY
+	case 6:
+		ret = sfSRErase(rpc[1]);
+		break;
+	case 7:
+		ret = sfSRProgram(rpc[1], rpc[2], (alt_u8*)&rpc[4], rpc[3]);
+		break;
+	case 8:
+		ret = sfSRLock(rpc[1]);
+		break;
+	case 9:
+		ret = sfSRRead(rpc[1], rpc[2], (alt_u8*)&rpc[4], rpc[3]);
+		break;
+	case 10:
+		ret = sfProtect();
+		break;
+#endif  /* SF_SECURITY */
 	}
 	rpc[1] = ret;
 }
@@ -259,6 +281,7 @@ alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
 	return 0;
 }
 
+#ifdef SF_SECURITY
 /**
  * @param reg Security Register index 0-2
  */
@@ -400,33 +423,6 @@ alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
 }
 
 /**
- *
- */
-alt_u32 sfWrite(alt_u8* data, alt_u32 len, alt_u32 flg)
-{
-	if (flg & SF_WRFLG_ERASE) {
-		sfErase(3, 0);
-	}
-
-	if (flg & SF_WRFLG_PROGRAM) {
-		sfProgram(0x00000000, data, len);
-	}
-
-	if (flg & SF_WRFLG_VERIFY) {
-		alt_u8 *buf = (alt_u8*)(0x00800000 + 0x00040000);
-		int     ret;
-
-		sfRead(0x00000000, buf, len);
-
-		ret = memcmpr((char*)buf, (char*)data, len);
-		if(ret){
-			return -1;
-		}
-	}
-	return 0;
-}
-
-/**
  * Protect first 512KB
  */
 alt_u32 sfProtect(void)
@@ -462,5 +458,34 @@ alt_u32 sfProtect(void)
 
 	txb[0] = 0x05;
 	do { alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);} while (rxb[0]&1);
+	return 0;
+}
+
+#endif /* SF_SECURITY */
+
+/**
+ *
+ */
+alt_u32 sfWrite(alt_u8* data, alt_u32 len, alt_u32 flg)
+{
+	if (flg & SF_WRFLG_ERASE) {
+		sfErase(3, 0);
+	}
+
+	if (flg & SF_WRFLG_PROGRAM) {
+		sfProgram(0x00000000, data, len);
+	}
+
+	if (flg & SF_WRFLG_VERIFY) {
+		alt_u8 *buf = (alt_u8*)(0x00800000 + 0x00040000);
+		int     ret;
+
+		sfRead(0x00000000, buf, len);
+
+		ret = memcmpr((char*)buf, (char*)data, len);
+		if(ret){
+			return -1;
+		}
+	}
 	return 0;
 }
