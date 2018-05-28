@@ -87,5 +87,10 @@
 			</target>
 		</buildTargets>
 	</storageModule>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Nios II">
+			<resource resourceType="PROJECT" workspacePath="/Vidor"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
