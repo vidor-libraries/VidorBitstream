@@ -13,7 +13,7 @@
 #include "fnc.h"
 
 #define SF_FAST_RD
-//#define SF_SECURITY
+#define SF_SECURITY
 
 /**
  *
@@ -409,17 +409,17 @@ alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
 	if (reg>2) {
 		return -1;
 	}
-	alt_u8  txb[1+3];
+	alt_u8  txb[1+4];
 
 	//Read Security Registers (48h)
 	txb[0] = 0x48;
 	txb[1] = 0;
 	txb[2] = (reg+1)<<4;
 	txb[3] = adr;
-	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+3, txb, len, data, 0);
+	txb[4] = 0; // dummy byte
+	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+4, txb, len, data, 0);
 
 	return 0;
-
 }
 
 /**
