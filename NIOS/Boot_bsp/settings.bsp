@@ -2,11 +2,11 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>May 29, 2018 5:32:21 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1527607941636</BspGeneratedUnixTimeStamp>
-        <BspGeneratedLocation>/media/max/storage/vidor/vidor_s/NIOS/Vidor_bsp</BspGeneratedLocation>
+        <BspGeneratedTimeStamp>May 29, 2018 5:30:06 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1527607806093</BspGeneratedUnixTimeStamp>
+        <BspGeneratedLocation>/media/max/storage/vidor/vidor_s/NIOS/Boot_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
-        <SopcDesignFile>../../FPGA/memory.sopcinfo</SopcDesignFile>
+        <SopcDesignFile>/media/max/storage/vidor/vidor_s/FPGA/memory.sopcinfo</SopcDesignFile>
         <JdiFile>default</JdiFile>
         <Cpu>nios2_gen2_0</Cpu>
         <SchemaVersion>1.9</SchemaVersion>
@@ -146,7 +146,7 @@
                 <SettingName>hal.linker.exception_stack_memory_region_name</SettingName>
                 <Identifier>none</Identifier>
                 <Type>UnquotedString</Type>
-                <Value>onchip_memory2_0</Value>
+                <Value>none</Value>
                 <DefaultValue>none</DefaultValue>
                 <DestinationFile>none</DestinationFile>
                 <Description>Name of the existing memory region that will be divided up to create the 'exception_stack' memory region. The selected region name will be adjusted automatically when the BSP is generated to create the 'exception_stack' memory region.</Description>
@@ -182,7 +182,7 @@
                 <SettingName>hal.linker.interrupt_stack_memory_region_name</SettingName>
                 <Identifier>none</Identifier>
                 <Type>UnquotedString</Type>
-                <Value>onchip_memory2_0</Value>
+                <Value>none</Value>
                 <DefaultValue>none</DefaultValue>
                 <DestinationFile>none</DestinationFile>
                 <Description>Name of the existing memory region that will be divided up to create the 'interrupt_stack' memory region. The selected region name will be adjusted automatically when the BSP is generated to create the 'interrupt_stack' memory region.</Description>
@@ -874,6 +874,38 @@
                 <Enabled>false</Enabled>
                 <Group>none</Group>
         </Setting>
+        <LinkerRegion>
+                <regionName>reset</regionName>
+                <memoryName>onchip_memory2_0</memoryName>
+                <offset>0</offset>
+                <size>32</size>
+                <baseAddress>0x70000000</baseAddress>
+                <addressRange>0x70000000 - 0x7000001F</addressRange>
+        </LinkerRegion>
+        <LinkerRegion>
+                <regionName>onchip_memory2_0</regionName>
+                <memoryName>onchip_memory2_0</memoryName>
+                <offset>32</offset>
+                <size>22496</size>
+                <baseAddress>0x70000020</baseAddress>
+                <addressRange>0x70000020 - 0x700057FF</addressRange>
+        </LinkerRegion>
+        <LinkerRegion>
+                <regionName>boot</regionName>
+                <memoryName>onchip_memory2_0</memoryName>
+                <offset>22528</offset>
+                <size>10240</size>
+                <baseAddress>0x70005800</baseAddress>
+                <addressRange>0x70005800 - 0x70007FFF</addressRange>
+        </LinkerRegion>
+        <LinkerRegion>
+                <regionName>dpram</regionName>
+                <memoryName>dpram</memoryName>
+                <offset>0</offset>
+                <size>1024</size>
+                <baseAddress>0x7001f000</baseAddress>
+                <addressRange>0x7001F000 - 0x7001F3FF</addressRange>
+        </LinkerRegion>
         <MemoryMap>
                 <slaveDescriptor>SDRAM_ARBITER</slaveDescriptor>
                 <addressRange>0x00000000 - 0x007FFFFF</addressRange>
@@ -994,4 +1026,16 @@
                 <sectionName>.stack</sectionName>
                 <regionName>onchip_memory2_0</regionName>
         </LinkerSection>
+        <LinkerSection>
+                <sectionName>.text2</sectionName>
+                <regionName>boot</regionName>
+        </LinkerSection>
+        <LinkerSection>
+                <sectionName>.rodata2</sectionName>
+                <regionName>boot</regionName>
+        </LinkerSection>
+        <DriverPackageInfo>
+                <name>none</name>
+                <moduleName>irq</moduleName>
+        </DriverPackageInfo>
 </sch:Settings>
