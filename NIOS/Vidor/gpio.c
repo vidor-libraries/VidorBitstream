@@ -265,7 +265,6 @@ int intPinInit(alt_u32 pin, int val)
 		IOWR(IRQ_BASE, PIO_SET, (1 << pin));
 	}else{
 		IOWR(IRQ_BASE, PIO_CLR, (1 << pin));
-
 	}
 }
 
