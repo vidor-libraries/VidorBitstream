@@ -9,8 +9,18 @@
 #include <system.h>
 #include <altera_avalon_spi.h>
 
+#include "mb.h"
+
+#define INVERT_BIT 1
+
 #define SF_FAST_RD
 #define SF_SECURITY
+
+
+#if defined(INVERT_BIT) && (INVERT_BIT == 1)
+void memcpyr(char *dst, char* src, int size);
+int memcmpr(char *dst, char* src, int size);
+#endif
 
 /**
  *
@@ -43,6 +53,63 @@ alt_u32 sfProtect(void);
 alt_u32 sfWrite(alt_u8* data, alt_u32 len, alt_u32 flg);
 
 /**
+ *
+ */
+void sfInit(int devs)
+{
+}
+
+/**
+ */
+void sfCmd(void)
+{
+	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+	alt_u32 ret;
+
+	ret = -1;
+	switch(MB_CMD(rpc[0])){
+	case 1:
+		ret = sfJedecId();
+		break;
+	case 2:
+		ret = sfUniqueId((alt_u8*)&rpc[2]);
+		break;
+	case 3:
+		ret = sfErase(rpc[1], rpc[2]);
+		break;
+	case 4:
+		ret = sfProgram(rpc[1], (alt_u8*)&rpc[3], rpc[2]);
+		break;
+	case 5:
+		ret = sfRead(rpc[1], (alt_u8*)&rpc[3], rpc[2]);
+		break;
+#ifdef SF_SECURITY
+	case 6:
+		ret = sfSRErase(rpc[1]);
+		break;
+	case 7:
+		ret = sfSRProgram(rpc[1], rpc[2], (alt_u8*)&rpc[4], rpc[3]);
+		break;
+	case 8:
+		ret = sfSRLock(rpc[1]);
+		break;
+	case 9:
+		ret = sfSRRead(rpc[1], rpc[2], (alt_u8*)&rpc[4], rpc[3]);
+		break;
+	case 10:
+		ret = sfProtect();
+		break;
+#endif  /* SF_SECURITY */
+	}
+	rpc[1] = ret;
+}
+
+/**
+ * for AT25SF081 rxb must be:
+ * MANUFACTURER ID 0x1F
+ * DEVICE ID BYTE1 0x85
+ * DEVICE ID BYTE2 0x01
+ * @return for AT25SF081 0x001F8501
  */
 alt_u32 sfJedecId(void)
 {
@@ -161,10 +228,10 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
 		txb[1] = adr>>16;
 		txb[2] = adr>>8;
 		txb[3] = adr;
-#if 1
-		memcpy((char*)txb+4, (char*)data+ptr, cnt);
-#else
+#if defined(INVERT_BIT) && (INVERT_BIT == 1)
 		memcpyr((char*)txb+4, (char*)data+ptr, cnt);
+#else
+		memcpy((char*)txb+4, (char*)data+ptr, cnt);
 #endif
 		alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+3+cnt, txb, 0, rxb, 0);
 		len -= cnt;
@@ -423,10 +490,10 @@ alt_u32 sfWrite(alt_u8* data, alt_u32 len, alt_u32 flg)
 		int     ret;
 
 		sfRead(0x00000000, buf, len);
-#if 1
-		ret = memcmp((char*)buf, (char*)data, len);
-#else
+#if defined(INVERT_BIT) && (INVERT_BIT == 1)
 		ret = memcmpr((char*)buf, (char*)data, len);
+#else
+		ret = memcmp((char*)buf, (char*)data, len);
 #endif
 		if(ret){
 			return -1;
@@ -434,3 +501,43 @@ alt_u32 sfWrite(alt_u8* data, alt_u32 len, alt_u32 flg)
 	}
 	return 0;
 }
+
+#if defined(INVERT_BIT) && (INVERT_BIT == 1)
+/**
+ *
+ */
+void memcpyr(char *dst, char* src, int size)
+{
+	char v;
+	while (size>0) {
+		v = *src++;
+		v = ((v >> 1) & 0x55) | ((v & 0x55) << 1);
+		v = ((v >> 2) & 0x33) | ((v & 0x33) << 2);
+		v = ((v >> 4) & 0x0F) | ((v & 0x0F) << 4);
+		*dst++ = v;
+		size--;
+	}
+}
+
+/**
+ *
+ */
+int memcmpr(char *dst, char* src, int size)
+{
+	char v;
+	int  p;
+	p = 0;
+	while (size>0) {
+		v = *src++;
+		v = ((v >> 1) & 0x55) | ((v & 0x55) << 1);
+		v = ((v >> 2) & 0x33) | ((v & 0x33) << 2);
+		v = ((v >> 4) & 0x0F) | ((v & 0x0F) << 4);
+		p++;
+		if (*dst++ != v) {
+			return p;
+		}
+		size--;
+	}
+	return 0;
+}
+#endif

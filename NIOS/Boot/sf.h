@@ -10,6 +10,8 @@
 
 #include <alt_types.h>
 
+void sfCmd(void);
+
 alt_u32 sfJedecId(void);
 alt_u32 sfUniqueId(alt_u8* id);
 

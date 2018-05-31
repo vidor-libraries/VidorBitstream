@@ -12,6 +12,8 @@
 #include <alt_types.h>
 #include <system.h>
 
+#include "mb.h"
+
 #define FB_BASE (alt_u16*)(SDRAM_ARBITER_BASE + \
 		                   SDRAM_ARBITER_FB_OFFSET*sizeof(short))
 #define FB_WIDTH  640
@@ -179,8 +181,6 @@ alt_u16 arduino_bmp[] = {
 		0x0000, 0x0000,
 };
 GFXbmp arduinoLogo = {0, 160, 110, sizeof(arduino_bmp)/sizeof(alt_u16), arduino_bmp};
-
-
 
 /**
  */

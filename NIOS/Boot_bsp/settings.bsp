@@ -2,11 +2,11 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>May 29, 2018 5:30:06 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1527607806093</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>May 31, 2018 2:37:36 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1527770256992</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/media/max/storage/vidor/vidor_s/NIOS/Boot_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
-        <SopcDesignFile>/media/max/storage/vidor/vidor_s/FPGA/memory.sopcinfo</SopcDesignFile>
+        <SopcDesignFile>../../FPGA/boot.sopcinfo</SopcDesignFile>
         <JdiFile>default</JdiFile>
         <Cpu>nios2_gen2_0</Cpu>
         <SchemaVersion>1.9</SchemaVersion>
@@ -146,7 +146,7 @@
                 <SettingName>hal.linker.exception_stack_memory_region_name</SettingName>
                 <Identifier>none</Identifier>
                 <Type>UnquotedString</Type>
-                <Value>none</Value>
+                <Value>onchip_memory2_0</Value>
                 <DefaultValue>none</DefaultValue>
                 <DestinationFile>none</DestinationFile>
                 <Description>Name of the existing memory region that will be divided up to create the 'exception_stack' memory region. The selected region name will be adjusted automatically when the BSP is generated to create the 'exception_stack' memory region.</Description>
@@ -182,7 +182,7 @@
                 <SettingName>hal.linker.interrupt_stack_memory_region_name</SettingName>
                 <Identifier>none</Identifier>
                 <Type>UnquotedString</Type>
-                <Value>none</Value>
+                <Value>onchip_memory2_0</Value>
                 <DefaultValue>none</DefaultValue>
                 <DestinationFile>none</DestinationFile>
                 <Description>Name of the existing memory region that will be divided up to create the 'interrupt_stack' memory region. The selected region name will be adjusted automatically when the BSP is generated to create the 'interrupt_stack' memory region.</Description>
@@ -734,7 +734,7 @@
                 <SettingName>hal.enable_small_c_library</SettingName>
                 <Identifier>none</Identifier>
                 <Type>Boolean</Type>
-                <Value>0</Value>
+                <Value>1</Value>
                 <DefaultValue>0</DefaultValue>
                 <DestinationFile>public_mk_define</DestinationFile>
                 <Description>Causes the small newlib (C library) to be used. This reduces code and data footprint at the expense of reduced functionality. Several newlib features are removed such as floating-point support in printf(), stdin input routines, and buffered I/O. The small C library is not compatible with Micrium MicroC/OS-II. If true, adds -msmallc to ALT_LDFLAGS in public.mk.</Description>
@@ -782,7 +782,7 @@
                 <SettingName>hal.enable_c_plus_plus</SettingName>
                 <Identifier>ALT_NO_C_PLUS_PLUS</Identifier>
                 <Type>Boolean</Type>
-                <Value>1</Value>
+                <Value>0</Value>
                 <DefaultValue>1</DefaultValue>
                 <DestinationFile>public_mk_define</DestinationFile>
                 <Description>Enable support for a subset of the C++ language. This option increases code footprint by adding support for C++ constructors. Certain features, such as multiple inheritance and exceptions are not supported. If false, adds -DALT_NO_C_PLUS_PLUS to ALT_CPPFLAGS in public.mk, and reduces code footprint.</Description>
@@ -794,7 +794,7 @@
                 <SettingName>hal.enable_reduced_device_drivers</SettingName>
                 <Identifier>ALT_USE_SMALL_DRIVERS</Identifier>
                 <Type>Boolean</Type>
-                <Value>0</Value>
+                <Value>1</Value>
                 <DefaultValue>0</DefaultValue>
                 <DestinationFile>public_mk_define</DestinationFile>
                 <Description>Certain drivers are compiled with reduced functionality to reduce code footprint. Not all drivers observe this setting. The altera_avalon_uart and altera_avalon_jtag_uart drivers switch from interrupt-driven to polled operation. CAUTION: Several device drivers are disabled entirely. These include the altera_avalon_cfi_flash, altera_avalon_epcs_flash_controller, and altera_avalon_lcd_16207 drivers. This can result in certain API (HAL flash access routines) to fail. You can define a symbol provided by each driver to prevent it from being removed. If true, adds -DALT_USE_SMALL_DRIVERS to ALT_CPPFLAGS in public.mk.</Description>
@@ -875,6 +875,14 @@
                 <Group>none</Group>
         </Setting>
         <LinkerRegion>
+                <regionName>generic_quad_spi_controller2_0_avl_mem</regionName>
+                <memoryName>generic_quad_spi_controller2_0_avl_mem</memoryName>
+                <offset>0</offset>
+                <size>2097152</size>
+                <baseAddress>0x10000000</baseAddress>
+                <addressRange>0x10000000 - 0x101FFFFF</addressRange>
+        </LinkerRegion>
+        <LinkerRegion>
                 <regionName>reset</regionName>
                 <memoryName>onchip_memory2_0</memoryName>
                 <offset>0</offset>
@@ -886,17 +894,17 @@
                 <regionName>onchip_memory2_0</regionName>
                 <memoryName>onchip_memory2_0</memoryName>
                 <offset>32</offset>
-                <size>22496</size>
+                <size>12352</size>
                 <baseAddress>0x70000020</baseAddress>
-                <addressRange>0x70000020 - 0x700057FF</addressRange>
+                <addressRange>0x70000020 - 0x7000305F</addressRange>
         </LinkerRegion>
         <LinkerRegion>
                 <regionName>boot</regionName>
                 <memoryName>onchip_memory2_0</memoryName>
-                <offset>22528</offset>
-                <size>10240</size>
-                <baseAddress>0x70005800</baseAddress>
-                <addressRange>0x70005800 - 0x70007FFF</addressRange>
+                <offset>12384</offset>
+                <size>4000</size>
+                <baseAddress>0x70003060</baseAddress>
+                <addressRange>0x70003060 - 0x70003FFF</addressRange>
         </LinkerRegion>
         <LinkerRegion>
                 <regionName>dpram</regionName>
@@ -920,8 +928,8 @@
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>onchip_memory2_0</slaveDescriptor>
-                <addressRange>0x70000000 - 0x70007FFF</addressRange>
-                <addressSpan>32768</addressSpan>
+                <addressRange>0x70000000 - 0x70003FFF</addressRange>
+                <addressSpan>16384</addressSpan>
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>
@@ -1036,6 +1044,18 @@
         </LinkerSection>
         <DriverPackageInfo>
                 <name>none</name>
+                <moduleName>nina_uart</moduleName>
+        </DriverPackageInfo>
+        <DriverPackageInfo>
+                <name>none</name>
+                <moduleName>nina_spi</moduleName>
+        </DriverPackageInfo>
+        <DriverPackageInfo>
+                <name>none</name>
                 <moduleName>irq</moduleName>
+        </DriverPackageInfo>
+        <DriverPackageInfo>
+                <name>none</name>
+                <moduleName>generic_quad_spi_controller2_0</moduleName>
         </DriverPackageInfo>
 </sch:Settings>
