@@ -6,11 +6,9 @@
  */
 #include <stdio.h>
 #include <system.h>
-#include <io.h>
 
 #include "mb.h"
 #include "sf.h"
-#include "pio.h"
 
 /**
  *
@@ -59,7 +57,7 @@ void platformCmd(void)
 {
 	volatile alt_u32 cmd;
 
-	cmd = *(volatile alt_u32*)DPRAM_BASE;
+	cmd = *(volatile alt_u32*)MB_BASE;
 	if (cmd) {
 		int dev;
 		dev = MB_DEV(cmd);
@@ -68,7 +66,7 @@ void platformCmd(void)
 				devHnd[dev].cmd();
 			}
 		}
-		*(volatile alt_u32*)DPRAM_BASE = 0;
+		*(volatile alt_u32*)MB_BASE = 0;
 		//intPinSet(1, 1);
 		//intPinSet(1, 0);
 	}
@@ -92,7 +90,7 @@ void platformLoop(void)
  */
 void pltCmd(void)
 {
-	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+	alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
 	alt_u32 ret;
 	int i;
 
@@ -112,8 +110,6 @@ void pltCmd(void)
 		ret = rpc[1];
 		break;
 	case 3:
-		/* set SPI mode pin to QSPI */
-		IOWR(IRQ_BASE, PIO_SET, (1 << SPI_MODE_PIN));
 		/* starting application */
 //TODO
 		break;

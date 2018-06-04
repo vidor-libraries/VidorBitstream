@@ -5,17 +5,108 @@
  *      Author: max
  */
 
+#include <io.h>
 #include <string.h>
 #include <system.h>
 #include <altera_avalon_spi.h>
 
 #include "mb.h"
 
+#define USE_QSPI   1
 #define INVERT_BIT 1
-
 #define SF_FAST_RD
 #define SF_SECURITY
 
+#if defined(USE_QSPI) && (USE_QSPI == 1)
+
+#define QSPI_CSR_BASE  (0x80000000 | GENERIC_QUAD_SPI_CONTROLLER2_0_AVL_CSR_BASE)
+#define QSPI_MEM_BASE  (0x80000000 | GENERIC_QUAD_SPI_CONTROLLER2_0_AVL_MEM_BASE)
+/*
+ * QSPI_MEM_OP register offset
+ *
+ * The QSPI_MEM_OP register is used to do memory protect and erase operations
+ *
+ */
+#define ALTERA_QSPI_CONTROLLER_MEM_OP_REG                       (0xC)
+
+/*
+ * QSPI_MEM_OP register access macros
+ */
+#define IOADDR_ALTERA_QSPI_CONTROLLER_MEM_OP(base) \
+    __IO_CALC_ADDRESS_DYNAMIC(base, ALTERA_QSPI_CONTROLLER_MEM_OP_REG)
+
+#define IORD_ALTERA_QSPI_CONTROLLER_MEM_OP(base) \
+    IORD_32DIRECT(base, ALTERA_QSPI_CONTROLLER_MEM_OP_REG)
+
+#define IOWR_ALTERA_QSPI_CONTROLLER_MEM_OP(base, data) \
+    IOWR_32DIRECT(base, ALTERA_QSPI_CONTROLLER_MEM_OP_REG, data)
+
+/*
+ * QSPI_MEM_OP register description macros
+ */
+#define ALTERA_QSPI_CONTROLLER_MEM_OP_CMD_MASK                  (0x00000003)
+#define ALTERA_QSPI_CONTROLLER_MEM_OP_BULK_ERASE_CMD            (0x00000001)
+#define ALTERA_QSPI_CONTROLLER_MEM_OP_SECTOR_ERASE_CMD          (0x00000002)
+#define ALTERA_QSPI_CONTROLLER_MEM_OP_SECTOR_PROTECT_CMD        (0x00000003)
+
+#define ALTERA_QSPI_CONTROLLER_MEM_OP_WRITE_ENABLE_CMD          (0x00000004)
+
+/** see datasheet for sector values */
+#define ALTERA_QSPI_CONTROLLER_MEM_OP_SECTOR_VALUE_MASK         (0x00FFFF00)
+
+/*
+ * QSPI_ISR register offset
+ *
+ * The QSPI_ISR register is used to determine whether an invalid write or erase
+ * operation triggered an interrupt
+ *
+ */
+#define ALTERA_QSPI_CONTROLLER_ISR_REG                          (0x10)
+
+/*
+ * QSPI_ISR register access macros
+ */
+#define IOADDR_ALTERA_QSPI_CONTROLLER_ISR(base) \
+    __IO_CALC_ADDRESS_DYNAMIC(base, ALTERA_QSPI_CONTROLLER_ISR_REG)
+
+#define IORD_ALTERA_QSPI_CONTROLLER_ISR(base) \
+    IORD_32DIRECT(base, ALTERA_QSPI_CONTROLLER_ISR_REG)
+
+#define IOWR_ALTERA_QSPI_CONTROLLER_ISR(base, data) \
+    IOWR_32DIRECT(base, ALTERA_QSPI_CONTROLLER_ISR_REG, data)
+
+/*
+ * QSPI_ISR register description macros
+ */
+#define ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_MASK           (0x00000001)
+#define ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_ACTIVE         (0x00000001)
+
+#define ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_WRITE_MASK           (0x00000002)
+#define ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_WRITE_ACTIVE         (0x00000002)
+
+#define ALTERA_QSPI_CONTROLLER_STATUS_REG                       (0x0)
+
+/*
+ * QSPI_RD_STATUS register access macros
+ */
+#define IOADDR_ALTERA_QSPI_CONTROLLER_STATUS(base) \
+    __IO_CALC_ADDRESS_DYNAMIC(base, ALTERA_QSPI_CONTROLLER_STATUS_REG)
+
+#define IORD_ALTERA_QSPI_CONTROLLER_STATUS(base) \
+    IORD_32DIRECT(base, ALTERA_QSPI_CONTROLLER_STATUS_REG)
+
+#define IOWR_ALTERA_QSPI_CONTROLLER_STATUS(base, data) \
+    IOWR_32DIRECT(base, ALTERA_QSPI_CONTROLLER_STATUS_REG, data)
+
+/** Write in progress bit */
+#define ALTERA_QSPI_CONTROLLER_STATUS_WIP_MASK                  (0x00000001)
+#define ALTERA_QSPI_CONTROLLER_STATUS_WIP_AVAILABLE             (0x00000000)
+#define ALTERA_QSPI_CONTROLLER_STATUS_WIP_BUSY                  (0x00000001)
+/** When to time out a poll of the write in progress bit */
+/* 0.7 sec time out */
+#define ALTERA_QSPI_CONTROLLER_1US_TIMEOUT_VALUE    		    700000
+
+#endif
 
 #if defined(INVERT_BIT) && (INVERT_BIT == 1)
 void memcpyr(char *dst, char* src, int size);
@@ -63,7 +154,7 @@ void sfInit(int devs)
  */
 void sfCmd(void)
 {
-	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+	alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
 	alt_u32 ret;
 
 	ret = -1;
@@ -104,6 +195,33 @@ void sfCmd(void)
 	rpc[1] = ret;
 }
 
+
+
+#if defined(USE_QSPI) && (USE_QSPI == 1)
+alt_32 static poll_for_wip(void)
+{
+    /* we'll want to implement timeout if a timeout value is specified */
+#if ALTERA_QSPI_CONTROLLER_1US_TIMEOUT_VALUE > 0
+	alt_u32 timeout = ALTERA_QSPI_CONTROLLER_1US_TIMEOUT_VALUE;
+	alt_u16 counter = 0;
+#endif
+
+	/* while Write in Progress bit is set, we wait */
+	while ((IORD_ALTERA_QSPI_CONTROLLER_STATUS(QSPI_CSR_BASE) &
+			ALTERA_QSPI_CONTROLLER_STATUS_WIP_MASK) ==
+			ALTERA_QSPI_CONTROLLER_STATUS_WIP_BUSY) {
+        alt_busy_sleep(1); /* delay 1us */
+#if ALTERA_QSPI_CONTROLLER_1US_TIMEOUT_VALUE > 0
+		if (timeout <= counter) {
+			return -1;
+		}
+		counter++;
+#endif
+	}
+	return 0;
+}
+#endif
+
 /**
  * for AT25SF081 rxb must be:
  * MANUFACTURER ID 0x1F
@@ -113,12 +231,16 @@ void sfCmd(void)
  */
 alt_u32 sfJedecId(void)
 {
+#if defined(USE_QSPI) && (USE_QSPI == 1)
+	return 0;
+#else
 	alt_u8  txb[]={0x9f};
 	alt_u8  rxb[4];
 
 	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 3, rxb, 0);
 
 	return (rxb[0]<<16) | (rxb[1]<<8) | (rxb[2]);
+#endif
 }
 
 /**
@@ -126,6 +248,9 @@ alt_u32 sfJedecId(void)
  */
 alt_u32 sfUniqueId(alt_u8* id)
 {
+#if defined(USE_QSPI) && (USE_QSPI == 1)
+
+#else
 	alt_u8  txb[1+4];
 
 	txb[0] = 0x4B;
@@ -135,7 +260,7 @@ alt_u32 sfUniqueId(alt_u8* id)
 	txb[4] = 0;
 
 	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+4, txb, 8, id, 0);
-
+#endif
 	return 0;
 }
 
@@ -152,6 +277,41 @@ alt_u32 sfUniqueId(alt_u8* id)
  */
 alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 {
+#if defined(USE_QSPI) && (USE_QSPI == 1)
+    alt_u32 op_value = 0; /* value to write to EPCQ_MEM_OP register */
+	switch(mode){
+	case 2:
+		// 64KB Block Erase 64K Block address
+	    IOWR_ALTERA_QSPI_CONTROLLER_MEM_OP(QSPI_CSR_BASE,
+	    		ALTERA_QSPI_CONTROLLER_MEM_OP_WRITE_ENABLE_CMD);
+
+		adr >>= 16;
+	    op_value = (adr << 8) & ALTERA_QSPI_CONTROLLER_MEM_OP_SECTOR_VALUE_MASK;
+	    op_value |= ALTERA_QSPI_CONTROLLER_MEM_OP_SECTOR_ERASE_CMD;
+	    /* write sector erase command to QSPI_MEM_OP register to erase sector "sector_number" */
+	    IOWR_ALTERA_QSPI_CONTROLLER_MEM_OP(QSPI_CSR_BASE, op_value);
+
+	    /* check whether erase triggered a illegal erase interrupt  */
+	    if((IORD_ALTERA_QSPI_CONTROLLER_ISR(QSPI_CSR_BASE) &
+	            		ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_MASK) ==
+	            				ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_ACTIVE)
+	    {
+		    /* clear register */
+		    /* QSPI_ISR access is write one to clear (W1C) */
+	    	IOWR_ALTERA_QSPI_CONTROLLER_ISR(QSPI_CSR_BASE,
+	    		ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_MASK);
+	    	return -1; /* erase failed, sector might be protected */
+	    }
+	    poll_for_wip();
+		break;
+	case 0: // Sector Erase   	 4K sector address
+	case 1: // 32KB Block Erase	32K Block address
+	case 3: // Chip Erase       Not used
+	default:
+		return -1;
+	}
+
+#else
 	alt_u8 txb[4];
 	alt_u8 txl;
 	alt_u8 rxb[1];
@@ -201,7 +361,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 	// wait tCHPE 12/20/30 sec
 	txb[0] = 0x05;
 	do {alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);} while (rxb[0]&1);
-
+#endif
 	return 0;
 }
 
@@ -209,6 +369,74 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
  */
 alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
 {
+#if defined(USE_QSPI) && (USE_QSPI == 1)
+    alt_u32 buffer_offset = 0; /** offset into data buffer to get write data */
+    alt_u32 remaining_length = len; /** length left to write */
+    alt_u32 write_offset = adr; /** offset into flash to write too */
+    /*
+     * Do writes one 32-bit word at a time.
+     * We need to make sure that we pad the first few bytes so they're word aligned if they are
+     * not already.
+     */
+    while (remaining_length > 0) {
+    	alt_u32 word_to_write = 0xFFFFFFFF; /** initialize word to write to blank word */
+    	alt_u32 padding = 0; /** bytes to pad the next word that is written */
+    	alt_u32 bytes_to_copy = sizeof(alt_u32); /** number of bytes from source to copy */
+
+        /*
+         * we need to make sure the write is word aligned
+    	 * this should only be true at most 1 time
+    	 */
+        if (0 != (write_offset & (sizeof(alt_u32) - 1))) {
+        	/*
+        	 * data is not word aligned
+        	 * calculate padding bytes need to add before start of a data offset
+        	 */
+            padding = write_offset & (sizeof(alt_u32) - 1);
+
+            /* update variables to account for padding being added */
+            bytes_to_copy -= padding;
+
+            if (bytes_to_copy > remaining_length) {
+            	bytes_to_copy = remaining_length;
+            }
+
+            write_offset = write_offset - padding;
+            if (0 != (write_offset & (sizeof(alt_u32) - 1))) {
+            	return -1;
+            }
+        } else {
+            if (bytes_to_copy > remaining_length) {
+            	bytes_to_copy = remaining_length;
+            }
+        }
+
+        /* prepare the word to be written */
+        memcpy((((void*)&word_to_write)) + padding, ((void*)data) + buffer_offset, bytes_to_copy);
+
+        /* update offset and length variables */
+        buffer_offset += bytes_to_copy;
+        remaining_length -= bytes_to_copy;
+
+        /* write to flash 32 bits at a time */
+        IOWR_32DIRECT(QSPI_MEM_BASE, write_offset, word_to_write);
+
+        /* check whether write triggered a illegal write interrupt */
+        if ((IORD_ALTERA_QSPI_CONTROLLER_ISR(QSPI_CSR_BASE) &
+        		ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_WRITE_MASK) ==
+        				ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_WRITE_ACTIVE) {
+		    /* clear register */
+        	IOWR_ALTERA_QSPI_CONTROLLER_ISR(QSPI_CSR_BASE,
+			ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_WRITE_MASK );
+        	return -1; /** write failed, sector might be protected */
+        }
+	    poll_for_wip();
+
+        /* update current offset */
+        write_offset = write_offset + sizeof(alt_u32);
+    }
+
+#else
 	alt_u8  txb[1+3+256];
 	alt_u8  rxb[1];
 	alt_u32 ptr;
@@ -241,7 +469,7 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
 		txb[0] = 0x05;
 		do { alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);} while (rxb[0]&1);
 	}while(len>0);
-
+#endif
 	return 0;
 }
 
@@ -257,6 +485,9 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
  */
 alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
 {
+#if defined(USE_QSPI) && (USE_QSPI == 1)
+	memcpy(data, QSPI_MEM_BASE+adr, len);
+#else
 	alt_u8  txb[1+3+1];
 	alt_u32 ptr;
 	alt_u32 cnt;
@@ -286,7 +517,7 @@ alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
 		adr += cnt;
 		ptr += cnt;
 	}while(len>0);
-
+#endif
 	return 0;
 }
 

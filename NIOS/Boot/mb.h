@@ -9,8 +9,16 @@
 #define MB_H_
 
 #include <alt_types.h>
+#include <system.h>
 
-//Device, Subdev, Command
+/**
+ *
+ */
+#define MB_BASE (0x80000000 | DPRAM_BASE)
+
+/**
+ * Device, Subdev, Command
+ */
 #define MB_DEV_MSK  0xFF000000
 #define MB_DEV_OFS  24
 #define MB_SUB_MSK  0x00F00000
