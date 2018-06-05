@@ -20,59 +20,65 @@ void platformCmd(void);
 
 void sftest(void)
 {
-	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+	alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
 	// read
 	memset(rpc, 0, 32);
+	rpc[0] = MB_DEV_SF | 0x05;
 	rpc[1] = 0;
 	rpc[2] = 16;
-	rpc[0] = MB_DEV_SF | 0x05;
 	platformCmd();
 
 	// read
 	memset(rpc, 0, 32);
+	rpc[0] = MB_DEV_SF | 0x05;
 	rpc[1] = 64*1024;
 	rpc[2] = 16;
-	rpc[0] = MB_DEV_SF | 0x05;
 	platformCmd();
-
+/*
 	// erase first 64K
+	rpc[0] = MB_DEV_SF | 0x03;
 	rpc[1] = 2;
 	rpc[2] = 0;
-	rpc[0] = MB_DEV_SF | 0x03;
 	platformCmd();
 
 	// erase second 64K
+	rpc[0] = MB_DEV_SF | 0x03;
 	rpc[1] = 2;
 	rpc[2] = 64*1024;
+	platformCmd();
+*/
+	// erase all FLASH
 	rpc[0] = MB_DEV_SF | 0x03;
+	rpc[1] = 3;
+	rpc[2] = 0;
 	platformCmd();
 return;
 	// program
+	rpc[0] = MB_DEV_SF | 0x04;
 	rpc[1] = 0;
 	rpc[2] = 16;
 	strcpy(&rpc[3], "01234567890abcdef");
-	rpc[0] = MB_DEV_SF | 0x04;
 	platformCmd();
 
 	// program
+	rpc[0] = MB_DEV_SF | 0x04;
 	rpc[1] = 64*1024;
 	rpc[2] = 16;
 	strcpy(&rpc[3], "fedcba9876543210");
-	rpc[0] = MB_DEV_SF | 0x04;
 	platformCmd();
 
 	// read
+	rpc[0] = MB_DEV_SF | 0x05;
 	memset(rpc, 0, 32);
 	rpc[1] = 0;
 	rpc[2] = 32;
-	rpc[0] = MB_DEV_SF | 0x05;
 	platformCmd();
 
 	// read
+	rpc[0] = MB_DEV_SF | 0x05;
 	memset(rpc, 0, 32);
 	rpc[1] = 64*1024;
 	rpc[2] = 32;
-	rpc[0] = MB_DEV_SF | 0x05;
 	platformCmd();
 
 }
@@ -83,7 +89,7 @@ return;
 int main()
 {
 	int ret;
-//sftest();
+sftest();
 	// logo iniziale
 	gfxInit(0);
 

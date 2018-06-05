@@ -279,23 +279,50 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 {
 #if defined(USE_QSPI) && (USE_QSPI == 1)
     alt_u32 op_value = 0; /* value to write to EPCQ_MEM_OP register */
+
 	switch(mode){
 	case 2:
-		// 64KB Block Erase 64K Block address
+		/* 64KB Block Erase 64K Block address */
+
+		/* write enable */
 	    IOWR_ALTERA_QSPI_CONTROLLER_MEM_OP(QSPI_CSR_BASE,
 	    		ALTERA_QSPI_CONTROLLER_MEM_OP_WRITE_ENABLE_CMD);
 
 		adr >>= 16;
 	    op_value = (adr << 8) & ALTERA_QSPI_CONTROLLER_MEM_OP_SECTOR_VALUE_MASK;
 	    op_value |= ALTERA_QSPI_CONTROLLER_MEM_OP_SECTOR_ERASE_CMD;
+
 	    /* write sector erase command to QSPI_MEM_OP register to erase sector "sector_number" */
 	    IOWR_ALTERA_QSPI_CONTROLLER_MEM_OP(QSPI_CSR_BASE, op_value);
 
 	    /* check whether erase triggered a illegal erase interrupt  */
 	    if((IORD_ALTERA_QSPI_CONTROLLER_ISR(QSPI_CSR_BASE) &
 	            		ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_MASK) ==
-	            				ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_ACTIVE)
-	    {
+	            				ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_ACTIVE) {
+		    /* clear register */
+		    /* QSPI_ISR access is write one to clear (W1C) */
+	    	IOWR_ALTERA_QSPI_CONTROLLER_ISR(QSPI_CSR_BASE,
+	    		ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_MASK);
+	    	return -1; /* erase failed, sector might be protected */
+	    }
+	    poll_for_wip();
+		break;
+	case 3:
+		/* Chip Erase       Not used */
+		/* write enable */
+	    IOWR_ALTERA_QSPI_CONTROLLER_MEM_OP(QSPI_CSR_BASE,
+	    		ALTERA_QSPI_CONTROLLER_MEM_OP_WRITE_ENABLE_CMD);
+
+	    op_value = 0;
+	    op_value |= ALTERA_QSPI_CONTROLLER_MEM_OP_BULK_ERASE_CMD;
+
+	    /* write sector erase command to QSPI_MEM_OP register to erase sector "sector_number" */
+	    IOWR_ALTERA_QSPI_CONTROLLER_MEM_OP(QSPI_CSR_BASE, op_value);
+
+	    /* check whether erase triggered a illegal erase interrupt  */
+	    if((IORD_ALTERA_QSPI_CONTROLLER_ISR(QSPI_CSR_BASE) &
+	            		ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_MASK) ==
+	            				ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_ACTIVE) {
 		    /* clear register */
 		    /* QSPI_ISR access is write one to clear (W1C) */
 	    	IOWR_ALTERA_QSPI_CONTROLLER_ISR(QSPI_CSR_BASE,
@@ -306,7 +333,6 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 		break;
 	case 0: // Sector Erase   	 4K sector address
 	case 1: // 32KB Block Erase	32K Block address
-	case 3: // Chip Erase       Not used
 	default:
 		return -1;
 	}
