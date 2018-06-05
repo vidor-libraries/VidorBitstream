@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>May 31, 2018 2:37:36 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1527770256992</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Jun 5, 2018 9:42:11 AM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1528184531408</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/media/max/storage/vidor/vidor_s/NIOS/Boot_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../FPGA/boot.sopcinfo</SopcDesignFile>
@@ -1042,14 +1042,6 @@
                 <sectionName>.rodata2</sectionName>
                 <regionName>boot</regionName>
         </LinkerSection>
-        <DriverPackageInfo>
-                <name>none</name>
-                <moduleName>nina_uart</moduleName>
-        </DriverPackageInfo>
-        <DriverPackageInfo>
-                <name>none</name>
-                <moduleName>nina_spi</moduleName>
-        </DriverPackageInfo>
         <DriverPackageInfo>
                 <name>none</name>
                 <moduleName>irq</moduleName>

@@ -13,7 +13,7 @@
 /**
  *
  */
-#define FPGA_VERSION 0x01010101
+#define FPGA_VERSION 0xB0010101
 
 /**
  */

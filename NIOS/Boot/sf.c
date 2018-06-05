@@ -412,8 +412,11 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
         }
 
         /* prepare the word to be written */
+#if defined(INVERT_BIT) && (INVERT_BIT == 1)
+        memcpyr((((void*)&word_to_write)) + padding, ((void*)data) + buffer_offset, bytes_to_copy);
+#else
         memcpy((((void*)&word_to_write)) + padding, ((void*)data) + buffer_offset, bytes_to_copy);
-
+#endif
         /* update offset and length variables */
         buffer_offset += bytes_to_copy;
         remaining_length -= bytes_to_copy;
