@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Jun 5, 2018 9:34:56 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1528184096989</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Jun 5, 2018 5:04:58 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1528211098775</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/media/max/storage/vidor/vidor_s/NIOS/Vidor_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../FPGA/memory.sopcinfo</SopcDesignFile>
@@ -874,6 +874,54 @@
                 <Enabled>false</Enabled>
                 <Group>none</Group>
         </Setting>
+        <LinkerRegion>
+                <regionName>bootflash</regionName>
+                <memoryName>generic_quad_spi_controller2_0_avl_mem</memoryName>
+                <offset>0</offset>
+                <size>524288</size>
+                <baseAddress>0x10000000</baseAddress>
+                <addressRange>0x10000000 - 0x1007FFFF</addressRange>
+        </LinkerRegion>
+        <LinkerRegion>
+                <regionName>workflash</regionName>
+                <memoryName>generic_quad_spi_controller2_0_avl_mem</memoryName>
+                <offset>524288</offset>
+                <size>524288</size>
+                <baseAddress>0x10080000</baseAddress>
+                <addressRange>0x10080000 - 0x100FFFFF</addressRange>
+        </LinkerRegion>
+        <LinkerRegion>
+                <regionName>generic_quad_spi_controller2_0_avl_mem</regionName>
+                <memoryName>generic_quad_spi_controller2_0_avl_mem</memoryName>
+                <offset>1048576</offset>
+                <size>1048576</size>
+                <baseAddress>0x10100000</baseAddress>
+                <addressRange>0x10100000 - 0x101FFFFF</addressRange>
+        </LinkerRegion>
+        <LinkerRegion>
+                <regionName>reset</regionName>
+                <memoryName>onchip_memory2_0</memoryName>
+                <offset>0</offset>
+                <size>32</size>
+                <baseAddress>0x70000000</baseAddress>
+                <addressRange>0x70000000 - 0x7000001F</addressRange>
+        </LinkerRegion>
+        <LinkerRegion>
+                <regionName>onchip_memory2_0</regionName>
+                <memoryName>onchip_memory2_0</memoryName>
+                <offset>32</offset>
+                <size>32736</size>
+                <baseAddress>0x70000020</baseAddress>
+                <addressRange>0x70000020 - 0x70007FFF</addressRange>
+        </LinkerRegion>
+        <LinkerRegion>
+                <regionName>dpram</regionName>
+                <memoryName>dpram</memoryName>
+                <offset>0</offset>
+                <size>1024</size>
+                <baseAddress>0x7001f000</baseAddress>
+                <addressRange>0x7001F000 - 0x7001F3FF</addressRange>
+        </LinkerRegion>
         <MemoryMap>
                 <slaveDescriptor>SDRAM_ARBITER</slaveDescriptor>
                 <addressRange>0x00000000 - 0x007FFFFF</addressRange>
@@ -972,11 +1020,11 @@
         </MemoryMap>
         <LinkerSection>
                 <sectionName>.text</sectionName>
-                <regionName>onchip_memory2_0</regionName>
+                <regionName>workflash</regionName>
         </LinkerSection>
         <LinkerSection>
                 <sectionName>.rodata</sectionName>
-                <regionName>onchip_memory2_0</regionName>
+                <regionName>workflash</regionName>
         </LinkerSection>
         <LinkerSection>
                 <sectionName>.rwdata</sectionName>
@@ -993,5 +1041,9 @@
         <LinkerSection>
                 <sectionName>.stack</sectionName>
                 <regionName>onchip_memory2_0</regionName>
+        </LinkerSection>
+        <LinkerSection>
+                <sectionName>.wrkexcp</sectionName>
+                <regionName>workflash</regionName>
         </LinkerSection>
 </sch:Settings>

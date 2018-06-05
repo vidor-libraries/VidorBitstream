@@ -109,10 +109,12 @@ void pltCmd(void)
 		}
 		ret = rpc[1];
 		break;
-	case 3:
+	case 3: {
 		/* starting application */
-//TODO
-		break;
+		//TODO jump to 0x10083da8  alt_main()
+		void(*app)(void) = (void*)0x10000000;
+		app();
+		} break;
 	}
 	rpc[1] = ret;
 }
