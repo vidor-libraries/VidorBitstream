@@ -22,10 +22,10 @@ void sftest(void)
 {
 	alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
 
-	memset(rpc, 0, 32);
 	rpc[0] = MB_DEV_SF | 0x01;
 	platformCmd();
 
+/*
 	// read
 	memset(rpc, 0, 32);
 	rpc[0] = MB_DEV_SF | 0x05;
@@ -39,6 +39,7 @@ void sftest(void)
 	rpc[1] = 64*1024;
 	rpc[2] = 16;
 	platformCmd();
+*/
 /*
 	// erase first 64K
 	rpc[0] = MB_DEV_SF | 0x03;
@@ -104,13 +105,13 @@ int main()
 	// cancella il codice eseguito fin qui
 	memset((void*)BOOT_REGION_BASE, 0, BOOT_REGION_SPAN);
 
-	// TODO abilitazione bridge jtag
-
 	// verifica la validità della firma
 /*	if(ret){
 		while(1);
 	}
 */
+
+	// TODO abilitazione bridge jtag
 
 	platformSetup();
 	while (1) {

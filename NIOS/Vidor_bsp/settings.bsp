@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Jun 5, 2018 5:04:58 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1528211098775</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Jun 6, 2018 12:43:48 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1528281828401</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/media/max/storage/vidor/vidor_s/NIOS/Vidor_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../FPGA/memory.sopcinfo</SopcDesignFile>
@@ -883,12 +883,20 @@
                 <addressRange>0x10000000 - 0x1007FFFF</addressRange>
         </LinkerRegion>
         <LinkerRegion>
-                <regionName>workflash</regionName>
+                <regionName>reset</regionName>
                 <memoryName>generic_quad_spi_controller2_0_avl_mem</memoryName>
                 <offset>524288</offset>
-                <size>524288</size>
+                <size>32</size>
                 <baseAddress>0x10080000</baseAddress>
-                <addressRange>0x10080000 - 0x100FFFFF</addressRange>
+                <addressRange>0x10080000 - 0x1008001F</addressRange>
+        </LinkerRegion>
+        <LinkerRegion>
+                <regionName>workflash</regionName>
+                <memoryName>generic_quad_spi_controller2_0_avl_mem</memoryName>
+                <offset>524320</offset>
+                <size>524256</size>
+                <baseAddress>0x10080020</baseAddress>
+                <addressRange>0x10080020 - 0x100FFFFF</addressRange>
         </LinkerRegion>
         <LinkerRegion>
                 <regionName>generic_quad_spi_controller2_0_avl_mem</regionName>
@@ -897,14 +905,6 @@
                 <size>1048576</size>
                 <baseAddress>0x10100000</baseAddress>
                 <addressRange>0x10100000 - 0x101FFFFF</addressRange>
-        </LinkerRegion>
-        <LinkerRegion>
-                <regionName>reset</regionName>
-                <memoryName>onchip_memory2_0</memoryName>
-                <offset>0</offset>
-                <size>32</size>
-                <baseAddress>0x70000000</baseAddress>
-                <addressRange>0x70000000 - 0x7000001F</addressRange>
         </LinkerRegion>
         <LinkerRegion>
                 <regionName>onchip_memory2_0</regionName>
