@@ -232,7 +232,10 @@ alt_32 static poll_for_wip(void)
 alt_u32 sfJedecId(void)
 {
 #if defined(USE_QSPI) && (USE_QSPI == 1)
-	return 0;
+	alt_u32 *csr_base = QSPI_CSR_BASE;
+	alt_u32 jid[5];
+	memcpy(jid, csr_base+8, 5*4);
+	return jid[0];
 #else
 	alt_u8  txb[]={0x9f};
 	alt_u8  rxb[4];

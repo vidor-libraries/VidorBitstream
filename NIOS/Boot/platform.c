@@ -13,7 +13,7 @@
 /**
  *
  */
-#define FPGA_VERSION 0xB0010101
+#define FPGA_VERSION 0xB0010102
 
 /**
  */
@@ -111,7 +111,6 @@ void pltCmd(void)
 		break;
 	case 3: {
 		/* starting application */
-		//TODO jump to 0x10083da8  alt_main()
 		void(*app)(void) = (void*)0x10000000;
 		app();
 		} break;

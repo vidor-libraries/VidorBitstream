@@ -21,6 +21,11 @@ void platformCmd(void);
 void sftest(void)
 {
 	alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
+
+	memset(rpc, 0, 32);
+	rpc[0] = MB_DEV_SF | 0x01;
+	platformCmd();
+
 	// read
 	memset(rpc, 0, 32);
 	rpc[0] = MB_DEV_SF | 0x05;
@@ -89,7 +94,7 @@ return;
 int main()
 {
 	int ret;
-sftest();
+//sftest();
 	// logo iniziale
 	gfxInit(0);
 

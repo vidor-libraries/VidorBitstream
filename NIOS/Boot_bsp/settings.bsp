@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Jun 5, 2018 9:42:11 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1528184531408</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Jun 6, 2018 9:57:04 AM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1528271824291</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/media/max/storage/vidor/vidor_s/NIOS/Boot_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../FPGA/boot.sopcinfo</SopcDesignFile>
