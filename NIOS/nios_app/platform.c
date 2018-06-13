@@ -5,17 +5,22 @@
  *      Author: max
  */
 #include <stdio.h>
-#include <nios2.h>
 #include <system.h>
 
 #include "mb.h"
+#include "i2c.h"
+#include "gpio.h"
 #include "sf.h"
-#include "ru.h"
+#include "gfx.h"
+#include "spi.h"
+#include "uart.h"
+#include "qr.h"
+#include "sdram.h"
 
 /**
  *
  */
-#define FPGA_VERSION 0xB0010105
+#define FPGA_VERSION 0x01010200
 
 /**
  */
@@ -31,7 +36,6 @@ typedef struct {
  *
  */
 void pltCmd(void);
-alt_u32 pltAppJmp(alt_u32 entry);
 
 /**
  *
@@ -39,6 +43,13 @@ alt_u32 pltAppJmp(alt_u32 entry);
 sDevHnd devHnd[] = {
 	{NULL, pltCmd, NULL, 0, 0},
 	{NULL, sfCmd, NULL, MB_DEV_SF, 1},
+	{NULL, gpioCmd, NULL, MB_DEV_GPIO, 1},
+	{NULL, gfxCmd, NULL, MB_DEV_GFX, 1},
+	{i2cInit, i2cCmd, NULL, MB_DEV_I2C, 2},
+	{spiInit, spiCmd, NULL, MB_DEV_SPI, 1},
+	{uartInit, uartCmd, NULL, MB_DEV_UART, 1},
+	{qrInit, qrCmd, qrLoop, MB_DEV_QR, 1},
+	{sdramInit, sdramCmd, NULL, MB_DEV_SDRAM, 1},
 };
 
 /**
@@ -60,7 +71,7 @@ void platformCmd(void)
 {
 	volatile alt_u32 cmd;
 
-	cmd = *(volatile alt_u32*)MB_BASE;
+	cmd = *(volatile alt_u32*)DPRAM_BASE;
 	if (cmd) {
 		int dev;
 		dev = MB_DEV(cmd);
@@ -69,7 +80,7 @@ void platformCmd(void)
 				devHnd[dev].cmd();
 			}
 		}
-		*(volatile alt_u32*)MB_BASE = 0;
+		*(volatile alt_u32*)DPRAM_BASE = 0;
 		//intPinSet(1, 1);
 		//intPinSet(1, 0);
 	}
@@ -93,7 +104,7 @@ void platformLoop(void)
  */
 void pltCmd(void)
 {
-	alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
+	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
 	alt_u32 ret;
 	int i;
 
@@ -112,24 +123,6 @@ void pltCmd(void)
 		}
 		ret = rpc[1];
 		break;
-	case 3:
-		/* starting application */
-		//ret = pltAppJmp(rpc[1]);
-		ret = ruLoad(0x00060000);
-		break;
 	}
 	rpc[1] = ret;
-}
-
-/**
- * TODO mettere indirizzo impostabile
- */
-alt_u32 pltAppJmp(alt_u32 entry)
-{
-	NIOS2_WRITE_STATUS(0);
-	NIOS2_WRITE_IENABLE(0);
-	__asm__ volatile ("movhi r12,0x1006");
-	__asm__ volatile ("addi r12,r12,0x0000");
-	__asm__ volatile ("jmp r12");
-	return 0;
 }

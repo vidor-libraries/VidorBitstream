@@ -124,7 +124,6 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len);
 
 #if defined(SECURITY) && (SECURITY == 1)
-
 /**
  * Security Register
  */
@@ -132,6 +131,7 @@ alt_u32 sfSRErase(alt_u8 reg);
 alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfSRLock(alt_u8 reg);
 alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
+
 alt_u32 sfProtect(void);
 #endif  /* defined(SECURITY) && (SECURITY == 1) */
 
@@ -195,7 +195,6 @@ void sfCmd(void)
 	}
 	rpc[1] = ret;
 }
-
 #if defined(USE_QSPI) && (USE_QSPI == 1)
 
 /**
@@ -492,6 +491,7 @@ alt_u32 sfUniqueId(alt_u8* id)
 	txb[4] = 0;
 
 	alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+4, txb, 8, id, 0);
+
 	return 0;
 }
 
