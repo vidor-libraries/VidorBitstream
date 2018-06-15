@@ -64,7 +64,7 @@ func main() {
 		}
 
 		// Pad to offset
-		for len(outBuffer) < (offset * 1024) {
+		for len(outBuffer) < (compositeOffset - offset*1024) {
 			outBuffer = append(outBuffer, 0xFF)
 		}
 

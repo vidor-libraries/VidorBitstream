@@ -6,8 +6,12 @@ Copy files:
 # Convert NIOS2 elf program to flashable image
 launch ./make_app.sh
 
-./createCompositeBinary -ttf=../vidor_s.ttf -bin=../nios_app.bin -invert -out=../app.
-./createCompositeBinary -ttf=../vidor_s_boot.ttf -bin=../nios_app.bin -invert -out=../boot.
+#To create bootloader + app package
+
+./createCompositeBinary -i ../vidor_s_boot.ttf:1:0,../vidor_s.ttf:1:512 -o ../boot.ttf -t 0
+
+# To create app + nios_app package
+./createCompositeBinary -i ../vidor_s.ttf:1:512,../nios_app.bin:896: -o ../app.ttf -t 1
 
 # Load bitstream to ram
 ./loadBitsreamToRam -openocd=.../.arduino15/packages/arduino/tools/openocd/0.10.0-arduino7/ -port=/dev/ttyACM1 -svf=../boot.svf
