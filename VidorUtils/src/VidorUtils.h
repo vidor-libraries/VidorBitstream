@@ -22,9 +22,15 @@ public:
 
 	static void onInterrupt();
 
-	int begin() {
+	int begin(bool jumpToApp = true) {
 		int ret = jtagInit();
 		mbPinSet();
+
+		if (ret == 0 && jumpToApp) {
+			uint32_t ptr[1];
+			ptr[0] = 0 | 3;
+			mbCmdSend(ptr, 1);
+		}
 
 		return (ret == 0);
 	}

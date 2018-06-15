@@ -69,15 +69,13 @@ public:
 
 	static void onInterrupt();
 
-	int begin() {
-		int ret = jtagInit();
+	int begin(bool jumpToApp = true) {
+		int ret = VidorUtils::begin(jumpToApp);
 
 		capabilities = 0xFF; //read(BASE_ADDRESS);
 		attachInterrupt(IRQ_PIN, VidorBase::onInterrupt, FALLING);
 
-		mbPinSet();
-
-		return (ret == 0);
+		return ret;
 	}
 
 	int isCapableOf(vidor_ips ip) {
