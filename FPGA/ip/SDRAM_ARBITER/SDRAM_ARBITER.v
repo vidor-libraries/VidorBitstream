@@ -79,6 +79,7 @@ reg  [cBURST_BITS-1:0]     rCURRENT_BURSTCNT;
 wire                       wFB_START;
 reg                        rAVL_ACTIVE;
 reg                        rAVL_WAIT;
+reg  [15:0]                rAVL_WRITEDATA;
 reg  [1:0]                 rBYTEENABLE;
 
 initial begin
@@ -302,6 +303,7 @@ begin
         rADDRESS<=iAVL_ADDRESS;
         rAVL_ACTIVE<=1;
         rAVL_WAIT<=0;
+        rAVL_WRITEDATA<= iAVL_WRITE_DATA;
         rBYTEENABLE<=iAVL_BYTEENABLE;
       end
     end
@@ -362,6 +364,6 @@ assign oSDRAM_ADDRESS    = rADDRESS;
 assign oSDRAM_READ       = rREAD;
 assign oSDRAM_WRITE      = rWRITE;
 assign oSDRAM_BYTEENABLE = rBYTEENABLE;
-assign oSDRAM_WRITEDATA  = rAVL_ACTIVE ? iAVL_WRITE_DATA : wMIPI_FIFO_DATA[14:0];
+assign oSDRAM_WRITEDATA  = rAVL_ACTIVE ? rAVL_WRITEDATA : wMIPI_FIFO_DATA[14:0];
 
 endmodule
