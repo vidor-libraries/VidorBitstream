@@ -89,14 +89,22 @@ module vidor_s_top
   inout         bMIPI_SCL,
   inout  [1:0]  bMIPI_GP,
 
-  // Flash interface
-  output        oFLASH_MOSI,
-  input         iFLASH_MISO,
+  // S-SPI Flash interface
+//  output        oFLASH_MOSI,
+//  input         iFLASH_MISO,
+//  output        oFLASH_SCK,
+//  output        oFLASH_CS,
+//  output        oFLASH_WP,
+//  output        oFLASH_HOLD
+
+  // Q-SPI Flash interface
   output        oFLASH_SCK,
   output        oFLASH_CS,
-  output        oFLASH_WP,
-  output        oFLASH_HOLD
-  
+  inout         oFLASH_MOSI,
+  inout         iFLASH_MISO,
+  inout         oFLASH_HOLD,
+  inout         oFLASH_WP
+
 );
 
 // signal declaration
@@ -144,7 +152,9 @@ SYSTEM_PLL PLL_inst(
 	.c0(wCLK24),
 	.c1(wCLK120),
 	.c2(wMEM_CLK),
-  .c3(oSDRAM_CLK),
+   .c3(oSDRAM_CLK),
+	.c4(wQSPI_CLK),
+   
 	.locked());
 
 // DVI output
@@ -277,6 +287,8 @@ memory u0(
 		.clk_clk                (wMEM_CLK),               //      clk.clk
 		.reset_reset_n          (rRESETCNT[5]), // reset.reset_n
 		.vid_clk                (wVID_CLK),        //   vid.clk
+		.clk_0_clk              (wQSPI_CLK),
+		.reset_0_reset_n			(rRESETCNT[5]), // reset.reset_n
 
 		.sdram_addr             (oSDRAM_ADDR), //    sdram.addr
 		.sdram_ba               (oSDRAM_BA),   //         .ba
@@ -297,16 +309,20 @@ memory u0(
 		.hdmi_i2c_scl           (bHDMI_SCL),     //   hdmi_i2c.scl
 		.hdmi_i2c_sda           (bHDMI_SDA),     //           .sda
 
-		.flash_spi_MISO         (iFLASH_MISO),   // flash_spi.MISO
-		.flash_spi_MOSI         (oFLASH_MOSI),   //          .MOSI
-		.flash_spi_SCLK         (oFLASH_SCK),   //          .SCLK
-		.flash_spi_SS_n         (oFLASH_CS),   //          .SS_n
+//		.flash_spi_MISO         (iFLASH_MISO),   // flash_spi.MISO
+//		.flash_spi_MOSI         (oFLASH_MOSI),   //          .MOSI
+//		.flash_spi_SCLK         (oFLASH_SCK),   //          .SCLK
+//		.flash_spi_SS_n         (oFLASH_CS),   //          .SS_n
+
+		.qspi_dclk              (oFLASH_SCK),
+		.qspi_ncs               (oFLASH_CS),
+		.qspi_data              ({oFLASH_HOLD, oFLASH_WP, iFLASH_MISO, oFLASH_MOSI}),
 
 		.csi_i2c_scl            (bMIPI_SCL),      //   csi_i2c.scl
 		.csi_i2c_sda            (bMIPI_SDA),      //          .sda
 
-    .mipi_rx_clk            (iMIPI_CLK),
-    .mipi_rx_data           (iMIPI_D),
+		.mipi_rx_clk            (iMIPI_CLK),
+		.mipi_rx_data           (iMIPI_D),
 
 		.arb_fb_clk             (wVID_CLK),       //    arb_fb.clk
 		.arb_fb_rdy             (fb_st_ready),       //          .rdy
@@ -322,7 +338,7 @@ memory u0(
 		.mipi_st_data           (mipi_st_data),     //   mipi_st.data
 		.mipi_st_start          (mipi_st_start),    //          .start
 		.mipi_st_dv             (mipi_st_dv),       //          .dv
-      
+
 		.qr_vid_in_reset        (0),  //           .reset
 		.qr_vid_in_clk          (iMIPI_CLK),    //           .clk
 		.qr_vid_in_data         (mipi_st_data),   //  qr_vid_in.data
@@ -331,12 +347,12 @@ memory u0(
 		.qr_vid_out_data        (mipi_ste_data),  // qr_vid_out.data
 		.qr_vid_out_dv          (mipi_ste_dv),    //           .dv
 		.qr_vid_out_start       (mipi_ste_start),  //           .start
-          
+
 		.arb_mipi_clk           (iMIPI_CLK),     //  arb_mipi.clk
 		.arb_mipi_data          ({mipi_ste_data[23-:5],mipi_ste_data[15-:5],mipi_ste_data[7-:5]}),    //          .data
 		.arb_mipi_start         (mipi_ste_start),    //          .data
 		.arb_mipi_dv            (mipi_ste_dv),      //          .dv
-      
+
 		.nina_uart_RXD          (iWM_TX),    // nina_uart.RXD
 		.nina_uart_TXD          (wNINA_RX),    //          .TXD
       
@@ -362,8 +378,8 @@ memory u0(
 		.irq_in_port            (iSAM_INT),      //        irq.in_port
 		.irq_out_port           (wIRQ_OUT),     //           .out_port
           
-    .sam_pwm_pwm            (wSAM_OUT1)
-    
+		.sam_pwm_pwm            (wSAM_OUT1)
+
 	);
 
 assign oSAM_INT = wIRQ_OUT[1];
@@ -401,7 +417,7 @@ assign wPEX_PIN_OUT[i] =
 end
 
 assign wWM_OUT2[18]=wNINA_RX;
-assign wWM_OUT2[12]= wNINA_MOSI;
+assign wWM_OUT2[12]=wNINA_MOSI;
 assign wWM_OUT2[9] =wNINA_SCLK;
 assign wWM_OUT2[17]=wNINA_SS;
 
@@ -517,10 +533,12 @@ begin
 end
 
 */
+
 // MIPI input
 assign bMIPI_GP[0]=1'b1;
 assign bMIPI_GP[1]=1'b1;
-assign oFLASH_WP=1;
-assign oFLASH_HOLD=1;
+
+//assign oFLASH_WP=1;
+//assign oFLASH_HOLD=1;
 
 endmodule
