@@ -353,14 +353,6 @@
          type = "int";
       }
    }
-   element nios2_gen2_0.debug_mem_slave
-   {
-      datum baseAddress
-      {
-         value = "2147481600";
-         type = "String";
-      }
-   }
    element onchip_memory2_0
    {
       datum _sortIndex
@@ -609,7 +601,7 @@
   <parameter name="AUTO_DEVICE_SPEEDGRADE" value="8" />
   <parameter name="bht_ramBlockType" value="Automatic" />
   <parameter name="breakOffset" value="32" />
-  <parameter name="breakSlave" value="None" />
+  <parameter name="breakSlave" value="onchip_memory2_0.s2" />
   <parameter name="cdx_enabled" value="false" />
   <parameter name="clockFrequency" value="100000000" />
   <parameter name="cpuArchRev" value="1" />
@@ -622,7 +614,7 @@
   <parameter name="dataAddrWidth" value="31" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='SDRAM_ARBITER.avl' start='0x0' end='0x800000' type='SDRAM_ARBITER.avl' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_mem' start='0x10000000' end='0x10200000' type='iptronix_generic_quad_spi_controller2.avl_mem' /><slave name='onchip_memory2_0.s1' start='0x70000000' end='0x70008000' type='altera_avalon_onchip_memory2.s1' /><slave name='remote_update_0.avl_csr' start='0x70010000' end='0x70010080' type='altera_remote_update.avl_csr' /><slave name='flash_spi.spi_control_port' start='0x70010080' end='0x700100A0' type='altera_avalon_spi.spi_control_port' /><slave name='irq.s1' start='0x700100D0' end='0x700100E0' type='altera_avalon_pio.s1' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_csr' start='0x70010400' end='0x70010440' type='iptronix_generic_quad_spi_controller2.avl_csr' /><slave name='dpram.s1' start='0x7001F000' end='0x7001F400' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x7FFFF800' end='0x80000000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='SDRAM_ARBITER.avl' start='0x0' end='0x800000' type='SDRAM_ARBITER.avl' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_mem' start='0x10000000' end='0x10200000' type='iptronix_generic_quad_spi_controller2.avl_mem' /><slave name='onchip_memory2_0.s1' start='0x70000000' end='0x70008000' type='altera_avalon_onchip_memory2.s1' /><slave name='remote_update_0.avl_csr' start='0x70010000' end='0x70010080' type='altera_remote_update.avl_csr' /><slave name='flash_spi.spi_control_port' start='0x70010080' end='0x700100A0' type='altera_avalon_spi.spi_control_port' /><slave name='irq.s1' start='0x700100D0' end='0x700100E0' type='altera_avalon_pio.s1' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_csr' start='0x70010400' end='0x70010440' type='iptronix_generic_quad_spi_controller2.avl_csr' /><slave name='dpram.s1' start='0x7001F000' end='0x7001F400' type='altera_avalon_onchip_memory2.s1' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -637,7 +629,7 @@
   <parameter name="debug_assignJtagInstanceID" value="false" />
   <parameter name="debug_datatrigger" value="0" />
   <parameter name="debug_debugReqSignals" value="false" />
-  <parameter name="debug_enabled" value="true" />
+  <parameter name="debug_enabled" value="false" />
   <parameter name="debug_hwbreakpoint" value="0" />
   <parameter name="debug_jtagInstanceID" value="0" />
   <parameter name="debug_traceStorage" value="onchip_trace" />
@@ -661,7 +653,7 @@
   <parameter name="icache_tagramBlockType" value="Automatic" />
   <parameter name="impl" value="Fast" />
   <parameter name="instAddrWidth" value="31" />
-  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s2' start='0x70000000' end='0x70008000' type='altera_avalon_onchip_memory2.s2' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x7FFFF800' end='0x80000000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
+  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s2' start='0x70000000' end='0x70008000' type='altera_avalon_onchip_memory2.s2' /></address-map>]]></parameter>
   <parameter name="instructionMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="instructionMasterHighPerformanceMapParam" value="" />
   <parameter name="instruction_master_high_performance_paddr_base" value="0" />
@@ -910,15 +902,6 @@
    kind="avalon"
    version="18.0"
    start="nios2_gen2_0.data_master"
-   end="nios2_gen2_0.debug_mem_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x7ffff800" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.data_master"
    end="onchip_memory2_0.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x70000000" />
@@ -958,15 +941,6 @@
    end="iptronix_generic_quad_spi_controller2_0.avl_mem">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x10000000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.instruction_master"
-   end="nios2_gen2_0.debug_mem_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x7ffff800" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1072,11 +1046,6 @@
    version="18.0"
    start="clk.clk_reset"
    end="onchip_memory2_0.reset2" />
- <connection
-   kind="reset"
-   version="18.0"
-   start="nios2_gen2_0.debug_reset_request"
-   end="nios2_gen2_0.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />

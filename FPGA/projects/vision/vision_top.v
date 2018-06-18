@@ -198,6 +198,16 @@ begin
   end
 end
 
+wire [3:0] wQSPI_DATAOUT;
+wire [3:0] wQSPI_DATAOE;
+
+assign oFLASH_SCK=wFLASH_SCK&!wFLASH_CS|wQSPI_CLK&!wQSPI_OE&!wQSPI_NCS;
+assign oFLASH_HOLD = !wQSPI_OE&wQSPI_DATAOE[3]&!wQSPI_NCS ? wQSPI_DATAOUT[3] : 1'b1;
+assign oFLASH_WP = !wQSPI_OE&wQSPI_DATAOE[2]&!wQSPI_NCS ? wQSPI_DATAOUT[2] : 1'b1;
+assign iFLASH_MISO = !wQSPI_OE&wQSPI_DATAOE[1]&!wQSPI_NCS ? wQSPI_DATAOUT[1] : 1'bz;
+assign oFLASH_MOSI = !wQSPI_OE&wQSPI_DATAOE[0]&!wQSPI_NCS ? wQSPI_DATAOUT[0] : wFLASH_MOSI;
+assign oFLASH_CS= wQSPI_NCS & wFLASH_CS;
+
 vision u0(
 		.clk_clk                (wMEM_CLK),               //      clk.clk
 		.reset_reset_n          (rRESETCNT[5]), // reset.reset_n
@@ -224,14 +234,17 @@ vision u0(
 		.hdmi_i2c_scl           (bHDMI_SCL),     //   hdmi_i2c.scl
 		.hdmi_i2c_sda           (bHDMI_SDA),     //           .sda
 
-//		.flash_spi_MISO         (iFLASH_MISO),   // flash_spi.MISO
-//		.flash_spi_MOSI         (oFLASH_MOSI),   //          .MOSI
-//		.flash_spi_SCLK         (oFLASH_SCK),   //          .SCLK
-//		.flash_spi_SS_n         (oFLASH_CS),   //          .SS_n
+		.flash_spi_MISO         (iFLASH_MISO ),   // flash_spi.MISO
+		.flash_spi_MOSI         (wFLASH_MOSI),   //          .MOSI
+		.flash_spi_SCLK         (wFLASH_SCK),   //          .SCLK
+		.flash_spi_SS_n         (wFLASH_CS),   //          .SS_n
 
-		.qspi_dclk              (oFLASH_SCK),
-		.qspi_ncs               (oFLASH_CS),
-		.qspi_data              ({oFLASH_HOLD, oFLASH_WP, iFLASH_MISO, oFLASH_MOSI}),
+		.qspi_dclk       (wQSPI_CLK),       //      qspi.dclk
+		.qspi_ncs        (wQSPI_NCS),        //          .ncs
+		.qspi_oe         (wQSPI_OE),         //          .oe
+		.qspi_dataout    (wQSPI_DATAOUT),    //          .dataout
+		.qspi_dataoe     (wQSPI_DATAOE),     //          .dataoe
+		.qspi_datain     ({oFLASH_HOLD, oFLASH_WP, iFLASH_MISO, oFLASH_MOSI}),      //          .datain
 
 		.csi_i2c_scl            (bMIPI_SCL),      //   csi_i2c.scl
 		.csi_i2c_sda            (bMIPI_SDA),      //          .sda

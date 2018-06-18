@@ -28,6 +28,7 @@ APP_DIR=./software/$PROJECT_NAME
 
 # Location containing all the application source files
 APP_SRC_DIR=../../../NIOS/$PROJECT_NAME
+COMMON_SRC_DIR=../../../NIOS/common
 
 # SOPC file definitions
 SOPC_INFO="./$PROJECT_NAME.sopcinfo"
@@ -89,9 +90,8 @@ BSP_FLAGS="--set hal.enable_c_plus_plus 0 \
 mkdir -p $APP_DIR
 cp -r $APP_SRC_DIR/* $APP_DIR
 
-# replace standard project sources with example specific files
-cp -f *.c $APP_DIR
-cp -f *.h $APP_DIR
+# copy common files
+cp -f $COMMON_SRC_DIR/* $APP_DIR
 
 generate the BSP in the $BSP_DIR
 cmd="nios2-bsp $BSP_TYPE $BSP_DIR $SOPC_INFO $BSP_FLAGS"

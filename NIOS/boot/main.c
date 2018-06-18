@@ -17,6 +17,16 @@
 
 void cmdRx(alt_u32 cmd);
 
+#define SEC_START(section) (&_alt_partition_##section##_start)
+#define SEC_SIZE(section) (&_alt_partition_##section##_end-&_alt_partition_##section##_start)
+
+#define SEC_EXTERN(section) \
+    extern void _alt_partition_##section##_start;                 \
+    extern void _alt_partition_##section##_end;                   
+
+SEC_EXTERN(text2)
+SEC_EXTERN(data2)
+
 /**
  *
  */
@@ -28,7 +38,8 @@ int main()
   ret = signChk();
 
   // cancella il codice eseguito fin qui (text2 in boot)
-  memset((void*)BOOT_REGION_BASE, 0, BOOT_REGION_SPAN);
+  memset(SEC_START(text2), 0, SEC_SIZE(text2));
+  memset(SEC_START(data2), 0, SEC_SIZE(data2));
 
   // logo iniziale
   gfxInit(0);
