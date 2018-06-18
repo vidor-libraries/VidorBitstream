@@ -9,6 +9,7 @@
 #define MB_H_
 
 #include <alt_types.h>
+#include <system.h>
 
 /**
  *

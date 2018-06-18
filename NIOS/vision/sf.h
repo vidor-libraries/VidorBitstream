@@ -10,12 +10,11 @@
 
 #include <alt_types.h>
 
-void sfInit(int devs);
 void sfCmd(void);
-
 
 alt_u32 sfJedecId(void);
 alt_u32 sfUniqueId(alt_u8* id);
+
 alt_u32 sfErase(alt_u32 mode, alt_u32 adr);
 alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len);

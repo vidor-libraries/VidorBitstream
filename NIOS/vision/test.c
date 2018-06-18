@@ -1,11 +1,11 @@
 /*
- * test.c
- *
- *  Created on: May 15, 2018
- *      Author: max
- */
+* test.c
+*
+*  Created on: May 15, 2018
+*      Author: max
+*/
 
-#define TEST
+//#define TEST
 
 #ifdef TEST
 
@@ -26,60 +26,60 @@
 #ifdef I2C_0_TEST
 void i2c0Test(void)
 {
-	int index = 0;
-	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  int index = 0;
+  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
 
-	// enable I2C index 0 - CSI_I2C_BASE
-	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x01;
-	platformCmd();
+  // enable I2C index 0 - CSI_I2C_BASE
+  rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x01;
+  platformCmd();
 
-	// start transmission
-	rpc[1] = 0x36;
-	rpc[2] = 0x00;
-	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x04;
-	platformCmd();
+  // start transmission
+  rpc[1] = 0x36;
+  rpc[2] = 0x00;
+  rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x04;
+  platformCmd();
 
-	// write
-	rpc[1] = 0x01;
-	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
-	platformCmd();
+  // write
+  rpc[1] = 0x01;
+  rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
+  platformCmd();
 
-	rpc[1] = 0x03;
-	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
-	platformCmd();
+  rpc[1] = 0x03;
+  rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
+  platformCmd();
 
-	rpc[1] = 0x01;
-	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
-	platformCmd();
+  rpc[1] = 0x01;
+  rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
+  platformCmd();
 
-	// stop
-	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x07;
-	platformCmd();
+  // stop
+  rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x07;
+  platformCmd();
 }
 #endif  //I2C_0_TEST
 
 #ifdef I2C_1_TEST
 void i2c1Test(void)
 {
-	int index = 1;
-	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  int index = 1;
+  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
 
-	// enable I2C index 1 - HDMI_I2C_BASE
-	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x01;
-	platformCmd();
+  // enable I2C index 1 - HDMI_I2C_BASE
+  rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x01;
+  platformCmd();
 
-	// write
-	rpc[1] = 0x00;  //address
-	rpc[2] = 0x01;  //len
-	rpc[3] = 0x00000000;
-	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
-	platformCmd();
+  // write
+  rpc[1] = 0x00;  //address
+  rpc[2] = 0x01;  //len
+  rpc[3] = 0x00000000;
+  rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x08;
+  platformCmd();
 
-	// read
-	rpc[1] = 0x00;  //address
-	rpc[2] = 0x80;  //len
-	rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x05;
-	platformCmd();
+  // read
+  rpc[1] = 0x00;  //address
+  rpc[2] = 0x80;  //len
+  rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x05;
+  platformCmd();
 }
 #endif  //I2C_1_TEST
 
@@ -87,58 +87,58 @@ void i2c1Test(void)
 #ifdef GPIO_TEST
 void gpioTest(void)
 {
-	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
-	alt_u32 pin;
-	alt_u32 mode;
+  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 pin;
+  alt_u32 mode;
 #if 0
-	alt_u32 val;
+  alt_u32 val;
 
-	/* set mode */
-	pin  = 32;
-	mode = 2;
-	rpc[1] = pin;
-	rpc[2] = mode;
-	rpc[0] = MB_DEV_GPIO | 0x01;
-	platformCmd();
+  /* set mode */
+  pin  = 32;
+  mode = 2;
+  rpc[1] = pin;
+  rpc[2] = mode;
+  rpc[0] = MB_DEV_GPIO | 0x01;
+  platformCmd();
 
-	/* write */
-	val = 0;
-	rpc[1] = pin;
-	rpc[2] = val;
-	rpc[0] = MB_DEV_GPIO | 0x02;
-	platformCmd();
+  /* write */
+  val = 0;
+  rpc[1] = pin;
+  rpc[2] = val;
+  rpc[0] = MB_DEV_GPIO | 0x02;
+  platformCmd();
 
-	/* write */
-	val = 1;
-	rpc[1] = pin;
-	rpc[2] = val;
-	rpc[0] = MB_DEV_GPIO | 0x02;
-	platformCmd();
+  /* write */
+  val = 1;
+  rpc[1] = pin;
+  rpc[2] = val;
+  rpc[0] = MB_DEV_GPIO | 0x02;
+  platformCmd();
 
-	/* read */
-	rpc[1] = pin;
-	rpc[0] = MB_DEV_GPIO | 0x03;
-	platformCmd();
+  /* read */
+  rpc[1] = pin;
+  rpc[0] = MB_DEV_GPIO | 0x03;
+  platformCmd();
 #endif
 
-	/* pwm */
-	pin  = 32;
-	mode = 3;
-	rpc[1] = pin;
-	rpc[2] = mode;
-	rpc[0] = MB_DEV_GPIO | 0x01;
-	platformCmd();
+  /* pwm */
+  pin  = 32;
+  mode = 3;
+  rpc[1] = pin;
+  rpc[2] = mode;
+  rpc[0] = MB_DEV_GPIO | 0x01;
+  platformCmd();
 
-	rpc[1] = 1000;//prescaler
-	rpc[2] = 120;//period
-	rpc[0] = MB_DEV_GPIO | 0x04;
-	platformCmd();
+  rpc[1] = 1000;//prescaler
+  rpc[2] = 120;//period
+  rpc[0] = MB_DEV_GPIO | 0x04;
+  platformCmd();
 
-	rpc[1] = pin;
-	rpc[2] = 60;
-	rpc[3] = 40;
-	rpc[0] = MB_DEV_GPIO | 0x05;
-	platformCmd();
+  rpc[1] = pin;
+  rpc[2] = 60;
+  rpc[3] = 40;
+  rpc[0] = MB_DEV_GPIO | 0x05;
+  platformCmd();
 
 }
 #endif  // GPIO_TEST
@@ -147,106 +147,106 @@ void gpioTest(void)
 #ifdef SF_TEST
 void sfTest(void)
 {
-	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
 
-	// JedecId
-	rpc[0] = MB_DEV_SF | 0x01;
-	platformCmd();
+  // JedecId
+  rpc[0] = MB_DEV_SF | 0x01;
+  platformCmd();
 
-	// UniqueId
-	memset(rpc, 0, 32);
-	rpc[0] = MB_DEV_SF | 0x02;
-	platformCmd();
+  // UniqueId
+  memset(rpc, 0, 32);
+  rpc[0] = MB_DEV_SF | 0x02;
+  platformCmd();
 
-	// read
-	memset(rpc, 0, 32);
-	rpc[1] = 0;
-	rpc[2] = 16;
-	rpc[0] = MB_DEV_SF | 0x05;
-	platformCmd();
+  // read
+  memset(rpc, 0, 32);
+  rpc[1] = 0;
+  rpc[2] = 16;
+  rpc[0] = MB_DEV_SF | 0x05;
+  platformCmd();
 
-	// read
-	memset(rpc, 0, 32);
-	rpc[1] = 64*1024;
-	rpc[2] = 16;
-	rpc[0] = MB_DEV_SF | 0x05;
-	platformCmd();
+  // read
+  memset(rpc, 0, 32);
+  rpc[1] = 64*1024;
+  rpc[2] = 16;
+  rpc[0] = MB_DEV_SF | 0x05;
+  platformCmd();
 
-	// erase first 64K
-	rpc[1] = 2;
-	rpc[2] = 0;
-	rpc[0] = MB_DEV_SF | 0x03;
-	platformCmd();
+  // erase first 64K
+  rpc[1] = 2;
+  rpc[2] = 0;
+  rpc[0] = MB_DEV_SF | 0x03;
+  platformCmd();
 
-	// erase second 64K
-	rpc[1] = 2;
-	rpc[2] = 1;
-	rpc[0] = MB_DEV_SF | 0x03;
-	platformCmd();
+  // erase second 64K
+  rpc[1] = 2;
+  rpc[2] = 1;
+  rpc[0] = MB_DEV_SF | 0x03;
+  platformCmd();
 
-	// program
-	rpc[1] = 0;
-	rpc[2] = 16;
-	strcpy(&rpc[3], "01234567890abcdef");
-	rpc[0] = MB_DEV_SF | 0x04;
-	platformCmd();
+  // program
+  rpc[1] = 0;
+  rpc[2] = 16;
+  strcpy(&rpc[3], "01234567890abcdef");
+  rpc[0] = MB_DEV_SF | 0x04;
+  platformCmd();
 
-	// program
-	rpc[1] = 64*1024;
-	rpc[2] = 16;
-	strcpy(&rpc[3], "fedcba9876543210");
-	rpc[0] = MB_DEV_SF | 0x04;
-	platformCmd();
+  // program
+  rpc[1] = 64*1024;
+  rpc[2] = 16;
+  strcpy(&rpc[3], "fedcba9876543210");
+  rpc[0] = MB_DEV_SF | 0x04;
+  platformCmd();
 
-	// read
-	memset(rpc, 0, 32);
-	rpc[1] = 0;
-	rpc[2] = 32;
-	rpc[0] = MB_DEV_SF | 0x05;
-	platformCmd();
+  // read
+  memset(rpc, 0, 32);
+  rpc[1] = 0;
+  rpc[2] = 32;
+  rpc[0] = MB_DEV_SF | 0x05;
+  platformCmd();
 
-	// read
-	memset(rpc, 0, 32);
-	rpc[1] = 64*1024;
-	rpc[2] = 32;
-	rpc[0] = MB_DEV_SF | 0x05;
-	platformCmd();
+  // read
+  memset(rpc, 0, 32);
+  rpc[1] = 64*1024;
+  rpc[2] = 32;
+  rpc[0] = MB_DEV_SF | 0x05;
+  platformCmd();
 
-	//int ret;
+  //int ret;
 
-	// update serial flash with FPGA binary
-	//ret = sfWrite(0x00800000, 181344, SF_WRFLG_ERASE | SF_WRFLG_PROGRAM | SF_WRFLG_VERIFY);
-	//ret = sfWrite(0x00800000, 181344, SF_WRFLG_VERIFY);
+  // update serial flash with FPGA binary
+  //ret = sfWrite(0x00800000, 181344, SF_WRFLG_ERASE | SF_WRFLG_PROGRAM | SF_WRFLG_VERIFY);
+  //ret = sfWrite(0x00800000, 181344, SF_WRFLG_VERIFY);
 /*
-	alt_u32 sf_id;
-	alt_u8  sf_sn[8];
+  alt_u32 sf_id;
+  alt_u8  sf_sn[8];
 
-	sf_id = sfDetect();
-	sfReadId(sf_sn);
+  sf_id = sfDetect();
+  sfReadId(sf_sn);
 
-	// Security Register test
-	alt_u8 data[256];
+  // Security Register test
+  alt_u8 data[256];
 
-	sfSRRead(0, 0, data, 256);
-	strcpy(data, "111-Security Register write test-111");
-	sfSRProgram(0, 0, data, 256);
+  sfSRRead(0, 0, data, 256);
+  strcpy(data, "111-Security Register write test-111");
+  sfSRProgram(0, 0, data, 256);
 
-	sfSRRead(1, 0, data, 256);
-	strcpy(data, "222-Security Register write test-222");
-	sfSRProgram(1, 0, data, 256);
+  sfSRRead(1, 0, data, 256);
+  strcpy(data, "222-Security Register write test-222");
+  sfSRProgram(1, 0, data, 256);
 
-	sfSRRead(2, 0, data, 256);
-	strcpy(data, "333-Security Register write test-333");
-	sfSRProgram(2, 0, data, 256);
+  sfSRRead(2, 0, data, 256);
+  strcpy(data, "333-Security Register write test-333");
+  sfSRProgram(2, 0, data, 256);
 
-	sfSRRead(0, 0, data, 256);
-	sfSRRead(1, 0, data, 256);
-	sfSRRead(2, 0, data, 256);
+  sfSRRead(0, 0, data, 256);
+  sfSRRead(1, 0, data, 256);
+  sfSRRead(2, 0, data, 256);
 */
 /*
-	sfSRErase(alt_u8 reg);
+  sfSRErase(alt_u8 reg);
 
-	sfSRLock(alt_u8 reg);
+  sfSRLock(alt_u8 reg);
 */
 
 }
@@ -257,31 +257,31 @@ void sfTest(void)
 void uartTest(void)
 {
 #if 0
-	gpioPinMode(64+18, 4);
+  gpioPinMode(64+18, 4);
 
-	for(;;){
-		uartWrite(0, "123", 3);
-	}
+  for(;;){
+    uartWrite(0, "123", 3);
+  }
 #endif
-	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
 
-	rpc[0] = MB_DEV_GPIO | 0x01;
-	rpc[1] = 64+18;
-	rpc[2] = 4;
-	platformCmd();
+  rpc[0] = MB_DEV_GPIO | 0x01;
+  rpc[1] = 64+18;
+  rpc[2] = 4;
+  platformCmd();
 /*
 for(;;){
-	rpc[0] = MB_DEV_UART | 0x08;
-	rpc[1] = 4;
-	rpc[2] = 0x33323130;
-	platformCmd();
+  rpc[0] = MB_DEV_UART | 0x08;
+  rpc[1] = 4;
+  rpc[2] = 0x33323130;
+  platformCmd();
 }
 */
-	for(;;){
-		rpc[0] = MB_DEV_UART | 0x07;
-		rpc[1] = 0x40;
-		platformCmd();
-	}
+  for(;;){
+    rpc[0] = MB_DEV_UART | 0x07;
+    rpc[1] = 0x40;
+    platformCmd();
+  }
 #define MB_DEV_UART   (6<<MB_DEV_OFS)
 
 }
@@ -307,7 +307,7 @@ void aesTest(void)
 
 
     struct AES_ctx ctx;
-	aes_ret = 0x00000000;
+  aes_ret = 0x00000000;
 
     AES_init_ctx(&ctx, key);
 
@@ -319,13 +319,13 @@ void aesTest(void)
 #elif defined(AES256)
     uint8_t in_ecb[]  = { 0xf3, 0xee, 0xd1, 0xbd, 0xb5, 0xd2, 0xa0, 0x3c, 0x06, 0x4b, 0x5a, 0x7e, 0x3d, 0xb1, 0x81, 0xf8 };
 #endif
-	uint8_t out_ecb[]   = { 0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a };
+  uint8_t out_ecb[]   = { 0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a };
 
-	AES_ECB_decrypt(&ctx, in_ecb);
+  AES_ECB_decrypt(&ctx, in_ecb);
     if (0 == memcmp((char*)out_ecb, (char*)in_ecb, 16)) {
-    	aes_ret |= 0x00000001;
+      aes_ret |= 0x00000001;
     } else {
-    	aes_ret |= 0x00000002;
+      aes_ret |= 0x00000002;
     }
 #endif /* AES_TEST_DEC_ECB */
 
@@ -354,9 +354,9 @@ void aesTest(void)
     AES_ctx_set_iv(&ctx, iv_cbc);
     AES_CBC_decrypt_buffer(&ctx, in_cbc, 64);
     if (0 == memcmp((char*)out_cbc, (char*)in_cbc, 64)) {
-    	aes_ret |= 0x00000004;
+      aes_ret |= 0x00000004;
     } else {
-    	aes_ret |= 0x00000008;
+      aes_ret |= 0x00000008;
     }
 
 #endif /* AES_TEST_DEC_CBC */
@@ -386,9 +386,9 @@ void aesTest(void)
     AES_ctx_set_iv(&ctx, iv_ctr);
     AES_CTR_xcrypt_buffer(&ctx, in_ctr, 64);
     if (0 == memcmp((char *)out_ctr, (char *)in_ctr, 64)) {
-    	aes_ret |= 0x00000010;
+      aes_ret |= 0x00000010;
     } else {
-    	aes_ret |= 0x00000020;
+      aes_ret |= 0x00000020;
     }
 #endif /* AES_TEST_DEC_CTR */
 }
@@ -397,64 +397,64 @@ void aesTest(void)
 #if 0
 void signWrTest(void)
 {
-	uint32_t       JedecId;
-	uint8_t        UniqueId[8];
-	uint8_t        data[3*256];
-	uint8_t        key[32];
-	uint8_t        iv[16];
-	struct AES_ctx ctx;
-	uint32_t       ret;
-	alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  uint32_t       JedecId;
+  uint8_t        UniqueId[8];
+  uint8_t        data[3*256];
+  uint8_t        key[32];
+  uint8_t        iv[16];
+  struct AES_ctx ctx;
+  uint32_t       ret;
+  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
 
-	rpc[0] = MB_DEV_SF | 0x01;
-	platformCmd();
-	JedecId = rpc[1];
+  rpc[0] = MB_DEV_SF | 0x01;
+  platformCmd();
+  JedecId = rpc[1];
 
-	rpc[0] = MB_DEV_SF | 0x02;
-	platformCmd();
-	memcpy((alt_u8*)&UniqueId, (alt_u8*)&rpc[2], 8);
+  rpc[0] = MB_DEV_SF | 0x02;
+  platformCmd();
+  memcpy((alt_u8*)&UniqueId, (alt_u8*)&rpc[2], 8);
 
-	keygen(key, (uint8_t*)&JedecId, UniqueId);
-	ivgen(iv, (uint8_t*)&JedecId, UniqueId);
+  keygen(key, (uint8_t*)&JedecId, UniqueId);
+  ivgen(iv, (uint8_t*)&JedecId, UniqueId);
 
-	memcpy(data, "asdfredcvbhgfrtyk8964dfvghjf5d54", 32);
+  memcpy(data, "asdfredcvbhgfrtyk8964dfvghjf5d54", 32);
 
-	AES_init_ctx(&ctx, key);
-	AES_ctx_set_iv(&ctx, iv);
-	AES_CBC_encrypt_buffer(&ctx, data, 3*256);
+  AES_init_ctx(&ctx, key);
+  AES_ctx_set_iv(&ctx, iv);
+  AES_CBC_encrypt_buffer(&ctx, data, 3*256);
 
-	rpc[0] = MB_DEV_SF | 0x06;
-	rpc[1] = 0;
-	platformCmd();
+  rpc[0] = MB_DEV_SF | 0x06;
+  rpc[1] = 0;
+  platformCmd();
 
-	rpc[0] = MB_DEV_SF | 0x07;
-	rpc[1] = 0;
-	rpc[2] = 0;
-	rpc[3] = 256;
-	memcpy((alt_u8*)&rpc[4], data, 256);
-	platformCmd();
+  rpc[0] = MB_DEV_SF | 0x07;
+  rpc[1] = 0;
+  rpc[2] = 0;
+  rpc[3] = 256;
+  memcpy((alt_u8*)&rpc[4], data, 256);
+  platformCmd();
 
-	rpc[0] = MB_DEV_SF | 0x06;
-	rpc[1] = 1;
-	platformCmd();
+  rpc[0] = MB_DEV_SF | 0x06;
+  rpc[1] = 1;
+  platformCmd();
 
-	rpc[0] = MB_DEV_SF | 0x07;
-	rpc[1] = 1;
-	rpc[2] = 0;
-	rpc[3] = 256;
-	memcpy((alt_u8*)&rpc[4], data+256, 256);
-	platformCmd();
+  rpc[0] = MB_DEV_SF | 0x07;
+  rpc[1] = 1;
+  rpc[2] = 0;
+  rpc[3] = 256;
+  memcpy((alt_u8*)&rpc[4], data+256, 256);
+  platformCmd();
 
-	rpc[0] = MB_DEV_SF | 0x06;
-	rpc[1] = 2;
-	platformCmd();
+  rpc[0] = MB_DEV_SF | 0x06;
+  rpc[1] = 2;
+  platformCmd();
 
-	rpc[0] = MB_DEV_SF | 0x07;
-	rpc[1] = 2;
-	rpc[2] = 0;
-	rpc[3] = 256;
-	memcpy((alt_u8*)&rpc[4], data+512, 256);
-	platformCmd();
+  rpc[0] = MB_DEV_SF | 0x07;
+  rpc[1] = 2;
+  rpc[2] = 0;
+  rpc[3] = 256;
+  memcpy((alt_u8*)&rpc[4], data+512, 256);
+  platformCmd();
 
 }
 #endif
