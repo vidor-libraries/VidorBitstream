@@ -10,5 +10,6 @@
 
 void platformSetup(void);
 void platformCmd(void);
+void platformLoop(void);
 
 #endif /* PLATFORM_H_ */

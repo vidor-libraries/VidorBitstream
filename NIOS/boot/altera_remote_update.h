@@ -43,19 +43,19 @@ extern "C"
 
 typedef enum reconfig_mode
 {
-	FACTORY = 0,
-	APPLICATION
+  FACTORY = 0,
+  APPLICATION
 } mode;
 
 /*
     Public API
 */
 int altera_remote_update_trigger_reconfig(
-		    alt_u32 base,
-			alt_u32 mode,
-			alt_u32 boot_address_value,
-			alt_u32 watch_dog_value
-		);
+      alt_u32 base,
+      alt_u32 mode,
+      alt_u32 boot_address_value,
+      alt_u32 watch_dog_value
+    );
 
 alt_u32 altera_remote_update_master_sm_current_state_mode (alt_u32 base, alt_u8 source);
 
