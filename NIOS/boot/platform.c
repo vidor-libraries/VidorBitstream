@@ -31,7 +31,6 @@ typedef struct {
  *
  */
 void pltCmd(void);
-alt_u32 pltAppJmp(alt_u32 entry);
 
 /**
  *
