@@ -40,7 +40,7 @@ void spiInit(int devs)
  */
 void spiCmd(void)
 {
-  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
   alt_u32 ret;
 
   ret = -1;

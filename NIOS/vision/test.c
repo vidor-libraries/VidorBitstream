@@ -27,7 +27,7 @@
 void i2c0Test(void)
 {
   int index = 0;
-  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
 
   // enable I2C index 0 - CSI_I2C_BASE
   rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x01;
@@ -62,7 +62,7 @@ void i2c0Test(void)
 void i2c1Test(void)
 {
   int index = 1;
-  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
 
   // enable I2C index 1 - HDMI_I2C_BASE
   rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x01;
@@ -87,7 +87,7 @@ void i2c1Test(void)
 #ifdef GPIO_TEST
 void gpioTest(void)
 {
-  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
   alt_u32 pin;
   alt_u32 mode;
 #if 0
@@ -147,7 +147,7 @@ void gpioTest(void)
 #ifdef SF_TEST
 void sfTest(void)
 {
-  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
 
   // JedecId
   rpc[0] = MB_DEV_SF | 0x01;
@@ -263,7 +263,7 @@ void uartTest(void)
     uartWrite(0, "123", 3);
   }
 #endif
-  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
 
   rpc[0] = MB_DEV_GPIO | 0x01;
   rpc[1] = 64+18;
@@ -404,7 +404,7 @@ void signWrTest(void)
   uint8_t        iv[16];
   struct AES_ctx ctx;
   uint32_t       ret;
-  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
 
   rpc[0] = MB_DEV_SF | 0x01;
   platformCmd();

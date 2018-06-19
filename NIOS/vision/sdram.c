@@ -24,7 +24,7 @@ void sdramInit(int devs)
  */
 void sdramCmd(void)
 {
-  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
   alt_u32 ret;
 
   ret = -1;

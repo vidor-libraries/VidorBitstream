@@ -11,7 +11,7 @@
 
 #include "mb.h"
 
-#define USE_QSPI   0
+#define USE_QSPI   1
 #define INVERT_BIT 0
 #define SECURITY   1
 

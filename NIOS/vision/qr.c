@@ -68,7 +68,7 @@ void qrInit(int devs)
  */
 void qrCmd(void)
 {
-  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
   alt_u32 ret;
 
   ret = -1;
@@ -155,14 +155,13 @@ void qrLoop(void)
 
       for (i=0; i<3; i++) {
         //if (qr.pt[i].valid==1) {
-                //  qrCross((qr.pt[i].xe+qr.pt[i].xs)/2,(qr.pt[i].ye+qr.pt[i].ys)/2,0);
+        //  qrCross((qr.pt[i].xe+qr.pt[i].xs)/2,(qr.pt[i].ye+qr.pt[i].ys)/2,0);
         //}
         qr.pt[i].valid = 0;
       }
 
       j = 0;
       for (i=0; i<20; i++) {
-
         if (pt[i].valid && (pt[i].ye-pt[i].ys)<(tmaxy/2)) {
           pt[i].valid = 0;
         } else if (pt[i].valid) {

@@ -71,7 +71,7 @@ void platformCmd(void)
 {
   volatile alt_u32 cmd;
 
-  cmd = *(volatile alt_u32*)DPRAM_BASE;
+  cmd = *(volatile alt_u32*)MB_BASE;
   if (cmd) {
     int dev;
     dev = MB_DEV(cmd);
@@ -80,9 +80,9 @@ void platformCmd(void)
         devHnd[dev].cmd();
       }
     }
-    *(volatile alt_u32*)DPRAM_BASE = 0;
-    //intPinSet(1, 1);
-    //intPinSet(1, 0);
+    *(volatile alt_u32*)MB_BASE = 0;
+    intPinSet(1, 1);
+    intPinSet(1, 0);
   }
 }
 
@@ -104,7 +104,7 @@ void platformLoop(void)
  */
 void pltCmd(void)
 {
-  alt_u32 volatile *rpc = (alt_u32*)DPRAM_BASE;
+  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
   alt_u32 ret;
   int i;
 
