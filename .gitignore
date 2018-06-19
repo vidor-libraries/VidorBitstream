@@ -3,3 +3,9 @@
 **/incremental_db
 **/output_files
 **/*.sopcinfo
+**/boot/boot
+**/boot/software
+**/factory/factory
+**/factory/software
+**/vision/software
+**/vision/vision
