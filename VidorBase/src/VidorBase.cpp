@@ -5,6 +5,7 @@
 
 VidorBase VD;
 
+#if 0
 __attribute__ ((used, section(".fpga_bitstream_signature")))
 const unsigned char signatures[4096] = {
 	//#include "signature.ttf"
@@ -22,6 +23,7 @@ __attribute__ ((used, section(".fpga_bitstream")))
 const unsigned char bitstream[] = {
 	#include "app.ttf"
 };
+#endif
 
 // redefines C-scope pin extended functions (non-weak implementation)
 

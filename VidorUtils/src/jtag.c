@@ -642,7 +642,7 @@ int jtagReadBuffer(unsigned int address, uint8_t *data, size_t len)
 }
 
 #define MB_BASE     0x00000000
-//#define MB_INT_PIN  31
+#define MB_INT_PIN  31
 #define MB_TIMEOUT  5000
 
 /**
