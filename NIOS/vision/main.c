@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "platform.h"
+#include "sign.h"
 #include "gfx.h"
 #include "gpio.h"
 
@@ -12,7 +13,7 @@
 
 #define SEC_EXTERN(section) \
     extern void _alt_partition_##section##_start;                 \
-    extern void _alt_partition_##section##_end;                   
+    extern void _alt_partition_##section##_end;
 
 SEC_EXTERN(text2)
 SEC_EXTERN(data2)
@@ -38,10 +39,10 @@ int main(void)
 
   // verifica la validità della firma
   if(ret){
-    fillRect(630, 0, 10, 10, 0xFC00);
+    fillRect(630, 470, 10, 10, 0xFC00);
     while(1);
   } else {
-    fillRect(630, 0, 10, 10, 0x83E0);
+    fillRect(630, 470, 10, 10, 0x83E0);
   }
 
   platformSetup();

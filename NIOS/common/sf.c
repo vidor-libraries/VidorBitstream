@@ -6,22 +6,17 @@
  */
 
 #include <string.h>
+#include <system.h>
+
+#include "config.h"
+#include "mb.h"
+
+#if defined(SF_USE_QSPI) && (SF_USE_QSPI == 1)
+
 #include <iptronix_generic_quad_spi_controller2.h>
 #include <iptronix_generic_quad_spi_controller2_regs.h>
 #include <io.h>
 #include <priv/alt_busy_sleep.h>
-#include <altera_avalon_spi.h>
-
-#include <system.h>
-
-#include "mb.h"
-
-#define USE_QSPI   1
-#define INVERT_BIT 0
-#define SECURITY   1
-
-#if defined(USE_QSPI) && (USE_QSPI == 1)
-
 #define QSPI_CSR_BASE  (0x80000000 | IPTRONIX_GENERIC_QUAD_SPI_CONTROLLER2_0_AVL_CSR_BASE)
 #define QSPI_MEM_BASE  (0x80000000 | IPTRONIX_GENERIC_QUAD_SPI_CONTROLLER2_0_AVL_MEM_BASE)
 
@@ -29,11 +24,12 @@
 /* 0.7 sec time out */
 #define QSPI_CONTROLLER_1US_TIMEOUT_VALUE        700000
 
-#else  /*  defined(USE_QSPI) && (USE_QSPI == 1) */
+#else  /*  defined(SF_USE_QSPI) && (SF_USE_QSPI == 1) */
+#include <altera_avalon_spi.h>
 
 #define SF_FAST_RD
 
-#endif  /*  defined(USE_QSPI) && (USE_QSPI == 1) */
+#endif  /*  defined(SF_USE_QSPI) && (SF_USE_QSPI == 1) */
 
 
 
@@ -46,25 +42,25 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr);
 alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len);
 
-#if defined(SECURITY) && (SECURITY == 1)
+#if defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1)
 /**
- * Security Register
+ * SF_SECURITY_CMDS Register
  */
 alt_u32 sfSRErase(alt_u8 reg);
 alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfSRLock(alt_u8 reg);
 alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfProtect(void);
-#endif  /* defined(SECURITY) && (SECURITY == 1) */
+#endif  /* defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1) */
 
-#if defined(USE_QSPI) && (USE_QSPI == 1)
+#if defined(SF_USE_QSPI) && (SF_USE_QSPI == 1)
 alt_32 static poll_for_wip(void);
-#endif /* defined(USE_QSPI) && (USE_QSPI == 1) */
+#endif /* defined(SF_USE_QSPI) && (SF_USE_QSPI == 1) */
 
-#if defined(INVERT_BIT) && (INVERT_BIT == 1)
+#if defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1)
 void memcpyr(char *dst, char* src, int size);
 int memcmpr(char *dst, char* src, int size);
-#endif /* defined(INVERT_BIT) && (INVERT_BIT == 1) */
+#endif /* defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1) */
 
 /**
  *
@@ -97,7 +93,7 @@ void sfCmd(void)
   case 5:
     ret = sfRead(rpc[1], (alt_u8*)&rpc[3], rpc[2]);
     break;
-#if defined(SECURITY) && (SECURITY == 1)
+#if defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1)
   case 6:
     ret = sfSRErase(rpc[1]);
     break;
@@ -113,12 +109,12 @@ void sfCmd(void)
   case 10:
     ret = sfProtect();
     break;
-#endif  /* defined(SECURITY) && (SECURITY == 1) */
+#endif  /* defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1) */
   }
   rpc[1] = ret;
 }
 
-#if defined(USE_QSPI) && (USE_QSPI == 1)
+#if defined(SF_USE_QSPI) && (SF_USE_QSPI == 1)
 
 /**
  * @return  MANUFACTURER ID DEVICE ID BYTE1 DEVICE ID BYTE2
@@ -262,7 +258,7 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
         }
 
         /* prepare the word to be written */
-#if defined(INVERT_BIT) && (INVERT_BIT == 1)
+#if defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1)
         memcpyr((((void*)&word_to_write)) + padding, ((void*)data) + buffer_offset, bytes_to_copy);
 #else
         memcpy((((void*)&word_to_write)) + padding, ((void*)data) + buffer_offset, bytes_to_copy);
@@ -325,7 +321,7 @@ alt_32 static poll_for_wip(void)
   return 0;
 }
 
-#else   /* defined(USE_QSPI) && (USE_QSPI == 1) */
+#else   /* defined(SF_USE_QSPI) && (SF_USE_QSPI == 1) */
 
 /**
  * for AT25SF081 rxb must be:
@@ -450,7 +446,7 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
     txb[1] = adr>>16;
     txb[2] = adr>>8;
     txb[3] = adr;
-#if defined(INVERT_BIT) && (INVERT_BIT == 1)
+#if defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1)
     memcpyr((char*)txb+4, (char*)data+ptr, cnt);
 #else
     memcpy((char*)txb+4, (char*)data+ptr, cnt);
@@ -512,12 +508,12 @@ alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
   return 0;
 }
 
-#endif /* defined(USE_QSPI) && (USE_QSPI == 1) */
+#endif /* defined(SF_USE_QSPI) && (SF_USE_QSPI == 1) */
 
-#if defined(SECURITY) && (SECURITY == 1)
+#if defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1)
 
 /**
- * @param reg Security Register index 0-2
+ * @param reg SF_SECURITY_CMDS Register index 0-2
  */
 alt_u32 sfSRErase(alt_u8 reg)
 {
@@ -534,7 +530,7 @@ alt_u32 sfSRErase(alt_u8 reg)
   txb[0] = 0x06;
   alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
 
-  //Erase Security Registers (44h)
+  //Erase SF_SECURITY_CMDS Registers (44h)
   txb[0] = 0x44;
   txb[1] = 0;
   txb[2] = (reg+1)<<4;
@@ -549,7 +545,7 @@ alt_u32 sfSRErase(alt_u8 reg)
 }
 
 /**
- * @param reg Security Register index 0-2
+ * @param reg SF_SECURITY_CMDS Register index 0-2
  * @param adr
  * @param data
  * @param len
@@ -569,7 +565,7 @@ alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
   txb[0] = 0x06;
   alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
 
-  //Program Security Registers
+  //Program SF_SECURITY_CMDS Registers
   txb[0] = 0x42;
   txb[1] = 0;
   txb[2] = (reg+1)<<4;
@@ -585,21 +581,21 @@ alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
 }
 
 /**
- * The Security Register Lock Bits LB[3:1] in the Status Register-2
- * can be used to OTP protect the security registers.
- * Once a lock bit is set to 1, the corresponding  security  register
- * will  be  permanently locked, Program Security Register instruction
+ * The SF_SECURITY_CMDS Register Lock Bits LB[3:1] in the Status Register-2
+ * can be used to OTP protect the SF_SECURITY_CMDS registers.
+ * Once a lock bit is set to 1, the corresponding  SF_SECURITY_CMDS  register
+ * will  be  permanently locked, Program SF_SECURITY_CMDS Register instruction
  * to that register will be ignored.
  *
- * Security Register Lock Bits (LB3, LB2, LB1)
- * The Security Register Lock Bits (LB3, LB2, LB1) are
+ * SF_SECURITY_CMDS Register Lock Bits (LB3, LB2, LB1)
+ * The SF_SECURITY_CMDS Register Lock Bits (LB3, LB2, LB1) are
  * non-volatile One Time Program (OTP) bits in Status
  * Register (S13, S12, S11) that provide the write protect
- * control and status to the Security Registers.
- * The default state of LB[3:1] is 0, Security Registers are unlocked.
+ * control and status to the SF_SECURITY_CMDS Registers.
+ * The default state of LB[3:1] is 0, SF_SECURITY_CMDS Registers are unlocked.
  * LB[3:1] can be set to 1 individually using the Write Status Register instruction.
  * LB[3:1] are One Time Programmable (OTP), once it’s set to 1, the
- * corresponding 256-Byte Security Register will become read-only permanently.
+ * corresponding 256-Byte SF_SECURITY_CMDS Register will become read-only permanently.
  *
  */
 alt_u32 sfSRLock(alt_u8 reg)
@@ -651,7 +647,7 @@ alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
   }
   alt_u8  txb[1+4];
 
-  //Read Security Registers (48h)
+  //Read SF_SECURITY_CMDS Registers (48h)
   txb[0] = 0x48;
   txb[1] = 0;
   txb[2] = (reg+1)<<4;
@@ -701,7 +697,7 @@ alt_u32 sfProtect(void)
   return 0;
 }
 
-#else /* defined(SECURITY) && (SECURITY == 1) */
+#else /* defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1) */
 
 alt_u32 sfSRErase(alt_u8 reg)
 {
@@ -724,9 +720,9 @@ alt_u32 sfProtect(void)
   return -1;
 }
 
-#endif /* defined(SECURITY) && (SECURITY == 1) */
+#endif /* defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1) */
 
-#if defined(INVERT_BIT) && (INVERT_BIT == 1)
+#if defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1)
 /**
  *
  */
@@ -764,5 +760,5 @@ int memcmpr(char *dst, char* src, int size)
   }
   return 0;
 }
-#endif /* defined(INVERT_BIT) && (INVERT_BIT == 1) */
+#endif /* defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1) */
 

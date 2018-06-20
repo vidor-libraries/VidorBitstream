@@ -12,6 +12,7 @@
 #include <alt_types.h>
 #include <system.h>
 
+#include "config.h"
 #include "mb.h"
 
 #define FB_BASE (alt_u16*)((SDRAM_ARBITER_BASE + \
@@ -22,6 +23,8 @@
 #define CAM_BASE (alt_u16*)(SDRAM_ARBITER_BASE)
 
 #define _swap_int16_t(a,b) {int16_t t=a; a=b; b=t;}
+
+#if defined(GFX_FONTS) && (GFX_FONTS == 1)
 
 typedef struct { // Data stored PER GLYPH
   alt_u16  bitmapOffset;     // Pointer into GFXfont->bitmap
@@ -36,6 +39,11 @@ typedef struct { // Data stored for FONT AS A WHOLE:
   alt_u8    first, last; // ASCII extents
   alt_u8    yAdvance;    // Newline distance (y axis)
 } GFXfont;
+
+#include GFX_FONT_FILE
+GFXfont *gfxFont = (GFXfont*)&GFX_FONT_NAME;
+
+#endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
 
 typedef struct {
   alt_u32  type;
@@ -56,6 +64,7 @@ alt_u32 drawTxt   (alt_u16 x, alt_u16 y, alt_u16 color, alt_u8* txt);
 alt_u32 drawBmp   (GFXbmp* bmp, alt_u16 x, alt_u16 y, alt_u16 color);
 
 
+#if defined(GFX_CMDS) && (GFX_CMDS == 1)
 typedef void (*pfv3)(alt_u32, alt_u32, alt_u32);
 typedef void (*pfv4)(alt_u32, alt_u32, alt_u32, alt_u32);
 typedef void (*pfv5)(alt_u32, alt_u32, alt_u32, alt_u32, alt_u32);
@@ -77,10 +86,7 @@ sFncTbl fncTbl[] = {
 	{(alt_u32)drawChar  , 0x15},
 	{(alt_u32)drawTxt   , 0x14},
 };
-
-#include "Fonts/FreeMono12pt7b.h"
-GFXfont *gfxFont = (GFXfont*)&FreeMono12pt7b;
-
+#endif /* defined(GFX_CMDS) && (GFX_CMDS == 1) */
 
 alt_u16 arduino_bmp[] = {
   0x0000, 0x0000, 0x0FC0, 0x0000, 0x0000, 0x0000, 0x0000, 0x03F0,
@@ -236,6 +242,7 @@ void gfxInit(int devs)
   drawBmp(&arduinoLogo, (640-160)/2, (480-110)/2, 33396);
 }
 
+#if defined(GFX_CMDS) && (GFX_CMDS == 1)
 /**
  *
  */
@@ -270,6 +277,7 @@ void gfxCmd(void)
 	}
 	rpc[1] = ret;
 }
+#endif /* defined(GFX_CMDS) && (GFX_CMDS == 1) */
 
 /**
  * Draw a Point of color at x, y
@@ -529,6 +537,8 @@ alt_u32 fillRoundRect(int16_t x, int16_t y, int16_t w,
   return 0;
 }
 
+#if defined(GFX_FONTS) && (GFX_FONTS == 1)
+
 // TEXT- AND CHARACTER-HANDLING FUNCTIONS ----------------------------------
 
 /**
@@ -610,6 +620,8 @@ alt_u32 drawTxt(alt_u16 x, alt_u16 y, alt_u16 color, alt_u8* txt)
 
 	return size;
 }
+
+#endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
 
 /**
  *
