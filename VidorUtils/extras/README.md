@@ -11,7 +11,7 @@ launch ./make_app.sh
 ./createCompositeBinary -i ../vidor_s_boot.ttf:1:0,../vidor_s.ttf:1:512 -o ../boot.ttf -t 0
 
 # To create app + nios_app package
-./createCompositeBinary -i ../vidor_s.ttf:1:512,../nios_app.bin:896: -o ../app.ttf -t 1
+./createCompositeBinary -i ../vidor_s.ttf:1:512,../nios_app.bin:0:896: -o ../app.ttf -t 1
 
 # Load bitstream to ram
 ./loadBitsreamToRam -openocd=.../.arduino15/packages/arduino/tools/openocd/0.10.0-arduino7/ -port=/dev/ttyACM1 -svf=../boot.svf
