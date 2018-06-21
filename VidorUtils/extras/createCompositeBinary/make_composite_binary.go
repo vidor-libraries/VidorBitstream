@@ -39,7 +39,7 @@ func (h *filesFlag) Set(csv string) error {
 func main() {
 
 	var filenames filesFlag
-	compositeOffset := 0
+	compositeOffset := -1
 
 	flag.Var(&filenames, "i", "Comma separated list of files to be merged; format is filename:isBitstream:offset")
 	var fileType = flag.Int("t", 1, "Filetype to generate (boot=0 , app=1, data=2)")
@@ -64,7 +64,7 @@ func main() {
 		}
 
 		// Pad to offset
-		for len(outBuffer) < (compositeOffset - offset*1024) {
+		for len(outBuffer) < ((offset - compositeOffset) * 1024) {
 			outBuffer = append(outBuffer, 0xFF)
 		}
 
@@ -114,7 +114,7 @@ func main() {
 	}
 	//ioutil.WriteFile(*outputFilename, []byte(outString), 0666)
 
-	printInfo(compositeOffset, *fileType, outBuffer, *outputFilename)
+	printInfo(compositeOffset*1024, *fileType, outBuffer, *outputFilename)
 
 }
 
