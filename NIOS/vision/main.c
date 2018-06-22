@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "platform.h"
-#include "sign.h"
 #include "gfx.h"
 #include "gpio.h"
 
@@ -27,32 +26,7 @@ int main(void)
 {
   int ret;
 
-  // calcola la firma
-  ret = signChk();
-
-  // cancella il codice eseguito fin qui (text2 in boot)
-  memset(SEC_START(text2), 0, SEC_SIZE(text2));
-  memset(SEC_START(data2), 0, SEC_SIZE(data2));
-
-  // logo iniziale
-  gfxInit(0);
-
-  // verifica la validità della firma
-  if(ret){
-    fillRect(630, 470, 10, 10, 0xFC00);
-    while(1);
-  } else {
-    fillRect(630, 470, 10, 10, 0x83E0);
-  }
-
   platformSetup();
-  //aesTest();
-  //i2cTest();
-  //gpioTest();
-  //sfTest();
-  //i2c1Test();
-  //uartTest();
-  //aesTest();
 
   irqPinSet(0, cmdRx);
   intPinInit(1, 0);

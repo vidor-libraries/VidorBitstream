@@ -76,7 +76,7 @@ typedef struct {
 	alt_u8  ret_prm;
 }sFncTbl, *psFncTbl;
 
-sFncTbl fncTbl[] = {
+sFncTbl const fncTbl[] = {
 	{(alt_u32)writePixel, 0x03},
 	{(alt_u32)writeLine , 0x05},
 	{(alt_u32)drawRect  , 0x05},
@@ -88,7 +88,7 @@ sFncTbl fncTbl[] = {
 };
 #endif /* defined(GFX_CMDS) && (GFX_CMDS == 1) */
 
-alt_u16 arduino_bmp[] = {
+alt_u16 const arduino_bmp[] = {
   0x0000, 0x0000, 0x0FC0, 0x0000, 0x0000, 0x0000, 0x0000, 0x03F0,
   0x0000, 0x0000, 0x0000, 0x0003, 0xFFFF, 0xC000, 0x0000, 0x0000,
   0x0003, 0xFFFF, 0xE000, 0x0000, 0x0000, 0x003F, 0xFFFF, 0xF800,
@@ -227,7 +227,7 @@ alt_u16 arduino_bmp[] = {
   0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
   0x0000, 0x0000,
 };
-GFXbmp arduinoLogo = {0, 160, 110, sizeof(arduino_bmp)/sizeof(alt_u16), arduino_bmp};
+GFXbmp const arduinoLogo = {0, 160, 110, sizeof(arduino_bmp)/sizeof(alt_u16), arduino_bmp};
 
 
 
@@ -237,7 +237,6 @@ void gfxInit(int devs)
 {
   memset(CAM_BASE, 0, FB_WIDTH*FB_HEIGHT*2);
   memset(FB_BASE, 0xFF, FB_WIDTH*FB_HEIGHT*2);
-
 
   drawBmp(&arduinoLogo, (640-160)/2, (480-110)/2, 33396);
 }

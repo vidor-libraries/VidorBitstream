@@ -46,7 +46,7 @@
 #define I2C_FLAG_WR    0
 
 
-alt_u32 i2c_baseaddr[] = {
+alt_u32 const i2c_baseaddr[] = {
 	CSI_I2C_BASE,
 	HDMI_I2C_BASE,
 };
