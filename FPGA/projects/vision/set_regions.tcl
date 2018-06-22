@@ -1,4 +1,2 @@
-add_section_mapping .text iptronix_generic_quad_spi_controller2_0_avl_mem
-add_section_mapping .rodata iptronix_generic_quad_spi_controller2_0_avl_mem
 add_section_mapping .text2 onchip_memory2_0
 add_section_mapping .data2 onchip_memory2_0

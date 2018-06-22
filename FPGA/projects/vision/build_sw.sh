@@ -33,7 +33,8 @@ COMMON_SRC_DIR=../../../NIOS/common
 # SOPC file definitions
 SOPC_INFO="./$PROJECT_NAME.sopcinfo"
 SOPC_CPU_NAME="nios2_gen2_0"
-SOPC_CODE_MEMORY_NAME="onchip_memory2_0"
+SOPC_CODE_MEMORY_NAME="flashapp"
+SOPC_DATA_MEMORY_NAME="onchip_memory2_0"
 
 # Various
 ELF_NAME=$PROJECT_NAME.elf
@@ -44,7 +45,8 @@ APP_FLAGS="--set APP_CFLAGS_OPTIMIZATION $OPTIMIZATION_LEVEL --set APP_LDFLAGS_U
 # BSP options
 SIMULATION_OPTIMIZED_SUPPORT="false"
 BSP_TYPE=hal
-BSP_FLAGS="--set hal.enable_c_plus_plus 0 \
+BSP_FLAGS=" \
+--set hal.enable_c_plus_plus 0 \
 --set hal.enable_clean_exit 0 \
 --set hal.enable_exit 0 \
 --set hal.enable_gprof 0 \
@@ -57,15 +59,15 @@ BSP_FLAGS="--set hal.enable_c_plus_plus 0 \
 --set hal.enable_sopc_sysid_check 1 \
 --set hal.enable_sim_optimize $SIMULATION_OPTIMIZED_SUPPORT \
 --set hal.make.bsp_cflags_optimization $OPTIMIZATION_LEVEL \
---set hal.linker.allow_code_at_reset 1 \
+--set hal.linker.allow_code_at_reset 0 \
 --set hal.linker.enable_alt_load 1 \
 --set hal.linker.enable_alt_load_copy_exceptions 0 \
 --set hal.linker.enable_alt_load_copy_rodata 0 \
 --set hal.linker.enable_alt_load_copy_rwdata 1 \
 --set hal.linker.enable_exception_stack 0 \
 --set hal.linker.enable_interrupt_stack 0 \
---set hal.linker.exception_stack_memory_region_name $SOPC_CODE_MEMORY_NAME \
---set hal.linker.interrupt_stack_memory_region_name $SOPC_CODE_MEMORY_NAME \
+--set hal.linker.exception_stack_memory_region_name $SOPC_DATA_MEMORY_NAME \
+--set hal.linker.interrupt_stack_memory_region_name $SOPC_DATA_MEMORY_NAME \
 --set hal.make.ignore_system_derived.big_endian 0 \
 --set hal.make.ignore_system_derived.debug_core_present 0 \
 --set hal.make.ignore_system_derived.fpu_present 0 \
@@ -83,8 +85,15 @@ BSP_FLAGS="--set hal.enable_c_plus_plus 0 \
 --set hal.stdin none \
 --set hal.stdout none \
 --set hal.sys_clk_timer none \
---script set_regions.tcl \
---cmd set_driver none remote_update_0 "
+--script set_app_regions.tcl \
+--cmd set_driver none remote_update_0 \
+--cmd add_section_mapping .data onchip_memory2_0 \
+--cmd add_section_mapping .bss onchip_memory2_0 \
+--cmd add_section_mapping .heap onchip_memory2_0 \
+--cmd add_section_mapping .entry iptronix_generic_quad_spi_controller2_0_avl_mem \
+--cmd add_section_mapping .text iptronix_generic_quad_spi_controller2_0_avl_mem \
+--cmd add_section_mapping .rodata iptronix_generic_quad_spi_controller2_0_avl_mem \
+"
 
 # make a copy of standard project sources
 mkdir -p $APP_DIR
