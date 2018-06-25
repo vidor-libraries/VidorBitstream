@@ -44,7 +44,7 @@ alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len);
 
 #if defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1)
 /**
- * SF_SECURITY_CMDS Register
+ * Security Register
  */
 alt_u32 sfSRErase(alt_u8 reg);
 alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
@@ -513,7 +513,7 @@ alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
 #if defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1)
 
 /**
- * @param reg SF_SECURITY_CMDS Register index 0-2
+ * @param reg Security Register index 0-2
  */
 alt_u32 sfSRErase(alt_u8 reg)
 {
@@ -530,7 +530,7 @@ alt_u32 sfSRErase(alt_u8 reg)
   txb[0] = 0x06;
   alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
 
-  //Erase SF_SECURITY_CMDS Registers (44h)
+  //Erase Security Registers (44h)
   txb[0] = 0x44;
   txb[1] = 0;
   txb[2] = (reg+1)<<4;
@@ -545,7 +545,7 @@ alt_u32 sfSRErase(alt_u8 reg)
 }
 
 /**
- * @param reg SF_SECURITY_CMDS Register index 0-2
+ * @param reg Security Register index 0-2
  * @param adr
  * @param data
  * @param len
@@ -565,7 +565,7 @@ alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
   txb[0] = 0x06;
   alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
 
-  //Program SF_SECURITY_CMDS Registers
+  //Program Security Registers
   txb[0] = 0x42;
   txb[1] = 0;
   txb[2] = (reg+1)<<4;
@@ -581,21 +581,21 @@ alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
 }
 
 /**
- * The SF_SECURITY_CMDS Register Lock Bits LB[3:1] in the Status Register-2
- * can be used to OTP protect the SF_SECURITY_CMDS registers.
- * Once a lock bit is set to 1, the corresponding  SF_SECURITY_CMDS  register
- * will  be  permanently locked, Program SF_SECURITY_CMDS Register instruction
+ * The Security Register Lock Bits LB[3:1] in the Status Register-2
+ * can be used to OTP protect the security registers.
+ * Once a lock bit is set to 1, the corresponding  security  register
+ * will  be  permanently locked, Program Security Register instruction
  * to that register will be ignored.
  *
- * SF_SECURITY_CMDS Register Lock Bits (LB3, LB2, LB1)
- * The SF_SECURITY_CMDS Register Lock Bits (LB3, LB2, LB1) are
+ * Security Register Lock Bits (LB3, LB2, LB1)
+ * The Security Register Lock Bits (LB3, LB2, LB1) are
  * non-volatile One Time Program (OTP) bits in Status
  * Register (S13, S12, S11) that provide the write protect
- * control and status to the SF_SECURITY_CMDS Registers.
- * The default state of LB[3:1] is 0, SF_SECURITY_CMDS Registers are unlocked.
+ * control and status to the Security Registers.
+ * The default state of LB[3:1] is 0, Security Registers are unlocked.
  * LB[3:1] can be set to 1 individually using the Write Status Register instruction.
  * LB[3:1] are One Time Programmable (OTP), once it’s set to 1, the
- * corresponding 256-Byte SF_SECURITY_CMDS Register will become read-only permanently.
+ * corresponding 256-Byte Security Register will become read-only permanently.
  *
  */
 alt_u32 sfSRLock(alt_u8 reg)
@@ -647,7 +647,7 @@ alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
   }
   alt_u8  txb[1+4];
 
-  //Read SF_SECURITY_CMDS Registers (48h)
+  //Read Security Registers (48h)
   txb[0] = 0x48;
   txb[1] = 0;
   txb[2] = (reg+1)<<4;

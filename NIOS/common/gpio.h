@@ -15,6 +15,7 @@ alt_u32 gpioPinMode(alt_u32 pin, alt_u32 mode);
 alt_u32 gpioWrite(alt_u32 pin, alt_u32 val);
 
 alt_u32 irqPinSet(alt_u32 pin, void (*hook)(alt_u32));
+int intPinInit(alt_u32 pin, int val);
 int intPinSet(alt_u32 pin, int val);
 
 #endif /* GPIO_H_ */

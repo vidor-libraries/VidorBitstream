@@ -62,10 +62,14 @@ void platformCmd(void)
   cmd = *(volatile alt_u32*)MB_BASE;
   if (cmd) {
     int dev;
-    dev = MB_DEV(cmd);
-    if (dev < sizeof(devHnd)/sizeof(sDevHnd)) {
-      if (devHnd[dev].cmd) {
-        devHnd[dev].cmd();
+    int i;
+    dev = cmd & MB_DEV_MSK;
+    for (i=0; i<sizeof(devHnd)/sizeof(sDevHnd); i++) {
+      if (devHnd[i].dev_cod == dev) {
+          if (devHnd[i].cmd) {
+            devHnd[i].cmd();
+            break;
+          }
       }
     }
     *(volatile alt_u32*)MB_BASE = 0;

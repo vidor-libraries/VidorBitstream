@@ -8,19 +8,13 @@
 #include <system.h>
 
 #include "mb.h"
-#include "i2c.h"
 #include "gpio.h"
 #include "sf.h"
-#include "gfx.h"
-#include "spi.h"
-#include "uart.h"
-#include "qr.h"
-#include "sdram.h"
 
 /**
  *
  */
-#define FPGA_VERSION 0x01010101
+#define FPGA_VERSION 0xC1010101
 
 /**
  */
@@ -43,13 +37,6 @@ void pltCmd(void);
 sDevHnd const devHnd[] = {
   {NULL, pltCmd, NULL, 0, 0},
   {NULL, sfCmd, NULL, MB_DEV_SF, 1},
-  {NULL, gpioCmd, NULL, MB_DEV_GPIO, 1},
-  {NULL, gfxCmd, NULL, MB_DEV_GFX, 1},
-  {i2cInit, i2cCmd, NULL, MB_DEV_I2C, 2},
-  {spiInit, spiCmd, NULL, MB_DEV_SPI, 1},
-//  {uartInit, uartCmd, NULL, MB_DEV_UART, 1},
-  {qrInit, qrCmd, qrLoop, MB_DEV_QR, 1},
-  {sdramInit, sdramCmd, NULL, MB_DEV_SDRAM, 1},
 };
 
 /**
@@ -126,6 +113,23 @@ void pltCmd(void)
       rpc[i*2+1] = devHnd[i].sub_devs;
     }
     ret = rpc[1];
+    break;
+  case 3:
+    /* disable interrupt */
+    alt_irq_disable_all();
+
+    /* send return to SAM */
+    rpc[1] = 0x100E0000;
+    rpc[0] = 0x00000000;
+    intPinSet(1, 1);
+    intPinSet(1, 0);
+
+    /* starting application */
+    __asm__ volatile (
+      "movhi r12, 0x100E\n"
+      "ori r12, r12, 0x0000\n"
+      "jmp r12");
+
     break;
   }
   rpc[1] = ret;

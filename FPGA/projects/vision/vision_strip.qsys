@@ -9,27 +9,11 @@
    categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
-   element AES_0
-   {
-      datum _sortIndex
-      {
-         value = "19";
-         type = "int";
-      }
-   }
-   element AES_0.ctrl
-   {
-      datum baseAddress
-      {
-         value = "1879114624";
-         type = "String";
-      }
-   }
    element FBST_0
    {
       datum _sortIndex
       {
-         value = "12";
+         value = "11";
          type = "int";
       }
    }
@@ -49,28 +33,92 @@
          type = "int";
       }
    }
-   element QRCODE_FINDER_0
-   {
-      datum _sortIndex
-      {
-         value = "11";
-         type = "int";
-      }
-   }
-   element QRCODE_FINDER_0.ctrl
-   {
-      datum baseAddress
-      {
-         value = "1879179264";
-         type = "String";
-      }
-   }
    element SDRAM_ARBITER
    {
       datum _sortIndex
       {
          value = "9";
          type = "int";
+      }
+   }
+   element boot
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element boot
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element boot
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element boot
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element boot
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element boot
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element boot
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element boot
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element boot
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element boot
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
       }
    }
    element clk
@@ -117,7 +165,7 @@
    {
       datum _sortIndex
       {
-         value = "24";
+         value = "15";
          type = "int";
       }
    }
@@ -137,27 +185,11 @@
          type = "String";
       }
    }
-   element hdmi_i2c
-   {
-      datum _sortIndex
-      {
-         value = "20";
-         type = "int";
-      }
-   }
-   element hdmi_i2c.avalon_slave_0
-   {
-      datum baseAddress
-      {
-         value = "1879113984";
-         type = "String";
-      }
-   }
    element iptronix_generic_quad_spi_controller2_0
    {
       datum _sortIndex
       {
-         value = "22";
+         value = "13";
          type = "int";
       }
    }
@@ -181,7 +213,7 @@
    {
       datum _sortIndex
       {
-         value = "21";
+         value = "12";
          type = "int";
       }
    }
@@ -337,38 +369,6 @@
          type = "String";
       }
    }
-   element nina_spi
-   {
-      datum _sortIndex
-      {
-         value = "14";
-         type = "int";
-      }
-   }
-   element nina_spi.spi_control_port
-   {
-      datum baseAddress
-      {
-         value = "1879113952";
-         type = "String";
-      }
-   }
-   element nina_uart
-   {
-      datum _sortIndex
-      {
-         value = "13";
-         type = "int";
-      }
-   }
-   element nina_uart.avalon_rs232_slave
-   {
-      datum baseAddress
-      {
-         value = "1879113920";
-         type = "String";
-      }
-   }
    element nios2_gen2_0
    {
       datum _sortIndex
@@ -409,27 +409,11 @@
          type = "String";
       }
    }
-   element pex_pio
-   {
-      datum _sortIndex
-      {
-         value = "16";
-         type = "int";
-      }
-   }
-   element pex_pio.s1
-   {
-      datum baseAddress
-      {
-         value = "1879114272";
-         type = "String";
-      }
-   }
    element remote_update_0
    {
       datum _sortIndex
       {
-         value = "23";
+         value = "14";
          type = "int";
       }
    }
@@ -438,38 +422,6 @@
       datum baseAddress
       {
          value = "1879113728";
-         type = "String";
-      }
-   }
-   element sam_pio
-   {
-      datum _sortIndex
-      {
-         value = "15";
-         type = "int";
-      }
-   }
-   element sam_pio.s1
-   {
-      datum baseAddress
-      {
-         value = "1879114240";
-         type = "String";
-      }
-   }
-   element sam_pwm
-   {
-      datum _sortIndex
-      {
-         value = "18";
-         type = "int";
-      }
-   }
-   element sam_pwm.avalon_slave_0
-   {
-      datum baseAddress
-      {
-         value = "1879114496";
          type = "String";
       }
    }
@@ -489,44 +441,12 @@
          type = "String";
       }
    }
-   element sysid_qsys_0
-   {
-      datum _sortIndex
-      {
-         value = "25";
-         type = "int";
-      }
-   }
-   element sysid_qsys_0.control_slave
-   {
-      datum baseAddress
-      {
-         value = "1879146496";
-         type = "String";
-      }
-   }
    element vid
    {
       datum _sortIndex
       {
          value = "1";
          type = "int";
-      }
-   }
-   element wm_pio
-   {
-      datum _sortIndex
-      {
-         value = "17";
-         type = "int";
-      }
-   }
-   element wm_pio.s1
-   {
-      datum baseAddress
-      {
-         value = "1879114304";
-         type = "String";
       }
    }
 }
@@ -558,21 +478,12 @@
    dir="end" />
  <interface name="clk" internal="clk.clk_in" type="clock" dir="end" />
  <interface name="clk_0" internal="flash_clk.clk_in" type="clock" dir="end" />
- <interface
-   name="csi_i2c"
-   internal="csi_i2c.conduit_start"
-   type="conduit"
-   dir="end" />
+ <interface name="csi_i2c" internal="csi_i2c.conduit_start" />
  <interface name="fb_st" internal="FBST_0.stream" type="conduit" dir="end" />
  <interface name="fb_vport" internal="FBST_0.vport" type="conduit" dir="end" />
  <interface
    name="flash_spi"
    internal="flash_spi.external"
-   type="conduit"
-   dir="end" />
- <interface
-   name="hdmi_i2c"
-   internal="hdmi_i2c.conduit_start"
    type="conduit"
    dir="end" />
  <interface
@@ -586,45 +497,30 @@
    internal="MIPI_RX_ST_0.mipi_st"
    type="conduit"
    dir="end" />
- <interface name="nina_spi" internal="nina_spi.external" type="conduit" dir="end" />
- <interface
-   name="nina_uart"
-   internal="nina_uart.external_interface"
-   type="conduit"
-   dir="end" />
- <interface name="pex_pio" internal="pex_pio.pio" type="conduit" dir="end" />
- <interface name="qr_vid" internal="QRCODE_FINDER_0.vid_clk" />
- <interface
-   name="qr_vid_in"
-   internal="QRCODE_FINDER_0.vid_in"
-   type="conduit"
-   dir="end" />
- <interface
-   name="qr_vid_out"
-   internal="QRCODE_FINDER_0.vid_out"
-   type="conduit"
-   dir="end" />
  <interface
    name="qspi"
    internal="iptronix_generic_quad_spi_controller2_0.qspi_pins"
    type="conduit"
    dir="end" />
+ <interface name="remote_update_0_asmi_addr" internal="remote_update_0.asmi_addr" />
+ <interface name="remote_update_0_asmi_busy" internal="remote_update_0.asmi_busy" />
+ <interface
+   name="remote_update_0_asmi_data_valid"
+   internal="remote_update_0.asmi_data_valid" />
+ <interface
+   name="remote_update_0_asmi_dataout"
+   internal="remote_update_0.asmi_dataout" />
+ <interface name="remote_update_0_asmi_rden" internal="remote_update_0.asmi_rden" />
+ <interface name="remote_update_0_asmi_read" internal="remote_update_0.asmi_read" />
+ <interface name="remote_update_0_pof_error" internal="remote_update_0.pof_error" />
  <interface name="reset" internal="clk.clk_in_reset" type="reset" dir="end" />
  <interface
    name="reset_0"
    internal="flash_clk.clk_in_reset"
    type="reset"
    dir="end" />
- <interface name="sam_pio" internal="sam_pio.pio" type="conduit" dir="end" />
- <interface
-   name="sam_pwm"
-   internal="sam_pwm.conduit_end"
-   type="conduit"
-   dir="end" />
  <interface name="sdram" internal="sdram.wire" type="conduit" dir="end" />
  <interface name="vid" internal="vid.in_clk" type="clock" dir="end" />
- <interface name="wm_pio" internal="wm_pio.pio" type="conduit" dir="end" />
- <module name="AES_0" kind="AES" version="1.0" enabled="0" />
  <module name="FBST_0" kind="FBST" version="1.0" enabled="1">
   <parameter name="pHRES" value="640" />
   <parameter name="pHSE" value="752" />
@@ -637,13 +533,6 @@
  </module>
  <module name="JTAG_BRIDGE" kind="JTAG_BRIDGE" version="1.0" enabled="1" />
  <module name="MIPI_RX_ST_0" kind="MIPI_RX_ST" version="1.0" enabled="1" />
- <module name="QRCODE_FINDER_0" kind="QRCODE_FINDER" version="1.0" enabled="1">
-  <parameter name="pFIXED" value="5" />
-  <parameter name="pHRES" value="640" />
-  <parameter name="pTHRESHOLD" value="60" />
-  <parameter name="pTHRESH_MIN" value="4" />
-  <parameter name="pVRES" value="480" />
- </module>
  <module name="SDRAM_ARBITER" kind="SDRAM_ARBITER" version="1.0" enabled="1">
   <parameter name="pADDRESS_BITS" value="22" />
   <parameter name="pBURST_SIZE" value="128" />
@@ -658,7 +547,7 @@
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
  </module>
- <module name="csi_i2c" kind="o_i2c_master" version="1.0" enabled="1" />
+ <module name="csi_i2c" kind="o_i2c_master" version="1.0" enabled="0" />
  <module
    name="dpram"
    kind="altera_avalon_onchip_memory2"
@@ -713,7 +602,6 @@
   <parameter name="targetClockRate" value="50000000" />
   <parameter name="targetSlaveSelectToSClkDelay" value="0.0" />
  </module>
- <module name="hdmi_i2c" kind="o_i2c_master" version="1.0" enabled="1" />
  <module
    name="iptronix_generic_quad_spi_controller2_0"
    kind="iptronix_generic_quad_spi_controller2"
@@ -741,36 +629,7 @@
   <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
-  <parameter name="width" value="2" />
- </module>
- <module name="nina_spi" kind="altera_avalon_spi" version="18.0" enabled="1">
-  <parameter name="avalonSpec" value="2.0" />
-  <parameter name="clockPhase" value="0" />
-  <parameter name="clockPolarity" value="0" />
-  <parameter name="dataWidth" value="8" />
-  <parameter name="disableAvalonFlowControl" value="false" />
-  <parameter name="inputClockRate" value="100000000" />
-  <parameter name="insertDelayBetweenSlaveSelectAndSClk" value="false" />
-  <parameter name="insertSync" value="false" />
-  <parameter name="lsbOrderedFirst" value="false" />
-  <parameter name="masterSPI" value="true" />
-  <parameter name="numberOfSlaves" value="1" />
-  <parameter name="syncRegDepth" value="2" />
-  <parameter name="targetClockRate" value="50000000" />
-  <parameter name="targetSlaveSelectToSClkDelay" value="0.0" />
- </module>
- <module
-   name="nina_uart"
-   kind="altera_up_avalon_rs232"
-   version="17.1"
-   enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
-  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone 10 LP" />
-  <parameter name="avalon_bus_type" value="Memory Mapped" />
-  <parameter name="baud" value="115200" />
-  <parameter name="data_bits" value="8" />
-  <parameter name="parity" value="None" />
-  <parameter name="stop_bits" value="1" />
+  <parameter name="width" value="3" />
  </module>
  <module
    name="nios2_gen2_0"
@@ -796,7 +655,7 @@
   <parameter name="dataAddrWidth" value="31" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='SDRAM_ARBITER.avl' start='0x0' end='0x800000' type='SDRAM_ARBITER.avl' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_mem' start='0x10000000' end='0x10200000' type='iptronix_generic_quad_spi_controller2.avl_mem' /><slave name='onchip_memory2_0.s1' start='0x70000000' end='0x70004000' type='altera_avalon_onchip_memory2.s1' /><slave name='remote_update_0.avl_csr' start='0x70010000' end='0x70010080' type='altera_remote_update.avl_csr' /><slave name='flash_spi.spi_control_port' start='0x70010080' end='0x700100A0' type='altera_avalon_spi.spi_control_port' /><slave name='csi_i2c.avalon_slave_0' start='0x700100A0' end='0x700100C0' type='o_i2c_master.avalon_slave_0' /><slave name='nina_uart.avalon_rs232_slave' start='0x700100C0' end='0x700100C8' type='altera_up_avalon_rs232.avalon_rs232_slave' /><slave name='irq.s1' start='0x700100D0' end='0x700100E0' type='altera_avalon_pio.s1' /><slave name='nina_spi.spi_control_port' start='0x700100E0' end='0x70010100' type='altera_avalon_spi.spi_control_port' /><slave name='hdmi_i2c.avalon_slave_0' start='0x70010100' end='0x70010120' type='o_i2c_master.avalon_slave_0' /><slave name='sam_pio.s1' start='0x70010200' end='0x70010220' type='PIO.s1' /><slave name='pex_pio.s1' start='0x70010220' end='0x70010240' type='PIO.s1' /><slave name='wm_pio.s1' start='0x70010240' end='0x70010260' type='PIO.s1' /><slave name='sam_pwm.avalon_slave_0' start='0x70010300' end='0x70010380' type='PWM.avalon_slave_0' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_csr' start='0x70010400' end='0x70010440' type='iptronix_generic_quad_spi_controller2.avl_csr' /><slave name='sysid_qsys_0.control_slave' start='0x70018000' end='0x70018008' type='altera_avalon_sysid_qsys.control_slave' /><slave name='dpram.s1' start='0x7001F000' end='0x7001F400' type='altera_avalon_onchip_memory2.s1' /><slave name='QRCODE_FINDER_0.ctrl' start='0x70020000' end='0x70022000' type='QRCODE_FINDER.ctrl' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x7FFFF800' end='0x80000000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='SDRAM_ARBITER.avl' start='0x0' end='0x800000' type='SDRAM_ARBITER.avl' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_mem' start='0x10000000' end='0x10200000' type='iptronix_generic_quad_spi_controller2.avl_mem' /><slave name='onchip_memory2_0.s1' start='0x70000000' end='0x70004000' type='altera_avalon_onchip_memory2.s1' /><slave name='remote_update_0.avl_csr' start='0x70010000' end='0x70010080' type='altera_remote_update.avl_csr' /><slave name='flash_spi.spi_control_port' start='0x70010080' end='0x700100A0' type='altera_avalon_spi.spi_control_port' /><slave name='irq.s1' start='0x700100D0' end='0x700100E0' type='altera_avalon_pio.s1' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_csr' start='0x70010400' end='0x70010440' type='iptronix_generic_quad_spi_controller2.avl_csr' /><slave name='dpram.s1' start='0x7001F000' end='0x7001F400' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x7FFFF800' end='0x80000000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -842,7 +701,7 @@
   <parameter name="instruction_master_high_performance_paddr_size" value="0" />
   <parameter name="instruction_master_paddr_base" value="0" />
   <parameter name="instruction_master_paddr_size" value="0" />
-  <parameter name="internalIrqMaskSystemInfo" value="15" />
+  <parameter name="internalIrqMaskSystemInfo" value="9" />
   <parameter name="io_regionbase" value="0" />
   <parameter name="io_regionsize" value="0" />
   <parameter name="master_addr_map" value="false" />
@@ -986,7 +845,6 @@
   <parameter name="useShallowMemBlocks" value="false" />
   <parameter name="writable" value="true" />
  </module>
- <module name="pex_pio" kind="PIO" version="1.0" enabled="1" />
  <module
    name="remote_update_0"
    kind="altera_remote_update"
@@ -1001,12 +859,6 @@
   <parameter name="check_avalon_interface" value="true" />
   <parameter name="m_support_write_config_check" value="true" />
   <parameter name="operation_mode" value="REMOTE" />
- </module>
- <module name="sam_pio" kind="PIO" version="1.0" enabled="1" />
- <module name="sam_pwm" kind="PWM" version="1.0" enabled="1">
-  <parameter name="pCHANNELS" value="23" />
-  <parameter name="pMATCH_BITS" value="16" />
-  <parameter name="pPRESCALER_BITS" value="32" />
  </module>
  <module
    name="sdram"
@@ -1037,19 +889,11 @@
   <parameter name="registerDataIn" value="true" />
   <parameter name="rowWidth" value="12" />
  </module>
- <module
-   name="sysid_qsys_0"
-   kind="altera_avalon_sysid_qsys"
-   version="18.0"
-   enabled="1">
-  <parameter name="id" value="-1161707793" />
- </module>
  <module name="vid" kind="altera_clock_bridge" version="18.0" enabled="1">
   <parameter name="DERIVED_CLOCK_RATE" value="0" />
   <parameter name="EXPLICIT_CLOCK_RATE" value="0" />
   <parameter name="NUM_CLOCK_OUTPUTS" value="1" />
  </module>
- <module name="wm_pio" kind="PIO" version="1.0" enabled="1" />
  <connection
    kind="avalon"
    version="18.0"
@@ -1063,36 +907,9 @@
    kind="avalon"
    version="18.0"
    start="nios2_gen2_0.data_master"
-   end="nina_uart.avalon_rs232_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x700100c0" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.data_master"
    end="csi_i2c.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x700100a0" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.data_master"
-   end="sam_pwm.avalon_slave_0">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x70010300" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.data_master"
-   end="hdmi_i2c.avalon_slave_0">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x70010100" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1135,33 +952,6 @@
    kind="avalon"
    version="18.0"
    start="nios2_gen2_0.data_master"
-   end="sysid_qsys_0.control_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x70018000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.data_master"
-   end="QRCODE_FINDER_0.ctrl">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x70020000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.data_master"
-   end="AES_0.ctrl">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x70010380" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.data_master"
    end="nios2_gen2_0.debug_mem_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x7ffff800" />
@@ -1189,33 +979,6 @@
    kind="avalon"
    version="18.0"
    start="nios2_gen2_0.data_master"
-   end="sam_pio.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x70010200" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.data_master"
-   end="pex_pio.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x70010220" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.data_master"
-   end="wm_pio.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x70010240" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.data_master"
    end="irq.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x700100d0" />
@@ -1228,15 +991,6 @@
    end="flash_spi.spi_control_port">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x70010080" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.data_master"
-   end="nina_spi.spi_control_port">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x700100e0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1277,14 +1031,8 @@
  </connection>
  <connection kind="clock" version="18.0" start="clk.clk" end="sdram.clk" />
  <connection kind="clock" version="18.0" start="clk.clk" end="nios2_gen2_0.clk" />
- <connection kind="clock" version="18.0" start="clk.clk" end="flash_spi.clk" />
- <connection kind="clock" version="18.0" start="clk.clk" end="nina_uart.clk" />
- <connection kind="clock" version="18.0" start="clk.clk" end="nina_spi.clk" />
- <connection kind="clock" version="18.0" start="clk.clk" end="sam_pio.clk" />
- <connection kind="clock" version="18.0" start="clk.clk" end="pex_pio.clk" />
- <connection kind="clock" version="18.0" start="clk.clk" end="wm_pio.clk" />
  <connection kind="clock" version="18.0" start="clk.clk" end="irq.clk" />
- <connection kind="clock" version="18.0" start="clk.clk" end="sysid_qsys_0.clk" />
+ <connection kind="clock" version="18.0" start="clk.clk" end="flash_spi.clk" />
  <connection
    kind="clock"
    version="18.0"
@@ -1301,43 +1049,21 @@
  <connection
    kind="clock"
    version="18.0"
-   start="clk.clk"
-   end="QRCODE_FINDER_0.clock" />
- <connection kind="clock" version="18.0" start="clk.clk" end="AES_0.clock" />
- <connection
-   kind="clock"
-   version="18.0"
    start="flash_clk.clk"
    end="remote_update_0.clock" />
- <connection kind="clock" version="18.0" start="clk.clk" end="csi_i2c.clock_sink" />
- <connection kind="clock" version="18.0" start="clk.clk" end="sam_pwm.clock_sink" />
- <connection kind="clock" version="18.0" start="clk.clk" end="hdmi_i2c.clock_sink" />
  <connection
    kind="clock"
    version="18.0"
    start="flash_clk.clk"
    end="iptronix_generic_quad_spi_controller2_0.clock_sink" />
+ <connection kind="clock" version="18.0" start="clk.clk" end="csi_i2c.clock_sink" />
  <connection kind="clock" version="18.0" start="vid.out_clk" end="FBST_0.vid_clk" />
- <connection
-   kind="interrupt"
-   version="18.0"
-   start="nios2_gen2_0.irq"
-   end="nina_uart.interrupt">
-  <parameter name="irqNumber" value="1" />
- </connection>
  <connection
    kind="interrupt"
    version="18.0"
    start="nios2_gen2_0.irq"
    end="flash_spi.irq">
   <parameter name="irqNumber" value="0" />
- </connection>
- <connection
-   kind="interrupt"
-   version="18.0"
-   start="nios2_gen2_0.irq"
-   end="nina_spi.irq">
-  <parameter name="irqNumber" value="2" />
  </connection>
  <connection
    kind="interrupt"
@@ -1351,11 +1077,6 @@
    version="18.0"
    start="clk.clk_reset"
    end="csi_i2c.clock_sink_reset" />
- <connection
-   kind="reset"
-   version="18.0"
-   start="clk.clk_reset"
-   end="hdmi_i2c.clock_sink_reset" />
  <connection kind="reset" version="18.0" start="clk.clk_reset" end="sdram.reset" />
  <connection
    kind="reset"
@@ -1366,47 +1087,23 @@
    kind="reset"
    version="18.0"
    start="clk.clk_reset"
-   end="flash_spi.reset" />
- <connection
-   kind="reset"
-   version="18.0"
-   start="clk.clk_reset"
    end="JTAG_BRIDGE.reset" />
  <connection
    kind="reset"
    version="18.0"
    start="clk.clk_reset"
    end="SDRAM_ARBITER.reset" />
- <connection
-   kind="reset"
-   version="18.0"
-   start="clk.clk_reset"
-   end="nina_uart.reset" />
- <connection
-   kind="reset"
-   version="18.0"
-   start="clk.clk_reset"
-   end="nina_spi.reset" />
- <connection kind="reset" version="18.0" start="clk.clk_reset" end="sam_pio.reset" />
- <connection kind="reset" version="18.0" start="clk.clk_reset" end="pex_pio.reset" />
- <connection kind="reset" version="18.0" start="clk.clk_reset" end="wm_pio.reset" />
- <connection
-   kind="reset"
-   version="18.0"
-   start="clk.clk_reset"
-   end="QRCODE_FINDER_0.reset" />
- <connection kind="reset" version="18.0" start="clk.clk_reset" end="AES_0.reset" />
  <connection kind="reset" version="18.0" start="clk.clk_reset" end="irq.reset" />
+ <connection
+   kind="reset"
+   version="18.0"
+   start="clk.clk_reset"
+   end="flash_spi.reset" />
  <connection
    kind="reset"
    version="18.0"
    start="flash_clk.clk_reset"
    end="remote_update_0.reset" />
- <connection
-   kind="reset"
-   version="18.0"
-   start="clk.clk_reset"
-   end="sysid_qsys_0.reset" />
  <connection
    kind="reset"
    version="18.0"
@@ -1423,11 +1120,6 @@
    version="18.0"
    start="clk.clk_reset"
    end="onchip_memory2_0.reset2" />
- <connection
-   kind="reset"
-   version="18.0"
-   start="clk.clk_reset"
-   end="sam_pwm.reset_sink" />
  <connection
    kind="reset"
    version="18.0"

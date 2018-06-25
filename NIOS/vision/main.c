@@ -4,18 +4,8 @@
 #include <string.h>
 
 #include "platform.h"
-#include "gfx.h"
 #include "gpio.h"
 
-#define SEC_START(section) (&_alt_partition_##section##_start)
-#define SEC_SIZE(section) (&_alt_partition_##section##_end-&_alt_partition_##section##_start)
-
-#define SEC_EXTERN(section) \
-    extern void _alt_partition_##section##_start;                 \
-    extern void _alt_partition_##section##_end;
-
-SEC_EXTERN(text2)
-SEC_EXTERN(data2)
 
 void cmdRx(alt_u32 cmd);
 

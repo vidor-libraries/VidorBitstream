@@ -274,7 +274,7 @@ vision u0(
 		.qr_vid_in_start        (mipi_st_start),  //           .start
 		.qr_vid_out_data        (mipi_ste_data),  // qr_vid_out.data
 		.qr_vid_out_dv          (mipi_ste_dv),    //           .dv
-		.qr_vid_out_start       (mipi_ste_start),  //           .start
+		.qr_vid_out_start       (mipi_ste_start),   //           .start
 
 		.arb_mipi_clk           (iMIPI_CLK),     //  arb_mipi.clk
 		.arb_mipi_data          ({mipi_ste_data[23-:5],mipi_ste_data[15-:5],mipi_ste_data[7-:5]}),    //          .data
