@@ -13,7 +13,7 @@
    {
       datum _sortIndex
       {
-         value = "19";
+         value = "20";
          type = "int";
       }
    }
@@ -62,6 +62,22 @@
       datum baseAddress
       {
          value = "1879179264";
+         type = "String";
+      }
+   }
+   element QUAD_ENCODER_0
+   {
+      datum _sortIndex
+      {
+         value = "19";
+         type = "int";
+      }
+   }
+   element QUAD_ENCODER_0.avalon_slave_0
+   {
+      datum baseAddress
+      {
+         value = "1879115008";
          type = "String";
       }
    }
@@ -117,7 +133,7 @@
    {
       datum _sortIndex
       {
-         value = "24";
+         value = "25";
          type = "int";
       }
    }
@@ -141,7 +157,7 @@
    {
       datum _sortIndex
       {
-         value = "20";
+         value = "21";
          type = "int";
       }
    }
@@ -157,7 +173,7 @@
    {
       datum _sortIndex
       {
-         value = "22";
+         value = "23";
          type = "int";
       }
    }
@@ -181,7 +197,7 @@
    {
       datum _sortIndex
       {
-         value = "21";
+         value = "22";
          type = "int";
       }
    }
@@ -429,7 +445,7 @@
    {
       datum _sortIndex
       {
-         value = "23";
+         value = "24";
          type = "int";
       }
    }
@@ -493,7 +509,7 @@
    {
       datum _sortIndex
       {
-         value = "25";
+         value = "26";
          type = "int";
       }
    }
@@ -511,6 +527,30 @@
       {
          value = "1";
          type = "int";
+      }
+   }
+   element vision
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element vision
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
+      }
+   }
+   element vision
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone 10 LP";
+         type = "String";
       }
    }
    element wm_pio
@@ -561,6 +601,11 @@
  <interface
    name="csi_i2c"
    internal="csi_i2c.conduit_start"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="encoder"
+   internal="QUAD_ENCODER_0.encoder"
    type="conduit"
    dir="end" />
  <interface name="fb_st" internal="FBST_0.stream" type="conduit" dir="end" />
@@ -643,6 +688,9 @@
   <parameter name="pTHRESHOLD" value="60" />
   <parameter name="pTHRESH_MIN" value="4" />
   <parameter name="pVRES" value="480" />
+ </module>
+ <module name="QUAD_ENCODER_0" kind="QUAD_ENCODER" version="1.0" enabled="1">
+  <parameter name="pENCODERS" value="11" />
  </module>
  <module name="SDRAM_ARBITER" kind="SDRAM_ARBITER" version="1.0" enabled="1">
   <parameter name="pADDRESS_BITS" value="22" />
@@ -796,7 +844,7 @@
   <parameter name="dataAddrWidth" value="31" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='SDRAM_ARBITER.avl' start='0x0' end='0x800000' type='SDRAM_ARBITER.avl' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_mem' start='0x10000000' end='0x10200000' type='iptronix_generic_quad_spi_controller2.avl_mem' /><slave name='onchip_memory2_0.s1' start='0x10200000' end='0x10204000' type='altera_avalon_onchip_memory2.s1' /><slave name='remote_update_0.avl_csr' start='0x70010000' end='0x70010080' type='altera_remote_update.avl_csr' /><slave name='flash_spi.spi_control_port' start='0x70010080' end='0x700100A0' type='altera_avalon_spi.spi_control_port' /><slave name='csi_i2c.avalon_slave_0' start='0x700100A0' end='0x700100C0' type='o_i2c_master.avalon_slave_0' /><slave name='nina_uart.avalon_rs232_slave' start='0x700100C0' end='0x700100C8' type='altera_up_avalon_rs232.avalon_rs232_slave' /><slave name='irq.s1' start='0x700100D0' end='0x700100E0' type='altera_avalon_pio.s1' /><slave name='nina_spi.spi_control_port' start='0x700100E0' end='0x70010100' type='altera_avalon_spi.spi_control_port' /><slave name='hdmi_i2c.avalon_slave_0' start='0x70010100' end='0x70010120' type='o_i2c_master.avalon_slave_0' /><slave name='sam_pio.s1' start='0x70010200' end='0x70010220' type='PIO.s1' /><slave name='pex_pio.s1' start='0x70010220' end='0x70010240' type='PIO.s1' /><slave name='wm_pio.s1' start='0x70010240' end='0x70010260' type='PIO.s1' /><slave name='sam_pwm.avalon_slave_0' start='0x70010300' end='0x70010380' type='PWM.avalon_slave_0' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_csr' start='0x70010400' end='0x70010440' type='iptronix_generic_quad_spi_controller2.avl_csr' /><slave name='sysid_qsys_0.control_slave' start='0x70018000' end='0x70018008' type='altera_avalon_sysid_qsys.control_slave' /><slave name='dpram.s1' start='0x7001F000' end='0x7001F400' type='altera_avalon_onchip_memory2.s1' /><slave name='QRCODE_FINDER_0.ctrl' start='0x70020000' end='0x70022000' type='QRCODE_FINDER.ctrl' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x7FFFF800' end='0x80000000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='SDRAM_ARBITER.avl' start='0x0' end='0x800000' type='SDRAM_ARBITER.avl' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_mem' start='0x10000000' end='0x10200000' type='iptronix_generic_quad_spi_controller2.avl_mem' /><slave name='onchip_memory2_0.s1' start='0x10200000' end='0x10204000' type='altera_avalon_onchip_memory2.s1' /><slave name='remote_update_0.avl_csr' start='0x70010000' end='0x70010080' type='altera_remote_update.avl_csr' /><slave name='flash_spi.spi_control_port' start='0x70010080' end='0x700100A0' type='altera_avalon_spi.spi_control_port' /><slave name='csi_i2c.avalon_slave_0' start='0x700100A0' end='0x700100C0' type='o_i2c_master.avalon_slave_0' /><slave name='nina_uart.avalon_rs232_slave' start='0x700100C0' end='0x700100C8' type='altera_up_avalon_rs232.avalon_rs232_slave' /><slave name='irq.s1' start='0x700100D0' end='0x700100E0' type='altera_avalon_pio.s1' /><slave name='nina_spi.spi_control_port' start='0x700100E0' end='0x70010100' type='altera_avalon_spi.spi_control_port' /><slave name='hdmi_i2c.avalon_slave_0' start='0x70010100' end='0x70010120' type='o_i2c_master.avalon_slave_0' /><slave name='sam_pio.s1' start='0x70010200' end='0x70010220' type='PIO.s1' /><slave name='pex_pio.s1' start='0x70010220' end='0x70010240' type='PIO.s1' /><slave name='wm_pio.s1' start='0x70010240' end='0x70010260' type='PIO.s1' /><slave name='sam_pwm.avalon_slave_0' start='0x70010300' end='0x70010380' type='PWM.avalon_slave_0' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_csr' start='0x70010400' end='0x70010440' type='iptronix_generic_quad_spi_controller2.avl_csr' /><slave name='QUAD_ENCODER_0.avalon_slave_0' start='0x70010500' end='0x70010540' type='QUAD_ENCODER.avalon_slave_0' /><slave name='sysid_qsys_0.control_slave' start='0x70018000' end='0x70018008' type='altera_avalon_sysid_qsys.control_slave' /><slave name='dpram.s1' start='0x7001F000' end='0x7001F400' type='altera_avalon_onchip_memory2.s1' /><slave name='QRCODE_FINDER_0.ctrl' start='0x70020000' end='0x70022000' type='QRCODE_FINDER.ctrl' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x7FFFF800' end='0x80000000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -1099,6 +1147,15 @@
    kind="avalon"
    version="18.0"
    start="nios2_gen2_0.data_master"
+   end="QUAD_ENCODER_0.avalon_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x70010500" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="18.0"
+   start="nios2_gen2_0.data_master"
    end="SDRAM_ARBITER.avl">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
@@ -1317,6 +1374,11 @@
    version="18.0"
    start="flash_clk.clk"
    end="iptronix_generic_quad_spi_controller2_0.clock_sink" />
+ <connection
+   kind="clock"
+   version="18.0"
+   start="clk.clk"
+   end="QUAD_ENCODER_0.clock_sink" />
  <connection kind="clock" version="18.0" start="vid.out_clk" end="FBST_0.vid_clk" />
  <connection
    kind="interrupt"
@@ -1428,6 +1490,11 @@
    version="18.0"
    start="clk.clk_reset"
    end="sam_pwm.reset_sink" />
+ <connection
+   kind="reset"
+   version="18.0"
+   start="clk.clk_reset"
+   end="QUAD_ENCODER_0.reset_sink" />
  <connection
    kind="reset"
    version="18.0"
