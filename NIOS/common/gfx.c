@@ -64,7 +64,7 @@ alt_u32 drawTxt   (alt_u16 x, alt_u16 y, alt_u16 color, alt_u8* txt);
 alt_u32 drawBmp   (GFXbmp* bmp, alt_u16 x, alt_u16 y, alt_u16 color);
 
 
-#if defined(GFX_CMDS) && (GFX_CMDS == 1)
+#if defined(GFX_CMDS) && (GFX_CMDS == 1)/*
 typedef void (*pfv3)(alt_u32, alt_u32, alt_u32);
 typedef void (*pfv4)(alt_u32, alt_u32, alt_u32, alt_u32);
 typedef void (*pfv5)(alt_u32, alt_u32, alt_u32, alt_u32, alt_u32);
@@ -85,7 +85,7 @@ sFncTbl const fncTbl[] = {
 	{(alt_u32)fillCircle, 0x04},
 	{(alt_u32)drawChar  , 0x15},
 	{(alt_u32)drawTxt   , 0x14},
-};
+};*/
 #endif /* defined(GFX_CMDS) && (GFX_CMDS == 1) */
 
 alt_u16 const arduino_bmp[] = {
@@ -247,6 +247,7 @@ void gfxInit(int devs)
  */
 void gfxCmd(void)
 {
+	/*
 	alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
 	int ret = -1;
 	int idx = MB_CMD(rpc[0]);
@@ -274,7 +275,38 @@ void gfxCmd(void)
 		ret = ((pfi5)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
 		break;
 	}
-	rpc[1] = ret;
+	*/
+  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
+  alt_u32 ret;
+
+  ret = -1;
+  switch(MB_CMD(rpc[0])){
+  case 0:
+    ret = writePixel(rpc[1], rpc[2], rpc[3]);
+    break;
+  case 1:
+    ret = writeLine(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
+    break;
+  case 2:
+    ret = drawRect(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
+    break;
+  case 3:
+    ret = fillRect(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
+    break;
+  case 4:
+    ret = drawCircle(rpc[1], rpc[2], rpc[3], rpc[4]);
+    break;
+  case 5:
+    ret = fillCircle(rpc[1], rpc[2], rpc[3], rpc[4]);
+    break;
+  case 6:
+    ret = drawChar(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
+    break;
+  case 7:
+    ret = drawTxt(rpc[1], rpc[2], rpc[3], rpc[4]);
+    break;
+  }
+  rpc[1] = ret;
 }
 #endif /* defined(GFX_CMDS) && (GFX_CMDS == 1) */
 

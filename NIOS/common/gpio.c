@@ -8,7 +8,11 @@
 #include <stdio.h>
 #include <io.h>
 #include <system.h>
+#ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
+#include <altera_vic_irq.h>
+#else
 #include <sys/alt_irq.h>
+#endif
 
 #include "config.h"
 
@@ -64,7 +68,7 @@ alt_u32 pwmWrite(alt_u32 pin, alt_u16 mh, alt_u16 ml);
  *
  */
 alt_u32 irqPin;
-void (*irqHook)(alt_u32);
+void (*irqHook)(void);
 
 void irqIsr(void* isr_context, alt_u32 id);
 
@@ -232,13 +236,28 @@ alt_u32 pwmWrite(alt_u32 pin, alt_u16 mh, alt_u16 ml)
 /**
  *
  */
-alt_u32 irqPinSet(alt_u32 pin, void (*hook)(alt_u32))
+alt_u32 irqPinSet(alt_u32 pin, void (*hook)(void))
 {
   alt_u32 reg;
   void* context = 0;
   int ret;
 
-  ret = alt_irq_register(IRQ_IRQ, context, irqIsr);
+  if (hook) {
+#ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
+	  ret = alt_ic_isr_register(IRQ_IRQ_INTERRUPT_CONTROLLER_ID,
+			  IRQ_IRQ,
+			  irqIsr, context,
+			  0);
+#else
+	 ret = alt_irq_register(IRQ_IRQ, context, irqIsr);
+#endif
+  } else {
+#ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
+	  ret = alt_ic_irq_disable(IRQ_IRQ_INTERRUPT_CONTROLLER_ID, IRQ_IRQ);
+#else
+		ret = alt_irq_register(IRQ_IRQ, NULL, NULL);
+#endif
+  }
   if (ret) {
     return -1;
   }
@@ -262,7 +281,7 @@ alt_u32 irqPinSet(alt_u32 pin, void (*hook)(alt_u32))
 void irqIsr(void* isr_context, alt_u32 id)
 {
   if (irqHook) {
-    irqHook(0);
+    irqHook();
   }
   IOWR(IRQ_BASE, PIO_EDET, 0);
 }

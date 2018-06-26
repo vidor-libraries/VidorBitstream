@@ -59,9 +59,9 @@ BSP_FLAGS=" \
 --set hal.enable_sopc_sysid_check 1 \
 --set hal.enable_sim_optimize $SIMULATION_OPTIMIZED_SUPPORT \
 --set hal.make.bsp_cflags_optimization $OPTIMIZATION_LEVEL \
---set hal.linker.allow_code_at_reset 0 \
+--set hal.linker.allow_code_at_reset 1 \
 --set hal.linker.enable_alt_load 1 \
---set hal.linker.enable_alt_load_copy_exceptions 0 \
+--set hal.linker.enable_alt_load_copy_exceptions 1 \
 --set hal.linker.enable_alt_load_copy_rodata 0 \
 --set hal.linker.enable_alt_load_copy_rwdata 1 \
 --set hal.linker.enable_exception_stack 0 \
@@ -85,14 +85,16 @@ BSP_FLAGS=" \
 --set hal.stdin none \
 --set hal.stdout none \
 --set hal.sys_clk_timer none \
+--set altera_vic_driver.linker_section .rwdata \
 --script set_app_regions.tcl \
 --cmd set_driver none remote_update_0 \
---cmd add_section_mapping .data onchip_memory2_0 \
+--cmd add_section_mapping .rwdata onchip_memory2_0 \
 --cmd add_section_mapping .bss onchip_memory2_0 \
 --cmd add_section_mapping .heap onchip_memory2_0 \
 --cmd add_section_mapping .entry iptronix_generic_quad_spi_controller2_0_avl_mem \
 --cmd add_section_mapping .text iptronix_generic_quad_spi_controller2_0_avl_mem \
 --cmd add_section_mapping .rodata iptronix_generic_quad_spi_controller2_0_avl_mem \
+--cmd add_section_mapping .data iptronix_generic_quad_spi_controller2_0_avl_mem \
 "
 
 # make a copy of standard project sources

@@ -11,10 +11,11 @@
 #include "gpio.h"
 #include "sf.h"
 
+#include <sys/alt_irq.h>
 /**
  *
  */
-#define FPGA_VERSION 0xC1010101
+#define FPGA_VERSION 0xC1010102
 
 /**
  */

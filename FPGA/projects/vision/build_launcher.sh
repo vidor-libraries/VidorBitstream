@@ -84,6 +84,7 @@ BSP_FLAGS="--set hal.enable_c_plus_plus 0 \
 --set hal.stdin none \
 --set hal.stdout none \
 --set hal.sys_clk_timer none \
+--set altera_vic_driver.linker_section .rwdata \
 --script set_regions.tcl \
 --cmd set_driver none remote_update_0 "
 

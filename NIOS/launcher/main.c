@@ -2,6 +2,7 @@
 *
 */
 #include <string.h>
+#include <sys/alt_irq.h>
 
 #include "sign.h"
 
@@ -15,14 +16,14 @@
 SEC_EXTERN(text2)
 SEC_EXTERN(data2)
 
-#define TEST
+//#define TEST
 
 #ifdef TEST
 
 #include "platform.h"
 #include "gpio.h"
 
-void cmdRx(alt_u32 cmd);
+#include "mb.h"
 
 #endif /* TEST */
 
@@ -47,14 +48,15 @@ int main(void)
 
 #ifdef TEST
   platformSetup();
-  irqPinSet(0, cmdRx);
+  irqPinSet(0, platformCmd);
   intPinInit(1, 0);
   while (1) {
     platformLoop();
   };
 #else
   /* disable interrupt */
-  alt_irq_disable_all();
+//  alt_irq_disable_all();
+  irqPinSet(0, NULL);
 
   /* start application */
   __asm__ volatile (
@@ -65,12 +67,3 @@ int main(void)
   return 0;
 }
 
-#ifdef TEST
-/**
- *
- */
-void cmdRx(alt_u32 arg)
-{
-  platformCmd();
-}
-#endif /* TEST */
