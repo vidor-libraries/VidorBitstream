@@ -1,5 +1,6 @@
 module QUAD_ENCODER #(
-    pENCODERS=2
+    pENCODERS=2,
+    pENCODER_PRECISION=32
   )(
     input                             iCLK,
     input                             iRESET,
@@ -15,7 +16,7 @@ module QUAD_ENCODER #(
   
 
 reg [3:0][pENCODERS-1:0] rRESYNC_ENCODER_A,rRESYNC_ENCODER_B;
-reg [pENCODERS-1:0][15:0] rSTEPS;
+reg [pENCODERS-1:0][pENCODER_PRECISION-1:0] rSTEPS;
 
 // decrement
 // A __----____----__

@@ -307,6 +307,7 @@ vision u0(
 		.irq_out_port           (wIRQ_OUT),     //           .out_port
           
 		.sam_pwm_pwm            (wSAM_OUT1),
+		.neopixel_data				(wSAM_OUT2),
 		.encoder_encoder_a      ({bMKR_D[12],bMKR_D[10],bMKR_D[8],bMKR_D[6],bMKR_D[4],bMKR_D[2],bMKR_D[0],bMKR_A[5],bMKR_A[3],bMKR_A[1],bMKR_AREF}), //    encoder.encoder_a
 		.encoder_encoder_b      ({bMKR_D[13],bMKR_D[11],bMKR_D[9],bMKR_D[7],bMKR_D[5],bMKR_D[3],bMKR_D[1],bMKR_A[6],bMKR_A[4],bMKR_A[2],bMKR_A[0]})  //           .encoder_b
 

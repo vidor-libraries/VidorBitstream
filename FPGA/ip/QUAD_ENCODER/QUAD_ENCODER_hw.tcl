@@ -49,11 +49,17 @@ add_fileset_file QUAD_ENCODER.sv SYSTEM_VERILOG PATH QUAD_ENCODER.sv TOP_LEVEL_F
 # 
 add_parameter pENCODERS INTEGER 2
 set_parameter_property pENCODERS DEFAULT_VALUE 2
-set_parameter_property pENCODERS DISPLAY_NAME pENCODERS
+set_parameter_property pENCODERS DISPLAY_NAME "Number of Encoders"
 set_parameter_property pENCODERS TYPE INTEGER
 set_parameter_property pENCODERS UNITS None
 set_parameter_property pENCODERS HDL_PARAMETER true
 
+add_parameter pENCODER_PRECISION INTEGER 32
+set_parameter_property pENCODER_PRECISION DEFAULT_VALUE 32
+set_parameter_property pENCODER_PRECISION DISPLAY_NAME "Counter Bits"
+set_parameter_property pENCODER_PRECISION TYPE INTEGER
+set_parameter_property pENCODER_PRECISION UNITS None
+set_parameter_property pENCODER_PRECISION HDL_PARAMETER true
 
 # 
 # display items
