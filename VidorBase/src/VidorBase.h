@@ -54,6 +54,20 @@ typedef enum {
 #define MB_DEV_QR   	0x07000000
 #define MB_DEV_SDRAM 	0x08000000
 
+static char* configToString(uint32_t cod)
+{
+	switch(cod){
+		case 0x01000000: return "MB_DEV_SF";
+		case 0x02000000: return "MB_DEV_GPIO";
+		case 0x03000000: return "MB_DEV_GFX";
+		case 0x04000000: return "MB_DEV_I2C";
+		case 0x05000000: return "MB_DEV_SPI";
+		case 0x06000000: return "MB_DEV_UART";
+		case 0x07000000: return "MB_DEV_QR";
+		case 0x08000000: return "MB_DEV_SDRAM";
+	}
+}
+
 typedef struct {
   int num;
   struct {
@@ -75,6 +89,11 @@ public:
 		capabilities = 0xFF; //read(BASE_ADDRESS);
 		attachInterrupt(IRQ_PIN, VidorBase::onInterrupt, FALLING);
 
+		if (jumpToApp) {
+			// wait one second to make sure jump was ok
+			delay(1000);
+		}
+
 		return ret;
 	}
 
@@ -84,6 +103,35 @@ public:
 
 	bool ready() {
 		return capabilities != 0;
+	}
+
+	uint32_t version() {
+		uint32_t ptr[1];
+		uint32_t ver;
+
+		ptr[0] = 0 | 1;
+		ver = mbCmdSend(ptr, 1);
+		return ver;
+	}
+
+	uint32_t printConfig(void)
+	{
+		uint32_t ptr[1];
+		sFpgaCfg cfg;
+		char str[64];
+
+		ptr[0] = 0 | 2;
+		mbCmdSend(ptr, 1);
+		mbRead(1, &cfg, (sizeof(cfg)+3)/4);
+
+		int i;
+		sprintf(str, "number of devices %d", cfg.num);
+		Serial.println(str);
+		for(i=0; i<cfg.num; i++){
+			sprintf(str, "%d %08X %s", cfg.dev[i].num, cfg.dev[i].cod, configToString(cfg.dev[i].cod));
+			Serial.println(str);
+		}
+		return 0;
 	}
 
 	int writeMemory(int offset, uint8_t* buffer, size_t len) {
