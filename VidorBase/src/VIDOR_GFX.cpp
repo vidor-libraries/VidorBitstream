@@ -123,7 +123,7 @@ size_t Vidor_GFX::write(uint8_t c) {
     if(GFXText.cursor_x<VIDOR_WEIGHT && GFXText.cursor_y <VIDOR_LENGTH)
     {
     	if(c=='\n'){
-    		GFXText.cursor_y+=12*GFXText.txt_size;
+    		GFXText.cursor_y+=YSHIFT*GFXText.txt_size;
 		  return 1;
 	    } else if (c=='\r'){
 	    	GFXText.cursor_x=0;
@@ -136,9 +136,9 @@ size_t Vidor_GFX::write(uint8_t c) {
           ptr[4] = GFXText.txt_size;
           ptr[5] = c;
           ret= mbCmdSend(ptr, 6);
-          GFXText.cursor_x+=12*GFXText.txt_size;
-          if((GFXText.cursor_x+(12*GFXText.txt_size))>=VIDOR_WEIGHT){
-        	  GFXText.cursor_y+=(12*GFXText.txt_size);
+          GFXText.cursor_x+=YSHIFT*GFXText.txt_size;
+          if((GFXText.cursor_x+(YSHIFT*GFXText.txt_size))>=VIDOR_WEIGHT){
+        	  GFXText.cursor_y+=(YSHIFT*GFXText.txt_size);
             if(GFXText.cursor_y>=VIDOR_LENGTH){
               return 0;
         	}
@@ -182,4 +182,7 @@ uint16_t Vidor_GFX::Black(){
 }
 uint16_t Vidor_GFX::Brown(){
  return Color(80,0,0);
+}
+uint16_t Vidor_GFX::White(){
+ return Color(0xFF,0xFF,0xFF);
 }

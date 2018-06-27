@@ -4,10 +4,11 @@
 
 #include "Arduino.h"
 #include "VidorUtils.h"
+#include "VidorBase.h"
 
 #define VIDOR_WEIGHT 640
 #define VIDOR_LENGTH 480
-
+#define YSHIFT 17
 #define MB_DEV_GFX  0x03000000
 
 #define GFX_PX   0
@@ -30,7 +31,7 @@ class Vidor_GFXtext {
           uint16_t getCursotY(void);
 	protected:
 	    uint16_t cursor_x=0;
-	    uint16_t cursor_y=12;
+	    uint16_t cursor_y=YSHIFT;
 	    uint16_t txt_color=0;
 	    uint16_t txt_alpha=1;
 	    uint16_t txt_size=1;
@@ -59,6 +60,7 @@ class Vidor_GFX:public Print {
     uint16_t Purple();
     uint16_t Black();
     uint16_t Brown();
+    uint16_t White();
     Vidor_GFXtext GFXText;
 
 
