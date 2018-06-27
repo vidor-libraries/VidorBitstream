@@ -16,6 +16,7 @@
 #include "uart.h"
 #include "qr.h"
 #include "sdram.h"
+#include "np.h"
 
 /**
  *
@@ -50,6 +51,7 @@ sDevHnd const devHnd[] = {
 //  {uartInit, uartCmd, NULL, MB_DEV_UART, 1},
   {qrInit, qrCmd, qrLoop, MB_DEV_QR, 1},
   {sdramInit, sdramCmd, NULL, MB_DEV_SDRAM, 1},
+  {npInit, npCmd, NULL, MB_DEV_NP, 1},
 };
 
 /**

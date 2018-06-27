@@ -14,7 +14,7 @@
 #include "mb.h"
 
 alt_u32 spi_baseaddr[] = {
-	NINA_SPI_BASE,
+  NINA_SPI_BASE,
 };
 
 alt_u32 spi_dev_num;
@@ -69,9 +69,9 @@ alt_u32 spiTrx(alt_u32 index, alt_u8* buf, alt_u32 len)
    * Unfortunately the hardware does not seem to work with credits > 1,
    * leave it at 1 for now.
    */
-  alt_32 credits = 1;
-  int i;
+  alt_32  credits = 1;
   alt_u32 status;
+  int     i;
 
   /**
    * Discard any stale data present in the RXDATA register, in case

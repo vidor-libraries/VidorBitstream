@@ -38,5 +38,6 @@
 #define MB_DEV_UART   (6<<MB_DEV_OFS)
 #define MB_DEV_QR     (7<<MB_DEV_OFS)
 #define MB_DEV_SDRAM  (8<<MB_DEV_OFS)
+#define MB_DEV_NP     (9<<MB_DEV_OFS)
 
 #endif /* MB_H_ */

@@ -303,7 +303,7 @@ void gfxCmd(void)
     ret = drawChar(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
     break;
   case 7:
-    ret = drawTxt(rpc[1], rpc[2], rpc[3], rpc[4]);
+    ret = drawTxt(rpc[1], rpc[2], rpc[3], (alt_u8*)rpc[4]);
     break;
   }
   rpc[1] = ret;

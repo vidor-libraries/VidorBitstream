@@ -65,7 +65,7 @@ alt_u32 i2cRead(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len);
  */
 void i2cInit(int devs)
 {
-	i2c_dev_num = devs;
+  i2c_dev_num = devs;
 }
 
 /**
@@ -73,31 +73,31 @@ void i2cInit(int devs)
  */
 void i2cCmd(void)
 {
-	alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
-	alt_u32 ret;
+  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
+  alt_u32 ret;
 
-	ret = -1;
-	switch(MB_CMD(rpc[0])){
-	case 1:
-		/* enableI2C(int index) */
-		ret = i2cEnable(MB_SUB(rpc[0]));
-		break;
-	case 2:
-		/* setI2CClock(int index, int baud) */
-		ret = i2cClockSet(MB_SUB(rpc[0]), rpc[1]);
-		break;
-	case 3:
-		/* disableI2C(int index) */
-		ret = i2cDisable(MB_SUB(rpc[0]));
-		break;
-	case 5:
-		ret = i2cRead(MB_SUB(rpc[0]), rpc[1], (alt_u8*)&rpc[3], rpc[2]);
-		break;
-	case 8:
-		ret = i2cWrite(MB_SUB(rpc[0]), rpc[1], (alt_u8*)&rpc[3], rpc[2]);
-		break;
-	}
-	rpc[1] = ret;
+  ret = -1;
+  switch(MB_CMD(rpc[0])){
+  case 1:
+    /* enableI2C(int index) */
+    ret = i2cEnable(MB_SUB(rpc[0]));
+    break;
+  case 2:
+    /* setI2CClock(int index, int baud) */
+    ret = i2cClockSet(MB_SUB(rpc[0]), rpc[1]);
+    break;
+  case 3:
+    /* disableI2C(int index) */
+    ret = i2cDisable(MB_SUB(rpc[0]));
+    break;
+  case 5:
+    ret = i2cRead(MB_SUB(rpc[0]), rpc[1], (alt_u8*)&rpc[3], rpc[2]);
+    break;
+  case 8:
+    ret = i2cWrite(MB_SUB(rpc[0]), rpc[1], (alt_u8*)&rpc[3], rpc[2]);
+    break;
+  }
+  rpc[1] = ret;
 }
 
 /**
@@ -105,21 +105,21 @@ void i2cCmd(void)
  */
 alt_u32 i2cEnable(alt_u32 index)
 {
-	if(index >= i2c_dev_num){
-		return -1;
-	}
-	alt_u32 baseaddr = i2c_baseaddr[index];
+  if(index >= i2c_dev_num){
+    return -1;
+  }
+  alt_u32 baseaddr = i2c_baseaddr[index];
 
-	/* Setup prescaler for 100KHz with sysclk of 154MHz */
-	int prescale = 154000000/(5*100000);
+  /* Setup prescaler for 100KHz with sysclk of 154MHz */
+  int prescale = 154000000/(5*100000);
 
-	IOWR_I2C_CTR(baseaddr, 0x00); /* Disable core */
+  IOWR_I2C_CTR(baseaddr, 0x00); /* Disable core */
 
-	IOWR_I2C_PRERLO(baseaddr,  prescale & 0xff);
-	IOWR_I2C_PRERHI(baseaddr, (prescale & 0xff00)>>8);
+  IOWR_I2C_PRERLO(baseaddr,  prescale & 0xff);
+  IOWR_I2C_PRERHI(baseaddr, (prescale & 0xff00)>>8);
 
-	IOWR_I2C_CTR(baseaddr, OC_I2C_EN); /* Enable core */
-	return 0;
+  IOWR_I2C_CTR(baseaddr, OC_I2C_EN); /* Enable core */
+  return 0;
 }
 
 /**
@@ -127,21 +127,21 @@ alt_u32 i2cEnable(alt_u32 index)
  */
 alt_u32 i2cClockSet(alt_u32 index, alt_u32 baud)
 {
-	if(index >= i2c_dev_num){
-		return -1;
-	}
-	alt_u32 baseaddr = i2c_baseaddr[index];
-	int prescale = 154000000/(5*baud);	/* Setup prescaler for baud with sysclk of 154MHz */
+  if(index >= i2c_dev_num){
+    return -1;
+  }
+  alt_u32 baseaddr = i2c_baseaddr[index];
+  int prescale = 154000000/(5*baud);	/* Setup prescaler for baud with sysclk of 154MHz */
 
-	/* disable core */
-	IOWR_I2C_CTR(baseaddr, 0x00);
+  /* disable core */
+  IOWR_I2C_CTR(baseaddr, 0x00);
 
-	IOWR_I2C_PRERLO(baseaddr,  prescale & 0xFF);
-	IOWR_I2C_PRERHI(baseaddr, (prescale & 0xFF00)>>8);
+  IOWR_I2C_PRERLO(baseaddr,  prescale & 0xFF);
+  IOWR_I2C_PRERHI(baseaddr, (prescale & 0xFF00)>>8);
 
-	/* enable core */
-	IOWR_I2C_CTR(baseaddr, OC_I2C_EN);
-	return 0;
+  /* enable core */
+  IOWR_I2C_CTR(baseaddr, OC_I2C_EN);
+  return 0;
 }
 
 /**
@@ -149,14 +149,14 @@ alt_u32 i2cClockSet(alt_u32 index, alt_u32 baud)
  */
 alt_u32 i2cDisable(alt_u32 index)
 {
-	if(index >= i2c_dev_num){
-		return -1;
-	}
-	alt_u32 baseaddr = i2c_baseaddr[index];
+  if(index >= i2c_dev_num){
+    return -1;
+  }
+  alt_u32 baseaddr = i2c_baseaddr[index];
 
-	/* disable core */
-	IOWR_I2C_CTR(baseaddr, I2C_CR_STO);
-	return 0;
+  /* disable core */
+  IOWR_I2C_CTR(baseaddr, I2C_CR_STO);
+  return 0;
 }
 
 
@@ -165,34 +165,34 @@ alt_u32 i2cDisable(alt_u32 index)
  */
 alt_u32 i2cRead(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
 {
-	if(index >= i2c_dev_num){
-		return -1;
-	}
-	alt_u32 baseaddr = i2c_baseaddr[index];
-	int i;
+  if(index >= i2c_dev_num){
+    return -1;
+  }
+  alt_u32 baseaddr = i2c_baseaddr[index];
+  int i;
 
-	_i2c_wait_tip(baseaddr);
+  _i2c_wait_tip(baseaddr);
 
-	// write address
-	IOWR_I2C_TXR(baseaddr, (address<<1)|1);
-	IOWR_I2C_CR(baseaddr, I2C_CR_STA | I2C_CR_WR);
-	_i2c_wait_tip(baseaddr);
-	if(IORD_I2C_SR(baseaddr) & I2C_SR_RXACK){
-		return -2;
-	}
+  // write address
+  IOWR_I2C_TXR(baseaddr, (address<<1)|1);
+  IOWR_I2C_CR(baseaddr, I2C_CR_STA | I2C_CR_WR);
+  _i2c_wait_tip(baseaddr);
+  if(IORD_I2C_SR(baseaddr) & I2C_SR_RXACK){
+    return -2;
+  }
 
-	// read data
-	for(i=0; i<len; i++){
-		if(i==(len-1)){
-			IOWR_I2C_CR(baseaddr, I2C_CR_RD  | I2C_CR_ACK | I2C_CR_STO);
-		}else{
-			IOWR_I2C_CR(baseaddr, I2C_CR_RD);
-		}
-		_i2c_wait_tip(baseaddr);
-		*(data + i) = IORD_I2C_RXR(baseaddr);
-	}
+  // read data
+  for(i=0; i<len; i++){
+    if(i==(len-1)){
+      IOWR_I2C_CR(baseaddr, I2C_CR_RD  | I2C_CR_ACK | I2C_CR_STO);
+    }else{
+      IOWR_I2C_CR(baseaddr, I2C_CR_RD);
+    }
+    _i2c_wait_tip(baseaddr);
+    *(data + i) = IORD_I2C_RXR(baseaddr);
+  }
 
-	return 0;
+  return 0;
 }
 
 /**
@@ -200,37 +200,37 @@ alt_u32 i2cRead(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
  */
 alt_u32 i2cWrite(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
 {
-	if(index >= i2c_dev_num){
-		return -1;
-	}
-	alt_u32 baseaddr = i2c_baseaddr[index];
-	alt_u32 i;
+  if(index >= i2c_dev_num){
+    return -1;
+  }
+  alt_u32 baseaddr = i2c_baseaddr[index];
+  alt_u32 i;
 
-	_i2c_wait_tip(baseaddr);
+  _i2c_wait_tip(baseaddr);
 
-	// write address
-	IOWR_I2C_TXR(baseaddr, address<<1);
-	IOWR_I2C_CR(baseaddr, I2C_CR_STA | I2C_CR_WR);
-	_i2c_wait_tip(baseaddr);
-	if(IORD_I2C_SR(baseaddr) & I2C_SR_RXACK){
-		return -2;
-	}
+  // write address
+  IOWR_I2C_TXR(baseaddr, address<<1);
+  IOWR_I2C_CR(baseaddr, I2C_CR_STA | I2C_CR_WR);
+  _i2c_wait_tip(baseaddr);
+  if(IORD_I2C_SR(baseaddr) & I2C_SR_RXACK){
+    return -2;
+  }
 
-	for(i=0; i<len-1; i++){
-		IOWR_I2C_TXR(baseaddr, data[i]);
-		IOWR_I2C_CR(baseaddr, I2C_CR_WR);
-		_i2c_wait_tip(baseaddr);
-		if(IORD_I2C_SR(baseaddr) & I2C_SR_RXACK){
-			return -2;
-		}
-	}
-	IOWR_I2C_TXR(baseaddr, data[len-1]);
-	IOWR_I2C_CR(baseaddr, I2C_CR_WR | I2C_CR_STO);
-	_i2c_wait_tip(baseaddr);
-	if(IORD_I2C_SR(baseaddr) & I2C_SR_RXACK){
-		return -2;
-	}
-	return 0;
+  for(i=0; i<len-1; i++){
+    IOWR_I2C_TXR(baseaddr, data[i]);
+    IOWR_I2C_CR(baseaddr, I2C_CR_WR);
+    _i2c_wait_tip(baseaddr);
+    if(IORD_I2C_SR(baseaddr) & I2C_SR_RXACK){
+      return -2;
+    }
+  }
+  IOWR_I2C_TXR(baseaddr, data[len-1]);
+  IOWR_I2C_CR(baseaddr, I2C_CR_WR | I2C_CR_STO);
+  _i2c_wait_tip(baseaddr);
+  if(IORD_I2C_SR(baseaddr) & I2C_SR_RXACK){
+    return -2;
+  }
+  return 0;
 }
 
 /**
@@ -238,5 +238,5 @@ alt_u32 i2cWrite(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
  */
 void _i2c_wait_tip(alt_u32 base)
 {
-	while(IORD_I2C_SR(base) & I2C_SR_TIP);
+  while(IORD_I2C_SR(base) & I2C_SR_TIP);
 }
