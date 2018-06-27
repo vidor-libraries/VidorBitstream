@@ -21,21 +21,21 @@
 #define GFX_WT   7
 
 class Vidor_GFXtext {
-	public:
-	Vidor_GFXtext(void);
-      void textColor(uint16_t color);
-      void textAlpha(uint16_t alpha=1);
-      void textSize(uint16_t size);
-      void setCursor(uint16_t x,uint16_t y);
-      uint16_t getCursotX(void);
-          uint16_t getCursotY(void);
-	protected:
-	    uint16_t cursor_x=0;
-	    uint16_t cursor_y=YSHIFT;
-	    uint16_t txt_color=0;
-	    uint16_t txt_alpha=1;
-	    uint16_t txt_size=1;
-	    friend class Vidor_GFX;
+  public:
+  Vidor_GFXtext(void);
+    void textColor(uint16_t color);
+    void textAlpha(uint16_t alpha=1);
+    void textSize(uint16_t size);
+    void setCursor(uint16_t x,uint16_t y);
+    uint16_t getCursotX(void);
+    uint16_t getCursotY(void);
+  protected:
+    uint16_t cursor_x=0;
+    uint16_t cursor_y=YSHIFT;
+    uint16_t txt_color=0;
+    uint16_t txt_alpha=1;
+    uint16_t txt_size=1;
+    friend class Vidor_GFX;
 };
 
 class Vidor_GFX:public Print {
@@ -50,7 +50,6 @@ class Vidor_GFX:public Print {
     void fillCircle(uint16_t x0, uint16_t y0, uint16_t r, uint16_t color, uint16_t alpha=1);
     void drawChar(uint16_t x, uint16_t y, uint16_t color, uint8_t size,unsigned char c, uint16_t alpha=1);
     virtual size_t write(uint8_t c);
-
     uint16_t Color(uint8_t r, uint8_t g, uint8_t b);
     uint16_t Red();
     uint16_t Green();
@@ -62,7 +61,5 @@ class Vidor_GFX:public Print {
     uint16_t Brown();
     uint16_t White();
     Vidor_GFXtext GFXText;
-
-
 };
 #endif // _VIDOR_GFX_H

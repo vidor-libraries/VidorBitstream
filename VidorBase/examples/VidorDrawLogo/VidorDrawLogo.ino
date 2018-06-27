@@ -34,7 +34,7 @@ void loop()
   vdgfx.fillRect(175,220,100,10 ,vdgfx.lightBlue(),1);
   vdgfx.fillRect(365,220,100,10 ,vdgfx.lightBlue(),1);
   vdgfx.fillRect(410,175,10,100 ,vdgfx.lightBlue(),1);
-  vdgfx.GFXText.setCursor(145,375);
+  vdgfx.GFXText.setCursor(150,375);
   vdgfx.GFXText.textAlpha(1);
   vdgfx.GFXText.textSize(3);
   vdgfx.GFXText.textColor(vdgfx.lightBlue());
