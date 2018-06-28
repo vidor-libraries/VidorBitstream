@@ -22,7 +22,7 @@
 
 class Vidor_GFXtext {
   public:
-  Vidor_GFXtext(void);
+    Vidor_GFXtext(void);
     void textColor(uint16_t color);
     void textAlpha(uint16_t alpha=1);
     void textSize(uint16_t size);
@@ -36,11 +36,11 @@ class Vidor_GFXtext {
     uint16_t txt_alpha=1;
     uint16_t txt_size=1;
     friend class Vidor_GFX;
+
 };
 
 class Vidor_GFX:public Print {
   public:
-    //Scrivere il costruttore
     Vidor_GFX(void);
     void drawPixel(uint16_t x, uint16_t y, uint16_t color, uint16_t alpha=1);
     void drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t    color, uint16_t alpha=1);
@@ -61,5 +61,7 @@ class Vidor_GFX:public Print {
     uint16_t Brown();
     uint16_t White();
     Vidor_GFXtext GFXText;
+  protected:
+    friend class Vidor_CAM;
 };
 #endif // _VIDOR_GFX_H

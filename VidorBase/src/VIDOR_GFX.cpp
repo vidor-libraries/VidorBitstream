@@ -13,7 +13,7 @@ void Vidor_GFX::drawPixel(uint16_t x, uint16_t y, uint16_t color, uint16_t alpha
     ptr[0] = MB_DEV_GFX | GFX_PX;
     ptr[1] = x;
     ptr[2] = y;
-    ptr[3] = (color&0x7FFFF)|(alpha<<15);
+    ptr[3] = (color&0x7FFF)|(alpha<<15);
     mbCmdSend(ptr, 4);
   }
 }
@@ -26,7 +26,7 @@ void Vidor_GFX::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uin
     ptr[2] = y0;
     ptr[3] = x1;
     ptr[4] = y1;
-    ptr[5] = (color&0x7FFFF)|(alpha<<15);
+    ptr[5] = (color & 0x7FFF)|(alpha<<15);
     mbCmdSend(ptr, 6);
   }
 }
@@ -38,7 +38,7 @@ void Vidor_GFX::drawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_
     ptr[2] = y;
     ptr[3] = w;
     ptr[4] = h;
-    ptr[5] = (color&0x7FFFF)|(alpha<<15);
+    ptr[5] = (color&0x7FFF)|(alpha<<15);
     mbCmdSend(ptr, 6);
   }
 }
@@ -51,7 +51,7 @@ void Vidor_GFX::fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_
     ptr[2] = y;
     ptr[3] = w;
     ptr[4] = h;
-    ptr[5] = (color&0x7FFFF)|(alpha<<15);
+    ptr[5] = (color&0x7FFF)|(alpha<<15);
     mbCmdSend(ptr, 6);
   }
 }
@@ -64,7 +64,7 @@ void Vidor_GFX::drawCircle(uint16_t x0, uint16_t y0, uint16_t r, uint16_t color,
     ptr[1] = x0;
     ptr[2] = y0;
     ptr[3] = r;
-    ptr[4] = (color&0x7FFFF)|(alpha<<15);
+    ptr[4] = (color&0x7FFF)|(alpha<<15);
     mbCmdSend(ptr, 5);
   }
 }
@@ -77,7 +77,7 @@ void Vidor_GFX::fillCircle(uint16_t x0, uint16_t y0, uint16_t r, uint16_t color,
     ptr[1] = x0;
     ptr[2] = y0;
     ptr[3] = r;
-    ptr[4] = (color&0x7FFFF)|(alpha<<15);
+    ptr[4] = (color&0x7FFF)|(alpha<<15);
     mbCmdSend(ptr, 5);
   }
 }
@@ -121,7 +121,7 @@ size_t Vidor_GFX::write(uint8_t c) {
       ptr[0] = MB_DEV_GFX | GFX_WC;
       ptr[1] = GFXText.cursor_x;
       ptr[2] = GFXText.cursor_y;
-      ptr[3] = ( GFXText.txt_color&0x7FFFF)|(GFXText.txt_alpha<<15);
+      ptr[3] = ( GFXText.txt_color&0x7FFF)|(GFXText.txt_alpha<<15);
       ptr[4] = GFXText.txt_size;
       ptr[5] = c;
       ret= mbCmdSend(ptr, 6);
@@ -142,7 +142,7 @@ size_t Vidor_GFX::write(uint8_t c) {
 uint16_t Vidor_GFX::Color(uint8_t r, uint8_t g, uint8_t b) {
   return (((uint16_t)(r & 0xF8) << 8) |
          ((uint16_t)(g & 0xFC) << 3) |
-                    (b         >> 3))&0x7FFFF;
+                    (b         >> 3))&0x7FFF;
 }
 
 uint16_t Vidor_GFX::Red() {
