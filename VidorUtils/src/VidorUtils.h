@@ -15,6 +15,8 @@
 #define NO_APP				no_data
 #define NO_USER_DATA		no_data
 
+__attribute__((weak)) void enableFpgaClock() {}
+
 class VidorUtils {
 public:
 
@@ -23,6 +25,11 @@ public:
 	static void onInterrupt();
 
 	int begin(bool jumpToApp = true) {
+
+		// Start clocking the FPGA; this function is declared weak and can be overridden
+		// with a custom implementation (or can be left untouched if FPGA is clocked internally)
+		enableFpgaClock();
+
 		int ret = jtagInit();
 		mbPinSet();
 
