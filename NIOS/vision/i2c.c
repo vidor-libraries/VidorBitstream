@@ -47,8 +47,8 @@
 
 
 alt_u32 const i2c_baseaddr[] = {
-	CSI_I2C_BASE,
-	HDMI_I2C_BASE,
+  CSI_I2C_BASE,
+  HDMI_I2C_BASE,
 };
 alt_u32 i2c_dev_num;
 

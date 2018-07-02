@@ -17,11 +17,12 @@
 #include "qr.h"
 #include "sdram.h"
 #include "np.h"
+#include "enc.h"
 
 /**
  *
  */
-#define FPGA_VERSION 0x01010101
+#define FPGA_VERSION 0x01010102
 
 /**
  */
@@ -52,6 +53,7 @@ sDevHnd const devHnd[] = {
   {qrInit, qrCmd, qrLoop, MB_DEV_QR, 1},
   {sdramInit, sdramCmd, NULL, MB_DEV_SDRAM, 1},
   {npInit, npCmd, NULL, MB_DEV_NP, 1},
+  {encInit, encCmd, NULL, MB_DEV_ENC, 11},
 };
 
 /**

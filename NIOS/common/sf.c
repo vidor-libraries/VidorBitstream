@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <system.h>
+#include <altera_avalon_spi.h>
 
 #include "config.h"
 #include "mb.h"
@@ -25,7 +26,6 @@
 #define QSPI_CONTROLLER_1US_TIMEOUT_VALUE        700000
 
 #else  /*  defined(SF_USE_QSPI) && (SF_USE_QSPI == 1) */
-#include <altera_avalon_spi.h>
 
 #define SF_FAST_RD
 

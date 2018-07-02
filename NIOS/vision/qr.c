@@ -60,7 +60,7 @@ void qrInit(int devs)
 #endif
   //qrThrSet(120);
   qr.sts = QR_STS_NOQR;
-  qrEnable = 1;
+  qrEnable = 0;
   qrCnt = 0;
 }
 

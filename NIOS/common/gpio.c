@@ -70,7 +70,12 @@ alt_u32 pwmWrite(alt_u32 pin, alt_u16 mh, alt_u16 ml);
 alt_u32 irqPin;
 void (*irqHook)(void);
 
+#ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
+void irqIsr(void* isr_context);
+#else
 void irqIsr(void* isr_context, alt_u32 id);
+#endif
+
 
 #if defined(GPIO_GPIO) && (GPIO_GPIO == 1)
 
@@ -118,7 +123,7 @@ alt_u32 gpioPinMode(alt_u32 pin, alt_u32 mode)
   case GPIO_IO_I:
     reg = GPIO_MUX0 + (pad>>4);
     val = IORD(base, reg);
-    val &=~ 0x3 << ((pad & 0x0F) << 1);
+    val &=~ (0x3 << ((pad & 0x0F) << 1));
     //val |= mode << ((pad & 0x0F) << 1);
     IOWR(base, reg, val);
 
@@ -130,7 +135,7 @@ alt_u32 gpioPinMode(alt_u32 pin, alt_u32 mode)
   case GPIO_IO_O:
     reg = GPIO_MUX0 + (pad>>4);
     val = IORD(base, reg);
-    val &=~ 0x3 << ((pad & 0x0F) << 1);
+    val &=~ (0x3 << ((pad & 0x0F) << 1));
     //val |= mode << ((pad & 0x0F) << 1);
     IOWR(base, reg, val);
 
@@ -142,7 +147,7 @@ alt_u32 gpioPinMode(alt_u32 pin, alt_u32 mode)
   case GPIO_PWM:
     reg = GPIO_MUX0 + (pad>>4);
     val = IORD(base, reg);
-    val &=~ 0x3 << ((pad & 0x0F) << 1);
+    val &=~ (0x3 << ((pad & 0x0F) << 1));
     val |= 1 << ((pad & 0x0F) << 1);
     IOWR(base, reg, val);
     break;
@@ -150,7 +155,7 @@ alt_u32 gpioPinMode(alt_u32 pin, alt_u32 mode)
   case GPIO_AUX:
     reg = GPIO_MUX0 + (pad>>4);
     val = IORD(base, reg);
-    val &=~ 0x3 << ((pad & 0x0F) << 1);
+    val &=~ (0x3 << ((pad & 0x0F) << 1));
     val |= 2 << ((pad & 0x0F) << 1);
     IOWR(base, reg, val);
     break;
@@ -244,18 +249,17 @@ alt_u32 irqPinSet(alt_u32 pin, void (*hook)(void))
 
   if (hook) {
 #ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
-	  ret = alt_ic_isr_register(IRQ_IRQ_INTERRUPT_CONTROLLER_ID,
-			  IRQ_IRQ,
-			  irqIsr, context,
-			  0);
+    ret = alt_ic_isr_register(IRQ_IRQ_INTERRUPT_CONTROLLER_ID,
+                              IRQ_IRQ,
+                              irqIsr, context, 0);
 #else
-	 ret = alt_irq_register(IRQ_IRQ, context, irqIsr);
+    ret = alt_irq_register(IRQ_IRQ, context, irqIsr);
 #endif
   } else {
 #ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
-	  ret = alt_ic_irq_disable(IRQ_IRQ_INTERRUPT_CONTROLLER_ID, IRQ_IRQ);
+    ret = alt_ic_irq_disable(IRQ_IRQ_INTERRUPT_CONTROLLER_ID, IRQ_IRQ);
 #else
-		ret = alt_irq_register(IRQ_IRQ, NULL, NULL);
+    ret = alt_irq_register(IRQ_IRQ, NULL, NULL);
 #endif
   }
   if (ret) {
@@ -278,7 +282,11 @@ alt_u32 irqPinSet(alt_u32 pin, void (*hook)(void))
 /**
  *
  */
+#ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
+void irqIsr(void* isr_context)
+#else
 void irqIsr(void* isr_context, alt_u32 id)
+#endif
 {
   if (irqHook) {
     irqHook();

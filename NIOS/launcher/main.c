@@ -19,12 +19,9 @@ SEC_EXTERN(data2)
 //#define TEST
 
 #ifdef TEST
-
 #include "platform.h"
 #include "gpio.h"
-
 #include "mb.h"
-
 #endif /* TEST */
 
 /**
