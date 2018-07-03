@@ -91,6 +91,7 @@ class VidorSPISettings {
   BitOrder bitOrder;
 
   friend class VidorSPIClass;
+  friend class BitBangedSPI;
 };
 
 
@@ -133,6 +134,70 @@ class VidorSPIClass {
   uint32_t interruptMask;
 };
 
+
+class BitBangedSPI {
+public:
+
+  BitBangedSPI() {}
+
+  void begin() {
+    pinMode(SCK_BB, OUTPUT);
+    pinMode(MOSI_BB, OUTPUT);
+    //pinMode(MISO_BB, INPUT);
+    digitalWrite(SCK_BB, LOW);
+    digitalWrite(MOSI_BB, LOW);
+  }
+
+  void beginTransaction(VidorSPISettings settings) {
+    pulseWidth = (500000 + settings.clockFreq - 1) / settings.clockFreq;
+    if (pulseWidth == 0)
+      pulseWidth = 1;
+  }
+
+  void endTransaction() {}
+
+  void end() {}
+
+  uint8_t transfer (uint8_t b) {
+    for (unsigned int i = 0; i < 8; ++i) {
+      digitalWrite(MOSI_BB, (b & 0x80) ? HIGH : LOW);
+      digitalWrite(SCK_BB, HIGH);
+      //delayMicroseconds(pulseWidth);
+      b = (b << 1) | digitalRead(MISO_BB);
+      digitalWrite(SCK_BB, LOW); // slow pulse
+      //delayMicroseconds(pulseWidth);
+    }
+    Serial.println(b, HEX);
+    return b;
+  }
+
+  uint8_t transfer (uint8_t* data, size_t count) {
+    for (size_t i=0; i<count; i++) {
+      data[i] = transfer(data[i]);
+    }
+	return count;
+  }
+
+  uint16_t transfer16 (uint16_t data) {
+    union { uint16_t val; struct { uint8_t lsb; uint8_t msb; }; } t;
+
+    t.val = data;
+
+    t.msb = transfer(t.msb);
+    t.lsb = transfer(t.lsb);
+
+    return t.val;
+  }
+
+  void setBitOrder(uint8_t) {}
+  void setDataMode(uint8_t) {}
+  void setClockDivider(uint32_t) {}
+
+private:
+  unsigned long pulseWidth; // in microseconds
+};
+
+extern BitBangedSPI SPIExBB;
 extern VidorSPIClass SPIEx;
 
 #endif

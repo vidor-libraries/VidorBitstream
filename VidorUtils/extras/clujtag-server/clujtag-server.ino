@@ -1,7 +1,10 @@
 #include "jtag.h"
+#include "VidorUtils.h"
 
 void setup() {
   // put your setup code here, to run once:
+  enableFpgaClock();
+
   Serial.begin(115200);
   while (!Serial) {}
   pinMode(LED_BUILTIN, OUTPUT);
