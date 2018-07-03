@@ -3,21 +3,21 @@
 # DO NOT MODIFY
 
 
-# 
+#
 # NEOPIXEL "NeoPixel driver" v1.0
 #  2018.06.27.19:31:20
-# 
-# 
+#
+#
 
-# 
+#
 # request TCL package from ACDS 16.1
-# 
+#
 package require -exact qsys 16.1
 
 
-# 
+#
 # module NEOPIXEL
-# 
+#
 set_module_property DESCRIPTION ""
 set_module_property NAME NEOPIXEL
 set_module_property VERSION 1.0
@@ -34,9 +34,9 @@ set_module_property REPORT_HIERARCHY false
 set_module_property ELABORATION_CALLBACK            elaboration_callback
 
 
-# 
+#
 # file sets
-# 
+#
 add_fileset QUARTUS_SYNTH QUARTUS_SYNTH "" ""
 set_fileset_property QUARTUS_SYNTH TOP_LEVEL NEOPIXEL
 set_fileset_property QUARTUS_SYNTH ENABLE_RELATIVE_INCLUDE_PATHS false
@@ -44,9 +44,9 @@ set_fileset_property QUARTUS_SYNTH ENABLE_FILE_OVERWRITE_MODE false
 add_fileset_file NEOPIXEL.sv SYSTEM_VERILOG PATH NEOPIXEL.sv TOP_LEVEL_FILE
 
 
-# 
+#
 # parameters
-# 
+#
 add_parameter pCHANNELS INTEGER 23
 set_parameter_property pCHANNELS DEFAULT_VALUE 23
 set_parameter_property pCHANNELS DISPLAY_NAME pCHANNELS
@@ -55,14 +55,14 @@ set_parameter_property pCHANNELS UNITS None
 set_parameter_property pCHANNELS HDL_PARAMETER true
 
 
-# 
+#
 # display items
-# 
+#
 
 
-# 
+#
 # connection point csr
-# 
+#
 add_interface csr avalon end
 set_interface_property csr addressUnits WORDS
 set_interface_property csr associatedClock clock
@@ -75,8 +75,8 @@ set_interface_property csr holdTime 0
 set_interface_property csr linewrapBursts false
 set_interface_property csr maximumPendingReadTransactions 0
 set_interface_property csr maximumPendingWriteTransactions 0
-set_interface_property csr readLatency 0
-set_interface_property csr readWaitTime 1
+set_interface_property csr readLatency 1
+set_interface_property csr readWaitTime 0
 set_interface_property csr setupTime 0
 set_interface_property csr timingUnits Cycles
 set_interface_property csr writeWaitTime 0
@@ -97,9 +97,9 @@ set_interface_assignment csr embeddedsw.configuration.isNonVolatileStorage 0
 set_interface_assignment csr embeddedsw.configuration.isPrintableDevice 0
 
 
-# 
+#
 # connection point clock
-# 
+#
 add_interface clock clock end
 set_interface_property clock clockRate 0
 set_interface_property clock ENABLED true
@@ -111,9 +111,9 @@ set_interface_property clock SVD_ADDRESS_GROUP ""
 add_interface_port clock iCLOCK clk Input 1
 
 
-# 
+#
 # connection point reset
-# 
+#
 add_interface reset reset end
 set_interface_property reset associatedClock clock
 set_interface_property reset synchronousEdges DEASSERT
@@ -126,9 +126,9 @@ set_interface_property reset SVD_ADDRESS_GROUP ""
 add_interface_port reset iRESET reset Input 1
 
 
-# 
+#
 # connection point pixel
-# 
+#
 add_interface pixel conduit end
 set_interface_property pixel associatedClock clock
 set_interface_property pixel associatedReset ""
@@ -138,9 +138,9 @@ set_interface_property pixel PORT_NAME_MAP ""
 set_interface_property pixel CMSIS_SVD_VARIABLES ""
 set_interface_property pixel SVD_ADDRESS_GROUP ""
 
-# 
+#
 # connection point data
-# 
+#
 add_interface data avalon end
 set_interface_property data addressUnits WORDS
 set_interface_property data associatedClock clock
@@ -172,11 +172,11 @@ set_interface_assignment data embeddedsw.configuration.isNonVolatileStorage 0
 set_interface_assignment data embeddedsw.configuration.isPrintableDevice 0
 
 
-# 
+#
 # connection point irq
-# 
+#
 add_interface irq interrupt end
-set_interface_property irq associatedAddressablePoint ""
+set_interface_property irq associatedAddressablePoint "csr"
 set_interface_property irq associatedClock clock
 set_interface_property irq bridgedReceiverOffset ""
 set_interface_property irq bridgesToReceiver ""
@@ -204,4 +204,5 @@ proc elaboration_callback {} {
   set channels [expr { 1+ [get_parameter_value pCHANNELS] } ]
   add_interface_port data iDATA_ADDRESS address Input [log2 $channels]
   add_interface_port pixel oDATA data Output $channels
+  set_module_assignment embeddedsw.CMacro.CHANNELS [get_parameter_value pCHANNELS]u
 }
