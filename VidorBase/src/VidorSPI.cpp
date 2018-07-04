@@ -202,4 +202,3 @@ void VidorSPIClass::detachInterrupt() {
 }
 
 VidorSPIClass SPIEx (&VD, 0);
-BitBangedSPI SPIExBB;
