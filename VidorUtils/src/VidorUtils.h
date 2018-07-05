@@ -16,6 +16,7 @@
 #define NO_USER_DATA		no_data
 
 __attribute__((weak)) void enableFpgaClock() {}
+__attribute__((weak)) void disableFpgaClock() {}
 
 class VidorUtils {
 public:
@@ -43,6 +44,7 @@ public:
 	}
 
 	void end() {
+		disableFpgaClock();
 		jtagDeinit();
 	}
 
