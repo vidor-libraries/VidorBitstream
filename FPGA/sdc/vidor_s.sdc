@@ -39,7 +39,7 @@ set_time_format -unit ns -decimal_places 3
 #**************************************************************
 
 create_clock -name {altera_reserved_tck} -period 100.000 -waveform { 0.000 50.000 } [get_ports {altera_reserved_tck}]
-create_clock -name mipi_clk -period 13.792 [get_ports {iMIPI_CLK}]
+create_clock -name mipi_clk -period 15.38 [get_ports {iMIPI_CLK}]
 create_clock -name iCLK -period 20.833 [get_ports {iCLK}]
 
 derive_pll_clocks
@@ -60,7 +60,7 @@ create_generated_clock -name oSDRAM_CLK -source [get_pins PLL_inst|altpll_compon
 #**************************************************************
 # Set Clock Uncertainty
 #**************************************************************
-
+derive_clock_uncertainty
 
 
 #**************************************************************
