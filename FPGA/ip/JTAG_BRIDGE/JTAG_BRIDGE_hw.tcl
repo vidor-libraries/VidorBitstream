@@ -70,7 +70,7 @@ set_interface_property avalon_master linewrapBursts false
 set_interface_property avalon_master maximumPendingReadTransactions 0
 set_interface_property avalon_master maximumPendingWriteTransactions 0
 set_interface_property avalon_master readLatency 0
-set_interface_property avalon_master readWaitTime 1
+set_interface_property avalon_master readWaitTime 0
 set_interface_property avalon_master setupTime 0
 set_interface_property avalon_master timingUnits Cycles
 set_interface_property avalon_master writeWaitTime 0

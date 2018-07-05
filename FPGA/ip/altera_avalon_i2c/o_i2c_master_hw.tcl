@@ -113,8 +113,8 @@ set_interface_property avalon_slave_0 holdTime 0
 set_interface_property avalon_slave_0 linewrapBursts false
 set_interface_property avalon_slave_0 maximumPendingReadTransactions 0
 set_interface_property avalon_slave_0 maximumPendingWriteTransactions 0
-set_interface_property avalon_slave_0 readLatency 0
-set_interface_property avalon_slave_0 readWaitTime 1
+set_interface_property avalon_slave_0 readLatency 1
+set_interface_property avalon_slave_0 readWaitTime 0
 set_interface_property avalon_slave_0 setupTime 0
 set_interface_property avalon_slave_0 timingUnits Cycles
 set_interface_property avalon_slave_0 writeWaitTime 0
