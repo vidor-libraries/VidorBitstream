@@ -595,6 +595,12 @@ void jtagDeinit(void)
   pinMode(TCK, INPUT);
 }
 
+int jtagReload() {
+  int ret = LoadJI(JI_PULSE_NCONFIG);
+  Js_Shiftdr();
+  return ret;
+}
+
 int jtagWriteBuffer(unsigned int address, const uint8_t *data, size_t len)
 {
   int ret = 0;
