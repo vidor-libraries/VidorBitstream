@@ -19,10 +19,17 @@
 #include "VidorUART.h"
 #include "Arduino.h"
 
-VidorUart::VidorUart(VidorBase *_s, int idx)
+VidorUart::VidorUart(VidorBase *_s, int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr)
 {
   s = _s;
   index = idx;
+  idx=_idx;
+  tx=_tx;
+  rx=_rx;
+  cts=_cts;
+  rts=_rts;
+  dtr=_dtr;
+  dsr=_dsr;
 }
 
 void VidorUart::begin(unsigned long baudrate)
@@ -32,7 +39,7 @@ void VidorUart::begin(unsigned long baudrate)
 
 void VidorUart::begin(unsigned long baudrate, uint16_t config)
 {
-  s->enableUART(index);
+  s->enableUART(tx,rx);
   s->setUART(index, baudrate, config);
 }
 
@@ -90,5 +97,22 @@ size_t Uart::write(const char* data, size_t len)
   return 1;
 }
 */
+int VidorUart::enableFlowControl(void){
+  if(rts>=0 && cts>=0 && dtr>=0 && dsr>=0 ){
+	  s->enableUART(rts,cts);
+	  s->enableUART(dtr,dsr);
+	return 1;
+  }
+  return 0;
+}
 
-VidorUart SerialEx(&VD, 0);
+
+VidorUart SerialFPGA0(&VD, 0,A0,A1,-1,-1,-1,-1);
+VidorUart SerialFPGA1(&VD, 1,A2,A3,A0,A1,-1,-1);
+VidorUart SerialFPGA2(&VD, 2,A4,A5,-1,-1,-1,-1);
+VidorUart SerialFPGA3(&VD, 3,A6,0,A4,A5,A3,A2);
+VidorUart SerialFPGA4(&VD, 4,1,2,-1,-1,-1,-1);
+VidorUart SerialFPGA5(&VD, 5,3,4,1,2,0,A6);
+VidorUart SerialFPGA6(&VD, 6,5,6,-1,-1,-1,-1);
+VidorUart SerialFPGA7(&VD, 7,7,8,5,6,4,3);
+

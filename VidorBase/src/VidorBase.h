@@ -213,7 +213,25 @@ public:
 	}
 
 	/* UART functions */
-	void enableUART(int index) {
+	void enableUART(int tx,int rx) {
+		if(tx<=14){
+			tx=tx-0 ;
+			pinMode(tx,INPUT);
+			pinMode(tx+140,4);
+		} else {
+			tx=tx-A0;
+			pinMode(tx,INPUT);
+			pinMode(tx+133,4);
+		}
+		if(rx<=14){
+			rx=rx-0 ;
+			pinMode(rx+140,INPUT);
+			pinMode(rx,INPUT);
+		} else {
+			rx=rx-A0;
+			pinMode(rx+133,INPUT);
+			pinMode(rx,INPUT);
+		}
 	}
 	void setUART(int index, int baud, int config) {}
 	void disableUART(int index) {}

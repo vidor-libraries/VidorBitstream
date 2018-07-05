@@ -1,4 +1,4 @@
-#include "VIDOR_GFX.h"
+#include "Vidor_GFX.h"
 
 Vidor_GFX::Vidor_GFX(void) {
   GFXText=Vidor_GFXtext();
@@ -179,4 +179,15 @@ uint16_t Vidor_GFX::Brown() {
 
 uint16_t Vidor_GFX::White() {
  return Color(0xFF,0xFF,0xFF);
+}
+
+/**
+ *
+ */
+void Vidor_GFX::Cross(uint16_t x, uint16_t y, uint16_t c)
+{
+  if (x<4) x=4;
+  if (y<4) y=4;
+  drawLine(x-4, y, x+4, y, c);
+  drawLine(x, y-4, x, y+4, c);
 }

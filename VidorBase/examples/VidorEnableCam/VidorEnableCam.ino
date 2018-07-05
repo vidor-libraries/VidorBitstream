@@ -1,7 +1,7 @@
 #include "VidorUART.h"
-#include "VIDOR_CAM.h"
+#include "VidorCamera.h"
 
-Vidor_CAM vcam;
+VidorCamera vcam;
 
 
 void setup() {
@@ -29,7 +29,7 @@ void setup() {
   }
 
   delay(4000);
-      Serial.println("Power On ok");
+      Serial.println("Power On");
 }
 
 void loop()

@@ -6,15 +6,30 @@
 //#include "VidorUtils.h"
 //#include "VidorBase.h"
 #include "VidorI2C.h"
-#include "VIDOR_GFX.h"
+#include "Vidor_GFX.h"
 
 
 #define CAM_ADDR        0x36
 #define CAM_SW_RESET        0x0103
 #define CAM_REG_CHIPID_H        0x300A
 #define CAM_REG_CHIPID_L        0x300B
+#define MB_DEV_QR        0x07000000
 
-//#define ARRAY_SIZE(a)  (sizeof(a) / sizeof(struct regval_list))
+typedef struct {
+    uint32_t xs;
+    uint32_t xe;
+    uint32_t ys;
+    uint32_t ye;
+    uint32_t valid;
+}sQrPnt, *psQrPnt;
+
+/**
+ *
+ */
+typedef struct{
+  uint32_t sts;
+  sQrPnt  pt[3];
+}sQrDet, *psQrDet;
 
 struct regval_list {
   unsigned short  addr;
@@ -114,16 +129,31 @@ static struct regval_list cam_640x480[] = {
   {0x0100, 0x01},
 };
 
-class Vidor_CAM {
+class VidorQR {
 
   public:
-    Vidor_CAM();
+	sQrDet qr;
+	VidorQR(void);
+    void qrEnable(uint8_t on);
+    void setMode(uint8_t mode);
+    void setThr(uint8_t thr);
+    void readQRCode(void);
+  protected:
+};
+
+
+class VidorCamera {
+
+  public:
+    Vidor_GFX vgfx;
+    VidorQR qrrec;
+    VidorCamera();
     int begin();
     int setPower(bool on);
     int enableStream();
     int disableStream();
     int modelDetect(void);
-    Vidor_GFX vgfx;
+    void qrCross(uint16_t x, uint16_t y, uint16_t c);
   protected:
     int sensor_init(void);
     int write_array(struct regval_list *regs, int array_size);
@@ -131,6 +161,7 @@ class Vidor_CAM {
     int set_virtual_channel(int channel);
     int read(uint8_t address, uint16_t reg, uint8_t* data, uint8_t len);
     int write(uint8_t address, uint16_t reg, uint8_t data);
+
 };
 
 #endif //_VIDOR_CAM_H
