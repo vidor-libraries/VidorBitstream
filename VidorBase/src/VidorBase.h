@@ -262,9 +262,9 @@ public:
 
 	/* SPI functions */
 	void enableSPI(int index) {
-		pinMode(SCK_BB, 4);
-    	pinMode(MOSI_BB, 4);
-    	pinMode(MISO_BB, 4);
+		//pinMode(SCK_BB, 4);
+		//pinMode(MOSI_BB, 4);
+		//pinMode(MISO_BB, 4);
 	}
 
 	void setSPIMode(int index, int baud, int mode, int bitOrder) {}
