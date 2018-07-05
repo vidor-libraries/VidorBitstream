@@ -1,4 +1,4 @@
-#include "VIDOR_GFX.h"
+#include "Vidor_GFX.h"
 Vidor_GFX  vdgfx;
 
 void setup() {
