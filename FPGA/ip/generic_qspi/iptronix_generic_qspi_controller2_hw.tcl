@@ -265,7 +265,7 @@ proc compose {} {
     set_instance_parameter_value reset {NUM_RESET_OUTPUTS} {1}
     set_instance_parameter_value reset {USE_RESET_REQUEST} {0}
 
-	add_instance	asmi2_inst_qspi_ctrl altera_asmi_parallel2 18.0
+	add_instance	asmi2_inst_qspi_ctrl iptronix_asmi_parallel2 18.0
 	add_instance	addr_adaption_1 altera_qspi_address_adaption 18.0
 
 	#--------------------------------------------- settings that exist in all procedure ------------------------------------------------
@@ -277,7 +277,7 @@ proc compose {} {
 	set QSPI_list {"EPCQ16" "EPCQ32" "EPCQ64" "EPCQ128" "EPCQ256" "EPCQL256" "EPCQ512" "EPCQL512" "EPCQL1024" \
 							"N25Q16" "N25Q32" "N25Q64" "N25Q128" "N25Q256" "N25Q256-L" "N25Q512" "N25Q512-L" "N25Q1024-L" "Micron512"  "MT25QL256" "MT25QL512" "MT25QU256" "MT25QU512" "MT25QU01"}
 	# devices that supported QSPI - Quad/Dual data width, asmi_dataout, asmi_sdoin, asmi_dataoe
-	set supported_QSPI_devices_list {"Arria 10" "Cyclone V" "Arria V GZ" "Arria V" "Stratix V" "MAX 10 FPGA" "Cyclone 10 GX" "Stratix 10"}
+	set supported_QSPI_devices_list {"Arria 10" "Cyclone V" "Arria V GZ" "Arria V" "Stratix V" "MAX 10 FPGA" "Cyclone 10 LP" "Cyclone 10 GX" "Stratix 10"}
 	
 	# devices that supported simulation
 	set supported_sim_devices_list {"Arria 10" "Cyclone V" "Arria V GZ" "Arria V" "Stratix V" "Cyclone 10 GX"}
