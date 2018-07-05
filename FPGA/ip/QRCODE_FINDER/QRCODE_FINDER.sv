@@ -382,10 +382,10 @@ begin
       case (rDECODE_STATE)
         dsIDLE: begin
           if (rPREV_STATE==stBLACK) begin
-            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>4)+1;
-            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>4)-1;
-            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>4)+3;
-            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>4)-3;
+            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>3)+1;
+            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>3)-1;
+            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>2)+(rPREV_DUR>>3)+3;
+            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>2)-(rPREV_DUR>>3)-3;
             rDECODE_STATE<=dsFIRST;
             rREFBIT_HSTART<= rPREV_HSTART;
           end
@@ -407,10 +407,10 @@ begin
             rPREV_CENT_HSTART<= rPREV_HSTART;
           end
           else begin
-            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>4)+1;
-            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>4)-1;
-            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>4)+3;
-            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>4)-3;
+            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>3)+1;
+            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>3)-1;
+            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>2)+(rPREV_DUR>>3)+3;
+            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>2)-(rPREV_DUR>>3)-3;
             rDECODE_STATE<=dsFIRST;
             rREFBIT_HSTART<= rPREV_HSTART;
           end
@@ -488,10 +488,10 @@ begin
             */
           end
           else begin
-            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>4)+1;
-            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>4)-1;
-            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>3)+(rPREV_DUR>>4)+3;
-            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>3)-(rPREV_DUR>>4)-3;
+            rREFBIT_DUR_MAX <=rPREV_DUR+(rPREV_DUR>>3)+1;
+            rREFBIT_DUR_MIN <=rPREV_DUR-(rPREV_DUR>>3)-1;
+            rREFBIT_3DUR_MAX <=(rPREV_DUR<<1)+rPREV_DUR+(rPREV_DUR>>2)+(rPREV_DUR>>3)+3;
+            rREFBIT_3DUR_MIN <=(rPREV_DUR<<1)+rPREV_DUR-(rPREV_DUR>>2)-(rPREV_DUR>>3)-3;
             rDECODE_STATE<=dsFIRST;
             rREFBIT_HSTART<= rPREV_HSTART;
           end
