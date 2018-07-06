@@ -49,11 +49,17 @@ add_fileset_file NEOPIXEL.sv SYSTEM_VERILOG PATH NEOPIXEL.sv TOP_LEVEL_FILE
 #
 add_parameter pCHANNELS INTEGER 23
 set_parameter_property pCHANNELS DEFAULT_VALUE 23
-set_parameter_property pCHANNELS DISPLAY_NAME pCHANNELS
+set_parameter_property pCHANNELS DISPLAY_NAME "Number of strings"
 set_parameter_property pCHANNELS TYPE INTEGER
 set_parameter_property pCHANNELS UNITS None
 set_parameter_property pCHANNELS HDL_PARAMETER true
 
+add_parameter pSTART_ADDRESS INTEGER 0
+set_parameter_property pSTART_ADDRESS DEFAULT_VALUE 0
+set_parameter_property pSTART_ADDRESS DISPLAY_NAME "Memory buffer start address"
+set_parameter_property pSTART_ADDRESS TYPE INTEGER
+set_parameter_property pSTART_ADDRESS UNITS None
+set_parameter_property pSTART_ADDRESS HDL_PARAMETER true
 
 #
 # display items
@@ -141,20 +147,19 @@ set_interface_property pixel SVD_ADDRESS_GROUP ""
 #
 # connection point data
 #
-add_interface data avalon end
-set_interface_property data addressUnits WORDS
+add_interface data avalon start
+set_interface_property data addressUnits SYMBOLS
 set_interface_property data associatedClock clock
 set_interface_property data associatedReset reset
 set_interface_property data bitsPerSymbol 8
 set_interface_property data burstOnBurstBoundariesOnly false
 set_interface_property data burstcountUnits WORDS
-set_interface_property data explicitAddressSpan 0
 set_interface_property data holdTime 0
 set_interface_property data linewrapBursts false
 set_interface_property data maximumPendingReadTransactions 0
 set_interface_property data maximumPendingWriteTransactions 0
 set_interface_property data readLatency 0
-set_interface_property data readWaitTime 1
+set_interface_property data readWaitTime 0
 set_interface_property data setupTime 0
 set_interface_property data timingUnits Cycles
 set_interface_property data writeWaitTime 0
@@ -164,13 +169,12 @@ set_interface_property data PORT_NAME_MAP ""
 set_interface_property data CMSIS_SVD_VARIABLES ""
 set_interface_property data SVD_ADDRESS_GROUP ""
 
-add_interface_port data iDATA_WRITE_DATA writedata Input 32
-add_interface_port data iDATA_WRITE write Input 1
-set_interface_assignment data embeddedsw.configuration.isFlash 0
-set_interface_assignment data embeddedsw.configuration.isMemoryDevice 0
-set_interface_assignment data embeddedsw.configuration.isNonVolatileStorage 0
-set_interface_assignment data embeddedsw.configuration.isPrintableDevice 0
-
+add_interface_port data oDATA_ADDRESS address Output 32
+add_interface_port data oDATA_READ    read    Output 1
+add_interface_port data iDATA_WAITREQUEST    waitrequest    Input 1
+add_interface_port data oDATA_BURST_COUNT    burstcount    Output 5
+add_interface_port data iDATA_READ_DATA    readdata    Input 32
+add_interface_port data iDATA_READ_DATAVALID    readdatavalid    Input 1
 
 #
 # connection point irq
@@ -202,7 +206,6 @@ proc log2 {value} {
 # -----------------------------------------------------------------------------
 proc elaboration_callback {} {
   set channels [expr { 1+ [get_parameter_value pCHANNELS] } ]
-  add_interface_port data iDATA_ADDRESS address Input [log2 $channels]
   add_interface_port pixel oDATA data Output $channels
   set_module_assignment embeddedsw.CMacro.CHANNELS [get_parameter_value pCHANNELS]u
 }

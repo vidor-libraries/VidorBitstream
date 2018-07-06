@@ -214,7 +214,7 @@ add_interface_port avl oAVL_READ_DATAVALID readdatavalid Output 1
 add_interface_port avl iAVL_WRITE_DATA writedata Input 16
 add_interface_port avl oAVL_WAITREQUEST waitrequest Output 1
 add_interface_port avl iAVL_ADDRESS address Input pADDRESS_BITS
-#add_interface_port avl iAVL_BURSTCOUNT burstcount Input 6
+add_interface_port avl iAVL_BURSTCOUNT burstcount Input 6
 add_interface_port avl iAVL_READ read Input 1
 add_interface_port avl iAVL_WRITE write Input 1
 add_interface_port avl iAVL_BYTEENABLE byteenable Input 2
