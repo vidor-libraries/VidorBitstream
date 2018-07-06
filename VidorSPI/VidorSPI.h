@@ -98,7 +98,7 @@ class VidorSPISettings {
 
 class VidorSPIClass {
   public:
-  VidorSPIClass(int index);
+  VidorSPIClass(int index,int _mosi,int _miso,int _sck,int _cs);
 
   byte transfer(uint8_t data);
   uint16_t transfer16(uint16_t data);
@@ -126,7 +126,10 @@ class VidorSPIClass {
   void config(SPISettings settings);
 
   VidorSPISettings settings;
-
+  int mosi;
+  int miso;
+  int sck;
+  int cs;
   int index;
   bool initialized;
   uint8_t interruptMode;
@@ -134,6 +137,10 @@ class VidorSPIClass {
   uint32_t interruptMask;
 };
 
-extern VidorSPIClass SPIEx;
+extern VidorSPIClass SPIFPGA0;
+extern VidorSPIClass SPIFPGA1;
+extern VidorSPIClass SPIFPGA2;
+extern VidorSPIClass SPIFPGA3;
+extern VidorSPIClass SPIFPGA4;
 
 #endif
