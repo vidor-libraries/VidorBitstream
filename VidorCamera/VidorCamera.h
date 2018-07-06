@@ -3,17 +3,16 @@
 
 
 #include "Arduino.h"
-//#include "VidorUtils.h"
-//#include "VidorBase.h"
+#include "defines.h"
 #include "VidorI2C.h"
 #include "Vidor_GFX.h"
 
 
-#define CAM_ADDR        0x36
+#define CAM_ADDR            0x36
 #define CAM_SW_RESET        0x0103
-#define CAM_REG_CHIPID_H        0x300A
-#define CAM_REG_CHIPID_L        0x300B
-#define MB_DEV_QR        0x07000000
+#define CAM_REG_CHIPID_H    0x300A
+#define CAM_REG_CHIPID_L    0x300B
+#define MB_DEV_QR           0x07000000
 
 typedef struct {
     uint32_t xs;

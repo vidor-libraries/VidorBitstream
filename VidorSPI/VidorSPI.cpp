@@ -49,7 +49,7 @@ void VidorSPIClass::init()
   interruptSave = 0;
   interruptMask = 0;
   initialized = true;
-  s->enableSPI(index);
+  VidorIO::enableSPI(index);
 }
 
 void VidorSPIClass::config(SPISettings settings)
@@ -58,13 +58,13 @@ void VidorSPIClass::config(SPISettings settings)
     this->settings.clockFreq = settings.getClockFreq();
     this->settings.dataMode = settings.getDataMode();
     this->settings.bitOrder = settings.getBitOrder();
-    s->setSPIMode(index, this->settings.clockFreq, this->settings.dataMode, this->settings.bitOrder);
+    VidorIO::setSPIMode(index, this->settings.clockFreq, this->settings.dataMode, this->settings.bitOrder);
   }
 }
 
 void VidorSPIClass::end()
 {
-  s->disableSPI(index);
+  VidorIO::disableSPI(index);
   initialized = false;
 }
 
@@ -152,24 +152,24 @@ void VidorSPIClass::endTransaction(void)
 void VidorSPIClass::setBitOrder(BitOrder order)
 {
   settings.bitOrder = order;
-  s->setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
+  VidorIO::setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
 }
 
 void VidorSPIClass::setDataMode(uint8_t mode)
 {
   settings.dataMode = mode;
-  s->setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
+  VidorIO::setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
 }
 
 void VidorSPIClass::setClockDivider(uint8_t div)
 {
   settings.clockFreq = MAX_CLOCK_FREQUENCY / div;
-  s->setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
+  VidorIO::setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
 }
 
 byte VidorSPIClass::transfer(uint8_t data)
 {
-  return s->transferDataSPI(index, data);
+  return VidorIO::transferDataSPI(index, data);
 }
 
 uint16_t VidorSPIClass::transfer16(uint16_t data) {
@@ -190,7 +190,7 @@ uint16_t VidorSPIClass::transfer16(uint16_t data) {
 
 void VidorSPIClass::transfer(void *buf, size_t count)
 {
-  s->transferDataSPI(index, (uint8_t*)buf, count);
+  VidorIO::transferDataSPI(index, (uint8_t*)buf, count);
 }
 
 void VidorSPIClass::attachInterrupt() {
@@ -201,4 +201,4 @@ void VidorSPIClass::detachInterrupt() {
   // Should be disableInterrupt()
 }
 
-VidorSPIClass SPIEx (&VD, 0);
+VidorSPIClass SPIEx (0);

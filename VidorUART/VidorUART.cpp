@@ -19,9 +19,8 @@
 #include "VidorUART.h"
 #include "Arduino.h"
 
-VidorUart::VidorUart(VidorBase *_s, int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr)
+VidorUart::VidorUart(int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr)
 {
-  s = _s;
   index = idx;
   idx=_idx;
   tx=_tx;
@@ -39,13 +38,13 @@ void VidorUart::begin(unsigned long baudrate)
 
 void VidorUart::begin(unsigned long baudrate, uint16_t config)
 {
-  s->enableUART(tx,rx);
-  s->setUART(index, baudrate, config);
+  VidorIO::enableUART(tx,rx);
+  VidorIO::setUART(index, baudrate, config);
 }
 
 void VidorUart::end()
 {
-  s->disableUART(index);
+  VidorIO::disableUART(index);
   rxBuffer.clear();
   txBuffer.clear();
 }
@@ -53,19 +52,24 @@ void VidorUart::end()
 void VidorUart::flush()
 {
   while(txBuffer.available()); // wait until TX buffer is empty
-  s->flushUART(index);
+  VidorIO::flushUART(index);
 }
 
 int VidorUart::available()
 {
-  return s->availableUART(index);
+  int ret = VidorIO::availableUART(index);
+  if (ret > 0) {
+    // Workaround until we have interrupt capabilities
+    onInterrupt();
+  }
+  return ret;
 }
 
 void VidorUart::onInterrupt()
 {
-  int available = s->availableUART(index);
+  int available = VidorIO::availableUART(index);
   while (available-- > 0) {
-    rxBuffer.store_char(s->readUART(index));
+    rxBuffer.store_char(VidorIO::readUART(index));
   }
 }
 
@@ -81,38 +85,54 @@ int VidorUart::peek()
 
 int VidorUart::read()
 {
-  return s->readUART(index);
+  return VidorIO::readUART(index);
 }
 
 size_t VidorUart::write(const uint8_t data)
 {
-  s->writeUART(index, data);
+  VidorIO::writeUART(index, data);
   return 1;
 }
 
-/*
+
 size_t Uart::write(const char* data, size_t len)
 {
-  sercom->writeUART(index, data, len);
-  return 1;
+  VidorIO::writeUART(index, data, len);
+  return len;
 }
-*/
-int VidorUart::enableFlowControl(void){
-  if(rts>=0 && cts>=0 && dtr>=0 && dsr>=0 ){
-	  s->enableUART(rts,cts);
-	  s->enableUART(dtr,dsr);
-	return 1;
+
+int VidorUart::enableFlowControl(void)
+{
+  if(rts>=0 && cts>=0 && dtr>=0 && dsr>=0 ) {
+    VidorIO::enableUART(rts,cts);
+    VidorIO::enableUART(dtr,dsr);
+    return 1;
   }
   return 0;
 }
 
 
-VidorUart SerialFPGA0(&VD, 0,A0,A1,-1,-1,-1,-1);
-VidorUart SerialFPGA1(&VD, 1,A2,A3,A0,A1,-1,-1);
-VidorUart SerialFPGA2(&VD, 2,A4,A5,-1,-1,-1,-1);
-VidorUart SerialFPGA3(&VD, 3,A6,0,A4,A5,A3,A2);
-VidorUart SerialFPGA4(&VD, 4,1,2,-1,-1,-1,-1);
-VidorUart SerialFPGA5(&VD, 5,3,4,1,2,0,A6);
-VidorUart SerialFPGA6(&VD, 6,5,6,-1,-1,-1,-1);
-VidorUart SerialFPGA7(&VD, 7,7,8,5,6,4,3);
-
+#if FPGA_UART_INTERFACES_COUNT > 0
+VidorUart SerialFPGA0(0,  A0, A1, -1, -1, -1, -1);
+#if FPGA_UART_INTERFACES_COUNT > 1
+VidorUart SerialFPGA1(1,  A2, A3, A0, A1, -1, -1);
+#if FPGA_UART_INTERFACES_COUNT > 2
+VidorUart SerialFPGA2(2,  A4, A5, -1, -1, -1, -1);
+#if FPGA_UART_INTERFACES_COUNT > 3
+VidorUart SerialFPGA3(3,  A6,  0, A4, A5, A3, A2);
+#if FPGA_UART_INTERFACES_COUNT > 4
+VidorUart SerialFPGA4(4,   1,  2, -1, -1, -1, -1);
+#if FPGA_UART_INTERFACES_COUNT > 5
+VidorUart SerialFPGA5(5,   3,  4,  1,  2,  0, A6);
+#if FPGA_UART_INTERFACES_COUNT > 6
+VidorUart SerialFPGA6(6,   5,  6, -1, -1, -1, -1);
+#if FPGA_UART_INTERFACES_COUNT > 7
+VidorUart SerialFPGA7(7,   7,  8,  5,  6,  4,  3);
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif

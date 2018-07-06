@@ -22,7 +22,8 @@
 
 #include <Arduino.h>
 #include <SPI.h>
-#include <VidorBase.h>
+#include "defines.h"
+#include "VidorIO.h"
 
 class VidorSPISettings {
   public:
@@ -97,7 +98,7 @@ class VidorSPISettings {
 
 class VidorSPIClass {
   public:
-  VidorSPIClass(VidorBase * s, int index);
+  VidorSPIClass(VidorIO * s, int index);
 
   byte transfer(uint8_t data);
   uint16_t transfer16(uint16_t data);
@@ -124,7 +125,6 @@ class VidorSPIClass {
   void init();
   void config(SPISettings settings);
 
-  VidorBase *s;
   VidorSPISettings settings;
 
   int index;

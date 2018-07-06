@@ -1,7 +1,36 @@
 #include "VidorBase.h"
+
+#if FPGA_I2C_INTERFACES_COUNT > 0
 #include "VidorI2C.h"
+#endif
+
+#if FPGA_SPI_INTERFACES_COUNT > 0
 #include "VidorSPI.h"
+#endif
+
+#if FPGA_UART_INTERFACES_COUNT > 0
 #include "VidorUART.h"
+#endif
+
+#if FPGA_ENCODERS_COUNT > 0
+#include "VidorEncoder.h"
+#endif
+
+#if FPGA_NEOPIXEL_COUNT > 0
+#include "VidorNeopixel.h"
+#endif
+
+#if FPGA_CAMERA_COUNT > 0
+#include "VidorCamera.h"
+#endif
+
+#if FPGA_GFX_COUNT > 0
+#include "Vidor_GFX.h"
+#endif
+
+#if FPGA_QR_COUNT > 0
+#include "VidorQR.h"
+#endif
 
 VidorBase VD;
 
@@ -25,44 +54,6 @@ const unsigned char bitstream[] = {
 };
 #endif
 
-// redefines C-scope pin extended functions (non-weak implementation)
-
-extern "C" {
-void pinModeExtended( uint32_t ulPin, uint32_t ulMode ) {
-	// TODO: add some checks if ulPin makes sense?
-	// ulMode can be INPUT, INPUT_PULLUP or OUTPUT
-	VD.pinMode(ulPin - GPIO_NUM_OFFSET, ulMode);
-}
-
-void digitalWriteExtended( uint32_t ulPin, uint32_t ulVal ) {
-	// No need to check if the pin is alredy in GPIO mode
-	VD.digitalWrite(ulPin - GPIO_NUM_OFFSET, ulVal);
-}
-
-int digitalReadExtended( uint32_t ulPin ) {
-	// No need to check if the pin is alredy in GPIO mode
-	return VD.digitalRead(ulPin - GPIO_NUM_OFFSET);
-}
-
-void analogWriteExtended( uint32_t ulPin, uint32_t ulVal ) {
-	// check if mux for the pin is already in PWM mode and eventually change it
-	pinModeExtended(ulPin, 2);
-	// set the PWM duty
-	return VD.analogWrite(ulPin - GPIO_NUM_OFFSET, ulVal);
-}
-}
-
 void VidorBase::onInterrupt() {
-	// check which module has originated the request
-	uint32_t irq = VD.read(IRQ_BASE_ADDRESS);
-
-	// serve the interrupts.
-	if (irq | (1 << IRQ_WIRE)) {
-		// TODO: handle onReceive() and onRequest()
-		// onService only needed in slave mode
-		//WireEx.onService();
-	}
-	if (irq | (1 << IRQ_UART)) {
-		SerialEx.onInterrupt() ;
-	}
+	// TODO: do be implemented
 }

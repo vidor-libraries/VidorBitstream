@@ -18,8 +18,9 @@
 
 #pragma once
 
+#include "VidorIO.h"
+#include "defines.h"
 #include "HardwareSerial.h"
-#include "VidorBase.h"
 #include "RingBuffer.h"
 
 #include <cstddef>
@@ -27,7 +28,7 @@
 class VidorUart : public HardwareSerial
 {
   public:
-	VidorUart(VidorBase *_s, int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr);
+	VidorUart(int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr);
     void begin(unsigned long baudRate);
     void begin(unsigned long baudrate, uint16_t config);
     void end();
@@ -43,10 +44,7 @@ class VidorUart : public HardwareSerial
     void onInterrupt();
 
     operator bool() {
-		if (s != NULL) {
-			return s->ready();
-		}
-		return false;
+			return true;
 	}
 
   private:
@@ -57,7 +55,6 @@ class VidorUart : public HardwareSerial
     int rts;
     int dtr;
     int dsr;
-    VidorBase *s = NULL;
     int index;
     RingBuffer rxBuffer;
     RingBuffer txBuffer;

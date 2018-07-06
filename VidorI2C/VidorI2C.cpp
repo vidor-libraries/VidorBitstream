@@ -24,16 +24,15 @@ extern "C" {
 #include <Arduino.h>
 #include "VidorI2C.h"
 
-VidorTwoWire::VidorTwoWire(VidorBase * s, int index)
+VidorTwoWire::VidorTwoWire(int index)
 {
-  this->s = s;
   this->idx = index;
   transmissionBegun = false;
 }
 
 int VidorTwoWire::begin(void) {
   // Master Mode
-  return s->enableI2C(idx);
+  return VidorIO::enableI2C(idx);
 }
 
 void VidorTwoWire::begin(uint8_t address) {
@@ -42,11 +41,11 @@ void VidorTwoWire::begin(uint8_t address) {
 }
 
 void VidorTwoWire::setClock(uint32_t baudrate) {
-  s->setI2CClock(idx, baudrate);
+  VidorIO::setI2CClock(idx, baudrate);
 }
 
 void VidorTwoWire::end() {
-  s->disableI2C(idx);
+  VidorIO::disableI2C(idx);
 }
 
 uint8_t VidorTwoWire::requestFrom(uint8_t address, size_t quantity, bool stopBit)
@@ -187,4 +186,4 @@ void VidorTwoWire::onService(void)
 	// I2C slave, not implemented ATM
 }
 
-VidorTwoWire WireEx(&VD,0);
+VidorTwoWire WireEx(0);

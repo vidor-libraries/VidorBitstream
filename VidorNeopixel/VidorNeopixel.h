@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include "VidorUtils.h"
+#include "defines.h"
 
 #define MB_DEV_NP  0x09000000
 

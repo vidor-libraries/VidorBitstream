@@ -1,9 +1,9 @@
 #ifndef VidorTwoWire_h
 #define VidorTwoWire_h
 
-#include "VidorBase.h"
 #include "Stream.h"
 #include "RingBuffer.h"
+#include "defines.h"
 
  // WIRE_HAS_END means Wire has end()
 #define WIRE_HAS_END 1
@@ -14,7 +14,7 @@
 class VidorTwoWire : public Stream
 {
   public:
-    VidorTwoWire(VidorBase *s, int index);
+    VidorTwoWire(int index);
     int begin();
     void begin(uint8_t address);
     void end();
@@ -47,7 +47,6 @@ class VidorTwoWire : public Stream
 
   private:
     bool transmissionBegun;
-    VidorBase *s;
     uint8_t idx;
 
     // RX Buffer
