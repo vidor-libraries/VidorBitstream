@@ -1,6 +1,9 @@
 #include "VidorUtils.h"
 #include "defines.h"
 
+#ifndef __VIDOR_IO_H__
+#define __VIDOR_IO_H__
+
 class VidorIO {
 
 public:
@@ -167,4 +170,6 @@ public:
 		rpc[1] = data;
 		return mbCmdSend(rpc, 2);
 	}
-}
+};
+
+#endif

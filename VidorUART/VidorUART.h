@@ -40,6 +40,7 @@ class VidorUart : public HardwareSerial
     size_t write(const uint8_t data);
     int enableFlowControl(void);
     using Print::write; // pull in write(str) and write(buf, size) from Print
+    size_t write(const uint8_t* data, size_t len);
 
     void onInterrupt();
 

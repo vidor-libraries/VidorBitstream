@@ -14,14 +14,16 @@ cp -r $LIB_NAME/* ./distrib/$LIB_NAME/
 
 arraylength=${#libs[@]}
 
-for (( i=1; i<${arraylength}; i++ ));
+for (( i=0; i<${arraylength}; i++ ));
 do
 HAS_LIB=`cat $LIB_NAME/src/defines.h | grep ${libs[i]}  | expand | tr -s ' ' | cut -f3 -d' ' `
 
 if [ x$HAS_LIB != x ] && [ $HAS_LIB != 0 ]
 then
 	cp ${folders[i]}/* ./distrib/$LIB_NAME/src/
-	cp ${folders[i]}/examples ./distrib/$LIB_NAME/examples/
+	if [ -d ${folders[i]}/examples/ ]; then
+		cp -r ${folders[i]}/examples/* ./distrib/$LIB_NAME/examples/
+	fi
 fi
 
 done
@@ -30,11 +32,12 @@ done
 declare -a defaultlibs=("VidorIO" "VidorCommon")
 arraylength=${#defaultlibs[@]}
 
-for (( i=1; i<${arraylength}; i++ ));
+for (( i=0; i<${arraylength}; i++ ));
 do
-cp  ${defaultlibs[i]}/* ./distrib/$LIB_NAME/src/
-cp -r ${defaultlibs[i]}/examples/ ./distrib/$LIB_NAME/examples/
-
+	cp  ${defaultlibs[i]}/* ./distrib/$LIB_NAME/src/
+	if [ -d ${defaultlibs[i]}/examples/ ]; then
+		cp -r ${defaultlibs[i]}/examples/* ./distrib/$LIB_NAME/examples/
+	fi
 done
 
 # copy VidorUtils (not sure about this one)

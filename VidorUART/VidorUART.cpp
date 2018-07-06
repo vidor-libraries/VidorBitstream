@@ -95,9 +95,9 @@ size_t VidorUart::write(const uint8_t data)
 }
 
 
-size_t Uart::write(const char* data, size_t len)
+size_t VidorUart::write(const uint8_t* data, size_t len)
 {
-  VidorIO::writeUART(index, data, len);
+  VidorIO::writeUART(index, (uint8_t*)data, len);
   return len;
 }
 

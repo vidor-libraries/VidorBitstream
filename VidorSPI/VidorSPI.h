@@ -98,7 +98,7 @@ class VidorSPISettings {
 
 class VidorSPIClass {
   public:
-  VidorSPIClass(VidorIO * s, int index);
+  VidorSPIClass(int index);
 
   byte transfer(uint8_t data);
   uint16_t transfer16(uint16_t data);

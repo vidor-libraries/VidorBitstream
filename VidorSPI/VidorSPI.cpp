@@ -28,10 +28,9 @@
 
 #define MAX_CLOCK_FREQUENCY		50000000	//50MHz
 
-VidorSPIClass::VidorSPIClass(VidorBase * s, int index) : settings(SPISettings(0, MSBFIRST, SPI_MODE0))
+VidorSPIClass::VidorSPIClass(int index) : settings(SPISettings(0, MSBFIRST, SPI_MODE0))
 {
   initialized = false;
-  this->s = s;
   this->index = index;
 }
 

@@ -1,6 +1,6 @@
-#include "VidorBase.h"
+#include "VidorGraphics.h"
 
-VidorBase VD;
+VidorGraphics VD;
 
 #if 1
 __attribute__ ((used, section(".fpga_bitstream_signature")))
@@ -22,6 +22,6 @@ const unsigned char bitstream[] = {
 };
 #endif
 
-void VidorBase::onInterrupt() {
+void VidorGraphics::onInterrupt() {
 	// TODO: do be implemented
 }

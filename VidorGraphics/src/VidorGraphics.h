@@ -1,5 +1,5 @@
-#ifndef __VIDOR_BASE_H__
-#define __VIDOR_BASE_H__
+#ifndef __VIDOR_GRAPHICS_H__
+#define __VIDOR_GRAPHICS_H__
 
 #define THIS_BITSTREAM_CHECKSUM 		"45c83d4fb44010509dc529cd8a8633e7"
 
@@ -46,10 +46,10 @@
 #include "VidorQR.h"
 #endif
 
-class VidorBase : public VidorUtils {
+class VidorGraphics : public VidorUtils {
 public:
 
-	VidorBase() {}
+	VidorGraphics() {}
 
 	static void onInterrupt();
 
@@ -100,6 +100,6 @@ public:
 	}
 };
 
-extern VidorBase VD;
+extern VidorGraphics VD;
 
 #endif
