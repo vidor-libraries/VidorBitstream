@@ -142,7 +142,7 @@ SYSTEM_PLL PLL_inst(
 	.c1(wCLK120),
 	.c2(wMEM_CLK),
    .c3(oSDRAM_CLK),
-	.c4(wQSPI_CLK),
+	.c4(wFLASH_CLK),
    
 	.locked());
 
@@ -200,20 +200,19 @@ end
 
 wire [3:0] wQSPI_DATAOUT;
 wire [3:0] wQSPI_DATAOE;
-
 assign oFLASH_SCK=wFLASH_SCK&!wFLASH_CS|wQSPI_CLK&!wQSPI_OE&!wQSPI_NCS;
-assign oFLASH_HOLD = !wQSPI_OE&wQSPI_DATAOE[3]&!wQSPI_NCS ? wQSPI_DATAOUT[3] : 1'b1;
-assign oFLASH_WP = !wQSPI_OE&wQSPI_DATAOE[2]&!wQSPI_NCS ? wQSPI_DATAOUT[2] : 1'b1;
+assign oFLASH_HOLD = !wQSPI_OE&wQSPI_DATAOE[3]&!wQSPI_NCS ? wQSPI_DATAOUT[3] : wFLASH_CS ? 1'bz : 1'b1;
+assign oFLASH_WP = !wQSPI_OE&wQSPI_DATAOE[2]&!wQSPI_NCS? wQSPI_DATAOUT[2] : wFLASH_CS ? 1'bz : 1'b1;
 assign iFLASH_MISO = !wQSPI_OE&wQSPI_DATAOE[1]&!wQSPI_NCS ? wQSPI_DATAOUT[1] : 1'bz;
-assign oFLASH_MOSI = !wQSPI_OE&wQSPI_DATAOE[0]&!wQSPI_NCS ? wQSPI_DATAOUT[0] : wFLASH_MOSI;
+assign oFLASH_MOSI = !wQSPI_OE&wQSPI_DATAOE[0]&!wQSPI_NCS ? wQSPI_DATAOUT[0] : wFLASH_CS ? 1'bz : wFLASH_MOSI;
 assign oFLASH_CS= wQSPI_NCS & wFLASH_CS;
 
 vision u0(
 		.clk_clk                (wMEM_CLK),               //      clk.clk
 		.reset_reset_n          (rRESETCNT[5]), // reset.reset_n
 		.vid_clk                (wVID_CLK),        //   vid.clk
-		.clk_0_clk              (wQSPI_CLK),
-		.reset_0_reset_n			(rRESETCNT[5]), // reset.reset_n
+		.clk_0_clk              (wFLASH_CLK),
+//		.reset_0_reset_n			(rRESETCNT[5]), // reset.reset_n
 
 		.sdram_addr             (oSDRAM_ADDR), //    sdram.addr
 		.sdram_ba               (oSDRAM_BA),   //         .ba
@@ -266,7 +265,6 @@ vision u0(
 		.mipi_st_data           (mipi_st_data),     //   mipi_st.data
 		.mipi_st_start          (mipi_st_start),    //          .start
 		.mipi_st_dv             (mipi_st_dv),       //          .dv
-
 		.qr_vid_in_reset        (0),  //           .reset
 		.qr_vid_in_clk          (iMIPI_CLK),    //           .clk
 		.qr_vid_in_data         (mipi_st_data),   //  qr_vid_in.data
@@ -275,20 +273,20 @@ vision u0(
 		.qr_vid_out_data        (mipi_ste_data),  // qr_vid_out.data
 		.qr_vid_out_dv          (mipi_ste_dv),    //           .dv
 		.qr_vid_out_start       (mipi_ste_start),   //           .start
-
 		.arb_mipi_clk           (iMIPI_CLK),     //  arb_mipi.clk
 		.arb_mipi_data          ({mipi_ste_data[23-:5],mipi_ste_data[15-:5],mipi_ste_data[7-:5]}),    //          .data
 		.arb_mipi_start         (mipi_ste_start),    //          .data
 		.arb_mipi_dv            (mipi_ste_dv),      //          .dv
-
+/*
 		.nina_uart_RXD          (iWM_TX),    // nina_uart.RXD
 		.nina_uart_TXD          (wNINA_RX),    //          .TXD
+  */    
       
 		.nina_spi_MISO          (bWM_PIO1),    //  nina_spi.MISO
 		.nina_spi_MOSI          (wNINA_MOSI),    //          .MOSI
 		.nina_spi_SCLK          (wNINA_SCLK),    //          .SCLK
-		.nina_spi_SS_n          (wNINA_SS),     //          .SS_n
-      
+		.nina_spi_CS            (wNINA_SS),     //          .SS_n
+
 		.sam_pio_in             (wSAM_PIO_IN),       //   sam_pio.in
 		.sam_pio_out            (wSAM_PIO_OUT),      //          .out
 		.sam_pio_dir            (wSAM_PIO_DIR),      //          .dir
@@ -307,13 +305,13 @@ vision u0(
 		.irq_out_port           (wIRQ_OUT),     //           .out_port
           
 		.sam_pwm_pwm            (wSAM_OUT1),
-		.neopixel_data				(wSAM_OUT2),
-		.encoder_encoder_a      ({bMKR_D[12],bMKR_D[10],bMKR_D[8],bMKR_D[6],bMKR_D[4],bMKR_D[2],bMKR_D[0],bMKR_A[5],bMKR_A[3],bMKR_A[1],bMKR_AREF}), //    encoder.encoder_a
-		.encoder_encoder_b      ({bMKR_D[13],bMKR_D[11],bMKR_D[9],bMKR_D[7],bMKR_D[5],bMKR_D[3],bMKR_D[1],bMKR_A[6],bMKR_A[4],bMKR_A[2],bMKR_A[0]})  //           .encoder_b
+		.neopixel_data				(wSAM_OUT2[11:1]),
+		.encoder_encoder_a      ({bMKR_D[13],bMKR_D[11],bMKR_D[9],bMKR_D[7],bMKR_D[5],bMKR_D[3],bMKR_D[1],bMKR_A[6],bMKR_A[4],bMKR_A[2],bMKR_A[0]}), //    encoder.encoder_a
+		.encoder_encoder_b      ({bMKR_D[14],bMKR_D[12],bMKR_D[10],bMKR_D[8],bMKR_D[6],bMKR_D[4],bMKR_D[2],bMKR_D[0],bMKR_A[5],bMKR_A[3],bMKR_A[1]})  //           .encoder_b
 
 
 	);
-
+assign wSAM_OUT2[22:12] = wSAM_OUT2[11:1];
 assign oSAM_INT = wIRQ_OUT[1];
   
 wire [31:0] wSAM_PIN_OUT,wSAM_OUT1,wSAM_OUT2,wSAM_OUT3;
@@ -348,7 +346,7 @@ assign wPEX_PIN_OUT[i] =
 
 end
 
-assign wWM_OUT2[18]=wNINA_RX;
+//assign wWM_OUT2[18]=wNINA_RX;
 assign wWM_OUT2[12]=wNINA_MOSI;
 assign wWM_OUT2[9] =wNINA_SCLK;
 assign wWM_OUT2[17]=wNINA_SS;
