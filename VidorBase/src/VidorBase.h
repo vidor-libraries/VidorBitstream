@@ -14,17 +14,6 @@
 #include "VidorUtils.h"
 
 typedef enum {
-	BASIC = 1,			// basic contains gpio functionlities
-	ADVANCED_PWM,
-	ADVANCED_I2C,
-	ADVANCED_SPI,
-	ADVANCED_UART,
-	MIPI,
-	VIDEO_OUT,
-	MEMORY_MAP
-} vidor_ips;
-
-typedef enum {
 	IRQ_WIRE = 1,
 	IRQ_UART,
 } vidor_irq;
@@ -86,7 +75,6 @@ public:
 	int begin(bool jumpToApp = true) {
 		int ret = VidorUtils::begin(jumpToApp);
 
-		capabilities = 0xFF; //read(BASE_ADDRESS);
 		attachInterrupt(IRQ_PIN, VidorBase::onInterrupt, FALLING);
 
 		if (jumpToApp) {
@@ -97,12 +85,8 @@ public:
 		return ret;
 	}
 
-	int isCapableOf(vidor_ips ip) {
-		return (capabilities | (1 << ip));
-	}
-
 	bool ready() {
-		return capabilities != 0;
+		return (version() != 0) &&  (version() != 0xFFFFFFFF);
 	}
 
 	uint32_t version() {
@@ -135,37 +119,29 @@ public:
 	}
 
 	int writeMemory(int offset, uint8_t* buffer, size_t len) {
-		if (isCapableOf(MEMORY_MAP)) {
-			return write(MEMORY_BASE_ADDRESS + offset, buffer, len);
-		}
-		return -1;
+		return write(MEMORY_BASE_ADDRESS + offset, buffer, len);
 	}
 
 	int readMemory(int offset, uint8_t* buffer, size_t len) {
-		if (isCapableOf(MEMORY_MAP)) {
-			return read(MEMORY_BASE_ADDRESS + offset, buffer, len);
-		}
-		return -1;
+		return read(MEMORY_BASE_ADDRESS + offset, buffer, len);
 	}
 
 	void pinMode(uint32_t pin, uint32_t mode) {
-		if (isCapableOf(BASIC)) {
-			uint32_t rpc[256];
-			rpc[0] = MB_DEV_GPIO | 0x01;
-			rpc[1] = pin;
+		uint32_t rpc[256];
+		rpc[0] = MB_DEV_GPIO | 0x01;
+		rpc[1] = pin;
 
-			switch (mode) {
-				case OUTPUT:
-					rpc[2] = 2;
-					break;
-				case INPUT:
-					rpc[2] = 1;
-					break;
-				default:
-					rpc[2] = mode;
-			}
-			mbCmdSend(rpc, 3);
+		switch (mode) {
+			case OUTPUT:
+				rpc[2] = 2;
+				break;
+			case INPUT:
+				rpc[2] = 1;
+				break;
+			default:
+				rpc[2] = mode;
 		}
+		mbCmdSend(rpc, 3);
 	}
 
 	void digitalWrite(uint32_t pin, uint32_t mode) {
