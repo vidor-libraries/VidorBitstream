@@ -28,10 +28,14 @@
 
 #define MAX_CLOCK_FREQUENCY		50000000	//50MHz
 
-VidorSPIClass::VidorSPIClass(int index) : settings(SPISettings(0, MSBFIRST, SPI_MODE0))
+VidorSPIClass::VidorSPIClass(int index,int _mosi,int _miso,int _sck,int _cs) : settings(SPISettings(0, MSBFIRST, SPI_MODE0))
 {
   initialized = false;
   this->index = index;
+  mosi=_mosi;
+  miso=_miso;
+  sck= _sck;
+  cs= _cs;
 }
 
 void VidorSPIClass::begin()
@@ -48,7 +52,7 @@ void VidorSPIClass::init()
   interruptSave = 0;
   interruptMask = 0;
   initialized = true;
-  VidorIO::enableSPI(index);
+  VidorIO::enableSPI(index, mosi, miso, sck, cs);
 }
 
 void VidorSPIClass::config(SPISettings settings)
@@ -200,4 +204,8 @@ void VidorSPIClass::detachInterrupt() {
   // Should be disableInterrupt()
 }
 
-VidorSPIClass SPIEx (0);
+VidorSPIClass SPIFPGA0 (0, A2, A6, A3, A4);
+VidorSPIClass SPIFPGA1 (1, A5, 0, 1, 2);
+VidorSPIClass SPIFPGA2 (2, 3, 7, 4, 5);
+VidorSPIClass SPIFPGA3 (3, 6, 8, 9, 10);
+VidorSPIClass SPIFPGA4 (4, 11, 12, 13, 14);

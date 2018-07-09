@@ -15,7 +15,7 @@
 class VidorTwoWire : public Stream
 {
   public:
-    VidorTwoWire(int index);
+    VidorTwoWire(int index,int _scl,int _sda);
     int begin();
     void begin(uint8_t address);
     void end();
@@ -49,7 +49,8 @@ class VidorTwoWire : public Stream
   private:
     bool transmissionBegun;
     uint8_t idx;
-
+    int scl;
+    int sda;
     // RX Buffer
     RingBufferN<256> rxBuffer;
 
@@ -65,6 +66,9 @@ class VidorTwoWire : public Stream
     static const uint32_t TWI_CLOCK = 100000;
 };
 
-extern VidorTwoWire WireEx;
+extern VidorTwoWire WireFPGA0;
+extern VidorTwoWire WireFPGA1;
+extern VidorTwoWire WireFPGA2;
+extern VidorTwoWire WireFPGA3;
 
 #endif
