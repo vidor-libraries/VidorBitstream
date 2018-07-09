@@ -1,7 +1,15 @@
 #include "Vidor_NeoPixel.h"
 #include "VidorIO.h"
 
-Vidor_NeoPixel::Vidor_NeoPixel(uint8_t pin, uint16_t howMany, uint8_t type = NEO_GRB + NEO_KHZ800) {
+Vidor_NeoPixel::Vidor_NeoPixel(uint8_t pin, uint16_t howMany, uint8_t type) {
+
+  this->howMany = howMany;
+  this->type = type;
+  this->pin = pin;
+}
+
+uint32_t Vidor_NeoPixel::begin()
+{
   uint32_t ptr[4];
 
   switch (pin) {
@@ -20,29 +28,23 @@ Vidor_NeoPixel::Vidor_NeoPixel(uint8_t pin, uint16_t howMany, uint8_t type = NEO
     case NEOPIXEL_PIN_4:
       index = 4;
       break;
+#ifdef NEOPIXEL_PIN_5
     case NEOPIXEL_PIN_5:
       index = 5;
       break;
+#endif
     default:
       // no default case allowed
-      return;
+      return -1;
   }
 
   if (pin >= A0) {
     msk = 1 << (pin - A0 + 1);
-    pinMode(pin - A0 + 132 + 1, 5)
+    pinMode(pin - A0 + 132 + 1, 5);
   } else {
     msk = 1 << (pin + 8);
-    pinMode(pin + 132 + 8, 5)
+    pinMode(pin + 132 + 8, 5);
   }
-
-  this->howMany = howMany;
-  this->type = type;
-}
-
-uint32_t Vidor_NeoPixel::begin()
-{
-  uint32_t ptr[4];
 
   ptr[0] = MB_DEV_NP | 1;
   ptr[1] = msk & 0x007FFFFF;
@@ -52,6 +54,12 @@ uint32_t Vidor_NeoPixel::begin()
   init = true;
 
   return mbCmdSend(ptr, 4);
+}
+
+uint32_t Vidor_NeoPixel::setPin(uint8_t pin) {
+  this->pin = pin;
+  begin();
+  return 0;
 }
 
 /**
@@ -67,7 +75,7 @@ uint32_t Vidor_NeoPixel::setPixelColor(uint16_t n, uint32_t red, uint32_t green,
   uint32_t ptr[6];
 
   ptr[0] = MB_DEV_NP | ((index & 0x0F)<<20) | 2;
-  ptr[1] = LED;
+  ptr[1] = n;
   ptr[2] = red;
   ptr[3] = green;
   ptr[4] = blue;
@@ -120,7 +128,7 @@ uint32_t Vidor_NeoPixel::test(void)
   //setPin(0x00000001, 256, 0x0058);
 
   for (int i=0; i<256; i++) {
-    setPixelColor(0, i, i*4, 255-i*4, i*8, 0);
+    setPixelColor(i, i*4, 255-i*4, i*8, 0);
   }
   show();
   return 0;

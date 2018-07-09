@@ -31,7 +31,7 @@
 #endif
 
 #if FPGA_NEOPIXEL_COUNT > 0
-#include "VidorNeopixel.h"
+#include "Vidor_NeoPixel.h"
 #endif
 
 #if FPGA_CAMERA_COUNT > 0
