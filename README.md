@@ -1,7 +1,7 @@
 Vidor Libraries monorepo
 ========================
 
-* This repository contains all the libraries and scripts needed by MKRVidor4000.
+This repository contains all the libraries and scripts needed by MKRVidor4000.
 
 * Folders description:
 	- VidorUtils: implements basic communication primitives; it is recommended to derive any specialized class from this one
@@ -23,7 +23,7 @@ Vidor Libraries monorepo
 
 	- VidorCam: implements a driver for Omnivision OV5647 camera
 
-	- VidorQR: implements a QR code marker recognition using images from an OV5647 camera
+	- VidorQR: implements a QR code marker recognition using images from an OV5647 camera (included in VidorCam)
 
 	- VidorEncoder: implements a decoder for quadrature encoders
 
@@ -32,4 +32,9 @@ Vidor Libraries monorepo
 
 
 	Since only a single library (implementing a bitstream) can be included at a time, we provide a script to automatically create a "final" library starting from the given sublibraries. This "fat" library is uploaded to http://github.com/vidor-libraries so it can be retrieved by the Library Manager. All the repositories there are readonly, the development only happens in this repo.
+	For example, to generate VidorGraphics library, execute
+	```
+	./distrib/assemble_library.sh VidorGraphics
+	```
+	
 
