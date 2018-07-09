@@ -22,6 +22,7 @@ if [ x$HAS_LIB != x ] && [ $HAS_LIB != 0 ]
 then
 	cp ${folders[i]}/* ./distrib/$LIB_NAME/src/
 	if [ -d ${folders[i]}/examples/ ]; then
+		mkdir -p ./distrib/$LIB_NAME/examples/
 		cp -r ${folders[i]}/examples/* ./distrib/$LIB_NAME/examples/
 	fi
 fi

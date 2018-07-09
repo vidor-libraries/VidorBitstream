@@ -131,13 +131,15 @@ static struct regval_list cam_640x480[] = {
 class VidorQR {
 
   public:
-	sQrDet qr;
-	VidorQR(void);
-    void qrEnable(uint8_t on);
+    sQrDet qr;
+    VidorQR(void);
+    void begin() {enable(true);}
+    void end() {enable(false);}
     void setMode(uint8_t mode);
     void setThr(uint8_t thr);
     void readQRCode(void);
-  protected:
+  private:
+    void enable(uint8_t on);
 };
 
 
@@ -148,12 +150,13 @@ class VidorCamera {
     VidorQR qrrec;
     VidorCamera();
     int begin();
-    int setPower(bool on);
+    int end() {setPower(false);}
     int enableStream();
     int disableStream();
     int modelDetect(void);
     void qrCross(uint16_t x, uint16_t y, uint16_t c);
   protected:
+    int setPower(bool on);
     int sensor_init(void);
     int write_array(struct regval_list *regs, int array_size);
     int set_sw_standby(int standby);

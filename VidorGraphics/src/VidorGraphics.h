@@ -42,10 +42,6 @@
 #include "Vidor_GFX.h"
 #endif
 
-#if FPGA_QR_COUNT > 0
-#include "VidorQR.h"
-#endif
-
 class VidorGraphics : public VidorUtils {
 public:
 
@@ -56,7 +52,7 @@ public:
 	int begin(bool jumpToApp = true) {
 		int ret = VidorUtils::begin(jumpToApp);
 
-		attachInterrupt(IRQ_PIN, VidorBase::onInterrupt, FALLING);
+		attachInterrupt(IRQ_PIN, VidorGraphics::onInterrupt, FALLING);
 
 		if (jumpToApp) {
 			// wait one second to make sure jump was ok

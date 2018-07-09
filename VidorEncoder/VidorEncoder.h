@@ -13,7 +13,7 @@ class VidorEncoder {
     void write(int32_t p);
     int32_t read();
   protected:
-    int32_t offset=0;
+    int32_t offset = 0;
     int idx;
 };
 

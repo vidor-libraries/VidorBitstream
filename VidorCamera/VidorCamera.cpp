@@ -6,10 +6,14 @@ VidorCamera::VidorCamera(){
 VidorQR::VidorQR(void){
 
 }
-int VidorCamera::begin () {
+
+int VidorCamera::begin() {
   int ret;
-  ret= WireEx.begin();
+  ret = WireEx.begin();
   vgfx.fillRect(0, 0, 640, 480,0,0);
+  if (ret > 0) {
+    ret = setPower(true);
+  }
   return ret;
 }
 
@@ -170,7 +174,7 @@ int VidorCamera::set_virtual_channel(int channel) {
   return write(CAM_ADDR, 0x4814, channel_id | (channel << 6));
 }
 
-void VidorQR::qrEnable(uint8_t on) {
+void VidorQR::enable(uint8_t on) {
   uint32_t ptr[2];
   ptr[0] = MB_DEV_QR | 1;
   ptr[1] = on;
@@ -190,7 +194,6 @@ void VidorQR::readQRCode(void){
 
   ptr[0] = MB_DEV_QR | 3;
   if(mbCmdSend(ptr, 1)>=0) {
-    //Serial.println("scritto");
     mbRead(2, &qr, (sizeof(sQrDet) + 3) / 4);
   }
 }

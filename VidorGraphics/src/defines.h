@@ -21,7 +21,6 @@
 #define NEOPIXEL_PIN_2				7
 #define NEOPIXEL_PIN_3				8
 #define NEOPIXEL_PIN_4				12
-#define NEOPIXEL_PIN_5				A6
-
+#define NEOPIXEL_PIN_5				A0
 
 #endif
