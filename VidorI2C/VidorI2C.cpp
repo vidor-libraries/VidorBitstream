@@ -24,15 +24,21 @@ extern "C" {
 #include <Arduino.h>
 #include "VidorI2C.h"
 
-VidorTwoWire::VidorTwoWire(int index)
+VidorTwoWire::VidorTwoWire(int index,int _scl,int _sda)
 {
   this->idx = index;
   transmissionBegun = false;
+  scl= _scl;
+  sda=_sda;
 }
 
 int VidorTwoWire::begin(void) {
   // Master Mode
-  return VidorIO::enableI2C(idx);
+	if(idx<3){
+		return VidorIO::enableI2C(idx,sda,scl,4);
+	}else{
+		VidorIO::enableI2C(idx,sda,scl,5);
+	}
 }
 
 void VidorTwoWire::begin(uint8_t address) {
@@ -186,4 +192,7 @@ void VidorTwoWire::onService(void)
 	// I2C slave, not implemented ATM
 }
 
-VidorTwoWire WireEx(0);
+VidorTwoWire WireFPGA0(0,9,10);
+VidorTwoWire WireFPGA1(1,11,12);
+VidorTwoWire WireFPGA2(2,13,14);
+VidorTwoWire WireFPGA3(3,A0,A1);

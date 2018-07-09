@@ -50,7 +50,26 @@ public:
 
 	/* I2C functions */
 
-	static int enableI2C(int index) {
+	static int enableI2C(int index,int sda,int scl,int mode) {
+
+		if(sda<=14){
+			sda=sda-0 ;
+			pinMode(sda,INPUT);
+			pinMode(sda+140,mode);
+		} else {
+			sda=sda-A0;
+			pinMode(sda,INPUT);
+			pinMode(sda+133,mode);
+		}
+		if(scl<=14){
+			scl=scl-0 ;
+			pinMode(scl,INPUT);
+			pinMode(scl+140,mode);
+		} else {
+			scl=scl-A0;
+			pinMode(scl,INPUT);
+			pinMode(scl+133,mode);
+		}
 		uint32_t rpc[1];
 		rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x01;
 		return mbCmdSend(rpc, 1);
@@ -136,7 +155,43 @@ public:
 	static void flushUART(int index) {}
 
 	/* SPI functions */
-	static void enableSPI(int index) {
+	static void enableSPI(int index,int mosi, int miso,int sck,int cs) {
+		if(mosi<=14){
+			mosi=mosi-0 ;
+			pinMode(mosi,INPUT);
+			pinMode(mosi+140,5);
+		} else {
+			mosi=mosi-A0;
+			pinMode(mosi,INPUT);
+			pinMode(mosi+133,5);
+		}
+		if(miso<=14){
+			miso=miso-0 ;
+			pinMode(miso+140,INPUT);
+			pinMode(miso,INPUT);
+		} else {
+			miso=miso-A0;
+			pinMode(miso+133,INPUT);
+			pinMode(miso,INPUT);
+		}
+		if(sck<=14){
+			sck=sck-0 ;
+			pinMode(sck,INPUT);
+			pinMode(sck+140,5);
+		} else {
+			sck=sck-A0;
+			pinMode(sck,INPUT);
+			pinMode(sck+133,5);
+		}
+		if(cs<=14){
+			cs=cs-0;
+			pinMode(cs,INPUT);
+			pinMode(cs+140,5);
+		} else {
+			cs=cs-A0;
+			pinMode(cs,INPUT);
+			pinMode(cs+133,5);
+		}
 		//pinMode(SCK_BB, 4);
 		//pinMode(MOSI_BB, 4);
 		//pinMode(MISO_BB, 4);
