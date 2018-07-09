@@ -70,5 +70,6 @@ extern VidorTwoWire WireFPGA0;
 extern VidorTwoWire WireFPGA1;
 extern VidorTwoWire WireFPGA2;
 extern VidorTwoWire WireFPGA3;
+extern VidorTwoWire WireEx;
 
 #endif

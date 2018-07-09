@@ -1,15 +1,15 @@
+#include "VidorGraphics.h"
 #include "Vidor_GFX.h"
+
 Vidor_GFX  vdgfx;
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
-  while (!Serial){
-    
-   }
+  while (!Serial){}
 
+  // Initialize the FPGA
   if (!VD.begin()) {
-     Serial.println("Initialization failed!");
+    Serial.println("Initialization failed!");
     while (1) {}
   }
 
@@ -19,19 +19,16 @@ void setup() {
 void loop()
 {
   /**
-  *  Draw Arduino logo
+  *  Draw an Arduino logo
   */
+
+  // Fill the screen with a white background
   vdgfx.fillRect(0,0,640,480,vdgfx.White(),1);
-    /**
-  *  The library VIDOR_GFX.h allow to draw some basic elements to the view, like circle rectangular line and point, simply it could be drawed by using the function: 
-  *  - drawPixel()
-  *  - drawLine()
-  *  - drawRect()  
-  *  - fillRect()
-  *  - drawCircle()
-  *  - fillCircle()
-  *  - drawChar()
+
+  /**
+  *  The library allows drawing some basic elements to the view, like circles, rectangles, lines
   */  
+
   vdgfx.fillCircle(225,225,100 ,vdgfx.lightBlue(),1);
   vdgfx.fillCircle(415,225,100 ,vdgfx.lightBlue(),1);
   vdgfx.fillCircle(225,225,90 ,vdgfx.White(),1);
@@ -39,23 +36,20 @@ void loop()
   vdgfx.fillRect(175,220,100,10 ,vdgfx.lightBlue(),1);
   vdgfx.fillRect(365,220,100,10 ,vdgfx.lightBlue(),1);
   vdgfx.fillRect(410,175,10,100 ,vdgfx.lightBlue(),1);
+
   /**
-  *  for draw a text in the view could be used the function write() or print(),
-  *  the text feature like color, size, position and alpha could be setted by the 
-  *  functions textAlpha(), setCursor(), textColor() and textSize().
+  *  To draw a text we can use the classic functions like write() and print()
+  *  Text size, color and position can be changed using the .text subclass
   */
-  vdgfx.GFXText.setCursor(150,375);
-  vdgfx.GFXText.textAlpha(1);
-  vdgfx.GFXText.textSize(3);
-  vdgfx.GFXText.textColor(vdgfx.lightBlue());
+  vdgfx.text.setCursor(150,375);
+  vdgfx.text.setAlpha(1);
+  vdgfx.text.setSize(3);
+  vdgfx.text.setColor(vdgfx.lightBlue());
   vdgfx.println("ARDUINO");
-  vdgfx.GFXText.setCursor(480,145);
-  vdgfx.GFXText.textSize(1);
+  vdgfx.text.setCursor(480,145);
+  vdgfx.text.setSize(1);
   vdgfx.println("TM");
-  
-  //vdgfx.GFXText.textColor(vdgfx.Blue());
-  //vdgfx.println("Green");
-  
-  while(1){
+
+  while (1) {
   }
 }

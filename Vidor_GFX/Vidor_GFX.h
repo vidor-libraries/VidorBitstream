@@ -23,12 +23,12 @@
 class Vidor_GFXtext {
   public:
     Vidor_GFXtext(void);
-    void textColor(uint16_t color);
-    void textAlpha(uint16_t alpha=1);
-    void textSize(uint16_t size);
+    void setColor(uint16_t color);
+    void setAlpha(uint16_t alpha=1);
+    void setSize(uint16_t size);
     void setCursor(uint16_t x,uint16_t y);
-    uint16_t getCursotX(void);
-    uint16_t getCursotY(void);
+    uint16_t getCursorX(void);
+    uint16_t getCursorY(void);
   protected:
     uint16_t cursor_x=0;
     uint16_t cursor_y=YSHIFT;
@@ -39,7 +39,7 @@ class Vidor_GFXtext {
 
 };
 
-class Vidor_GFX:public Print {
+class Vidor_GFX : public Print {
   public:
     Vidor_GFX(void);
     void drawPixel(uint16_t x, uint16_t y, uint16_t color, uint16_t alpha=1);
@@ -61,7 +61,7 @@ class Vidor_GFX:public Print {
     uint16_t Brown();
     uint16_t White();
     void Cross(uint16_t x, uint16_t y, uint16_t c);
-    Vidor_GFXtext GFXText;
+    Vidor_GFXtext text;
   protected:
     friend class Vidor_CAM;
 };

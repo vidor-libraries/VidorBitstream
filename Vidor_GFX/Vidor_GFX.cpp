@@ -1,7 +1,7 @@
 #include "Vidor_GFX.h"
 
 Vidor_GFX::Vidor_GFX(void) {
-  GFXText=Vidor_GFXtext();
+  text = Vidor_GFXtext();
 }
 
 Vidor_GFXtext::Vidor_GFXtext(void) {
@@ -82,11 +82,11 @@ void Vidor_GFX::fillCircle(uint16_t x0, uint16_t y0, uint16_t r, uint16_t color,
   }
 }
 
-void Vidor_GFXtext::textColor(uint16_t color) {
+void Vidor_GFXtext::setColor(uint16_t color) {
   txt_color=color;
 }
 
-void Vidor_GFXtext::textAlpha(uint16_t alpha) {
+void Vidor_GFXtext::setAlpha(uint16_t alpha) {
   txt_alpha=alpha;
 }
 
@@ -95,43 +95,43 @@ void Vidor_GFXtext::setCursor(uint16_t x,uint16_t y) {
   cursor_y=y;
 }
 
-uint16_t Vidor_GFXtext::getCursotX(void) {
+uint16_t Vidor_GFXtext::getCursorX(void) {
   return cursor_x;
 }
 
-uint16_t Vidor_GFXtext::getCursotY(void) {
+uint16_t Vidor_GFXtext::getCursorY(void) {
   return cursor_y;
 }
 
-void Vidor_GFXtext::textSize(uint16_t size) {
+void Vidor_GFXtext::setSize(uint16_t size) {
   txt_size=size;
 }
 
 size_t Vidor_GFX::write(uint8_t c) {
   uint32_t ptr[6];
   size_t ret;
-  if(GFXText.cursor_x<VIDOR_WEIGHT && GFXText.cursor_y <VIDOR_LENGTH) {
+  if(text.cursor_x<VIDOR_WEIGHT && text.cursor_y <VIDOR_LENGTH) {
     if(c=='\n') {
-      GFXText.cursor_y+=YSHIFT*GFXText.txt_size;
+      text.cursor_y+=YSHIFT*text.txt_size;
       return 1;
     } else if (c=='\r') {
-      GFXText.cursor_x=0;
+      text.cursor_x=0;
       return 1;
     } else {
       ptr[0] = MB_DEV_GFX | GFX_WC;
-      ptr[1] = GFXText.cursor_x;
-      ptr[2] = GFXText.cursor_y;
-      ptr[3] = ( GFXText.txt_color&0x7FFF)|(GFXText.txt_alpha<<15);
-      ptr[4] = GFXText.txt_size;
+      ptr[1] = text.cursor_x;
+      ptr[2] = text.cursor_y;
+      ptr[3] = ( text.txt_color&0x7FFF)|(text.txt_alpha<<15);
+      ptr[4] = text.txt_size;
       ptr[5] = c;
       ret= mbCmdSend(ptr, 6);
-      GFXText.cursor_x+=YSHIFT*GFXText.txt_size;
-      if((GFXText.cursor_x+(YSHIFT*GFXText.txt_size))>=VIDOR_WEIGHT) {
-        GFXText.cursor_y+=(YSHIFT*GFXText.txt_size);
-        if(GFXText.cursor_y>=VIDOR_LENGTH) {
+      text.cursor_x+=YSHIFT*text.txt_size;
+      if((text.cursor_x+(YSHIFT*text.txt_size))>=VIDOR_WEIGHT) {
+        text.cursor_y+=(YSHIFT*text.txt_size);
+        if(text.cursor_y>=VIDOR_LENGTH) {
           return 0;
         }
-        GFXText.cursor_x=0;
+        text.cursor_x=0;
       }
       return ret;
     }

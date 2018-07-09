@@ -196,3 +196,7 @@ VidorTwoWire WireFPGA0(0,9,10);
 VidorTwoWire WireFPGA1(1,11,12);
 VidorTwoWire WireFPGA2(2,13,14);
 VidorTwoWire WireFPGA3(3,A0,A1);
+
+// Internal pins to control the camera (P1 and P2 on the FPGA)
+// TODO: fixme with the actual code
+VidorTwoWire WireEx(4, A0, A1);
