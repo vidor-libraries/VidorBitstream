@@ -16,4 +16,10 @@
 
 #define IRQ_PIN						33
 
+#define NEOPIXEL_PIN_0				A6
+#define NEOPIXEL_PIN_1				0
+#define NEOPIXEL_PIN_2				7
+#define NEOPIXEL_PIN_3				8
+#define NEOPIXEL_PIN_4				12
+
 #endif
