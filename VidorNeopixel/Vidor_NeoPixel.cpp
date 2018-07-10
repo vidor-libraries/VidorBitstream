@@ -13,24 +13,59 @@ uint32_t Vidor_NeoPixel::begin()
   uint32_t ptr[4];
 
   switch (pin) {
+#ifdef NEOPIXEL_PIN_0
     case NEOPIXEL_PIN_0:
       index = 0;
       break;
+#endif
+#ifdef NEOPIXEL_PIN_1
     case NEOPIXEL_PIN_1:
       index = 1;
       break;
+#endif
+#ifdef NEOPIXEL_PIN_2
     case NEOPIXEL_PIN_2:
       index = 2;
       break;
+#endif
+#ifdef NEOPIXEL_PIN_3
     case NEOPIXEL_PIN_3:
       index = 3;
       break;
+#endif
+#ifdef NEOPIXEL_PIN_4
     case NEOPIXEL_PIN_4:
       index = 4;
       break;
+#endif
 #ifdef NEOPIXEL_PIN_5
     case NEOPIXEL_PIN_5:
       index = 5;
+      break;
+#endif
+#ifdef NEOPIXEL_PIN_6
+    case NEOPIXEL_PIN_6:
+      index = 6;
+      break;
+#endif
+#ifdef NEOPIXEL_PIN_7
+    case NEOPIXEL_PIN_7:
+      index = 7;
+      break;
+#endif
+#ifdef NEOPIXEL_PIN_8
+    case NEOPIXEL_PIN_8:
+      index = 8;
+      break;
+#endif
+#ifdef NEOPIXEL_PIN_9
+    case NEOPIXEL_PIN_9:
+      index = 9;
+      break;
+#endif
+#ifdef NEOPIXEL_PIN_10
+    case NEOPIXEL_PIN_10:
+      index = 10;
       break;
 #endif
     default:
@@ -40,10 +75,10 @@ uint32_t Vidor_NeoPixel::begin()
 
   if (pin >= A0) {
     msk = 1 << (pin - A0 + 1);
-    pinMode(pin - A0 + 132 + 1, 5);
+    pinMode(pin - A0 + 132 + 1, NEOPIXEL_PINMUX);
   } else {
     msk = 1 << (pin + 8);
-    pinMode(pin + 132 + 8, 5);
+    pinMode(pin + 132 + 8, NEOPIXEL_PINMUX);
   }
 
   ptr[0] = MB_DEV_NP | 1;
