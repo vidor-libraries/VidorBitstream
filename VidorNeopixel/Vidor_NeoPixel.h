@@ -81,7 +81,9 @@ class Vidor_NeoPixel {
     Vidor_NeoPixel(uint16_t howMany, uint8_t pin, uint8_t type = NEO_GRB + NEO_KHZ800);
     uint32_t setPin(uint8_t pin);
     uint32_t setPixelColor(uint16_t n, uint32_t red, uint32_t green, uint32_t blue, uint32_t white);
-    uint32_t setPixelColor(uint16_t n, uint32_t red, uint32_t green, uint32_t blue);
+    uint32_t setPixelColor(uint16_t n, uint32_t red, uint32_t green, uint32_t blue) {
+        return setPixelColor(n, red, green, blue, 1);
+    }
     uint32_t setBrightness(uint16_t brg);
     uint32_t show(void);
     uint32_t test(void);

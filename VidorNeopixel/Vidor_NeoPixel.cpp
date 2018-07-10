@@ -74,10 +74,10 @@ uint32_t Vidor_NeoPixel::begin()
   }
 
   if (pin >= A0) {
-    msk = 1 << (pin - A0 + 1);
+    msk = 1 << (pin - A0);
     pinMode(pin - A0 + 132 + 1, NEOPIXEL_PINMUX);
   } else {
-    msk = 1 << (pin + 8);
+    msk = 1 << (pin + 7);
     pinMode(pin + 132 + 8, NEOPIXEL_PINMUX);
   }
 
@@ -158,7 +158,7 @@ uint32_t Vidor_NeoPixel::show(void)
  */
 uint32_t Vidor_NeoPixel::test(void)
 {
-  // call test() on a device created with Vidor_NeoPixel(A0, 256, NEO_BRG)
+  // call test() on a device created with Vidor_NeoPixel(128, A0, NEO_BRG)
 
   //setPin(0x00000001, 256, 0x0058);
 
