@@ -61,6 +61,8 @@ public:
 		if (jumpToApp) {
 			// wait one second to make sure jump was ok
 			delay(1000);
+			// reinitilize jtag chain
+			jtagInit();
 		}
 
 		return ret;

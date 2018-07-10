@@ -664,6 +664,24 @@ int mbPinSet(void)
 #endif
 }
 
+int mbEveSend(uint32_t* data, int len)
+{
+ long start;
+ int ret;
+#ifdef MB_INT_PIN
+ ret = jtagWriteBuffer(MB_BASE, (const uint8_t *)data, len);
+ if (ret!=len) {
+   return -10;
+ }
+ digitalWrite(MB_INT_PIN, HIGH);
+ digitalWrite(MB_INT_PIN, LOW);
+#else
+ jtagWriteBuffer(MB_BASE + 1, (const uint8_t *)(&data[1]), len-1);
+ jtagWriteBuffer(MB_BASE, (const uint8_t *)data, 1);
+#endif
+ return 0;
+}
+
 /**
  * Sends len words (32 bit) via messagebox
  */

@@ -37,7 +37,7 @@ public:
 		if (ret == 0 && jumpToApp) {
 			uint32_t ptr[1];
 			ptr[0] = 0 | 3;
-			mbCmdSend(ptr, 1);
+			mbEveSend(ptr, 1);
 		}
 
 		return (ret == 0);

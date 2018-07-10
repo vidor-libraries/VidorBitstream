@@ -52,6 +52,9 @@ public:
 
 	static int enableI2C(int index,int sda,int scl,int mode) {
 
+		if (sda == -1)
+			goto set_scl;
+
 		if(sda<=14){
 			sda=sda-0 ;
 			pinMode(sda,INPUT);
@@ -61,6 +64,11 @@ public:
 			pinMode(sda,INPUT);
 			pinMode(sda+133,mode);
 		}
+
+set_scl:
+		if (scl == -1)
+			goto i2c_apply;
+
 		if(scl<=14){
 			scl=scl-0 ;
 			pinMode(scl,INPUT);
@@ -70,6 +78,8 @@ public:
 			pinMode(scl,INPUT);
 			pinMode(scl+133,mode);
 		}
+
+i2c_apply:
 		uint32_t rpc[1];
 		rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x01;
 		return mbCmdSend(rpc, 1);

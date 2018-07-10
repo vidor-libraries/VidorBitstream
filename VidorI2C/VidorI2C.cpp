@@ -192,11 +192,11 @@ void VidorTwoWire::onService(void)
 	// I2C slave, not implemented ATM
 }
 
-VidorTwoWire WireFPGA0(0,9,10);
-VidorTwoWire WireFPGA1(1,11,12);
-VidorTwoWire WireFPGA2(2,13,14);
-VidorTwoWire WireFPGA3(3,A0,A1);
+VidorTwoWire WireFPGA0(1,9,10);
+VidorTwoWire WireFPGA1(2,11,12);
+VidorTwoWire WireFPGA2(3,13,14);
+VidorTwoWire WireFPGA3(4,A0,A1);
 
 // Internal pins to control the camera (P1 and P2 on the FPGA)
 // TODO: fixme with the actual code
-VidorTwoWire WireEx(4, A0, A1);
+VidorTwoWire WireEx(0, -1, -1);
