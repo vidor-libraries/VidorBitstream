@@ -191,7 +191,7 @@ void VidorQR::setMode(uint8_t mode) {
 int VidorQR::readQRCode(void){
   uint32_t ptr[1];
   ptr[0] = MB_DEV_QR | 3;
-  ret = mbCmdSend(ptr, 1);
+  int ret = mbCmdSend(ptr, 1);
   if (ret) {
 	  return 0;
   } else {

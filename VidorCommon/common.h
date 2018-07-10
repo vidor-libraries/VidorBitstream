@@ -23,7 +23,7 @@ static char* configToString(uint32_t cod)
 		case MB_DEV_UART: 	return "MB_DEV_UART";
 		case MB_DEV_QR: 	return "MB_DEV_QR";
 		case MB_DEV_SDRAM: 	return "MB_DEV_SDRAM";
-		case MB_DEV_ENC 	return "MB_DEV_ENC";
+		case MB_DEV_ENC: 	return "MB_DEV_ENC";
 	}
 }
 

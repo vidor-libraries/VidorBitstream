@@ -138,7 +138,7 @@ class VidorQR {
     void end() {enable(false);}
     void setMode(uint8_t mode);
     void setThr(uint8_t thr);
-    void readQRCode(void);
+    int readQRCode(void);
   private:
     void enable(uint8_t on);
 };
