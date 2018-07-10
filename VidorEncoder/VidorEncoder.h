@@ -5,7 +5,7 @@
 #include "VidorUtils.h"
 #include "defines.h"
 
-#define MB_DEV_ENC  0x0A000000
+
 
 class VidorEncoder {
   public:

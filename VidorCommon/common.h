@@ -10,6 +10,7 @@
 #define MB_DEV_UART 	0x06000000
 #define MB_DEV_QR   	0x07000000
 #define MB_DEV_SDRAM 	0x08000000
+#define MB_DEV_ENC  	0x0A000000
 
 static char* configToString(uint32_t cod)
 {
@@ -22,6 +23,7 @@ static char* configToString(uint32_t cod)
 		case MB_DEV_UART: 	return "MB_DEV_UART";
 		case MB_DEV_QR: 	return "MB_DEV_QR";
 		case MB_DEV_SDRAM: 	return "MB_DEV_SDRAM";
+		case MB_DEV_ENC 	return "MB_DEV_ENC";
 	}
 }
 

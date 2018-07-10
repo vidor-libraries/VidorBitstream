@@ -9,7 +9,6 @@
 #define VIDOR_WEIGHT 640
 #define VIDOR_LENGTH 480
 #define YSHIFT 17
-#define MB_DEV_GFX  0x03000000
 
 #define GFX_PX   0
 #define GFX_LN   1

@@ -12,7 +12,8 @@
 #define CAM_SW_RESET        0x0103
 #define CAM_REG_CHIPID_H    0x300A
 #define CAM_REG_CHIPID_L    0x300B
-#define MB_DEV_QR           0x07000000
+
+#define QR_PT_DET_NUM 12
 
 typedef struct {
     uint32_t xs;
@@ -27,7 +28,7 @@ typedef struct {
  */
 typedef struct{
   uint32_t sts;
-  sQrPnt  pt[3];
+  sQrPnt  pt[QR_PT_DET_NUM];
 }sQrDet, *psQrDet;
 
 struct regval_list {
