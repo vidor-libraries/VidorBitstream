@@ -184,10 +184,9 @@ uint16_t Vidor_GFX::White() {
 /**
  *
  */
-void Vidor_GFX::Cross(uint16_t x, uint16_t y, uint16_t c)
-{
-  if (x<4) x=4;
-  if (y<4) y=4;
-  drawLine(x-4, y, x+4, y, c);
-  drawLine(x, y-4, x, y+4, c);
+void Vidor_GFX::Cross(uint16_t x, uint16_t y, uint16_t c, uint16_t alpha) {
+  if (x<10) x=10;
+  if (y<10) y=10;
+  drawLine(x-10, y, x+10, y, c,alpha);
+  drawLine(x, y-10, x, y+10, c,alpha);
 }

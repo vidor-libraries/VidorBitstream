@@ -8,12 +8,10 @@ VidorQR::VidorQR(void){
 }
 
 int VidorCamera::begin() {
-  int ret;
-  ret = WireEx.begin();
+  int ret=0;
+  WireEx.begin();
   vgfx.fillRect(0, 0, 640, 480,0,0);
-  if (ret > 0) {
-    ret = setPower(true);
-  }
+  ret = setPower(true);
   return ret;
 }
 
@@ -74,17 +72,14 @@ int VidorCamera::write(uint8_t address, uint16_t reg, uint8_t data) {
   WireEx.beginTransmission(address);
 
   ret=WireEx.write((uint8_t)(reg>>8));
-  if(ret<=0){
-  	  return -1;
+  if(ret==0){
+  	  return ret;
   }
   ret=WireEx.write((uint8_t)(reg));
-  if(ret<=0){
-  	  return -1;
+  if(ret==0){
+  	  return ret;
   }
   ret=WireEx.write(data);
-  if(ret<=0){
-  	  return -1;
-  }
   WireEx.endTransmission();
   return ret;
 }
@@ -110,15 +105,15 @@ int VidorCamera::sensor_init(void) {
   int ret;
   unsigned char resetval, rdval;
   ret = read(CAM_ADDR, 0x0100, &rdval, 1);
-  if (ret <0) {
+  if (ret < 0) {
     return ret;
   }
   ret = write_array(cam_640x480, (sizeof(cam_640x480) / sizeof(struct regval_list)));
-  if (ret < 0) {
+  if (ret == 0) {
     return ret;
   }
   ret = set_virtual_channel( 0);
-  if (ret < 0) {
+  if (ret == 0) {
     return ret;
   }
   ret = read(CAM_ADDR, 0x0100, &resetval, 1);
@@ -127,11 +122,12 @@ int VidorCamera::sensor_init(void) {
   }
   if (!(resetval & 0x01)) {
     ret = write(CAM_ADDR, 0x0100, 0x01);
-    if (ret < 0) {
+    if (ret == 0) {
       return ret;
     }
   }
-  return write(CAM_ADDR, 0x4800, 0x04);
+  ret=write(CAM_ADDR, 0x4800, 0x04);
+  return ret;
 }
 
 int VidorCamera::write_array(struct regval_list *regs, int array_size) {
@@ -139,11 +135,11 @@ int VidorCamera::write_array(struct regval_list *regs, int array_size) {
 
   for (i = 0; i < array_size; i++) {
     ret = write(CAM_ADDR, regs[i].addr, regs[i].data);
-    if (ret < 0) {
+    if (ret == 0) {
       return ret;
     }
   }
-  return 0;
+  return ret;
 }
 
 
@@ -171,6 +167,7 @@ int VidorCamera::set_virtual_channel(int channel) {
     return ret;
   }
   channel_id &= ~(3 << 6);
+
   return write(CAM_ADDR, 0x4814, channel_id | (channel << 6));
 }
 
@@ -205,11 +202,4 @@ void VidorQR::setThr(uint8_t thr){
   ptr[0] = MB_DEV_QR | 4;
   ptr[1] = thr;
   mbCmdSend(ptr, 2);
-}
-
-void VidorCamera::qrCross(uint16_t x, uint16_t y, uint16_t c){
-  if (x<4) x=4;
-  if (y<4) y=4;
-  vgfx.drawLine(x-4, y, x+4, y, c);
-  vgfx.drawLine(x, y-4, x, y+4, c);
 }

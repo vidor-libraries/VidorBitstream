@@ -155,7 +155,6 @@ class VidorCamera {
     int enableStream();
     int disableStream();
     int modelDetect(void);
-    void qrCross(uint16_t x, uint16_t y, uint16_t c);
   protected:
     int setPower(bool on);
     int sensor_init(void);

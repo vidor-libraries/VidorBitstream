@@ -59,7 +59,7 @@ class Vidor_GFX : public Print {
     uint16_t Black();
     uint16_t Brown();
     uint16_t White();
-    void Cross(uint16_t x, uint16_t y, uint16_t c);
+    void Cross(uint16_t x, uint16_t y, uint16_t c, uint16_t alpha=1);
     Vidor_GFXtext text;
   protected:
     friend class Vidor_CAM;
