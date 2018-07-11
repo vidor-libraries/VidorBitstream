@@ -736,3 +736,9 @@ int mbRead(uint32_t address, void* data, int len)
   }
   return 0;
 }
+
+void resetExternalChip() {
+  if (jtag.id != -1) {
+    jtagReload();
+  }
+}
