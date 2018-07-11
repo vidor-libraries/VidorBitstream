@@ -237,7 +237,7 @@ scfifo #(
 
 assign oFB_DATAVALID=!wFB_FIFO_EMPTY&!wFB_FIFO2_EMPTY&&(wFB_FIFO2_USEDW>pBURST_SIZE/3);
 
-assign oAVL_WAITREQUEST=rAVL_WAIT;
+assign oAVL_WAITREQUEST=rAVL_WAIT|iSDRAM_WAITREQUEST;
 assign oAVL_READ_DATA = iSDRAM_READ_DATA;
 assign oAVL_READ_DATAVALID = iSDRAM_READ_DATAVALID&&(rCURRENT_CLIENT==2'd2);
 
@@ -293,17 +293,17 @@ begin
         rBYTEENABLE<=iAVL_BYTEENABLE;
         rCMD_WRITE<=1;
         rREAD_CLIENT<=2;
-        rBURSTCNT <= 0;//iAVL_BURSTCOUNT-1;
+        rBURSTCNT <= (iAVL_BURSTCOUNT==0) ? 0: iAVL_BURSTCOUNT-1;
         rADDRESS<=iAVL_ADDRESS;
         rAVL_WAIT<=0;
       end
-      else if (iAVL_WRITE&&(iAVL_BYTEENABLE!=0)) begin
+      else if (iAVL_WRITE) begin
         rWRITE<=1;
-        rBURSTCNT <= 0;//iAVL_BURSTCOUNT-1;
+        rBURSTCNT <= (iAVL_BURSTCOUNT==0) ? 0: iAVL_BURSTCOUNT-1;
         rADDRESS<=iAVL_ADDRESS;
         rAVL_ACTIVE<=1;
         rAVL_WAIT<=0;
-        rAVL_WRITEDATA<= iAVL_WRITE_DATA;
+        //rAVL_WRITEDATA<= iAVL_WRITE_DATA;
         rBYTEENABLE<=iAVL_BYTEENABLE;
       end
     end
@@ -314,6 +314,11 @@ begin
       rBURSTCNT<=rBURSTCNT-1;
       if (!rAVL_ACTIVE) 
         rWRITE_ADDRESS<=rWRITE_ADDRESS+1;
+		else begin
+		  rBYTEENABLE<=iAVL_BYTEENABLE;
+        rAVL_WRITEDATA<= iAVL_WRITE_DATA;
+		end
+
       rADDRESS<=rADDRESS+1;
       if (rWRITE_ADDRESS==(pFB_SIZE-1)) begin
         //rBUFFER<=!rBUFFER;
@@ -362,8 +367,8 @@ end
 
 assign oSDRAM_ADDRESS    = rADDRESS;
 assign oSDRAM_READ       = rREAD;
-assign oSDRAM_WRITE      = rWRITE;
-assign oSDRAM_BYTEENABLE = rBYTEENABLE;
-assign oSDRAM_WRITEDATA  = rAVL_ACTIVE ? rAVL_WRITEDATA : wMIPI_FIFO_DATA[14:0];
+assign oSDRAM_WRITE      = rWRITE&!(rAVL_ACTIVE&!iAVL_WRITE);
+assign oSDRAM_BYTEENABLE = rAVL_ACTIVE  ? iAVL_BYTEENABLE : 3;
+assign oSDRAM_WRITEDATA  = rAVL_ACTIVE ? iAVL_WRITE_DATA : wMIPI_FIFO_DATA[14:0];
 
 endmodule
