@@ -40,12 +40,34 @@ public:
 		return mbCmdSend(rpc, 2);
 	}
 
-	static void analogWrite(uint32_t pin, uint32_t mode) {
+	static int period;
+
+	static void analogWriteResolution(int bits, int frequency) {
+
 		uint32_t rpc[256];
+		period = 2 << bits;
+		int prescaler = (F_CPU / frequency) / period;
+
 		rpc[0] = MB_DEV_GPIO | 0x04;
+		rpc[1] = prescaler;    // prescaler
+		rpc[2] =  period;    // period
+		mbCmdSend(rpc, 3);
+	}
+
+	static void analogWrite(uint32_t pin, uint32_t mode) {
+
+		uint32_t rpc[256];
+
+		if (period == -1) {
+			// sane default
+			analogWriteResolution(8, 490);
+		}
+
+		rpc[0] = MB_DEV_GPIO | 0x05;
 		rpc[1] = pin;
 		rpc[2] = mode;
-		mbCmdSend(rpc, 3);
+		rpc[3] = period - mode;
+		mbCmdSend(rpc, 4);
 	}
 
 	/* I2C functions */

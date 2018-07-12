@@ -3,6 +3,8 @@
 
 // redefines C-scope pin extended functions (non-weak implementation)
 
+int VidorIO::period = -1;
+
 extern "C" {
 void pinModeExtended( uint32_t ulPin, uint32_t ulMode ) {
 	// TODO: add some checks if ulPin makes sense?
