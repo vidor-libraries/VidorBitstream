@@ -46,7 +46,7 @@ public:
 
 		uint32_t rpc[256];
 		period = 2 << bits;
-		int prescaler = (F_CPU / frequency) / period;
+		int prescaler = (2 * F_CPU / frequency) / period;
 
 		rpc[0] = MB_DEV_GPIO | 0x04;
 		rpc[1] = prescaler;    // prescaler

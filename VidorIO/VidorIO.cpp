@@ -24,7 +24,7 @@ int digitalReadExtended( uint32_t ulPin ) {
 
 void analogWriteExtended( uint32_t ulPin, uint32_t ulVal ) {
 	// check if mux for the pin is already in PWM mode and eventually change it
-	pinModeExtended(ulPin, 2);
+	pinModeExtended(ulPin, 3);
 	// set the PWM duty
 	return VidorIO::analogWrite(ulPin - GPIO_NUM_OFFSET, ulVal);
 }
