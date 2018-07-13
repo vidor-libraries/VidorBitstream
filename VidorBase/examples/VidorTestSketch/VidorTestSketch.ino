@@ -6,15 +6,15 @@
 void setup() {
   Serial.begin(115200);
   while (!Serial) {}
-  if (!VD.begin()) {
+  if (!FPGA.begin()) {
     Serial.println("Initialization failed!");
     while (1) {}
   }
-  Serial.println(VD.read(0), HEX);
-  Serial.println(VD.read(1), HEX);
-  Serial.println(VD.read(2), HEX);
-  Serial.println(VD.read(3), HEX);
-  Serial.println(VD.read(4), HEX);
+  Serial.println(FPGA.read(0), HEX);
+  Serial.println(FPGA.read(1), HEX);
+  Serial.println(FPGA.read(2), HEX);
+  Serial.println(FPGA.read(3), HEX);
+  Serial.println(FPGA.read(4), HEX);
 
   pinMode(105, OUTPUT);
   digitalWrite(105, HIGH);
@@ -30,7 +30,7 @@ void setup() {
   while (!SerialEx);
   SerialEx.println("test");
 
-  VD.end();
+  FPGA.end();
 }
 
 void loop() {

@@ -102,6 +102,6 @@ public:
 	}
 };
 
-extern VidorBase VD;
+extern VidorBase FPGA;
 
 #endif

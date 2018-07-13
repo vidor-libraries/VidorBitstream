@@ -8,7 +8,7 @@ void setup() {
   while (!Serial){}
 
   // Initialize the FPGA
-  if (!VD.begin()) {
+  if (!FPGA.begin()) {
     Serial.println("Initialization failed!");
     while (1) {}
   }

@@ -8,7 +8,7 @@ static uint16_t x[QR_PT_DET_NUM], y[QR_PT_DET_NUM];
 void setup() {
   Serial.begin(115200);
   while (!Serial) {}
-  if (!VD.begin()) {
+  if (!FPGA.begin()) {
     Serial.println("Initialization failed!");
     while (1) {}
   }

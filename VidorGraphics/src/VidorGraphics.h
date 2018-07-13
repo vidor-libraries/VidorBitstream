@@ -98,6 +98,6 @@ public:
 	}
 };
 
-extern VidorGraphics VD;
+extern VidorGraphics FPGA;
 
 #endif

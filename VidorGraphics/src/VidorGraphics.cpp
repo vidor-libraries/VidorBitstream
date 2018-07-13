@@ -1,6 +1,6 @@
 #include "VidorGraphics.h"
 
-VidorGraphics VD;
+VidorGraphics FPGA;
 
 #if 1
 __attribute__ ((used, section(".fpga_bitstream_signature")))
