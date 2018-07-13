@@ -42,7 +42,7 @@
 #include "Vidor_GFX.h"
 #endif
 
-class VidorGraphics : public VidorUtils {
+class VidorGraphics : public VidorUtils, public VidorIO {
 public:
 
 	VidorGraphics() {}

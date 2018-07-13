@@ -46,7 +46,7 @@
 #include "VidorQR.h"
 #endif
 
-class VidorBase : public VidorUtils {
+class VidorBase : public VidorUtils, public VidorIO {
 public:
 
 	VidorBase() {}
