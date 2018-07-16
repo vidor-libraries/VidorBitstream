@@ -1,4 +1,4 @@
-#include "VidorGraphics.h"
+#_INCLUDE_PARENT_LIB_
 #include "Vidor_GFX.h"
 
 Vidor_GFX  vdgfx;

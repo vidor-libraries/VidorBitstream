@@ -1,4 +1,4 @@
-#include "VidorGraphics.h"
+#_INCLUDE_PARENT_LIB_
 #include "VidorCamera.h"
 
 VidorCamera vcam;
