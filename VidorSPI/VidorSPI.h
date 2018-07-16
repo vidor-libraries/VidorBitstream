@@ -142,5 +142,6 @@ extern VidorSPIClass SPIFPGA1;
 extern VidorSPIClass SPIFPGA2;
 extern VidorSPIClass SPIFPGA3;
 extern VidorSPIClass SPIFPGA4;
+extern VidorSPIClass SPIEx;
 
 #endif

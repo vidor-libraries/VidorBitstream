@@ -187,42 +187,53 @@ i2c_apply:
 	static void flushUART(int index) {}
 
 	/* SPI functions */
-	static void enableSPI(int index,int mosi, int miso,int sck,int cs) {
-		if(mosi<=14){
-			mosi=mosi-0 ;
-			pinMode(mosi,INPUT);
-			pinMode(mosi+140,5);
+	static void enableSPI(int index, int mosi, int miso, int sck, int cs) {
+		if (mosi == -1)
+			goto set_miso;
+		if (mosi <= 14) {
+			mosi = mosi - 0;
+			pinMode(mosi, INPUT);
+			pinMode(mosi + 140, 5);
 		} else {
-			mosi=mosi-A0;
-			pinMode(mosi,INPUT);
-			pinMode(mosi+133,5);
+			mosi = mosi - A0;
+			pinMode(mosi, INPUT);
+			pinMode(mosi + 133, 5);
 		}
-		if(miso<=14){
-			miso=miso-0 ;
-			pinMode(miso+140,INPUT);
-			pinMode(miso,INPUT);
+set_miso:
+		if (miso == -1)
+			goto set_sck;
+		if (miso <= 14) {
+			miso = miso - 0 ;
+			pinMode(miso + 140, INPUT);
+			pinMode(miso, INPUT);
 		} else {
-			miso=miso-A0;
-			pinMode(miso+133,INPUT);
-			pinMode(miso,INPUT);
+			miso = miso - A0;
+			pinMode(miso + 133, INPUT);
+			pinMode(miso, INPUT);
 		}
-		if(sck<=14){
-			sck=sck-0 ;
-			pinMode(sck,INPUT);
-			pinMode(sck+140,5);
+set_sck:
+		if (sck == -1)
+			goto set_cs;
+		if (sck <= 14) {
+			sck = sck - 0 ;
+			pinMode(sck, INPUT);
+			pinMode(sck + 140, 5);
 		} else {
-			sck=sck-A0;
-			pinMode(sck,INPUT);
-			pinMode(sck+133,5);
+			sck = sck - A0;
+			pinMode(sck, INPUT);
+			pinMode(sck + 133, 5);
 		}
-		if(cs<=14){
-			cs=cs-0;
-			pinMode(cs,INPUT);
-			pinMode(cs+140,5);
+set_cs:
+		if (cs == -1)
+			return;
+		if (cs <= 14) {
+			cs = cs - 0;
+			pinMode(cs, INPUT);
+			pinMode(cs + 140, 5);
 		} else {
-			cs=cs-A0;
-			pinMode(cs,INPUT);
-			pinMode(cs+133,5);
+			cs = cs - A0;
+			pinMode(cs, INPUT);
+			pinMode(cs + 133, 5);
 		}
 		//pinMode(SCK_BB, 4);
 		//pinMode(MOSI_BB, 4);

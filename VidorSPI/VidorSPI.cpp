@@ -204,8 +204,10 @@ void VidorSPIClass::detachInterrupt() {
   // Should be disableInterrupt()
 }
 
-VidorSPIClass SPIFPGA0 (0, A2, A6, A3, A4);
-VidorSPIClass SPIFPGA1 (1, A5, 0, 1, 2);
-VidorSPIClass SPIFPGA2 (2, 3, 7, 4, 5);
-VidorSPIClass SPIFPGA3 (3, 6, 8, 9, 10);
-VidorSPIClass SPIFPGA4 (4, 11, 12, 13, 14);
+VidorSPIClass SPIFPGA0 (1, A2, A6, A3, A4);
+VidorSPIClass SPIFPGA1 (2, A5, 0, 1, 2);
+VidorSPIClass SPIFPGA2 (3, 3, 7, 4, 5);
+VidorSPIClass SPIFPGA3 (4, 6, 8, 9, 10);
+VidorSPIClass SPIFPGA4 (5, 11, 12, 13, 14);
+
+VidorSPIClass SPIEx (0, -1, -1, -1, -1);  // Internally connected to NiNa module
