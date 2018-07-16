@@ -10,7 +10,7 @@
 
 # To create app + nios_app package
 ```
-./createCompositeBinary -i ../vidor_s.ttf:1:512,../nios_app.bin:0:896: -o ../app.ttf -t 1
+./createCompositeBinary -i ../vidor_s.ttf:1:512,../nios_app.bin:0:896 -o ../app.ttf -t 1
 ```
 
 # Directly load bitstream to ram
