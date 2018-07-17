@@ -225,7 +225,7 @@ set_sck:
 		}
 set_cs:
 		if (cs == -1)
-			return;
+			goto enable_spi;
 		if (cs <= 14) {
 			cs = cs - 0;
 			pinMode(cs, INPUT);
@@ -235,20 +235,32 @@ set_cs:
 			pinMode(cs, INPUT);
 			pinMode(cs + 133, 5);
 		}
-		//pinMode(SCK_BB, 4);
-		//pinMode(MOSI_BB, 4);
-		//pinMode(MISO_BB, 4);
+
+enable_spi:
+		uint32_t rpc[1];
+		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x01;
+		rpc[1] = index;
+		mbCmdSend(rpc, 2);
 	}
 
-	static void setSPIMode(int index, int baud, int mode, int bitOrder) {}
+	static void setSPIMode(int index, int baud, int mode, int bitOrder) {
+		uint32_t rpc[4];
+		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x02;
+		rpc[1] = 1000000;
+		rpc[2] = 0;
+		rpc[3] = 0;
+		mbCmdSend(rpc, 4);
+	}
+
 	static void disableSPI(int index) {}
 
 	static uint8_t transferDataSPI(int index, uint8_t* buf, size_t howMany) {
+
 		uint32_t rpc[256];
 		if(howMany>128){
 			return 0;
 		}
-		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x01;
+		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x04;
 		rpc[1] = howMany;
 		memcpy(&rpc[2], buf, howMany);
 		mbCmdSend(rpc, 2+(rpc[1]+3)/4);
@@ -264,9 +276,11 @@ set_cs:
 
 	static uint8_t transferDataSPI(int index, uint8_t data) {
 		uint32_t rpc[256];
-		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x02;
+		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x05;
 		rpc[1] = data;
-		return mbCmdSend(rpc, 2);
+		uint8_t ret= mbCmdSend(rpc, 2);
+		Serial.println(ret, HEX);
+		return ret;
 	}
 };
 

@@ -26,16 +26,16 @@
 #define SPI_IMODE_EXTINT 1
 #define SPI_IMODE_GLOBAL 2
 
-#define MAX_CLOCK_FREQUENCY		50000000	//50MHz
+#define MAX_CLOCK_FREQUENCY   50000000  //50MHz
 
 VidorSPIClass::VidorSPIClass(int index,int _mosi,int _miso,int _sck,int _cs) : settings(SPISettings(0, MSBFIRST, SPI_MODE0))
 {
   initialized = false;
   this->index = index;
-  mosi=_mosi;
-  miso=_miso;
-  sck= _sck;
-  cs= _cs;
+  mosi = _mosi;
+  miso = _miso;
+  sck = _sck;
+  cs = _cs;
 }
 
 void VidorSPIClass::begin()
