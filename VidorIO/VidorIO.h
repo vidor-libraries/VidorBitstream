@@ -246,7 +246,7 @@ enable_spi:
 	static void setSPIMode(int index, int baud, int mode, int bitOrder) {
 		uint32_t rpc[4];
 		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x02;
-		rpc[1] = 1000000;
+		rpc[1] = baud * 2;
 		rpc[2] = 0;
 		rpc[3] = 0;
 		mbCmdSend(rpc, 4);
@@ -263,24 +263,24 @@ enable_spi:
 		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x04;
 		rpc[1] = howMany;
 		memcpy(&rpc[2], buf, howMany);
-		mbCmdSend(rpc, 2+(rpc[1]+3)/4);
+		int ret = mbCmdSend(rpc, 2+(rpc[1]+3)/4);
 
-		size_t i;
-		for(i=0; i<1+(howMany+3)/4; i++){
-			jtagReadBuffer(MB_BASE+2+i, (uint8_t*)&rpc[2+i], 1);
-		}
+		jtagReadBuffer(MB_BASE+2, (uint8_t*)&rpc[2], (howMany+3)/4);
 		memcpy(buf, &rpc[2], howMany);
 
 		return 0;
 	}
 
 	static uint8_t transferDataSPI(int index, uint8_t data) {
+		/*
 		uint32_t rpc[256];
 		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x05;
 		rpc[1] = data;
-		uint8_t ret= mbCmdSend(rpc, 2);
-		Serial.println(ret, HEX);
+		uint8_t ret = mbCmdSend(rpc, 2);
 		return ret;
+		*/
+		transferDataSPI(index, &data, 1);
+		return data;
 	}
 };
 
