@@ -5,7 +5,7 @@
    Moreover, the library also includes all the "building block" as standard Arduino libraries
 */
 
-#include "VidorBase.h"
+#include "VidorPeripherals.h"
 
 void setup() {
   Serial.begin(115200);
