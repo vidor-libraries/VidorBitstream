@@ -5,25 +5,19 @@
    Moreover, the library also includes all the "building block" as standard Arduino libraries
 */
 
-#include "VidorBase.h"
+#include "VidorPeripherals.h"
 
 void setup() {
   Serial.begin(115200);
   while (!Serial) {}
 
-  // The FPGA bitstream is automatically loaded at board startup.
-  // However, we can stop the FPGA and reload its functionality at any time
-
-  // Let's start by stopping the FPGA
-  FPGA.end();
-
-  // Now the FPGA is off, let's restart it
+  // Let's start by initializing the FPGA
   if (!FPGA.begin()) {
     Serial.println("Initialization failed!");
     while (1) {}
   }
 
-  // We are back to the normal functionalities, so let's discover which version we are running
+  // Let's discover which version we are running
   int version = FPGA.version();
   Serial.print("Vidor bitstream version: ");
   Serial.println(version, HEX);

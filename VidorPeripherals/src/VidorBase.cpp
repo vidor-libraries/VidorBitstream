@@ -1,4 +1,4 @@
-#include "VidorBase.h"
+#include "VidorPeripherals.h"
 
 VidorBase FPGA;
 
