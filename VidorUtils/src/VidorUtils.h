@@ -48,6 +48,10 @@ public:
 		jtagDeinit();
 	}
 
+	void reload() {
+		jtagReload();
+	}
+
 	int write(int address, const uint8_t* buffer, size_t len) {
 		return jtagWriteBuffer(address, buffer, len/4);
 	}

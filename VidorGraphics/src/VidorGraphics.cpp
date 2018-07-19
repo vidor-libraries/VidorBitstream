@@ -25,3 +25,7 @@ const unsigned char bitstream[] = {
 void VidorGraphics::onInterrupt() {
 	// TODO: do be implemented
 }
+// This strong implementation allows booting the FPGA without external intervention
+extern "C" void startFPGA() {
+	FPGA.begin();
+}
