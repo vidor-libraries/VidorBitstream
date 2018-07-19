@@ -5,8 +5,6 @@
 #include "VidorUtils.h"
 #include "defines.h"
 
-#define MB_DEV_NP  0x09000000
-
 #ifndef ADAFRUIT_NEOPIXEL_H
 
 // The order of primary colors in the NeoPixel data stream can vary
