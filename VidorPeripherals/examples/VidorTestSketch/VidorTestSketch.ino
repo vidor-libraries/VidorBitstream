@@ -29,15 +29,15 @@ void setup() {
   // The GPIO pins controlled by the FPGA start from 100
   // Please refer to the online documentation for the actual pin assignment
   // Let's configure pin A0 to be an output, controlled by the FPGA
-  pinMode(133, OUTPUT);
-  digitalWrite(133, HIGH);
+  FPGA.pinMode(33, OUTPUT);
+  FPGA.digitalWrite(33, HIGH);
 
   // The same pin can be read by the SAMD processor :)
   pinMode(A0, INPUT);
   Serial.print("Pin A0 is ");
   Serial.println(digitalRead(A0) == LOW ? "LOW" : "HIGH");
 
-  digitalWrite(133, LOW);
+  FPGA.digitalWrite(33, LOW);
   Serial.print("Pin A0 is ");
   Serial.println(digitalRead(A0) == LOW ? "LOW" : "HIGH");
 
