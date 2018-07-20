@@ -4,6 +4,13 @@
 #ifndef __VIDOR_IO_H__
 #define __VIDOR_IO_H__
 
+extern "C" {
+	void pinModeExtended( uint32_t ulPin, uint32_t ulMode );
+	void digitalWriteExtended( uint32_t ulPin, uint32_t ulVal );
+	int digitalReadExtended( uint32_t ulPin );
+	void analogWriteExtended( uint32_t pin, uint32_t value );
+}
+
 class VidorIO {
 
 public:
