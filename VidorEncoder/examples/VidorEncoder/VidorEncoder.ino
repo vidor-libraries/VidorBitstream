@@ -37,13 +37,19 @@ void loop() {
   Serial.print("Encoder value: ");
   Serial.println(value);
 
+#if 1
+
   // Wait one second with interrupts disabled
   noInterrupts();
   // We can't call delay() since it uses interrupts, so use busy loops
-  while (int i=0; i<F_CPU; i++) {
+  for (int i = 0; i < F_CPU / 10; i++) {
     asm ("nop");
   }
   interrupts();
+
+#else
+  delay(200);
+#endif
 
   if (value >= 200 || value <= -200) {
     // Reset the count
