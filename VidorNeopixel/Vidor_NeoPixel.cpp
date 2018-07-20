@@ -75,10 +75,10 @@ uint32_t Vidor_NeoPixel::begin()
 
   if (pin >= A0) {
     msk = 1 << (pin - A0);
-    pinMode(pin - A0 + 132 + 1, NEOPIXEL_PINMUX);
+    pinModeExtended(pin - A0 + 132 + 1, NEOPIXEL_PINMUX);
   } else {
     msk = 1 << (pin + 7);
-    pinMode(pin + 132 + 8, NEOPIXEL_PINMUX);
+    pinModeExtended(pin + 132 + 8, NEOPIXEL_PINMUX);
   }
 
   ptr[0] = MB_DEV_NP | 1;

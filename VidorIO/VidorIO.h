@@ -79,12 +79,10 @@ public:
 
 		if(sda<=14){
 			sda=sda-0 ;
-			pinMode(sda,INPUT);
-			pinMode(sda+140,mode);
+			pinModeExtended(sda+140,mode);
 		} else {
 			sda=sda-A0;
-			pinMode(sda,INPUT);
-			pinMode(sda+133,mode);
+			pinModeExtended(sda+133,mode);
 		}
 
 set_scl:
@@ -93,12 +91,10 @@ set_scl:
 
 		if(scl<=14){
 			scl=scl-0 ;
-			pinMode(scl,INPUT);
-			pinMode(scl+140,mode);
+			pinModeExtended(scl+140,mode);
 		} else {
 			scl=scl-A0;
-			pinMode(scl,INPUT);
-			pinMode(scl+133,mode);
+			pinModeExtended(scl+133,mode);
 		}
 
 i2c_apply:
@@ -124,21 +120,17 @@ i2c_apply:
 	static void enableUART(int tx,int rx) {
 		if(tx<=14){
 			tx=tx-0 ;
-			pinMode(tx,INPUT);
-			pinMode(tx+140,4);
+			pinModeExtended(tx+140,4);
 		} else {
 			tx=tx-A0;
-			pinMode(tx,INPUT);
-			pinMode(tx+133,4);
+			pinModeExtended(tx+133,4);
 		}
 		if(rx<=14){
 			rx=rx-0 ;
-			pinMode(rx+140,INPUT);
-			pinMode(rx,INPUT);
+			pinModeExtended(rx+140,INPUT);
 		} else {
 			rx=rx-A0;
-			pinMode(rx+133,INPUT);
-			pinMode(rx,INPUT);
+			pinModeExtended(rx+133,INPUT);
 		}
 	}
 	static void setUART(int index, int baud, int config) {}
@@ -192,48 +184,40 @@ i2c_apply:
 			goto set_miso;
 		if (mosi <= 14) {
 			mosi = mosi - 0;
-			pinMode(mosi, INPUT);
-			pinMode(mosi + 140, 5);
+			pinModeExtended(mosi + 140, 5);
 		} else {
 			mosi = mosi - A0;
-			pinMode(mosi, INPUT);
-			pinMode(mosi + 133, 5);
+			pinModeExtended(mosi + 133, 5);
 		}
 set_miso:
 		if (miso == -1)
 			goto set_sck;
 		if (miso <= 14) {
 			miso = miso - 0 ;
-			pinMode(miso + 140, INPUT);
-			pinMode(miso, INPUT);
+			pinModeExtended(miso + 140, INPUT);
 		} else {
 			miso = miso - A0;
-			pinMode(miso + 133, INPUT);
-			pinMode(miso, INPUT);
+			pinModeExtended(miso + 133, INPUT);
 		}
 set_sck:
 		if (sck == -1)
 			goto set_cs;
 		if (sck <= 14) {
 			sck = sck - 0 ;
-			pinMode(sck, INPUT);
-			pinMode(sck + 140, 5);
+			pinModeExtended(sck + 140, 5);
 		} else {
 			sck = sck - A0;
-			pinMode(sck, INPUT);
-			pinMode(sck + 133, 5);
+			pinModeExtended(sck + 133, 5);
 		}
 set_cs:
 		if (cs == -1)
 			goto enable_spi;
 		if (cs <= 14) {
 			cs = cs - 0;
-			pinMode(cs, INPUT);
-			pinMode(cs + 140, 5);
+			pinModeExtended(cs + 140, 5);
 		} else {
 			cs = cs - A0;
-			pinMode(cs, INPUT);
-			pinMode(cs + 133, 5);
+			pinModeExtended(cs + 133, 5);
 		}
 
 enable_spi:
