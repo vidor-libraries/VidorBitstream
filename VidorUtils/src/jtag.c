@@ -22,14 +22,18 @@ const int JSM[16][2] = {
 };
 
 
-static struct states {
+typedef struct {
   unsigned char state;
   unsigned char nSlaves;
   unsigned char slaveBits;
   unsigned char virSize;
   unsigned char id;
   unsigned char lastVir;
-} jtag;
+} states;
+
+static states jtag = {
+  .id = -1
+};
 
 #if 1
 
