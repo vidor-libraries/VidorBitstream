@@ -5,7 +5,7 @@ VidorEncoder::VidorEncoder(int index){
 }
 
 void VidorEncoder::write(int32_t p){
-	offset = read() - p;
+	offset += read() - p;
 }
 
 int32_t VidorEncoder::read(){
