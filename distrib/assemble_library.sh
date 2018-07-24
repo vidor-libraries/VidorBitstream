@@ -25,7 +25,7 @@ then
 		mkdir -p ./distrib/$LIB_NAME/examples/
 		cp -a ${folders[i]}/examples/* ./distrib/$LIB_NAME/examples/.
 	fi
-	find ./distrib/$LIB_NAME/examples/ -type f -exec sed -i -e "s/_INCLUDE_PARENT_LIB_/include \"${LIB_NAME}.h\"/g" {} \;
+	find ./distrib/$LIB_NAME/examples/ -type f -exec sed -i "" -e "s/_INCLUDE_PARENT_LIB_/include \"${LIB_NAME}.h\"/g" {} \;
 fi
 
 done
