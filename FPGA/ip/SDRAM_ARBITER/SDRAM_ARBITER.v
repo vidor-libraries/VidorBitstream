@@ -257,11 +257,7 @@ scfifo #(
 
 assign oFB_DATA_VALID=!wFB_FIFO_EMPTY&!wFB_FIFO2_EMPTY&&(wFB_FIFO2_USEDW>pBURST_SIZE/3);
 
-<<<<<<< Updated upstream
-assign oAVL_WAITREQUEST=rAVL_WAIT|iSDRAM_WAITREQUEST;
-=======
 assign oAVL_WAIT_REQUEST=rAVL_WAIT|iSDRAM_WAIT_REQUEST;
->>>>>>> Stashed changes
 assign oAVL_READ_DATA = iSDRAM_READ_DATA;
 assign oAVL_READ_DATA_VALID = iSDRAM_READ_DATA_VALID&&(rCURRENT_CLIENT==2'd2);
 
@@ -328,11 +324,7 @@ begin
         rAVL_ACTIVE<=1;
         rAVL_WAIT<=0;
         //rAVL_WRITEDATA<= iAVL_WRITE_DATA;
-<<<<<<< Updated upstream
-        rBYTEENABLE<=iAVL_BYTEENABLE;
-=======
         rBYTEENABLE<=iAVL_BYTE_ENABLE;
->>>>>>> Stashed changes
       end
     end
     
@@ -343,11 +335,7 @@ begin
       if (!rAVL_ACTIVE) 
         rWRITE_ADDRESS<=rWRITE_ADDRESS+1;
 		else begin
-<<<<<<< Updated upstream
-		  rBYTEENABLE<=iAVL_BYTEENABLE;
-=======
 		  rBYTEENABLE<=iAVL_BYTE_ENABLE;
->>>>>>> Stashed changes
         rAVL_WRITEDATA<= iAVL_WRITE_DATA;
 		end
 
@@ -400,12 +388,7 @@ end
 assign oSDRAM_ADDRESS    = rADDRESS;
 assign oSDRAM_READ       = rREAD;
 assign oSDRAM_WRITE      = rWRITE&!(rAVL_ACTIVE&!iAVL_WRITE);
-<<<<<<< Updated upstream
-assign oSDRAM_BYTEENABLE = rAVL_ACTIVE  ? iAVL_BYTEENABLE : 3;
-assign oSDRAM_WRITEDATA  = rAVL_ACTIVE ? iAVL_WRITE_DATA : wMIPI_FIFO_DATA[14:0];
-=======
 assign oSDRAM_BYTE_ENABLE = rAVL_ACTIVE  ? iAVL_BYTE_ENABLE : 3;
 assign oSDRAM_WRITE_DATA  = rAVL_ACTIVE ? iAVL_WRITE_DATA : wMIPI_FIFO_DATA[14:0];
->>>>>>> Stashed changes
 
 endmodule
