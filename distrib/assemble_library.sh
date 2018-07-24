@@ -10,7 +10,7 @@ declare -a folders=("Vidor_GFX" "VidorSPI" "VidorI2C" "VidorUART" "VidorEncoder"
 
 mkdir -p ./distrib/$LIB_NAME/
 
-cp -r $LIB_NAME/* ./distrib/$LIB_NAME/
+cp -a $LIB_NAME/* ./distrib/$LIB_NAME/.
 
 arraylength=${#libs[@]}
 
@@ -20,12 +20,12 @@ HAS_LIB=`cat $LIB_NAME/src/defines.h | grep ${libs[i]}  | expand | tr -s ' ' | c
 
 if [ x$HAS_LIB != x ] && [ $HAS_LIB != 0 ]
 then
-	cp ${folders[i]}/* ./distrib/$LIB_NAME/src/
+	cp -a ${folders[i]}/* ./distrib/$LIB_NAME/src/.
 	if [ -d ${folders[i]}/examples/ ]; then
 		mkdir -p ./distrib/$LIB_NAME/examples/
-		cp -r ${folders[i]}/examples/* ./distrib/$LIB_NAME/examples/
+		cp -a ${folders[i]}/examples/* ./distrib/$LIB_NAME/examples/.
 	fi
-	find ./distrib/$LIB_NAME/examples/ -type f -exec sed -i "s/_INCLUDE_PARENT_LIB_/include \"${LIB_NAME}.h\"/g" {} \;
+	find ./distrib/$LIB_NAME/examples/ -type f -exec sed -i -e "s/_INCLUDE_PARENT_LIB_/include \"${LIB_NAME}.h\"/g" {} \;
 fi
 
 done
@@ -36,12 +36,12 @@ arraylength=${#defaultlibs[@]}
 
 for (( i=0; i<${arraylength}; i++ ));
 do
-	cp  ${defaultlibs[i]}/* ./distrib/$LIB_NAME/src/
+	cp -a ${defaultlibs[i]}/* ./distrib/$LIB_NAME/src/.
 	if [ -d ${defaultlibs[i]}/examples/ ]; then
-		cp -r ${defaultlibs[i]}/examples/* ./distrib/$LIB_NAME/examples/
+		cp -a ${defaultlibs[i]}/examples/* ./distrib/$LIB_NAME/examples/.
 	fi
 done
 
 # copy VidorUtils (not sure about this one)
-cp -r VidorUtils/src/* ./distrib/$LIB_NAME/src/
+cp -a VidorUtils/src/* ./distrib/$LIB_NAME/src/.
 #don't copy examples
