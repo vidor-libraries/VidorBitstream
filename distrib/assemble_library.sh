@@ -20,7 +20,7 @@ HAS_LIB=`cat $LIB_NAME/src/defines.h | grep ${libs[i]}  | expand | tr -s ' ' | c
 
 if [ x$HAS_LIB != x ] && [ $HAS_LIB != 0 ]
 then
-	cp -a ${folders[i]}/* ./distrib/$LIB_NAME/src/.
+	cp ${folders[i]}/* ./distrib/$LIB_NAME/src/.
 	if [ -d ${folders[i]}/examples/ ]; then
 		mkdir -p ./distrib/$LIB_NAME/examples/
 		cp -a ${folders[i]}/examples/* ./distrib/$LIB_NAME/examples/.
@@ -36,7 +36,7 @@ arraylength=${#defaultlibs[@]}
 
 for (( i=0; i<${arraylength}; i++ ));
 do
-	cp -a ${defaultlibs[i]}/* ./distrib/$LIB_NAME/src/.
+	cp ${defaultlibs[i]}/* ./distrib/$LIB_NAME/src/.
 	if [ -d ${defaultlibs[i]}/examples/ ]; then
 		cp -a ${defaultlibs[i]}/examples/* ./distrib/$LIB_NAME/examples/.
 	fi
