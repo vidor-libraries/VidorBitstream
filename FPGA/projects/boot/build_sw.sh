@@ -84,7 +84,16 @@ BSP_FLAGS="--set hal.enable_c_plus_plus 0 \
 --set hal.stdout none \
 --set hal.sys_clk_timer none \
 --script set_regions.tcl \
---cmd set_driver none remote_update_0 "
+--cmd set_driver none remote_update_0 \
+--cmd add_section_mapping .rwdata onchip_memory2_0 \
+--cmd add_section_mapping .bss onchip_memory2_0 \
+--cmd add_section_mapping .heap onchip_memory2_0 \
+--cmd add_section_mapping .entry onchip_memory2_0 \
+--cmd add_section_mapping .text onchip_memory2_0 \
+--cmd add_section_mapping .rodata onchip_memory2_0 \
+--cmd add_section_mapping .data onchip_memory2_0 \
+--cmd add_section_mapping .stack onchip_memory2_0 \
+"
 
 mkdir -p $APP_DIR
 

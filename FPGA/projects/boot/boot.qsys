@@ -640,10 +640,10 @@
   <parameter name="dividerType" value="no_div" />
   <parameter name="exceptionOffset" value="32" />
   <parameter name="exceptionSlave" value="onchip_memory2_0.s2" />
-  <parameter name="faAddrWidth" value="29" />
-  <parameter name="faSlaveMapParam"><![CDATA[<address-map><slave name='iptronix_generic_quad_spi_controller2_0.avl_mem' start='0x10000000' end='0x10200000' type='iptronix_generic_quad_spi_controller2.avl_mem' /></address-map>]]></parameter>
+  <parameter name="faAddrWidth" value="1" />
+  <parameter name="faSlaveMapParam" value="" />
   <parameter name="fa_cache_line" value="2" />
-  <parameter name="fa_cache_linesize" value="16" />
+  <parameter name="fa_cache_linesize" value="0" />
   <parameter name="flash_instruction_master_paddr_base" value="0" />
   <parameter name="flash_instruction_master_paddr_size" value="0" />
   <parameter name="icache_burstType" value="None" />
@@ -932,15 +932,6 @@
    end="flash_spi.spi_control_port">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x70010080" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.flash_instruction_master"
-   end="iptronix_generic_quad_spi_controller2_0.avl_mem">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x10000000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
