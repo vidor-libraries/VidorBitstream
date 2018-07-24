@@ -1,26 +1,26 @@
 # (C) 2001-2018 Intel Corporation. All rights reserved.
-# Your use of Intel Corporation's design tools, logic functions and other 
-# software and tools, and its AMPP partner logic functions, and any output 
-# files from any of the foregoing (including device programming or simulation 
-# files), and any associated documentation or information are expressly subject 
-# to the terms and conditions of the Intel Program License Subscription 
-# Agreement, Intel FPGA IP License Agreement, or other applicable 
-# license agreement, including, without limitation, that your use is for the 
-# sole purpose of programming logic devices manufactured by Intel and sold by 
-# Intel or its authorized distributors.  Please refer to the applicable 
+# Your use of Intel Corporation's design tools, logic functions and other
+# software and tools, and its AMPP partner logic functions, and any output
+# files from any of the foregoing (including device programming or simulation
+# files), and any associated documentation or information are expressly subject
+# to the terms and conditions of the Intel Program License Subscription
+# Agreement, Intel FPGA IP License Agreement, or other applicable
+# license agreement, including, without limitation, that your use is for the
+# sole purpose of programming logic devices manufactured by Intel and sold by
+# Intel or its authorized distributors.  Please refer to the applicable
 # agreement for further details.
 
 
 
 # *********************************************************************
 # Description
-# 
+#
 # Script for compiling the DisplayPort Example Design software
 #
 # *********************************************************************
 
-PROJECT_BSP_NAME=${PWD##*/} 
-PROJECT_NAME=launcher 
+PROJECT_BSP_NAME=${PWD##*/}
+PROJECT_NAME=launcher
 # Location where BSP is built
 BSP_DIR="./software/"$PROJECT_NAME"_bsp"
 
@@ -45,7 +45,8 @@ APP_FLAGS="--set APP_CFLAGS_OPTIMIZATION $OPTIMIZATION_LEVEL --set APP_LDFLAGS_U
 # BSP options
 SIMULATION_OPTIMIZED_SUPPORT="false"
 BSP_TYPE=hal
-BSP_FLAGS="--set hal.enable_c_plus_plus 0 \
+BSP_FLAGS=" \
+--set hal.enable_c_plus_plus 0 \
 --set hal.enable_clean_exit 0 \
 --set hal.enable_exit 0 \
 --set hal.enable_gprof 0 \
@@ -59,7 +60,7 @@ BSP_FLAGS="--set hal.enable_c_plus_plus 0 \
 --set hal.enable_sim_optimize $SIMULATION_OPTIMIZED_SUPPORT \
 --set hal.make.bsp_cflags_optimization $OPTIMIZATION_LEVEL \
 --set hal.linker.allow_code_at_reset 1 \
---set hal.linker.enable_alt_load 1 \
+--set hal.linker.enable_alt_load 0 \
 --set hal.linker.enable_alt_load_copy_exceptions 0 \
 --set hal.linker.enable_alt_load_copy_rodata 0 \
 --set hal.linker.enable_alt_load_copy_rwdata 1 \
@@ -86,13 +87,22 @@ BSP_FLAGS="--set hal.enable_c_plus_plus 0 \
 --set hal.sys_clk_timer none \
 --set altera_vic_driver.linker_section .rwdata \
 --script set_regions.tcl \
---cmd set_driver none remote_update_0 "
+--cmd set_driver none remote_update_0 \
+--cmd add_section_mapping .rwdata onchip_memory2_0 \
+--cmd add_section_mapping .bss onchip_memory2_0 \
+--cmd add_section_mapping .heap onchip_memory2_0 \
+--cmd add_section_mapping .entry onchip_memory2_0 \
+--cmd add_section_mapping .text onchip_memory2_0 \
+--cmd add_section_mapping .rodata onchip_memory2_0 \
+--cmd add_section_mapping .data onchip_memory2_0 \
+--cmd add_section_mapping .stack onchip_memory2_0 \
+"
 
+mkdir -p $APP_DIR
 # copy common files
 cp -f $COMMON_SRC_DIR/* $APP_DIR
 
 # make a copy of standard project sources
-mkdir -p $APP_DIR
 cp -r $APP_SRC_DIR/* $APP_DIR
 
 generate the BSP in the $BSP_DIR

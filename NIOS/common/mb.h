@@ -40,5 +40,6 @@
 #define MB_DEV_SDRAM  (0x08<<MB_DEV_OFS)
 #define MB_DEV_NP     (0x09<<MB_DEV_OFS)
 #define MB_DEV_ENC    (0x0A<<MB_DEV_OFS)
+#define MB_DEV_REG    (0x0B<<MB_DEV_OFS)
 
 #endif /* MB_H_ */

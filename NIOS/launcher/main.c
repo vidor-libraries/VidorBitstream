@@ -2,9 +2,12 @@
 *
 */
 #include <string.h>
+#include <unistd.h>
 #include <sys/alt_irq.h>
 
+#include "sf.h"
 #include "sign.h"
+#include "gpio.h"
 
 #define SEC_START(section) (&_alt_partition_##section##_start)
 #define SEC_SIZE(section) (&_alt_partition_##section##_end-&_alt_partition_##section##_start)
@@ -16,13 +19,9 @@
 SEC_EXTERN(text2)
 SEC_EXTERN(data2)
 
-//#define TEST
-
-#ifdef TEST
+#if 0
 #include "platform.h"
-#include "gpio.h"
-#include "mb.h"
-#endif /* TEST */
+#endif
 
 /**
  *
@@ -31,36 +30,41 @@ int main(void)
 {
   int ret;
 
+  // enable quad spi access to flash
+  sfEnableQuad();
+
   // calcola la firma
   ret = signChk();
 
   // cancella il codice eseguito fin qui (text2 in boot)
   memset(SEC_START(text2), 0, SEC_SIZE(text2));
   memset(SEC_START(data2), 0, SEC_SIZE(data2));
+#if 0
+  platformSetup();
+
+  irqPinSet(0, platformCmd);
+  intPinInit(1, 0);
+
+  while (1) {
+    platformLoop();
+  };
+#endif
 
   // verifica la validità della firma
   if(ret){
     while(1);
   }
 
-#ifdef TEST
-  platformSetup();
-  irqPinSet(0, platformCmd);
-  intPinInit(1, 0);
-  while (1) {
-    platformLoop();
-  };
-#else
   /* disable interrupt */
 //  alt_irq_disable_all();
   irqPinSet(0, NULL);
 
   /* start application */
   __asm__ volatile (
-      "movhi r12, 0x100E\n"
+      "movhi r12, 0x008E\n"
       "ori r12, r12, 0x0000\n"
       "jmp r12");
-#endif /* TEST */
+
   return 0;
 }
 

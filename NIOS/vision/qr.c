@@ -28,6 +28,7 @@
 #include <system.h>
 
 #include "mb.h"
+#include "gfx.h"
 #include "qr.h"
 
 #define QR_CNT_MAX 1000
@@ -36,9 +37,21 @@
 #define QR_STS_READY 2
 #define QR_STS_NOQR  3
 
+#define QR_GET_TIMEOUT 10000
 
-int qrEnable;
-sQrDet qr;
+//#define QR_DEBUG
+
+#define QR_PT_NUM 100
+
+#define SEC_RAM  __attribute__((__section__(".rwdata")))
+
+#ifdef QR_DEBUG
+#include "ov5647.h"
+#endif
+
+int     qrEnable;
+int     qrDraw;
+sQrDet  qr;
 alt_u32 qrCnt;
 
 alt_u32 qrMode(alt_u32 mode);
@@ -49,18 +62,28 @@ alt_u32 qrThrSet(alt_u32 data);
  */
 void qrInit(int devs)
 {
-#if 0
+#ifdef QR_DEBUG
+  /*
   int *ptr;
   int i;
 
-  ptr = (int*)(640*480*2);
+  ptr = (int*)((SDRAM_ARBITER_BASE + SDRAM_ARBITER_FB_OFFSET*sizeof(short)) |
+               0x80000000);
+
   for (i=0; i<(640*480/2); i++) {
     *ptr++ = 0;
   }
+  */
+  ov5647SensorPower(1);
+  ov5647StreamOn();
+  qrEnable = 1;
+  qrDraw = 1;
+#else
+  qrEnable = 0;
+  qrDraw = 0;
 #endif
   //qrThrSet(120);
   qr.sts = QR_STS_NOQR;
-  qrEnable = 0;
   qrCnt = 0;
 }
 
@@ -90,12 +113,16 @@ void qrCmd(void)
     /* set qr threshold */
     ret = qrThrSet(rpc[1]);
     break;
+  case 5:
+    /* set cross drawing */
+    qrDraw = rpc[1];
+    break;
   }
   rpc[1] = ret;
 }
 
-
-/*
+/**
+ */
 void qrCross(alt_u32 x, alt_u32 y, alt_u32 c)
 {
    if (x<4) x=4;
@@ -103,23 +130,23 @@ void qrCross(alt_u32 x, alt_u32 y, alt_u32 c)
    writeLine(x-4, y, x+4, y, c);
    writeLine(x, y-4, x, y+4, c);
 }
-*/
+
 /**
  */
-void qrLoop(void)
+void SEC_RAM qrLoop(void)
 {
   alt_u32 temp, ty, txs, txe, tc, tmaxy;
-  sQrPnt  pt[20];
+  sQrPnt  pt[QR_PT_NUM];
 
   if (qrEnable) {
     int ctrl;
     int i, j;
-
+    int gc;
     ctrl = IORD(QRCODE_FINDER_0_BASE, 0);
     if (ctrl & 1) {
       qr.sts = QR_STS_BUSY;
       tmaxy = 0;
-      for(i=0; i<20; i++){
+      for(i=0; i<QR_PT_NUM; i++){
         pt[i].valid = 0;
       }
       for(i=0; i<1024; i++){
@@ -131,7 +158,8 @@ void qrLoop(void)
         txs = (temp>>10) & 0x3ff;
         ty  = (temp>>20) & 0x3ff;
         tc = (txs+txe)/2;
-        for (j=0; j<20; j++) {
+        gc =-1;
+        for (j=0; j<QR_PT_NUM; j++) {
           if (pt[j].valid) {
             if ((tc >= pt[j].xs) && (tc <= pt[j].xe) && ((ty-pt[j].ye)<4)) {
               pt[j].ye = ty;
@@ -140,28 +168,41 @@ void qrLoop(void)
               }
               break;
             }
+            else if ((ty-pt[j].ye)>4 && (pt[j].ye-pt[j].ys)<2) {
+              pt[j].valid = 0;
+              gc=j;
+            }
           } else {
             break;
           }
         }
-        if (j<20 && !pt[j].valid) {
+        if (j<QR_PT_NUM && !pt[j].valid) {
           pt[j].valid = 1;
           pt[j].xs = txs;
           pt[j].xe = txe;
           pt[j].ys = ty;
           pt[j].ye = ty;
         }
+        else if (j==QR_PT_NUM && gc) {
+          pt[gc].valid = 1;
+          pt[gc].xs = txs;
+          pt[gc].xe = txe;
+          pt[gc].ys = ty;
+          pt[gc].ye = ty;
+        }
       }
 
-      for (i=0; i<3; i++) {
-        //if (qr.pt[i].valid==1) {
-        //  qrCross((qr.pt[i].xe+qr.pt[i].xs)/2,(qr.pt[i].ye+qr.pt[i].ys)/2,0);
-        //}
+      for (i=0; i<QR_PT_DET_NUM; i++) {
+        if (qrDraw) {
+          if (qr.pt[i].valid==1) {
+            qrCross((qr.pt[i].xe+qr.pt[i].xs)/2, (qr.pt[i].ye+qr.pt[i].ys)/2, 0);
+          }
+        }
         qr.pt[i].valid = 0;
       }
 
       j = 0;
-      for (i=0; i<20; i++) {
+      for (i=0; i<QR_PT_NUM; i++) {
         if (pt[i].valid && (pt[i].ye-pt[i].ys)<(tmaxy/2)) {
           pt[i].valid = 0;
         } else if (pt[i].valid) {
@@ -171,9 +212,11 @@ void qrLoop(void)
           qr.pt[j].ye = pt[i].ye;
           pt[i].valid = 0;
           qr.pt[j].valid = 1;
-          //qrCross((qr.pt[j].xe+qr.pt[j].xs)/2, (qr.pt[j].ye+qr.pt[j].ys)/2, 0xffff);
+          if (qrDraw) {
+            qrCross((qr.pt[j].xe+qr.pt[j].xs)/2, (qr.pt[j].ye+qr.pt[j].ys)/2, 0xffff);
+          }
           j++;
-          if (j==3) {
+          if (j==QR_PT_DET_NUM) {
             break;
           }
         }
@@ -213,9 +256,11 @@ alt_u32 qrMode(alt_u32 mode)
 /**
  *
  */
-alt_u32 qrGet(alt_u32* data)
+alt_u32 SEC_RAM qrGet(alt_u32* data)
 {
-  while(qr.sts == QR_STS_BUSY);
+  if (qr.sts == QR_STS_BUSY) {
+    return -1;
+  }
   memcpy(data, &qr, sizeof(sQrDet));
   return 0;
 }

@@ -25,7 +25,8 @@
 #define GPIO_IO_I   1
 #define GPIO_IO_O   2
 #define GPIO_PWM    3
-#define GPIO_AUX    4
+#define GPIO_AUX1   4
+#define GPIO_AUX2   5
 
 /* GPIO registers */
 #define GPIO_VAL   0x00
@@ -152,11 +153,19 @@ alt_u32 gpioPinMode(alt_u32 pin, alt_u32 mode)
     IOWR(base, reg, val);
     break;
 
-  case GPIO_AUX:
+  case GPIO_AUX1:
     reg = GPIO_MUX0 + (pad>>4);
     val = IORD(base, reg);
     val &=~ (0x3 << ((pad & 0x0F) << 1));
     val |= 2 << ((pad & 0x0F) << 1);
+    IOWR(base, reg, val);
+    break;
+
+  case GPIO_AUX2:
+    reg = GPIO_MUX0 + (pad>>4);
+    val = IORD(base, reg);
+    val &=~ (0x3 << ((pad & 0x0F) << 1));
+    val |= 3 << ((pad & 0x0F) << 1);
     IOWR(base, reg, val);
     break;
   }

@@ -14,5 +14,6 @@ void gfxInit(int devs);
 void gfxCmd(void);
 
 alt_u32 fillRect(alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u16 color);
+alt_u32 writeLine(alt_u16 x0, alt_u16 y0, alt_u16 x1, alt_u16 y1, alt_u16 color);
 
 #endif /* GFX_H_ */

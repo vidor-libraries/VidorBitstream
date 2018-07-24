@@ -11,6 +11,7 @@
 #include <alt_types.h>
 
 void sfCmd(void);
+void sfInit(int devs);
 
 alt_u32 sfJedecId(void);
 alt_u32 sfUniqueId(alt_u8* id);
@@ -25,5 +26,7 @@ alt_u32 sfSRLock(alt_u8 reg);
 alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
 
 alt_u32 sfProtect(void);
+
+alt_u32 sfEnableQuad(void);
 
 #endif /* SF_H_ */

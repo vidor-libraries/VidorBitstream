@@ -8,6 +8,18 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+#include <system.h>
+
+/**
+ *
+ */
+#define FPGA_VERSION 0xB0010101
+
+
+
+#define RU_MODULE       1
+
+#define GFX_MODULE      1
 #define GFX_FONTS       0
 #define GFX_FONT_FILE   "Fonts/FreeMono12pt7b.h"
 #define GFX_FONT_NAME   FreeMono12pt7b
@@ -15,6 +27,7 @@
 
 #define GPIO_GPIO       0
 
+#define SF_MODULE         1
 #define SF_USE_QSPI       1
 #define SF_SF_INVERT_BIT  0
 #define SF_SECURITY_CMDS  1

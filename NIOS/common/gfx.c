@@ -5,22 +5,17 @@
  *      Author: max
  */
 
+#include "config.h"
+
+#if defined(GFX_MODULE) && (GFX_MODULE == 1)
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <alt_types.h>
-#include <system.h>
 
-#include "config.h"
 #include "mb.h"
-
-#define FB_BASE (alt_u16*)((SDRAM_ARBITER_BASE + \
-                            SDRAM_ARBITER_FB_OFFSET*sizeof(short)) | \
-                           0x80000000)
-#define FB_WIDTH  640
-#define FB_HEIGHT 480
-#define CAM_BASE (alt_u16*)(SDRAM_ARBITER_BASE)
 
 #define _swap_int16_t(a,b) {int16_t t=a; a=b; b=t;}
 
@@ -62,31 +57,6 @@ alt_u32 fillCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u16 color);
 alt_u32 drawChar  (alt_u16 x, alt_u16 y, alt_u16 color, alt_u8 size, alt_u8 c);
 alt_u32 drawTxt   (alt_u16 x, alt_u16 y, alt_u16 color, alt_u8* txt);
 alt_u32 drawBmp   (GFXbmp* bmp, alt_u16 x, alt_u16 y, alt_u16 color);
-
-
-#if defined(GFX_CMDS) && (GFX_CMDS == 1)/*
-typedef void (*pfv3)(alt_u32, alt_u32, alt_u32);
-typedef void (*pfv4)(alt_u32, alt_u32, alt_u32, alt_u32);
-typedef void (*pfv5)(alt_u32, alt_u32, alt_u32, alt_u32, alt_u32);
-typedef int  (*pfi4)(alt_u32, alt_u32, alt_u32, alt_u32);
-typedef int  (*pfi5)(alt_u32, alt_u32, alt_u32, alt_u32, alt_u32);
-
-typedef struct {
-	alt_u32 fnc;
-	alt_u8  ret_prm;
-}sFncTbl, *psFncTbl;
-
-sFncTbl const fncTbl[] = {
-	{(alt_u32)writePixel, 0x03},
-	{(alt_u32)writeLine , 0x05},
-	{(alt_u32)drawRect  , 0x05},
-	{(alt_u32)fillRect  , 0x05},
-	{(alt_u32)drawCircle, 0x04},
-	{(alt_u32)fillCircle, 0x04},
-	{(alt_u32)drawChar  , 0x15},
-	{(alt_u32)drawTxt   , 0x14},
-};*/
-#endif /* defined(GFX_CMDS) && (GFX_CMDS == 1) */
 
 alt_u16 const arduino_bmp[] = {
   0x0000, 0x0000, 0x0FC0, 0x0000, 0x0000, 0x0000, 0x0000, 0x03F0,
@@ -238,8 +208,8 @@ GFXbmp const arduinoLogo = {
  */
 void gfxInit(int devs)
 {
-  memset(CAM_BASE, 0, FB_WIDTH*FB_HEIGHT*2);
-  memset(FB_BASE, 0xFF, FB_WIDTH*FB_HEIGHT*2);
+  memset(GFX_CAM_BASE, 0, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
+  memset(GFX_FB_BASE, 0xFF, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
 
   drawBmp((GFXbmp*)&arduinoLogo, (640-160)/2, (480-110)/2, 33396);
 }
@@ -250,35 +220,6 @@ void gfxInit(int devs)
  */
 void gfxCmd(void)
 {
-	/*
-	alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
-	int ret = -1;
-	int idx = MB_CMD(rpc[0]);
-
-	if (idx >= sizeof(fncTbl)/sizeof(sFncTbl)) {
-		rpc[1] = -1;
-		return;
-	}
-
-	switch (fncTbl[idx].ret_prm) {
-	case 0x03:
-		((pfv3)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3]);
-		break;
-	case 0x04:
-		((pfv4)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], rpc[4]);
-		break;
-	case 0x05:
-		((pfv5)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
-		break;
-	case 0x14:
-//		ret = ((pfi4)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], (alt_u8*)&rpc[4]);
-		ret = ((pfi4)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], (alt_u32)&rpc[4]);
-		break;
-	case 0x15:
-		ret = ((pfi5)fncTbl[idx].fnc)(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
-		break;
-	}
-	*/
   alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
   alt_u32 ret;
 
@@ -320,7 +261,7 @@ alt_u32 writePixel(alt_u16 x, alt_u16 y, uint16_t color)
 {
   alt_u16 *p;
 
-  p = FB_BASE + (x + y*FB_WIDTH);
+  p = GFX_FB_BASE + (x + y*GFX_FB_WIDTH);
   *p = color;
   return 0;
 }
@@ -580,63 +521,63 @@ alt_u32 fillRoundRect(int16_t x, int16_t y, int16_t w,
  */
 alt_u32 drawChar(alt_u16 x, alt_u16 y, alt_u16 color, uint8_t size, alt_u8 c)
 {
-	// Custom font
+  // Custom font
 
-	// Character is assumed previously filtered by write() to eliminate
-	// newlines, returns, non-printable characters, etc.  Calling
-	// drawChar() directly with 'bad' characters of font may cause mayhem!
+  // Character is assumed previously filtered by write() to eliminate
+  // newlines, returns, non-printable characters, etc.  Calling
+  // drawChar() directly with 'bad' characters of font may cause mayhem!
 
-	c -= gfxFont->first;
-	GFXglyph *glyph  = &(gfxFont->glyph[c]);
-	alt_u8  *bitmap = gfxFont->bitmap;
-	alt_u16  bo = glyph->bitmapOffset;
-	alt_u8   w  = glyph->width;
-	alt_u8   h  = glyph->height;
-	alt_8    xo = glyph->xOffset;
-	alt_8    yo = glyph->yOffset;
-	alt_u8   xx, yy, bits = 0, bit = 0;
-	alt_16   xo16 = 0, yo16 = 0;
+  c -= gfxFont->first;
+  GFXglyph *glyph  = &(gfxFont->glyph[c]);
+  alt_u8  *bitmap = gfxFont->bitmap;
+  alt_u16  bo = glyph->bitmapOffset;
+  alt_u8   w  = glyph->width;
+  alt_u8   h  = glyph->height;
+  alt_8    xo = glyph->xOffset;
+  alt_8    yo = glyph->yOffset;
+  alt_u8   xx, yy, bits = 0, bit = 0;
+  alt_16   xo16 = 0, yo16 = 0;
 
-	if(size > 1){
-		xo16 = xo;
-		yo16 = yo;
-	}
+  if(size > 1){
+    xo16 = xo;
+    yo16 = yo;
+  }
 
-	// Todo: Add character clipping here
+  // Todo: Add character clipping here
 
-	// NOTE: THERE IS NO 'BACKGROUND' COLOR OPTION ON CUSTOM FONTS.
-	// THIS IS ON PURPOSE AND BY DESIGN.  The background color feature
-	// has typically been used with the 'classic' font to overwrite old
-	// screen contents with new data.  This ONLY works because the
-	// characters are a uniform size; it's not a sensible thing to do with
-	// proportionally-spaced fonts with glyphs of varying sizes (and that
-	// may overlap).  To replace previously-drawn text when using a custom
-	// font, use the getTextBounds() function to determine the smallest
-	// rectangle encompassing a string, erase the area with fillRect(),
-	// then draw new text.  This WILL infortunately 'blink' the text, but
-	// is unavoidable.  Drawing 'background' pixels will NOT fix this,
-	// only creates a new set of problems.  Have an idea to work around
-	// this (a canvas object type for MCUs that can afford the RAM and
-	// displays supporting setAddrWindow() and pushColors()), but haven't
-	// implemented this yet.
+  // NOTE: THERE IS NO 'BACKGROUND' COLOR OPTION ON CUSTOM FONTS.
+  // THIS IS ON PURPOSE AND BY DESIGN.  The background color feature
+  // has typically been used with the 'classic' font to overwrite old
+  // screen contents with new data.  This ONLY works because the
+  // characters are a uniform size; it's not a sensible thing to do with
+  // proportionally-spaced fonts with glyphs of varying sizes (and that
+  // may overlap).  To replace previously-drawn text when using a custom
+  // font, use the getTextBounds() function to determine the smallest
+  // rectangle encompassing a string, erase the area with fillRect(),
+  // then draw new text.  This WILL infortunately 'blink' the text, but
+  // is unavoidable.  Drawing 'background' pixels will NOT fix this,
+  // only creates a new set of problems.  Have an idea to work around
+  // this (a canvas object type for MCUs that can afford the RAM and
+  // displays supporting setAddrWindow() and pushColors()), but haven't
+  // implemented this yet.
 
 
-	for(yy=0; yy<h; yy++) {
-		for(xx=0; xx<w; xx++) {
-			if(!(bit++ & 7)) {
-				bits = bitmap[bo++];
-			}
-			if(bits & 0x80) {
-				if(size == 1) {
-					writePixel(x+xo+xx, y+yo+yy, color);
-				} else {
-					fillRect(x+(xo16+xx)*size, y+(yo16+yy)*size, size, size, color);
-				}
-			}
-			bits <<= 1;
-		}
-	}
-	return glyph->xAdvance * size;
+  for(yy=0; yy<h; yy++) {
+    for(xx=0; xx<w; xx++) {
+      if(!(bit++ & 7)) {
+        bits = bitmap[bo++];
+      }
+      if(bits & 0x80) {
+        if(size == 1) {
+          writePixel(x+xo+xx, y+yo+yy, color);
+        } else {
+          fillRect(x+(xo16+xx)*size, y+(yo16+yy)*size, size, size, color);
+        }
+      }
+      bits <<= 1;
+    }
+  }
+  return glyph->xAdvance * size;
 }
 
 /**
@@ -644,15 +585,15 @@ alt_u32 drawChar(alt_u16 x, alt_u16 y, alt_u16 color, uint8_t size, alt_u8 c)
  */
 alt_u32 drawTxt(alt_u16 x, alt_u16 y, alt_u16 color, alt_u8* txt)
 {
-	int size;
-	int i;
+  int size;
+  int i;
 
-	size = 0;
-	for(i=0; txt[i]; i++){
-		size += drawChar(x+size, y, color, 1, txt[i]);
-	}
+  size = 0;
+  for(i=0; txt[i]; i++){
+    size += drawChar(x+size, y, color, 1, txt[i]);
+  }
 
-	return size;
+  return size;
 }
 
 #endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
@@ -683,3 +624,5 @@ alt_u32 drawBmp(GFXbmp* bmp, alt_u16 x, alt_u16 y, alt_u16 color)
   }
   return 0;
 }
+
+#endif /* defined(GFX_MODULE) && (GFX_MODULE == 1) */

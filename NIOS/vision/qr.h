@@ -21,11 +21,13 @@ typedef struct {
   alt_u32  valid ;
 }sQrPnt, *psQrPnt;
 
+#define QR_PT_DET_NUM 12
+
 /**
  */
 typedef struct{
   alt_u32 sts;
-  sQrPnt  pt[3];
+  sQrPnt  pt[QR_PT_DET_NUM];
 }sQrDet, *psQrDet;
 
 void qrInit(int devs);

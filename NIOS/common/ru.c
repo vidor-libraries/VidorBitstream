@@ -5,6 +5,11 @@
  *      Author: max
  */
 
+#include "config.h"
+
+
+#if defined(RU_MODULE) && (RU_MODULE == 1)
+
 #include <alt_types.h>
 #include <system.h>
 
@@ -29,3 +34,5 @@ alt_u32 ruLoad(alt_u32 addr)
 
   return 0;
 }
+
+#endif /* defined(RU_MODULE) && (RU_MODULE == 1) */

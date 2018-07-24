@@ -38,10 +38,13 @@ NOTE:   String length must be evenly divisible by 16byte (str_len % 16 == 0)
 #include <stdint.h>
 #include <string.h> // CBC mode, for memset
 #include "aes.h"
-
+#if 1
 #define SEC_TEXT  __attribute__((__section__(".text2")))
 #define SEC_DATA  __attribute__((__section__(".data2")))
-
+#else
+#define SEC_TEXT
+#define SEC_DATA
+#endif
 /*****************************************************************************/
 /* Defines:                                                                  */
 /*****************************************************************************/

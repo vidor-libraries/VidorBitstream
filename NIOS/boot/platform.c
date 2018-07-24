@@ -8,14 +8,11 @@
 #include <nios2.h>
 #include <system.h>
 
+#include "config.h"
+
 #include "mb.h"
 #include "sf.h"
 #include "ru.h"
-
-/**
- *
- */
-#define FPGA_VERSION 0xB0010101
 
 /**
  */
@@ -115,10 +112,12 @@ void pltCmd(void)
     }
     ret = rpc[1];
     break;
+#if defined(RU_MODULE) && (RU_MODULE == 1)
   case 3:
     /* starting application */
     ret = ruLoad(0x00080000);
     break;
+#endif /* defined(RU_MODULE) && (RU_MODULE == 1) */
   }
   rpc[1] = ret;
 }
