@@ -126,11 +126,11 @@ set_interface_property sdram SVD_ADDRESS_GROUP ""
 add_interface_port sdram oSDRAM_ADDRESS address Output pADDRESS_BITS
 add_interface_port sdram oSDRAM_WRITE write Output 1
 add_interface_port sdram oSDRAM_READ read Output 1
-add_interface_port sdram oSDRAM_WRITEDATA writedata Output 16
+add_interface_port sdram oSDRAM_WRITE_DATA writedata Output 16
 add_interface_port sdram iSDRAM_READ_DATA readdata Input 16
-add_interface_port sdram iSDRAM_WAITREQUEST waitrequest Input 1
-add_interface_port sdram iSDRAM_READ_DATAVALID readdatavalid Input 1
-add_interface_port sdram oSDRAM_BYTEENABLE byteenable Output 2
+add_interface_port sdram iSDRAM_WAIT_REQUEST waitrequest Input 1
+add_interface_port sdram iSDRAM_READ_DATA_VALID readdatavalid Input 1
+add_interface_port sdram oSDRAM_BYTE_ENABLE byteenable Output 2
 
 
 # 
@@ -177,7 +177,7 @@ set_interface_property fb SVD_ADDRESS_GROUP ""
 add_interface_port fb iFB_CLK clk Input 1
 add_interface_port fb iFB_READY rdy Input 1
 add_interface_port fb oFB_DATA data Output 31
-add_interface_port fb oFB_DATAVALID dv Output 1
+add_interface_port fb oFB_DATA_VALID dv Output 1
 add_interface_port fb oFB_START start Output 1
 
 
@@ -195,7 +195,7 @@ set_interface_property mipi SVD_ADDRESS_GROUP ""
 
 add_interface_port mipi iMIPI_CLK clk Input 1
 add_interface_port mipi iMIPI_DATA data Input 15
-add_interface_port mipi iMIPI_DATAVALID dv Input 1
+add_interface_port mipi iMIPI_DATA_VALID dv Input 1
 add_interface_port mipi iMIPI_START start Input 1
 
 
@@ -210,14 +210,14 @@ set_interface_property avl bitsPerSymbol 8
 set_interface_property avl ENABLED true
 
 add_interface_port avl oAVL_READ_DATA readdata Output 16
-add_interface_port avl oAVL_READ_DATAVALID readdatavalid Output 1
+add_interface_port avl oAVL_READ_DATA_VALID readdatavalid Output 1
 add_interface_port avl iAVL_WRITE_DATA writedata Input 16
-add_interface_port avl oAVL_WAITREQUEST waitrequest Output 1
+add_interface_port avl oAVL_WAIT_REQUEST waitrequest Output 1
 add_interface_port avl iAVL_ADDRESS address Input pADDRESS_BITS
-add_interface_port avl iAVL_BURSTCOUNT burstcount Input 6
+add_interface_port avl iAVL_BURST_COUNT burstcount Input 6
 add_interface_port avl iAVL_READ read Input 1
 add_interface_port avl iAVL_WRITE write Input 1
-add_interface_port avl iAVL_BYTEENABLE byteenable Input 2
+add_interface_port avl iAVL_BYTE_ENABLE byteenable Input 2
 set_interface_property avl burstOnBurstBoundariesOnly {0}
 set_interface_property avl burstcountUnits {WORDS}
 set_interface_property avl constantBurstBehavior {0}

@@ -1,18 +1,18 @@
 # +-----------------------------------
-# | 
+# |
 # | tiny_spi "tiny_spi" v1.0
 # | Thomas Chou 2010.01.19.18:07:51
 # | SPI 8 bits
-# | 
+# |
 # | tiny_spi/hdl/tiny_spi.v
-# | 
+# |
 # |    ./hdl/tiny_spi.v syn, sim
-# | 
+# |
 # +-----------------------------------
 
 # +-----------------------------------
 # | module tiny_spi
-# | 
+# |
 set_module_property DESCRIPTION "tiny SPI 8 bits"
 set_module_property NAME tiny_spi
 set_module_property VERSION 1.0
@@ -25,20 +25,20 @@ set_module_property TOP_LEVEL_HDL_MODULE tiny_spi
 set_module_property INSTANTIATE_IN_SYSTEM_MODULE true
 set_module_property EDITABLE true
 set_module_property ANALYZE_HDL TRUE
-# | 
+# |
 # +-----------------------------------
 
 # +-----------------------------------
 # | files
-# | 
+# |
 add_file tiny_spi.v {SYNTHESIS SIMULATION}
-# | 
+# |
 # +-----------------------------------
 
 # +-----------------------------------
 # | parameters
-# | 
-# | 
+# |
+# |
 # +-----------------------------------
 add_parameter BAUD_WIDTH INTEGER 8
 set_parameter_property BAUD_WIDTH DEFAULT_VALUE 8
@@ -61,13 +61,13 @@ set_parameter_property SPI_MODE HDL_PARAMETER true
 
 # +-----------------------------------
 # | display items
-# | 
-# | 
+# |
+# |
 # +-----------------------------------
 
 # +-----------------------------------
 # | connection point d
-# | 
+# |
 add_interface d avalon end
 set_interface_property d addressAlignment NATIVE
 set_interface_property d addressUnits WORDS
@@ -81,7 +81,7 @@ set_interface_property d isNonVolatileStorage false
 set_interface_property d linewrapBursts false
 set_interface_property d maximumPendingReadTransactions 0
 set_interface_property d printableDevice false
-set_interface_property d readLatency 0
+set_interface_property d readLatency 1
 set_interface_property d readWaitStates 0
 set_interface_property d readWaitTime 0
 set_interface_property d setupTime 0
@@ -95,24 +95,24 @@ add_interface_port d we_i write Input 1
 add_interface_port d dat_i writedata Input 32
 add_interface_port d adr_i address Input 3
 add_interface_port d dat_o readdata Output 32
-# | 
+# |
 # +-----------------------------------
 
 # +-----------------------------------
 # | connection point clk
-# | 
+# |
 add_interface clk clock end
 
 set_interface_property clk ENABLED true
 
 add_interface_port clk clk_i clk Input 1
-# | 
+# |
 # +-----------------------------------
 
 
 # +-----------------------------------
 # | connection point reset
-# | 
+# |
 add_interface reset reset end
 set_interface_property reset associatedClock clk
 set_interface_property reset synchronousEdges DEASSERT
@@ -120,12 +120,12 @@ set_interface_property reset synchronousEdges DEASSERT
 set_interface_property reset ENABLED true
 
 add_interface_port reset rst_i reset Input 1
-# | 
+# |
 # +-----------------------------------
 
 # +-----------------------------------
 # | connection point irq
-# | 
+# |
 add_interface irq interrupt end
 set_interface_property irq associatedAddressablePoint d
 set_interface_property irq associatedClock clk
@@ -133,12 +133,12 @@ set_interface_property irq associatedReset reset
 set_interface_property irq ENABLED true
 
 add_interface_port irq int_o irq Output 1
-# | 
+# |
 # +-----------------------------------
 
 # +-----------------------------------
 # | connection point spi
-# | 
+# |
 add_interface spi conduit end
 
 set_interface_property spi ENABLED true
@@ -147,5 +147,5 @@ add_interface_port spi MOSI export Output 1
 add_interface_port spi SCLK export Output 1
 add_interface_port spi MISO export Input 1
 add_interface_port spi CS export Output 1
-# | 
+# |
 # +-----------------------------------

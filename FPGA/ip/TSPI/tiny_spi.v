@@ -40,23 +40,23 @@
 
 module tiny_spi(
    // system
-   input	  rst_i,
-   input	  clk_i,
+   input   rst_i,
+   input   clk_i,
    // memory mapped
-   input	  stb_i,
-   input	  we_i,
-   output [31:0]  dat_o,
+   input   stb_i,
+   input   we_i,
+   output reg [31:0]  dat_o,
    input [31:0]   dat_i,
-   output	  int_o,
-   input [2:0]	  adr_i,
+   output       int_o,
+   input [2:0]  adr_i,
    // input 	  cyc_i, // comment out for avalon
    // output 	  ack_o, // comment out for avalon
 
    // spi
-   output	  MOSI,
-   output	  SCLK,
-   input	  MISO,
-	 output   reg CS
+   output     MOSI,
+   output     SCLK,
+   input      MISO,
+   output reg CS
    );
 
    parameter BAUD_WIDTH = 8;
@@ -66,23 +66,23 @@ module tiny_spi(
    parameter DIV_WIDTH = BAUD_DIV ? $clog2(BAUD_DIV / 2 - 1) : BAUD_WIDTH;
 
 
-   reg [7:0]	  sr8, bb8;
-   wire [7:0]	  sr8_sf;
-   reg [BC_WIDTH - 1:0]		bc, bc_next;
-   reg [DIV_WIDTH - 1:0]	ccr;
-   reg [DIV_WIDTH - 1:0]	cc, cc_next;
-   wire		  misod;
-   wire		  cstb, wstb, bstb, istb;
-   reg		  sck;
-   reg		  sf, ld;
-   reg		  bba;   // buffer flag
-   reg		  txren, txeen;
-   wire 	  txr, txe;
-   wire		  cpol, cpha;
-   reg		  cpolr, cphar;
-   wire 	  wr;
-   wire 	  cyc_i; // comment out for wishbone
-   wire 	  ack_o; // comment out for wishbone
+   reg  [7:0]             sr8, bb8;
+   wire [7:0]             sr8_sf;
+   reg  [BC_WIDTH  - 1:0] bc, bc_next;
+   reg  [DIV_WIDTH - 1:0] ccr;
+   reg  [DIV_WIDTH - 1:0] cc, cc_next;
+   wire                   misod;
+   wire                   cstb, wstb, bstb, istb;
+   reg                    sck;
+   reg                    sf, ld;
+   reg                    bba;   // buffer flag
+   reg                    txren, txeen;
+   wire                   txr, txe;
+   wire                   cpol, cpha;
+   reg                    cpolr, cphar;
+   wire                   wr;
+   wire                   cyc_i; // comment out for wishbone
+   wire                   ack_o; // comment out for wishbone
    assign cyc_i = 1'b1;  // comment out for wishbone
    assign ack_o = stb_i & cyc_i; // zero wait
    assign wr = stb_i & cyc_i & we_i & ack_o;
@@ -91,11 +91,6 @@ module tiny_spi(
    assign cstb = wr & (adr_i == 3);
    assign bstb = wr & (adr_i == 4);
    assign sr8_sf = { sr8[6:0],misod };
-   assign dat_o =
-		      (sr8 & {8{(adr_i == 0)}})
-		    | (bb8 & {8{(adr_i == 1)}})
-		    | ({ txr, txe } & {8{(adr_i == 2)}})
-		      ;
 
    localparam
      IDLE = 0,
@@ -110,19 +105,24 @@ module tiny_spi(
      else
        spi_seq <= spi_seq_next;
 
-   always @(posedge clk_i)
-     begin
-	cc <= cc_next;
-	bc <= bc_next;
-     end
+  always @(posedge clk_i)
+    begin
+      cc <= cc_next;
+      bc <= bc_next;
+      dat_o <=
+            (sr8 & {8{(adr_i == 0)}})
+          | (bb8 & {8{(adr_i == 1)}})
+          | ({ txr, txe } & {8{(adr_i == 2)}})
+            ;
+    end
 
-   always @(/*AS*/bba or bc or cc or ccr or cpha or cpol or spi_seq)
-     begin
-	sck = cpol;
-	cc_next = BAUD_DIV ? (BAUD_DIV / 2 - 1) : ccr;
-	bc_next = bc;
-	ld = 1'b0;
-	sf = 1'b0;
+  always @(/*AS*/bba or bc or cc or ccr or cpha or cpol or spi_seq)
+    begin
+      sck = cpol;
+      cc_next = BAUD_DIV ? (BAUD_DIV / 2 - 1) : ccr;
+      bc_next = bc;
+      ld = 1'b0;
+      sf = 1'b0;
 
 	case (spi_seq)
 	  IDLE:
@@ -209,20 +209,20 @@ module tiny_spi(
 	  bb8 <= bb8;
      end // always @ (posedge clk_i)
 
-   always @(posedge clk_i or posedge rst_i)
-     begin
-	if (rst_i)
-	  bba <= 1'b0;
-	else if (wstb)
-	  bba <= 1'b1;
-	else if (ld)
-	  bba <= 1'b0;
-	else
-	  bba <= bba;
-     end
+  always @(posedge clk_i or posedge rst_i)
+    begin
+      if (rst_i)
+        bba <= 1'b0;
+      else if (wstb)
+        bba <= 1'b1;
+      else if (ld)
+        bba <= 1'b0;
+      else
+        bba <= bba;
+    end
 
    assign { cpol, cpha } = ((SPI_MODE >= 0) & (SPI_MODE < 4)) ?
-			   SPI_MODE : { cpolr, cphar };
+          SPI_MODE : { cpolr, cphar };
    assign txe = (spi_seq == IDLE);
    assign txr = ~bba;
    assign int_o = (txr & txren) | (txe & txeen);

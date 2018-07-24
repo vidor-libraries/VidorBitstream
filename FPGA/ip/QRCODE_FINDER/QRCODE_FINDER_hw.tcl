@@ -116,10 +116,10 @@ set_interface_property ctrl CMSIS_SVD_VARIABLES ""
 set_interface_property ctrl SVD_ADDRESS_GROUP ""
 
 add_interface_port ctrl iADDRESS address Input 11
-add_interface_port ctrl iWRITEDATA writedata Input 32
+add_interface_port ctrl iWRITE_DATA writedata Input 32
 add_interface_port ctrl iWRITE write Input 1
 add_interface_port ctrl iREAD read Input 1
-add_interface_port ctrl oREADDATA readdata Output 32
+add_interface_port ctrl oREAD_DATA readdata Output 32
 set_interface_assignment ctrl embeddedsw.configuration.isFlash 0
 set_interface_assignment ctrl embeddedsw.configuration.isMemoryDevice 0
 set_interface_assignment ctrl embeddedsw.configuration.isNonVolatileStorage 0
@@ -168,7 +168,7 @@ set_interface_property vid_in CMSIS_SVD_VARIABLES ""
 set_interface_property vid_in SVD_ADDRESS_GROUP ""
 
 add_interface_port vid_in iVID_DATA data Input 24
-add_interface_port vid_in iVID_DATAVALID dv Input 1
+add_interface_port vid_in iVID_DATA_VALID dv Input 1
 add_interface_port vid_in iVID_START start Input 1
 add_interface_port vid_in iVID_RESET reset Input 1
 add_interface_port vid_in iVID_CLK clk Input 1
@@ -187,6 +187,6 @@ set_interface_property vid_out CMSIS_SVD_VARIABLES ""
 set_interface_property vid_out SVD_ADDRESS_GROUP ""
 
 add_interface_port vid_out oVID_DATA data Output 24
-add_interface_port vid_out oVID_DATAVALID dv Output 1
+add_interface_port vid_out oVID_DATA_VALID dv Output 1
 add_interface_port vid_out oVID_START start Output 1
 

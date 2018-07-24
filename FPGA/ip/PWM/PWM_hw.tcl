@@ -98,7 +98,7 @@ set_interface_property avalon_slave_0 PORT_NAME_MAP ""
 set_interface_property avalon_slave_0 CMSIS_SVD_VARIABLES ""
 set_interface_property avalon_slave_0 SVD_ADDRESS_GROUP ""
 
-add_interface_port avalon_slave_0 iDATA writedata Input 32
+add_interface_port avalon_slave_0 iWRITE_DATA writedata Input 32
 add_interface_port avalon_slave_0 iWRITE write Input 1
 set_interface_assignment avalon_slave_0 embeddedsw.configuration.isFlash 0
 set_interface_assignment avalon_slave_0 embeddedsw.configuration.isMemoryDevice 0

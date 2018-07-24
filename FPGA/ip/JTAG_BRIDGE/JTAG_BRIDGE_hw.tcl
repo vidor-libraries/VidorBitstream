@@ -86,7 +86,7 @@ add_interface_port avalon_master oREAD read Output 1
 add_interface_port avalon_master oWRITE_DATA writedata Output 32
 add_interface_port avalon_master iREAD_DATA readdata Input 32
 add_interface_port avalon_master iWAIT_REQUEST waitrequest Input 1
-add_interface_port avalon_master iREAD_DATAVALID readdatavalid Input 1
+add_interface_port avalon_master iREAD_DATA_VALID readdatavalid Input 1
 
 
 # 

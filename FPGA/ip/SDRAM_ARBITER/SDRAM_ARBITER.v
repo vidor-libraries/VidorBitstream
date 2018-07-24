@@ -1,3 +1,23 @@
+/*
+* Copyright 2018 ARDUINO SA (http://www.arduino.cc/)
+* This file is part of Vidor IP.
+* Copyright (c) 2018
+* Authors: Dario Pennisi
+*
+* This software is released under:
+* The GNU General Public License, which covers the main part of 
+* Vidor IP
+* The terms of this license can be found at:
+* https://www.gnu.org/licenses/gpl-3.0.en.html
+*
+* You can be released from the requirements of the above licenses by purchasing
+* a commercial license. Buying such a license is mandatory if you want to modify or
+* otherwise use the software for commercial activities involving the Arduino
+* software without disclosing the source code of your own applications. To purchase
+* a commercial license, send an email to license@arduino.cc.
+*
+*/
+
 module SDRAM_ARBITER
 #(
 parameter pBURST_SIZE=64,
@@ -15,31 +35,31 @@ parameter pADDRESS_BITS = 22
                              
   output                     oFB_START,
   output [30:0]              oFB_DATA,
-  output                     oFB_DATAVALID,
+  output                     oFB_DATA_VALID,
   input                      iFB_READY,
 
   input [14:0]               iMIPI_DATA,
-  input                      iMIPI_DATAVALID,
+  input                      iMIPI_DATA_VALID,
   input                      iMIPI_START,
 
   output [pADDRESS_BITS-1:0] oSDRAM_ADDRESS,
   output                     oSDRAM_WRITE,
   output                     oSDRAM_READ,
-  output [15:0]              oSDRAM_WRITEDATA,
+  output [15:0]              oSDRAM_WRITE_DATA,
   input  [15:0]              iSDRAM_READ_DATA,
-  input                      iSDRAM_READ_DATAVALID,
-  input                      iSDRAM_WAITREQUEST,
-  output [1:0]               oSDRAM_BYTEENABLE,
+  input                      iSDRAM_READ_DATA_VALID,
+  input                      iSDRAM_WAIT_REQUEST,
+  output [1:0]               oSDRAM_BYTE_ENABLE,
 
   input [pADDRESS_BITS-1:0]  iAVL_ADDRESS,
   input                      iAVL_READ,
   input                      iAVL_WRITE,
-  output                     oAVL_WAITREQUEST,
+  output                     oAVL_WAIT_REQUEST,
   output [15:0]              oAVL_READ_DATA,
-  output                     oAVL_READ_DATAVALID,
+  output                     oAVL_READ_DATA_VALID,
   input  [15:0]              iAVL_WRITE_DATA,
-  input  [1:0]               iAVL_BYTEENABLE,
-  input  [5:0]               iAVL_BURSTCOUNT
+  input  [1:0]               iAVL_BYTE_ENABLE,
+  input  [5:0]               iAVL_BURST_COUNT
 );
 
   function integer CLogB2;
@@ -122,14 +142,14 @@ end
     .aclr         (1'b0),
 
     .wrclk        (iMIPI_CLK),
-    .wrreq        (iMIPI_DATAVALID&!wMIPI_FIFO_FULL),
+    .wrreq        (iMIPI_DATA_VALID&!wMIPI_FIFO_FULL),
     .wrempty      (),
     .wrfull       (wMIPI_FIFO_FULL),
     .wrusedw      (),
     .data         ({iMIPI_START,iMIPI_DATA}),
  
     .rdclk        (iMEM_CLK),
-    .rdreq        (!rAVL_ACTIVE&rWRITE&!wMIPI_FIFO_DATA[15]&!iSDRAM_WAITREQUEST|rMIPI_UNLOCK),
+    .rdreq        (!rAVL_ACTIVE&rWRITE&!wMIPI_FIFO_DATA[15]&!iSDRAM_WAIT_REQUEST|rMIPI_UNLOCK),
     .rdempty      (),
     .rdusedw      (wMIPI_FIFO_USEDW),
     .rdfull       (),
@@ -157,7 +177,7 @@ end
     .aclr         (1'b0),
 
     .wrclk        (iMEM_CLK),
-    .wrreq        ((iSDRAM_READ_DATAVALID&&(rCURRENT_CLIENT==2'd0))|
+    .wrreq        ((iSDRAM_READ_DATA_VALID&&(rCURRENT_CLIENT==2'd0))|
                    !wCMD_EMPTY&(wFB_START&&(rCURRENT_BURSTCNT==0))),
     .wrempty      (),
     .wrfull       (),
@@ -193,7 +213,7 @@ dcfifo #(
     .aclr         (1'b0),
 
     .wrclk        (iMEM_CLK),
-    .wrreq        ((iSDRAM_READ_DATAVALID&&(rCURRENT_CLIENT==2'd1))|
+    .wrreq        ((iSDRAM_READ_DATA_VALID&&(rCURRENT_CLIENT==2'd1))|
                    !wCMD_EMPTY&(wFB_START&&(rCURRENT_BURSTCNT==0))),
     .wrempty      (),
     .wrfull       (),
@@ -230,16 +250,20 @@ scfifo #(
  
     .rdreq        (((wFB_START&&rCURRENT_BURSTCNT==0)|
                    (rCURRENT_BURSTCNT==0)|
-                   (rCURRENT_BURSTCNT==1)&iSDRAM_READ_DATAVALID&!wFB_START)&!wCMD_EMPTY),
+                   (rCURRENT_BURSTCNT==1)&iSDRAM_READ_DATA_VALID&!wFB_START)&!wCMD_EMPTY),
     .empty        (wCMD_EMPTY),
     .q            ({wFB_START,wREAD_CLIENT, wBURSTCNT}) 
   );
 
-assign oFB_DATAVALID=!wFB_FIFO_EMPTY&!wFB_FIFO2_EMPTY&&(wFB_FIFO2_USEDW>pBURST_SIZE/3);
+assign oFB_DATA_VALID=!wFB_FIFO_EMPTY&!wFB_FIFO2_EMPTY&&(wFB_FIFO2_USEDW>pBURST_SIZE/3);
 
+<<<<<<< Updated upstream
 assign oAVL_WAITREQUEST=rAVL_WAIT|iSDRAM_WAITREQUEST;
+=======
+assign oAVL_WAIT_REQUEST=rAVL_WAIT|iSDRAM_WAIT_REQUEST;
+>>>>>>> Stashed changes
 assign oAVL_READ_DATA = iSDRAM_READ_DATA;
-assign oAVL_READ_DATAVALID = iSDRAM_READ_DATAVALID&&(rCURRENT_CLIENT==2'd2);
+assign oAVL_READ_DATA_VALID = iSDRAM_READ_DATA_VALID&&(rCURRENT_CLIENT==2'd2);
 
 always @(posedge iMEM_CLK)
 begin
@@ -290,32 +314,40 @@ begin
       end
       else if (iAVL_READ) begin
         rREAD <=1;
-        rBYTEENABLE<=iAVL_BYTEENABLE;
+        rBYTEENABLE<=iAVL_BYTE_ENABLE;
         rCMD_WRITE<=1;
         rREAD_CLIENT<=2;
-        rBURSTCNT <= (iAVL_BURSTCOUNT==0) ? 0: iAVL_BURSTCOUNT-1;
+        rBURSTCNT <= (iAVL_BURST_COUNT==0) ? 0: iAVL_BURST_COUNT-1;
         rADDRESS<=iAVL_ADDRESS;
         rAVL_WAIT<=0;
       end
       else if (iAVL_WRITE) begin
         rWRITE<=1;
-        rBURSTCNT <= (iAVL_BURSTCOUNT==0) ? 0: iAVL_BURSTCOUNT-1;
+        rBURSTCNT <= (iAVL_BURST_COUNT==0) ? 0: iAVL_BURST_COUNT-1;
         rADDRESS<=iAVL_ADDRESS;
         rAVL_ACTIVE<=1;
         rAVL_WAIT<=0;
         //rAVL_WRITEDATA<= iAVL_WRITE_DATA;
+<<<<<<< Updated upstream
         rBYTEENABLE<=iAVL_BYTEENABLE;
+=======
+        rBYTEENABLE<=iAVL_BYTE_ENABLE;
+>>>>>>> Stashed changes
       end
     end
     
-    if (rWRITE&&!iSDRAM_WAITREQUEST)
+    if (rWRITE&&!iSDRAM_WAIT_REQUEST)
     begin
       rAVL_WAIT <= !rAVL_ACTIVE;
       rBURSTCNT<=rBURSTCNT-1;
       if (!rAVL_ACTIVE) 
         rWRITE_ADDRESS<=rWRITE_ADDRESS+1;
 		else begin
+<<<<<<< Updated upstream
 		  rBYTEENABLE<=iAVL_BYTEENABLE;
+=======
+		  rBYTEENABLE<=iAVL_BYTE_ENABLE;
+>>>>>>> Stashed changes
         rAVL_WRITEDATA<= iAVL_WRITE_DATA;
 		end
 
@@ -332,7 +364,7 @@ begin
     end
 
     // generate read requests until all burst has been complete.
-    if (rREAD&&!iSDRAM_WAITREQUEST)
+    if (rREAD&&!iSDRAM_WAIT_REQUEST)
     begin
       rBURSTCNT<=rBURSTCNT-1;
       rADDRESS<=rADDRESS+1;
@@ -355,10 +387,10 @@ begin
         end
       end
     end
-    if (rCURRENT_BURSTCNT&&iSDRAM_READ_DATAVALID)
+    if (rCURRENT_BURSTCNT&&iSDRAM_READ_DATA_VALID)
       rCURRENT_BURSTCNT<=rCURRENT_BURSTCNT-1;
     if ( (rCURRENT_BURSTCNT==0)&!wCMD_EMPTY||
-         (rCURRENT_BURSTCNT==1)&iSDRAM_READ_DATAVALID&!wCMD_EMPTY) begin
+         (rCURRENT_BURSTCNT==1)&iSDRAM_READ_DATA_VALID&!wCMD_EMPTY) begin
       rCURRENT_BURSTCNT<= wFB_START ? 0 : {1'b0,wBURSTCNT}+1;
       rCURRENT_CLIENT<= wREAD_CLIENT;
     end
@@ -368,7 +400,12 @@ end
 assign oSDRAM_ADDRESS    = rADDRESS;
 assign oSDRAM_READ       = rREAD;
 assign oSDRAM_WRITE      = rWRITE&!(rAVL_ACTIVE&!iAVL_WRITE);
+<<<<<<< Updated upstream
 assign oSDRAM_BYTEENABLE = rAVL_ACTIVE  ? iAVL_BYTEENABLE : 3;
 assign oSDRAM_WRITEDATA  = rAVL_ACTIVE ? iAVL_WRITE_DATA : wMIPI_FIFO_DATA[14:0];
+=======
+assign oSDRAM_BYTE_ENABLE = rAVL_ACTIVE  ? iAVL_BYTE_ENABLE : 3;
+assign oSDRAM_WRITE_DATA  = rAVL_ACTIVE ? iAVL_WRITE_DATA : wMIPI_FIFO_DATA[14:0];
+>>>>>>> Stashed changes
 
 endmodule

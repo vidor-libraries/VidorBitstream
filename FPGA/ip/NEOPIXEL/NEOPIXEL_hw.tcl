@@ -171,10 +171,10 @@ set_interface_property data SVD_ADDRESS_GROUP ""
 
 add_interface_port data oDATA_ADDRESS address Output 32
 add_interface_port data oDATA_READ    read    Output 1
-add_interface_port data iDATA_WAITREQUEST    waitrequest    Input 1
+add_interface_port data iDATA_WAIT_REQUEST    waitrequest    Input 1
 add_interface_port data oDATA_BURST_COUNT    burstcount    Output 5
 add_interface_port data iDATA_READ_DATA    readdata    Input 32
-add_interface_port data iDATA_READ_DATAVALID    readdatavalid    Input 1
+add_interface_port data iDATA_READ_DATA_VALID    readdatavalid    Input 1
 
 #
 # connection point irq

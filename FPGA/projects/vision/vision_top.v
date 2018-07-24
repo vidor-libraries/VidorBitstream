@@ -200,12 +200,12 @@ end
 
 wire [3:0] wQSPI_DATAOUT;
 wire [3:0] wQSPI_DATAOE;
-assign oFLASH_SCK=wFLASH_SCK&!wFLASH_CS|wQSPI_CLK&!wQSPI_OE&!wQSPI_NCS;
+assign oFLASH_SCK  = wFLASH_SCK&!wFLASH_CS|wQSPI_CLK&!wQSPI_OE&!wQSPI_NCS;
 assign oFLASH_HOLD = !wQSPI_OE&wQSPI_DATAOE[3]&!wQSPI_NCS ? wQSPI_DATAOUT[3] : wFLASH_CS ? 1'bz : 1'b1;
-assign oFLASH_WP = !wQSPI_OE&wQSPI_DATAOE[2]&!wQSPI_NCS? wQSPI_DATAOUT[2] : wFLASH_CS ? 1'bz : 1'b1;
+assign oFLASH_WP   = !wQSPI_OE&wQSPI_DATAOE[2]&!wQSPI_NCS ? wQSPI_DATAOUT[2] : wFLASH_CS ? 1'bz : 1'b1;
 assign iFLASH_MISO = !wQSPI_OE&wQSPI_DATAOE[1]&!wQSPI_NCS ? wQSPI_DATAOUT[1] : 1'bz;
 assign oFLASH_MOSI = !wQSPI_OE&wQSPI_DATAOE[0]&!wQSPI_NCS ? wQSPI_DATAOUT[0] : wFLASH_CS ? 1'bz : wFLASH_MOSI;
-assign oFLASH_CS= wQSPI_NCS & wFLASH_CS;
+assign oFLASH_CS   = wQSPI_NCS & wFLASH_CS;
 
 vision u0(
 		.clk_clk                (wMEM_CLK),               //      clk.clk
@@ -236,14 +236,14 @@ vision u0(
 		.flash_spi_MISO         (iFLASH_MISO ),   // flash_spi.MISO
 		.flash_spi_MOSI         (wFLASH_MOSI),   //          .MOSI
 		.flash_spi_SCLK         (wFLASH_SCK),   //          .SCLK
-		.flash_spi_SS_n         (wFLASH_CS),   //          .SS_n
+		.flash_spi_CS           (wFLASH_CS),   //          .SS_n
 
-		.qspi_dclk       (wQSPI_CLK),       //      qspi.dclk
-		.qspi_ncs        (wQSPI_NCS),        //          .ncs
-		.qspi_oe         (wQSPI_OE),         //          .oe
-		.qspi_dataout    (wQSPI_DATAOUT),    //          .dataout
-		.qspi_dataoe     (wQSPI_DATAOE),     //          .dataoe
-		.qspi_datain     ({oFLASH_HOLD, oFLASH_WP, iFLASH_MISO, oFLASH_MOSI}),      //          .datain
+		.qspi_dclk              (wQSPI_CLK),       //      qspi.dclk
+		.qspi_ncs               (wQSPI_NCS),        //          .ncs
+		.qspi_oe                (wQSPI_OE),         //          .oe
+		.qspi_dataout           (wQSPI_DATAOUT),    //          .dataout
+		.qspi_dataoe            (wQSPI_DATAOE),     //          .dataoe
+		.qspi_datain            ({oFLASH_HOLD, oFLASH_WP, iFLASH_MISO, oFLASH_MOSI}),      //          .datain
 
 		.csi_i2c_scl            (bMIPI_SCL),      //   csi_i2c.scl
 		.csi_i2c_sda            (bMIPI_SDA),      //          .sda
@@ -319,11 +319,11 @@ wire [31:0] wWM_PIN_OUT,wWM_OUT1,wWM_OUT2,wWM_OUT3;
 wire [31:0] wPEX_PIN_OUT,wPEX_OUT1,wPEX_OUT2,wPEX_OUT3;
 
 assign wSAM_PIO_IN = {bMKR_D,bMKR_A,bMKR_AREF};
-assign wWM_PIO_IN = {iWM_PIO32,iWM_TX,oWM_RX,bWM_PIO36,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO29,bWM_PIO28,bWM_PIO27,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,bWM_PIO1,oWM_RESET};
+assign wWM_PIO_IN = {iWM_PIO32,iWM_TX,oWM_RX,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO28,bWM_PIO27,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,oWM_RESET};
 assign wPEX_PIO_IN = {iPEX_PIN33,iPEX_PIN31,iPEX_PIN25,iPEX_PIN23,iPEX_PIN13,iPEX_PIN11,bPEX_PIN51,bPEX_PIN49,bPEX_PIN48,bPEX_PIN47,bPEX_PIN46,bPEX_PIN45,bPEX_PIN44,bPEX_PIN42,bPEX_PIN32,bPEX_PIN30,bPEX_PIN28,bPEX_PIN20,bPEX_PIN16,bPEX_PIN14,bPEX_PIN12,bPEX_PIN10,bPEX_PIN8,bPEX_PIN6,bPEX_RST};
 
 assign {bMKR_D,bMKR_A,bMKR_AREF}= wSAM_PIN_OUT;
-assign {oWM_RX,bWM_PIO36,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO29,bWM_PIO28,bWM_PIO27,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,bWM_PIO1,oWM_RESET} = wWM_PIN_OUT;
+assign {oWM_RX,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO28,bWM_PIO27,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,oWM_RESET} = wWM_PIN_OUT;
 assign {bPEX_PIN51,bPEX_PIN49,bPEX_PIN48,bPEX_PIN47,bPEX_PIN46,bPEX_PIN45,bPEX_PIN44,bPEX_PIN42,bPEX_PIN32,bPEX_PIN30,bPEX_PIN28,bPEX_PIN20,bPEX_PIN16,bPEX_PIN14,bPEX_PIN12,bPEX_PIN10,bPEX_PIN8,bPEX_PIN6,bPEX_RST} = wPEX_PIN_OUT;
 genvar i;
 generate
@@ -333,13 +333,13 @@ assign wSAM_PIN_OUT[i] =  (wSAM_PIO_MSEL[i*2+1-:2] ==0) ? !wSAM_PIO_DIR[i] ? 1'b
                           (wSAM_PIO_MSEL[i*2+1-:2] ==1) ? wSAM_OUT1[i] : 
                           (wSAM_PIO_MSEL[i*2+1-:2] ==2) ? wSAM_OUT2[i] : 
                           (wSAM_PIO_MSEL[i*2+1-:2] ==3) ? wSAM_OUT3[i] : 0;
-assign wWM_PIN_OUT[i] =   
-                          (wWM_PIO_MSEL[i*2+1-:2] ==0) ? !wWM_PIO_DIR[i] ? 1'bZ : wWM_PIO_OUT[i] : 
+
+assign wWM_PIN_OUT[i] =   (wWM_PIO_MSEL[i*2+1-:2] ==0) ? !wWM_PIO_DIR[i] ? 1'bZ : wWM_PIO_OUT[i] : 
                           (wWM_PIO_MSEL[i*2+1-:2] ==1) ? wWM_OUT1[i] : 
                           (wWM_PIO_MSEL[i*2+1-:2] ==2) ? wWM_OUT2[i] : 
                           (wWM_PIO_MSEL[i*2+1-:2] ==3) ? wWM_OUT3[i] : 0;
-assign wPEX_PIN_OUT[i] =  
-                          (wPEX_PIO_MSEL[i*2+1-:2] ==0) ? !wPEX_PIO_DIR[i] ? 1'bZ : wPEX_PIO_OUT[i] : 
+
+assign wPEX_PIN_OUT[i] =  (wPEX_PIO_MSEL[i*2+1-:2] ==0) ? !wPEX_PIO_DIR[i] ? 1'bZ : wPEX_PIO_OUT[i] : 
                           (wPEX_PIO_MSEL[i*2+1-:2] ==1) ? wPEX_OUT1[i] : 
                           (wPEX_PIO_MSEL[i*2+1-:2] ==2) ? wPEX_OUT2[i] : 
                           (wPEX_PIO_MSEL[i*2+1-:2] ==3) ? wPEX_OUT3[i] : 0;
@@ -347,9 +347,9 @@ assign wPEX_PIN_OUT[i] =
 end
 
 //assign wWM_OUT2[18]=wNINA_RX;
-assign wWM_OUT2[12]=wNINA_MOSI;
-assign wWM_OUT2[9] =wNINA_SCLK;
-assign wWM_OUT2[17]=wNINA_SS;
+assign bWM_PIO36=wNINA_MOSI;
+assign bWM_PIO29=wNINA_SCLK;
+//assign wWM_OUT2[17]=wNINA_SS;
 
 endgenerate
 
