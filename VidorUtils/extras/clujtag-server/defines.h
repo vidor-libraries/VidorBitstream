@@ -6,4 +6,4 @@
 #define TDO     29
 #define TDI     26
 
-#define ACK_STEP 1024
+#define ACK_STEP 63

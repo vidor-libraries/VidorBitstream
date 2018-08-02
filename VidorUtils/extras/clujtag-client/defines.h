@@ -1,1 +1,1 @@
-#define ACK_STEP 1024
+#define ACK_STEP 63
