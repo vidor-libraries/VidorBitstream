@@ -11,6 +11,7 @@
 #include <iptronix_16550_uart.h>
 
 #include "mb.h"
+#include "gpio.h"
 #include "uart.h"
 
 alt_u32 uart_dev_num;

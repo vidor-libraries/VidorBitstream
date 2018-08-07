@@ -124,8 +124,6 @@ void sfCmd(void)
   rpc[1] = ret;
 }
 
-#if defined(SF_USE_QSPI) && (SF_USE_QSPI == 1)
-
 /**
  * @return  MANUFACTURER ID DEVICE ID BYTE1 DEVICE ID BYTE2
  */
@@ -156,14 +154,16 @@ alt_u32 sfUniqueId(alt_u8* id)
   return 0;
 }
 
+#if defined(SF_USE_QSPI) && (SF_USE_QSPI == 1)
+
 /**
  */
 alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 {
-    alt_u32 op_value = 0; /* value to write to EPCQ_MEM_OP register */
+  alt_u32 op_value = 0; /* value to write to EPCQ_MEM_OP register */
 
-    switch(mode){
-    case 2:
+  switch(mode){
+  case 2:
     /* 64KB Block Erase 64K Block address */
 
     /* write enable */
@@ -189,7 +189,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
     }
     poll_for_wip();
     break;
-    case 3:
+  case 3:
     /* Chip Erase       Not used */
     /* write enable */
     IOWR_IPTRONIX_QSPI_CONTROLLER2_MEM_OP(QSPI_CSR_BASE,
@@ -333,40 +333,6 @@ alt_32 static poll_for_wip(void)
 #else   /* defined(SF_USE_QSPI) && (SF_USE_QSPI == 1) */
 
 /**
- * for AT25SF081 rxb must be:
- * MANUFACTURER ID 0x1F
- * DEVICE ID BYTE1 0x85
- * DEVICE ID BYTE2 0x01
- * @return for AT25SF081 0x001F8501
- */
-alt_u32 sfJedecId(void)
-{
-  alt_u8  txb[]={0x9f};
-  alt_u8  rxb[4];
-
-  spiTrc(SF_SPI_IDX, 1, txb, 3, rxb);
-
-  return (rxb[0]<<16) | (rxb[1]<<8) | (rxb[2]);
-}
-
-/**
- *
- */
-alt_u32 sfUniqueId(alt_u8* id)
-{
-  alt_u8  txb[1+4];
-
-  txb[0] = 0x4B;
-  txb[1] = 0;
-  txb[2] = 0;
-  txb[3] = 0;
-  txb[4] = 0;
-
-  spiTrc(SF_SPI_IDX, 1+4, txb, 8, id);
-  return 0;
-}
-
-/**
  * While the device is executing a successful erase cycle, the Status Register
  * can be read and will indicate that the device is busy.
  * For faster throughput, it is recommended that the Status Register be polled
@@ -390,7 +356,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
   switch(mode){
   case 0:
     // Sector Erase    4K sector address  0x020
-    adr >>= 12;
+    //adr >>= 12;
     txb[0] = 0x020;
     txb[1] = adr>>16;
     txb[2] = adr>>8;
@@ -399,7 +365,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
     break;
   case 1:
     // 32KB Block Erase 32K Block address   0x52
-    adr >>= 15;
+    //adr >>= 15;
     txb[0] = 0x52;
     txb[1] = adr>>16;
     txb[2] = adr>>8;
@@ -408,7 +374,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
     break;
   case 2:
     // 64KB Block Erase 64K Block address    0xD8
-    adr >>= 16;
+    //adr >>= 16;
     txb[0] = 0xD8;
     txb[1] = adr>>16;
     txb[2] = adr>>8;

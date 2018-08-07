@@ -34,6 +34,8 @@
   #define GFX_FB_WIDTH    640
   #define GFX_FB_HEIGHT   480
 
+  #define GFX_LOGO        1
+
   #define GFX_FONTS       0
   #define GFX_FONT_FILE   "Fonts/FreeMono12pt7b.h"
   #define GFX_FONT_NAME   FreeMono12pt7b
@@ -44,9 +46,11 @@
 #define GPIO_GPIO       0
 
 #define SF_MODULE         1
-#define SF_USE_QSPI       1
-#define SF_SF_INVERT_BIT  0
-#define SF_SECURITY_CMDS  1
+#if defined(SF_MODULE) && (SF_MODULE == 1)
+  #define SF_USE_QSPI       0
+  #define SF_INVERT_BIT     0
+  #define SF_SECURITY_CMDS  1
+#endif /* defined(SF_MODULE) && (SF_MODULE == 1) */
 
 #endif /* CONFIG_H_ */
 

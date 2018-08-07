@@ -32,7 +32,7 @@
 
 #if defined(GFX_MODULE) && (GFX_MODULE == 1)
   #include "gfx.h"
-  #define GFX_DEV  {NULL, gfxCmd, NULL, MB_DEV_GFX, 1},
+  #define GFX_DEV {NULL, gfxCmd, NULL, MB_DEV_GFX, 1},
 #else
   #define GFX_DEV
 #endif /* defined(GFX_MODULE) && (GFX_MODULE == 1) */
@@ -60,21 +60,21 @@
 
 #if defined(SDRAM_MODULE) && (SDRAM_MODULE == 1)
   #include "sdram.h"
-  #define SDRAM_DEV  {sdramInit, sdramCmd, NULL, MB_DEV_SDRAM, 1},
+  #define SDRAM_DEV {sdramInit, sdramCmd, NULL, MB_DEV_SDRAM, 1},
 #else
   #define SDRAM_DEV
 #endif /* defined(SDRAM_MODULE) && (SDRAM_MODULE == 1) */
 
 #if defined(NP_MODULE) && (NP_MODULE == 1)
   #include "np.h"
-  #define NP_DEV  {npInit, npCmd, NULL, MB_DEV_NP, NP_DEV_NUM},
+  #define NP_DEV {npInit, npCmd, NULL, MB_DEV_NP, NP_DEV_NUM},
 #else
   #define NP_DEV
 #endif /* defined(NP_MODULE) && (NP_MODULE == 1) */
 
 #if defined(ENC_MODULE) && (ENC_MODULE == 1)
   #include "enc.h"
-  #define ENC_DEV  {encInit, encCmd, NULL, MB_DEV_ENC, ENC_DEV_NUM},
+  #define ENC_DEV {encInit, encCmd, NULL, MB_DEV_ENC, ENC_DEV_NUM},
 #else
   #define ENC_DEV
 #endif /* defined(ENC_MODULE) && (ENC_MODULE == 1) */

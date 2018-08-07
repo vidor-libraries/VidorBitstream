@@ -5,7 +5,7 @@ module vision_top
   input         iRESETn,
   input         iSAM_INT,
   output        oSAM_INT,
-  
+
   // SDRAM
   output        oSDRAM_CLK,
   output [11:0] oSDRAM_ADDR,
@@ -22,7 +22,7 @@ module vision_top
   inout         bMKR_AREF,
   inout  [6:0]  bMKR_A,
   inout  [14:0] bMKR_D,
-  
+
   // Mini PCIe
   inout         bPEX_RST,
   inout         bPEX_PIN6,
@@ -79,9 +79,9 @@ module vision_top
 
   inout         bHDMI_SDA,
   inout         bHDMI_SCL,
-  
+
   input         iHDMI_HPD,
-  
+
   // MIPI input
   input  [1:0]  iMIPI_D,
   input         iMIPI_CLK,
@@ -130,7 +130,7 @@ assign wCLK8      = iCLK;
 
 // internal oscillator
 cyclone10lp_oscillator   osc
-	( 
+	(
 	.clkout(wOSC_CLK),
 	.oscena(1'b1));
 
@@ -143,7 +143,7 @@ SYSTEM_PLL PLL_inst(
 	.c2(wMEM_CLK),
    .c3(oSDRAM_CLK),
 	.c4(wFLASH_CLK),
-   
+
 	.locked());
 
 // DVI output
@@ -173,18 +173,18 @@ wire mipi_st_start,mipi_st_dv;
 wire [23:0] mipi_ste_data;
 wire mipi_ste_start,mipi_ste_dv;
 
-wire [31:0] wSAM_PIO_IN;  
-wire [31:0] wSAM_PIO_OUT; 
-wire [31:0] wSAM_PIO_DIR; 
+wire [31:0] wSAM_PIO_IN;
+wire [31:0] wSAM_PIO_OUT;
+wire [31:0] wSAM_PIO_DIR;
 wire [63:0] wSAM_PIO_MSEL;
-wire [31:0] wWM_PIO_IN;   
-wire [31:0] wWM_PIO_OUT;  
-wire [31:0] wWM_PIO_DIR; 
+wire [31:0] wWM_PIO_IN;
+wire [31:0] wWM_PIO_OUT;
+wire [31:0] wWM_PIO_DIR;
 wire [63:0] wWM_PIO_MSEL;
-wire [31:0] wPEX_PIO_IN;  
+wire [31:0] wPEX_PIO_IN;
 wire [31:0] wPEX_PIO_OUT;
 wire [31:0] wPEX_PIO_DIR;
-wire [63:0] wPEX_PIO_MSEL; 
+wire [63:0] wPEX_PIO_MSEL;
 
 wire [1:0] wIRQ_OUT;
 
@@ -261,7 +261,7 @@ vision u0(
 		.fb_st_data             (fb_st_data),       //          .data
 		.fb_st_dv               (fb_st_dv),         //          .dv
 		.fb_st_ready            (fb_st_ready),       //          .ready
-      
+
 		.mipi_st_data           (mipi_st_data),     //   mipi_st.data
 		.mipi_st_start          (mipi_st_start),    //          .start
 		.mipi_st_dv             (mipi_st_dv),       //          .dv
@@ -280,82 +280,95 @@ vision u0(
 /*
 		.nina_uart_RXD          (iWM_TX),    // nina_uart.RXD
 		.nina_uart_TXD          (wNINA_RX),    //          .TXD
-  */    
-      
-		.nina_spi_MISO          (bWM_PIO1),    //  nina_spi.MISO
+  */
+
+		.nina_spi_MISO          (wNINA_MISO),    //  nina_spi.MISO
 		.nina_spi_MOSI          (wNINA_MOSI),    //          .MOSI
 		.nina_spi_SCLK          (wNINA_SCLK),    //          .SCLK
 		.nina_spi_CS            (wNINA_SS),     //          .SS_n
+
+		.nina_uart_sin          (wNINA_TX),     //  nina_uart.sin
+		.nina_uart_sout         (wNINA_RX),    //           .sout
+		//.nina_uart_sout_oe, //           .sout_oe
 
 		.sam_pio_in             (wSAM_PIO_IN),       //   sam_pio.in
 		.sam_pio_out            (wSAM_PIO_OUT),      //          .out
 		.sam_pio_dir            (wSAM_PIO_DIR),      //          .dir
 		.sam_pio_msel           (wSAM_PIO_MSEL),     //          .msel
-      
+
 		.wm_pio_in              (wWM_PIO_IN),        //    wm_pio.in
 		.wm_pio_out             (wWM_PIO_OUT),       //          .out
 		.wm_pio_dir             (wWM_PIO_DIR),       //          .dir
 		.wm_pio_msel            (wWM_PIO_MSEL),       //          .msel
-      
+
 		.pex_pio_in             (wPEX_PIO_IN),       //   pex_pio.in
 		.pex_pio_out            (wPEX_PIO_OUT),      //          .out
 		.pex_pio_dir            (wPEX_PIO_DIR),      //          .dir
 		.pex_pio_msel           (wPEX_PIO_MSEL),     //          .msel
 		.irq_in_port            (iSAM_INT),      //        irq.in_port
 		.irq_out_port           (wIRQ_OUT),     //           .out_port
-          
+
 		.sam_pwm_pwm            (wSAM_OUT1),
-		.neopixel_data				(wSAM_OUT2[11:1]),
+		.neopixel_data				  (wSAM_OUT2[11:1]),
 		.encoder_encoder_a      ({bMKR_D[13],bMKR_D[11],bMKR_D[9],bMKR_D[7],bMKR_D[5],bMKR_D[3],bMKR_D[1],bMKR_A[6],bMKR_A[4],bMKR_A[2],bMKR_A[0]}), //    encoder.encoder_a
 		.encoder_encoder_b      ({bMKR_D[14],bMKR_D[12],bMKR_D[10],bMKR_D[8],bMKR_D[6],bMKR_D[4],bMKR_D[2],bMKR_D[0],bMKR_A[5],bMKR_A[3],bMKR_A[1]})  //           .encoder_b
 
 
 	);
 assign wSAM_OUT2[22:12] = wSAM_OUT2[11:1];
-assign oSAM_INT = wIRQ_OUT[1];
-  
-wire [31:0] wSAM_PIN_OUT,wSAM_OUT1,wSAM_OUT2,wSAM_OUT3;
-wire [31:0] wWM_PIN_OUT,wWM_OUT1,wWM_OUT2,wWM_OUT3;
-wire [31:0] wPEX_PIN_OUT,wPEX_OUT1,wPEX_OUT2,wPEX_OUT3;
+assign oSAM_INT         = wIRQ_OUT[1];
+assign wWM_OUT2[11]     = wNINA_SS;
+assign wWM_OUT2[18]     = wNINA_SCLK;
+assign wWM_OUT2[19]     = wNINA_MOSI;
+assign wWM_OUT2[16]     = wNINA_RX;
 
-assign wSAM_PIO_IN = {bMKR_D,bMKR_A,bMKR_AREF};
-assign wWM_PIO_IN = {iWM_PIO32,iWM_TX,oWM_RX,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO28,bWM_PIO27,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,oWM_RESET};
-assign wPEX_PIO_IN = {iPEX_PIN33,iPEX_PIN31,iPEX_PIN25,iPEX_PIN23,iPEX_PIN13,iPEX_PIN11,bPEX_PIN51,bPEX_PIN49,bPEX_PIN48,bPEX_PIN47,bPEX_PIN46,bPEX_PIN45,bPEX_PIN44,bPEX_PIN42,bPEX_PIN32,bPEX_PIN30,bPEX_PIN28,bPEX_PIN20,bPEX_PIN16,bPEX_PIN14,bPEX_PIN12,bPEX_PIN10,bPEX_PIN8,bPEX_PIN6,bPEX_RST};
+assign wWM_OUT1[16]     = wSAM_PIO_IN[22]; // D14 for NINA_RX in bypass
+assign wWM_OUT1[0]      = wSAM_PIO_IN[15]; // D7 for NINA_RESET in bypass
+assign wWM_OUT1[10]     = wSAM_PIO_IN[14]; // D6 for NINA_GPIO0 in bypass
 
-assign {bMKR_D,bMKR_A,bMKR_AREF}= wSAM_PIN_OUT;
-assign {oWM_RX,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO28,bWM_PIO27,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,oWM_RESET} = wWM_PIN_OUT;
-assign {bPEX_PIN51,bPEX_PIN49,bPEX_PIN48,bPEX_PIN47,bPEX_PIN46,bPEX_PIN45,bPEX_PIN44,bPEX_PIN42,bPEX_PIN32,bPEX_PIN30,bPEX_PIN28,bPEX_PIN20,bPEX_PIN16,bPEX_PIN14,bPEX_PIN12,bPEX_PIN10,bPEX_PIN8,bPEX_PIN6,bPEX_RST} = wPEX_PIN_OUT;
-genvar i;
-generate
+assign wNINA_MISO       = wWM_PIO_IN[20]; // route NINA_MISO to internal SPI
 
-for (i=0;i<31;i++) begin : genloop
-assign wSAM_PIN_OUT[i] =  (wSAM_PIO_MSEL[i*2+1-:2] ==0) ? !wSAM_PIO_DIR[i] ? 1'bZ :wSAM_PIO_OUT[i] : 
-                          (wSAM_PIO_MSEL[i*2+1-:2] ==1) ? wSAM_OUT1[i] : 
-                          (wSAM_PIO_MSEL[i*2+1-:2] ==2) ? wSAM_OUT2[i] : 
-                          (wSAM_PIO_MSEL[i*2+1-:2] ==3) ? wSAM_OUT3[i] : 0;
-
-assign wWM_PIN_OUT[i] =   (wWM_PIO_MSEL[i*2+1-:2] ==0) ? !wWM_PIO_DIR[i] ? 1'bZ : wWM_PIO_OUT[i] : 
-                          (wWM_PIO_MSEL[i*2+1-:2] ==1) ? wWM_OUT1[i] : 
-                          (wWM_PIO_MSEL[i*2+1-:2] ==2) ? wWM_OUT2[i] : 
-                          (wWM_PIO_MSEL[i*2+1-:2] ==3) ? wWM_OUT3[i] : 0;
-
-assign wPEX_PIN_OUT[i] =  (wPEX_PIO_MSEL[i*2+1-:2] ==0) ? !wPEX_PIO_DIR[i] ? 1'bZ : wPEX_PIO_OUT[i] : 
-                          (wPEX_PIO_MSEL[i*2+1-:2] ==1) ? wPEX_OUT1[i] : 
-                          (wPEX_PIO_MSEL[i*2+1-:2] ==2) ? wPEX_OUT2[i] : 
-                          (wPEX_PIO_MSEL[i*2+1-:2] ==3) ? wPEX_OUT3[i] : 0;
-
-end
-
-//assign wWM_OUT2[18]=wNINA_RX;
-assign bWM_PIO36=wNINA_MOSI;
-assign bWM_PIO29=wNINA_SCLK;
-//assign wWM_OUT2[17]=wNINA_SS;
-
-endgenerate
 
 // MIPI input
 assign bMIPI_GP[0]=1'b1;
 assign bMIPI_GP[1]=1'b1;
 
+wire        wDUMMY1,wDUMMY0;
+wire [31:0] wSAM_PIN_OUT,wSAM_OUT1,wSAM_OUT2,wSAM_OUT3;
+wire [31:0] wWM_PIN_OUT,wWM_OUT1,wWM_OUT2,wWM_OUT3;
+wire [31:0] wPEX_PIN_OUT,wPEX_OUT1,wPEX_OUT2,wPEX_OUT3;
+
+assign wSAM_PIO_IN = {bMKR_D,bMKR_A,bMKR_AREF};
+assign wWM_PIO_IN = {bWM_PIO1,bWM_PIO36,bWM_PIO29,iWM_PIO32,iWM_TX,oWM_RX,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO28,bWM_PIO27,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,oWM_RESET};
+assign wPEX_PIO_IN = {iPEX_PIN33,iPEX_PIN31,iPEX_PIN25,iPEX_PIN23,iPEX_PIN13,iPEX_PIN11,bPEX_PIN51,bPEX_PIN49,bPEX_PIN48,bPEX_PIN47,bPEX_PIN46,bPEX_PIN45,bPEX_PIN44,bPEX_PIN42,bPEX_PIN32,bPEX_PIN30,bPEX_PIN28,bPEX_PIN20,bPEX_PIN16,bPEX_PIN14,bPEX_PIN12,bPEX_PIN10,bPEX_PIN8,bPEX_PIN6,bPEX_RST};
+
+assign {bMKR_D,bMKR_A,bMKR_AREF}= wSAM_PIN_OUT;
+assign {bWM_PIO1,bWM_PIO36,bWM_PIO29,wDUMMY1,wDUMMY0,oWM_RX,bWM_PIO35,bWM_PIO34,bWM_PIO31,bWM_PIO28,bWM_PIO27,bWM_PIO21,bWM_PIO20,bWM_PIO18,bWM_PIO8,bWM_PIO7,bWM_PIO5,bWM_PIO4,bWM_PIO3,bWM_PIO2,oWM_RESET} = wWM_PIN_OUT;
+assign {bPEX_PIN51,bPEX_PIN49,bPEX_PIN48,bPEX_PIN47,bPEX_PIN46,bPEX_PIN45,bPEX_PIN44,bPEX_PIN42,bPEX_PIN32,bPEX_PIN30,bPEX_PIN28,bPEX_PIN20,bPEX_PIN16,bPEX_PIN14,bPEX_PIN12,bPEX_PIN10,bPEX_PIN8,bPEX_PIN6,bPEX_RST} = wPEX_PIN_OUT;
+genvar i;
+generate
+
+for (i=0;i<31;i++) begin : genloop
+assign wSAM_PIN_OUT[i] =  (wSAM_PIO_MSEL[i*2+1-:2] ==0) ?
+                            (i==18 && wWM_PIO_MSEL[20*2+1-:2]==1) ? wWM_PIO_IN[20] : // NINA_MISO to SAM (D10) in bypass
+                            (i==21 && wWM_PIO_MSEL[15*2+1-:2]==1) ? wWM_PIO_IN[15] : // NINA_TX to SAM (D13) in bypass
+                            (i==12 && wWM_PIO_MSEL[5*2+1-:2]==1) ? wWM_PIO_IN[5] : // ACK from NINA to SAM (D4) in bypass
+                            !wSAM_PIO_DIR[i] ? 1'bZ :wSAM_PIO_OUT[i] :
+                          (wSAM_PIO_MSEL[i*2+1-:2] ==1) ? wSAM_OUT1[i] :
+                          (wSAM_PIO_MSEL[i*2+1-:2] ==2) ? wSAM_OUT2[i] :
+                          (wSAM_PIO_MSEL[i*2+1-:2] ==3) ? wSAM_OUT3[i] : 0;
+
+assign wWM_PIN_OUT[i] =   (wWM_PIO_MSEL[i*2+1-:2] ==0) ? !wWM_PIO_DIR[i] ? 1'bZ : wWM_PIO_OUT[i] :
+                          (wWM_PIO_MSEL[i*2+1-:2] ==1) ? wWM_OUT1[i] :
+                          (wWM_PIO_MSEL[i*2+1-:2] ==2) ? wWM_OUT2[i] :
+                          (wWM_PIO_MSEL[i*2+1-:2] ==3) ? wWM_OUT3[i] : 0;
+
+assign wPEX_PIN_OUT[i] =  (wPEX_PIO_MSEL[i*2+1-:2] ==0) ? !wPEX_PIO_DIR[i] ? 1'bZ : wPEX_PIO_OUT[i] :
+                          (wPEX_PIO_MSEL[i*2+1-:2] ==1) ? wPEX_OUT1[i] :
+                          (wPEX_PIO_MSEL[i*2+1-:2] ==2) ? wPEX_OUT2[i] :
+                          (wPEX_PIO_MSEL[i*2+1-:2] ==3) ? wPEX_OUT3[i] : 0;
+
+end
+endgenerate
 
 endmodule

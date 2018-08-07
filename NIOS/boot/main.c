@@ -15,8 +15,6 @@
 #include "gpio.h"
 #include "platform.h"
 
-void cmdRx(alt_u32 cmd);
-
 #define SEC_START(section) (&_alt_partition_##section##_start)
 #define SEC_SIZE(section) (&_alt_partition_##section##_end-&_alt_partition_##section##_start)
 
@@ -51,8 +49,8 @@ int main()
   } else {
     fillRect(630, 0, 10, 10, 0x83E0);
   }
-
-  irqPinSet(0, cmdRx);
+  // start command manager
+  irqPinSet(0, platformCmd);
   intPinInit(1, 0);
 
   platformSetup();
@@ -61,12 +59,4 @@ int main()
   };
 
   return 0;
-}
-
-/**
- *
- */
-void cmdRx(alt_u32 arg)
-{
-  platformCmd();
 }

@@ -5,18 +5,14 @@
  *      Author: max
  */
 
-#include <stdio.h>
-#include <io.h>
-#include <system.h>
-#ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
-#include <altera_vic_irq.h>
-#else
-#include <sys/alt_irq.h>
-#endif
-
 #include "config.h"
 
 #if defined(GPIO_GPIO) && (GPIO_GPIO == 1)
+
+#include <stdio.h>
+#include <io.h>
+#include <sys/alt_irq.h>
+#include <system.h>
 
 #include "mb.h"
 

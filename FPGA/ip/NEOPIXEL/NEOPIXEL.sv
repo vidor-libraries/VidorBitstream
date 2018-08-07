@@ -63,8 +63,18 @@ reg [pCHANNELS-1:0][23:0] rTMP_DATA;       // temporary buffer for next pixel to
 reg [pCHANNELS-1:0]       rMASK;           // holds mask flagging which strings will be updated
 reg [pCHANNEL_BITS-1:0]   rCHAN_CNT;       // counts channels during burst accesses
 reg                       rSTART;          // start update request flag
+reg [31:0]                rSTART_ADDRESS;  // start address for the buffer to transmit
+reg [31:0]                rWRAP_ADDRESS;   // address at which the address is set at wrap
+reg [9:0]                 rWRAP_COUNT;     // count at which wrap is done
+reg [9:0]                 rLINE_LENGTH;    // length of a line (used for zig zag mode)
+reg                       rZIGZAG;         // Zig Zag mode
+reg [31:0]                rZZ_OFFSET;      // offset to add to address when moving to next line in zigzag mode
+reg [9:0]                 rHCNT;           // Zig Zag horizontal counter
+reg                       rZZSTATE;        // state of the zigzag pattern
 integer i;
 assign oDATA_BURST_COUNT = pCHANNELS;      // burst size is fixed at compile time
+
+initial rSTART_ADDRESS <= pSTART_ADDRESS;
 
 always @(posedge iCLOCK)
 begin
@@ -82,6 +92,10 @@ begin
       3: rT0H <= iCSR_WRITE_DATA;
       4: rT1H <= iCSR_WRITE_DATA;
       5: rTT <= iCSR_WRITE_DATA;
+      6: {rZIGZAG, rZZSTATE,rLINE_LENGTH,rWRAP_COUNT} <= iCSR_WRITE_DATA;
+      8: rSTART_ADDRESS <= iCSR_WRITE_DATA;
+      9: rWRAP_ADDRESS <= iCSR_WRITE_DATA;
+      10: rZZ_OFFSET <= iCSR_WRITE_DATA;
     endcase
   end
   if (iCSR_READ) begin
@@ -98,16 +112,29 @@ begin
     rINT_STATE<= eST_PRELOAD;
     rCHAN_CNT<= 0;
     oDATA_READ <= 1;
-    oDATA_ADDRESS <= pSTART_ADDRESS;
+    oDATA_ADDRESS <= rSTART_ADDRESS;
     // also reset the start flag to acknowledge we started updating
     rSTART<= 0;
+	 rHCNT <= 0;
   end
 
   // if we are reading and slave accepted burst request...
   if (oDATA_READ&&!iDATA_WAIT_REQUEST) begin
     // remove read request and increment read address by burst size
     oDATA_READ<= 0;
-    oDATA_ADDRESS <= oDATA_ADDRESS+{oDATA_BURST_COUNT,2'b0};
+    if (!rZZSTATE)
+      oDATA_ADDRESS <= oDATA_ADDRESS+{oDATA_BURST_COUNT,2'b0};
+	 else 
+      oDATA_ADDRESS <= oDATA_ADDRESS-{oDATA_BURST_COUNT,2'b0};
+	 rHCNT <= rHCNT+1;
+	 if (rZIGZAG&&rHCNT==rLINE_LENGTH) begin
+	   oDATA_ADDRESS <= oDATA_ADDRESS+rZZ_OFFSET;
+		rHCNT <= 0;
+		rZZSTATE<= !rZZSTATE;
+	 end
+    if (rSTRING_LEN==rWRAP_COUNT) 
+      oDATA_ADDRESS <= rWRAP_ADDRESS;
+	 
   end
   
   // if we are receiving data we requested...

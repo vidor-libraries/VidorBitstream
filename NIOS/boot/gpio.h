@@ -10,7 +10,7 @@
 
 #include <alt_types.h>
 
-alt_u32 irqPinSet(alt_u32 pin, void (*hook)(alt_u32));
+alt_u32 irqPinSet(alt_u32 pin, void (*hook)(void));
 int intPinInit(alt_u32 pin, int val);
 int intPinSet(alt_u32 pin, int val);
 

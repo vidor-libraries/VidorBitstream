@@ -92,11 +92,13 @@ BSP_FLAGS=" \
 --cmd add_section_mapping .rwdata onchip_memory2_0 \
 --cmd add_section_mapping .bss onchip_memory2_0 \
 --cmd add_section_mapping .heap onchip_memory2_0 \
---cmd add_section_mapping .entry iptronix_generic_quad_spi_controller2_0_avl_mem \
---cmd add_section_mapping .text iptronix_generic_quad_spi_controller2_0_avl_mem \
---cmd add_section_mapping .rodata iptronix_generic_quad_spi_controller2_0_avl_mem \
---cmd add_section_mapping .data iptronix_generic_quad_spi_controller2_0_avl_mem \
---cmd add_section_mapping .stack onchip_memory2_0  \
+--cmd add_section_mapping .entry onchip_memory2_0 \
+--cmd add_section_mapping .text onchip_memory2_0 \
+--cmd add_section_mapping .rodata onchip_memory2_0 \
+--cmd add_section_mapping .data onchip_memory2_0 \
+--cmd add_section_mapping .stack onchip_memory2_0 \
+--cmd add_section_mapping .text2 onchip_memory2_0 \
+--cmd add_section_mapping .data2 onchip_memory2_0 \
 "
 
 mkdir -p $APP_DIR

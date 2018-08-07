@@ -22,14 +22,14 @@
  *
  */
 alt_u32 irqPin;
-void (*irqHook)(alt_u32);
+void (*irqHook)(void);
 
 void irqIsr(void* isr_context, alt_u32 id);
 
 /**
  *
  */
-alt_u32 irqPinSet(alt_u32 pin, void (*hook)(alt_u32))
+alt_u32 irqPinSet(alt_u32 pin, void (*hook)(void))
 {
   alt_u32 reg;
   void* context = 0;
@@ -59,7 +59,7 @@ alt_u32 irqPinSet(alt_u32 pin, void (*hook)(alt_u32))
 void irqIsr(void* isr_context, alt_u32 id)
 {
   if (irqHook) {
-    irqHook(0);
+    irqHook();
   }
   IOWR(IRQ_BASE, PIO_EDET, 0);
 }
