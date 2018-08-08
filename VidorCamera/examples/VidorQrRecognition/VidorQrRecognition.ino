@@ -17,8 +17,12 @@ static qrPtn qrBufferPtn[MAXDIM];
 uint16_t count = 0, last;
 
 void setup() {
-  Serial.begin(115200);
-  while (!Serial) {}
+  Serial.begin(9600);
+
+  // wait for the serial monitor to open,
+  // if you are powering the board from a USB charger remove the next line
+  while (!Serial);
+
   if (!FPGA.begin()) {
     Serial.println("Initialization failed!");
     while (1) {}
