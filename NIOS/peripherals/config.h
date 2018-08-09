@@ -13,7 +13,7 @@
 /**
  *
  */
-#define FPGA_VERSION 0x01020107
+#define FPGA_VERSION 0x01020108
 
 /**
  * GPIO module
@@ -81,18 +81,19 @@
 
 /**
  * uart module
- *  0      2w
- *  1      2w rts-cts
- *  2      2w
- *  3      2w rts-cts dtr-dsr
- *  4      2w
- *  5      2w rts-cts
- *  6      2w
- *  7      2w rts-cts dtr-dsr
+ *  0      2w NINA
+ *  1      2w
+ *  2      2w rts-cts
+ *  3      2w
+ *  4      2w rts-cts dtr-dsr
+ *  5      2w
+ *  6      2w rts-cts
+ *  7      2w
+ *  8      2w rts-cts dtr-dsr
  */
-#define UART_MODULE  0
+#define UART_MODULE  1
 #if defined(UART_MODULE) && (UART_MODULE == 1)
-  #define UART_DEV_NUM 8
+  #define UART_DEV_NUM 9
   #define UART_PIN_MUX 4
   #define UART_DEV_CFG \
     /*      name  cap     tx     rx    rts    cts    dtr    dsr*/\
