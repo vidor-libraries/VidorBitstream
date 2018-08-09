@@ -202,28 +202,20 @@ alt_u32 spiTrc(alt_u32 idx, alt_u32 txl, alt_u8* txb, alt_u32 rxl, alt_u8* rxb)
     IOWR(base, SPI_CONTROL, SPI_SS_L | pDev->mode);
   }
 
-  IOWR(base, SPI_TXDATA, *txb++);
-  if (bytes > 1) {
-    IOWR(base, SPI_TXDATA, *txb++);
-    for (i = 2; i < bytes; i++) {
-      tx = *txb++;
+  for (i=0;i<bytes;i++) {
+    if (i<txl)
+      IOWR(base, SPI_TXDATA, *txb++);
+    else
+      IOWR(base, SPI_TXDATA, 0xff);
+    if (i>0) {
       while (!(IORD(base, SPI_STATUS) & SPI_STATUS_TXR));
-      rx = IORD(base, SPI_TXDATA);
-      IOWR(base, SPI_TXDATA, tx);
-      if (i-2 >= txl) {
-        *rxb++ = rx;
-        fr = 1;
-      }
-    }
-    while (!(IORD(base, SPI_STATUS) & SPI_STATUS_TXR));
-    if (fr) {
-      *rxb++ = IORD(base, SPI_TXDATA);
+      if (i>txl)
+    	*rxb++ = IORD(base, SPI_TXDATA);
     }
   }
-  while (!(IORD(base, SPI_STATUS) & SPI_STATUS_TXE)) ;
-  if (fr) {
-    *rxb++ = IORD(base, SPI_RXDATA);
-  }
+  while (!(IORD(base, SPI_STATUS) & SPI_STATUS_TXE));
+  if (rxl)
+  	*rxb++ = IORD(base, SPI_RXDATA);
 
   /* clear SS */
   if (pDev->ss_auto) {
