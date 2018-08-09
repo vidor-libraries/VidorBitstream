@@ -50,7 +50,6 @@
   #define SF_USE_QSPI       0
   #define SF_INVERT_BIT     0
   #define SF_SECURITY_CMDS  1
-  #define SF_SECURITY       1
 #endif /* defined(SF_MODULE) && (SF_MODULE == 1) */
 
 #endif /* CONFIG_H_ */
