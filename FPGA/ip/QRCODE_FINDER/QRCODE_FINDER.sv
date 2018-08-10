@@ -89,7 +89,7 @@ reg signed [10:0] rLUM_DIFF;
 reg signed [12:0] rTHRESHOLD;
 wire [19:0] wLB_RAM_DATA;
 reg [10:0] rAVL_ADDRESS;
-reg [31:0] rREADDATA;
+reg [31:0] rREAD_DATA;
 
 typedef enum {
   stNONE,
@@ -214,15 +214,15 @@ begin
   rAVL_ADDRESS <= iADDRESS;
   if (iREAD) begin
     case (iADDRESS)
-      0 : rREADDATA<= {rOUTMODE,rUPDATE}; //control
-      default: rREADDATA<=0;
+      0 : rREAD_DATA<= {rOUTMODE,rUPDATE}; //control
+      default: rREAD_DATA<=0;
     endcase
   end
   if (rREFRESH&!rUPDATE)
     rREFRESH<=0;
 end
 
-assign oREADDATA = rAVL_ADDRESS[10] ? wDETECT_DATA : rREADDATA;
+assign oREAD_DATA = rAVL_ADDRESS[10] ? wDETECT_DATA : rREAD_DATA;
 assign wLUM_DIFF = { {2{rLUM_DIFF[10]}},rLUM_DIFF[10:1]} + { {1{wLB_RAM_DATA[9]}},wLB_RAM_DATA[9:0],1'b0} + {{2{wLB_RAM_DATA[19]}},wLB_RAM_DATA[19:10]};
 always @(posedge iVID_CLK)
 begin
