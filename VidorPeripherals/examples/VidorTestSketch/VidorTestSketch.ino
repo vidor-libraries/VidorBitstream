@@ -26,7 +26,6 @@ void setup() {
   FPGA.printConfig();
 
   // Ok, so we know now that the FPGA contains the extended GPIO IP
-  // The GPIO pins controlled by the FPGA start from 100
   // Please refer to the online documentation for the actual pin assignment
   // Let's configure pin A0 to be an output, controlled by the FPGA
   FPGA.pinMode(33, OUTPUT);
