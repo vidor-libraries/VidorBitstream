@@ -33,7 +33,7 @@
 #define MB_DEV_ENC      0x0A000000
 #define MB_DEV_REG      0x0B000000
 
-static char* configToString(uint32_t cod)
+static const char* configToString(uint32_t cod)
 {
 	switch(cod){
 		case MB_DEV_SF: 	return "MB_DEV_SF";
