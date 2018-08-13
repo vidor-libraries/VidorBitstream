@@ -43,4 +43,11 @@
 
 #define NEOPIXEL_PINMUX				5
 
+// NINA signals
+#define SPIWIFI              SPIEx
+#define FPGA_NINA_GPIO0      (64 + 10)   // WM_PIO27 -> NiNa GPIO0 -> FPGA N9
+#define FPGA_SPIWIFI_RESET   (64 + 0)    // WM_RESET -> NiNa RESETN -> FPGA R1
+#define FPGA_SPIWIFI_ACK     (64 + 5)    // WM_PIO7  -> NiNa GPIO33 -> FPGA P6
+#define FPGA_SPIWIFI_SS      (64 + 11)   // WM_PIO28 -> NiNa GPIO5 -> FPGA N11
+
 #endif
