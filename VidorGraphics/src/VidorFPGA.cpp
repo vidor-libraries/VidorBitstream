@@ -17,9 +17,9 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "VidorGraphics.h"
+#include "VidorFPGA.h"
 
-VidorGraphics FPGA;
+VidorFPGA FPGA;
 
 #if 1
 __attribute__ ((used, section(".fpga_bitstream_signature")))
@@ -41,7 +41,7 @@ const unsigned char bitstream[] = {
 };
 #endif
 
-void VidorGraphics::onInterrupt() {
+void VidorFPGA::onInterrupt() {
 	// TODO: do be implemented
 }
 
