@@ -17,25 +17,43 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef __VIDOR_MAILBOX_H__
-#define __VIDOR_MAILBOX_H__
+#ifndef __VIDOR_JTAG_H__
+#define __VIDOR_JTAG_H__
+
+extern "C" {
+	#include <utility/libxsvf.h>
+}
 
 #include <Arduino.h>
 
-class VidorMailboxClass {
+class VidorJTAGClass {
 public:
-	VidorMailboxClass();
+	VidorJTAGClass();
+	virtual ~VidorJTAGClass();
 
-	int begin();
+	int begin(bool reset = false);
 	void end();
-	void reload();
 
-	int sendCommand(const uint32_t data[], size_t len);
-	int sendEvent(const uint32_t data[], size_t len);
-	int read(uint32_t address, uint32_t data[], size_t len);
-	int write(uint32_t address, const uint32_t data[], size_t len);
+	int reset();
+
+	int writeBuffer(uint32_t address, const uint32_t* data, size_t len);
+	int readBuffer(uint32_t address, uint32_t* data, size_t len);
+
+private:
+	int checkStatus();
+	int idScan();
+	int loadVirtualInstruction(uint32_t instruction);
+	int loadInstruction(uint32_t instruction);
+
+private:
+	struct libxsvf_host _libxsvfHost;
+	int _numSlaves;
+	int _numSlaveBits;
+	int _virSize;
+	int _id;
+	uint32_t _lastVIR;
 };
 
-extern VidorMailboxClass VidorMailbox;
+extern VidorJTAGClass VidorJTAG;
 
 #endif

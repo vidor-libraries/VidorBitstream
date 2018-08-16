@@ -161,8 +161,10 @@ int libxsvf_tap_walk(struct libxsvf_host *h, enum libxsvf_tap_state s)
 			LIBXSVF_HOST_REPORT_ERROR("Illegal tap state.");
 			return -1;
 		}
+#ifndef ARDUINO
 		if (h->report_tapstate)
 			LIBXSVF_HOST_REPORT_TAPSTATE();
+#endif
 		if (i>10) {
 			LIBXSVF_HOST_REPORT_ERROR("Loop in tap walker.");
 			return -1;

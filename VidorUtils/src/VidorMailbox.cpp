@@ -17,50 +17,93 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "utility/jtag.h"
+#include "VidorJTAG.h"
 
 #include "VidorMailbox.h"
 
-#define MB_BASE 0x00000000
+#define MB_BASE     0x00000000
+#define MB_INT_PIN  31
+#define MB_TIMEOUT  5000
 
 VidorMailboxClass::VidorMailboxClass() {}
 
 int VidorMailboxClass::begin()
 {
-	int ret = jtagInit();
-	mbPinSet();
+	if (!VidorJTAG.begin()) {
+		return 0;
+	}
 
-	return (ret == 0);
+	uint32_t rpc[1];
+	rpc[0] = 0;
+
+	VidorJTAG.writeBuffer(MB_BASE, rpc, 1);
+
+	pinMode(MB_INT_PIN, OUTPUT);
+	digitalWrite(MB_INT_PIN, LOW);
+
+	return 1;
 }
 
 void VidorMailboxClass::end()
 {
-	jtagDeinit();
+	VidorJTAG.end();
+
+	digitalWrite(MB_INT_PIN, LOW);
+	pinMode(MB_INT_PIN, INPUT);
 }
 
 void VidorMailboxClass::reload()
 {
-	jtagReload();
+	VidorJTAG.reset();
 }
 
-int VidorMailboxClass::sendCommand(uint32_t data[], size_t len)
+int VidorMailboxClass::sendCommand(const uint32_t data[], size_t len)
 {
-	return mbCmdSend(data, len);
+	if (write(0x00, data, len) != (int)len) {
+		return -1;
+	}
+
+	digitalWrite(MB_INT_PIN, HIGH);
+	digitalWrite(MB_INT_PIN, LOW);
+
+	for (unsigned long start = millis(); (millis() - start) < MB_TIMEOUT;) {
+		uint32_t result;
+		read(0x00, &result, 1);
+
+		if (result == 0) {
+			read(0x01, &result, 1);
+
+			return result;
+		}
+	}
+
+	return -1;
 }
 
-int VidorMailboxClass::sendEvent(uint32_t data[], size_t len)
+int VidorMailboxClass::sendEvent(const uint32_t data[], size_t len)
 {
-	return mbEveSend(data, len);
+	if (write(0x00, data, len) != (int)len) {
+		return -1;
+	}
+
+	digitalWrite(MB_INT_PIN, HIGH);
+	digitalWrite(MB_INT_PIN, LOW);
+
+	return len;
 }
 
 int VidorMailboxClass::read(uint32_t address, uint32_t data[], size_t len)
 {
-	return mbRead(MB_BASE + address, (uint8_t*)data, len);
+	for (size_t i = 0; i < len; i++) {
+		VidorJTAG.readBuffer(MB_BASE + address + i, &data[i], 1);
+	}
+
+	return len;
 }
 
 int VidorMailboxClass::write(uint32_t address, const uint32_t data[], size_t len)
 {
-	return mbWrite(MB_BASE + address, (const uint8_t*)data, len);
+	return VidorJTAG.writeBuffer(MB_BASE + address, data, len);
 }
 
 VidorMailboxClass VidorMailbox;

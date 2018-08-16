@@ -1,16 +1,16 @@
 #include <VidorBoot.h>
 #include <VidorUtils.h>
-#include <utility/jtag.h>
+#include <VidorJTAG.h>
 
 void setup() {
   // Enable FPGA clock
   enableFpgaClock();
 
   // Initialize JTAG interface
-  jtagInit();
+  VidorJTAG.begin();
 
   // Triggers a reload; this way Boot bitstream is surely running (even if another bitstream was running from RAM)
-  jtagReload();
+  VidorJTAG.reset();
 }
 
 void loop() {

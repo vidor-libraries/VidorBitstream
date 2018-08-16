@@ -21,11 +21,13 @@
 #ifndef LIBXSVF_H
 #define LIBXSVF_H
 
+#ifndef ARDUINO
 enum libxsvf_mode {
 	LIBXSVF_MODE_SVF = 1,
 	LIBXSVF_MODE_XSVF = 2,
 	LIBXSVF_MODE_SCAN = 3
 };
+#endif
 
 enum libxsvf_tap_state {
 	/* Special States */
@@ -50,6 +52,7 @@ enum libxsvf_tap_state {
 	LIBXSVF_TAP_IRUPDATE = 16
 };
 
+#ifndef ARDUINO
 enum libxsvf_mem {
 	LIBXSVF_MEM_XSVF_TDI_DATA = 0,
 	LIBXSVF_MEM_XSVF_TDO_DATA = 1,
@@ -89,8 +92,10 @@ enum libxsvf_mem {
 	LIBXSVF_MEM_SVF_TIR_RET_MASK = 35,
 	LIBXSVF_MEM_NUM = 36
 };
+#endif
 
 struct libxsvf_host {
+#ifndef ARDUINO
 	int (*setup)(struct libxsvf_host *h);
 	int (*shutdown)(struct libxsvf_host *h);
 	void (*udelay)(struct libxsvf_host *h, long usecs, int tms, long num_tck);
@@ -105,10 +110,14 @@ struct libxsvf_host {
 	void (*report_status)(struct libxsvf_host *h, const char *message);
 	void (*report_error)(struct libxsvf_host *h, const char *file, int line, const char *message);
 	void *(*realloc)(struct libxsvf_host *h, void *ptr, int size, enum libxsvf_mem which);
+#endif
 	enum libxsvf_tap_state tap_state;
+#ifndef ARDUINO
 	void *user_data;
+#endif
 };
 
+#ifndef ARDUINO
 int libxsvf_play(struct libxsvf_host *, enum libxsvf_mode mode);
 const char *libxsvf_state2str(enum libxsvf_tap_state tap_state);
 const char *libxsvf_mem2str(enum libxsvf_mem which);
@@ -117,9 +126,28 @@ const char *libxsvf_mem2str(enum libxsvf_mem which);
 int libxsvf_svf(struct libxsvf_host *h);
 int libxsvf_xsvf(struct libxsvf_host *h);
 int libxsvf_scan(struct libxsvf_host *h);
+#endif
 int libxsvf_tap_walk(struct libxsvf_host *, enum libxsvf_tap_state);
 
 /* Host accessor macros (see README) */
+#ifdef ARDUINO
+
+#ifdef __cplusplus
+extern "C"{
+#endif // __cplusplus
+	extern int jtag_host_setup();
+	extern int jtag_host_shutdown();
+	extern void jtag_host_pulse_tck(int tms);
+#ifdef __cplusplus
+};
+#endif // __cplusplus
+
+#define LIBXSVF_HOST_SETUP() jtag_host_setup()
+#define LIBXSVF_HOST_SHUTDOWN() jtag_host_shutdown()
+#define LIBXSVF_HOST_PULSE_TCK(_tms, _tdi, _tdo, _rmask, _sync) { (void)h; jtag_host_pulse_tck(_tms); }
+#define LIBXSVF_HOST_REPORT_TAPSTATE()
+#define LIBXSVF_HOST_REPORT_ERROR(_msg)
+#else
 #define LIBXSVF_HOST_SETUP() h->setup(h)
 #define LIBXSVF_HOST_SHUTDOWN() h->shutdown(h)
 #define LIBXSVF_HOST_UDELAY(_usecs, _tms, _num_tck) h->udelay(h, _usecs, _tms, _num_tck)
@@ -134,6 +162,7 @@ int libxsvf_tap_walk(struct libxsvf_host *, enum libxsvf_tap_state);
 #define LIBXSVF_HOST_REPORT_STATUS(_msg) do { if (h->report_status) h->report_status(h, _msg); } while (0)
 #define LIBXSVF_HOST_REPORT_ERROR(_msg) h->report_error(h, __FILE__, __LINE__, _msg)
 #define LIBXSVF_HOST_REALLOC(_ptr, _size, _which) h->realloc(h, _ptr, _size, _which)
+#endif
 
 #endif
 
