@@ -22,7 +22,7 @@
 
 // Defines for fpga_bitstream_signature section
 
-#include "jtag.h"
+#include "utility/jtag.h"
 
 #define no_data		0xFF, 0xFF, 0xFF, 0xFF, \
 					0xFF, 0xFF, 0xFF, 0xFF, \
