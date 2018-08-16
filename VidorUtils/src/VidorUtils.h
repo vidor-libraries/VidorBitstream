@@ -33,6 +33,9 @@
 #define NO_APP				no_data
 #define NO_USER_DATA		no_data
 
+__attribute__((weak)) void enableFpgaClock() {}
+__attribute__((weak)) void disableFpgaClock() {}
+
 class VidorUtils {
 public:
 	VidorUtils();

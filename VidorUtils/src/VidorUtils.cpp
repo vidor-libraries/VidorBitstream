@@ -19,9 +19,6 @@
 
 #include "VidorUtils.h"
 
-__attribute__((weak)) void enableFpgaClock() {}
-__attribute__((weak)) void disableFpgaClock() {}
-
 VidorUtils::VidorUtils() {}
 
 int VidorUtils::begin(bool jumpToApp)
