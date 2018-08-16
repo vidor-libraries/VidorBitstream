@@ -48,6 +48,7 @@ static const char* configToString(uint32_t cod)
 		case MB_DEV_ENC: 	return "MB_DEV_ENC";
 		case MB_DEV_NP: 	return "MB_DEV_NP";
 		case MB_DEV_REG: 	return "MB_DEV_REG";
+		default: 			return "";
 	}
 }
 
