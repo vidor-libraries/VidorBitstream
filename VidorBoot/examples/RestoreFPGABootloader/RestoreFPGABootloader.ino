@@ -1,5 +1,6 @@
-#include "VidorBoot.h"
-#include "VidorUtils.h"
+#include <VidorBoot.h>
+#include <VidorUtils.h>
+#include <utility/jtag.h>
 
 void setup() {
   // Enable FPGA clock
@@ -13,6 +14,4 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
 }
