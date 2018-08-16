@@ -17,36 +17,50 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#include "utility/jtag.h"
+
 #include "VidorMailbox.h"
 
-#include "VidorUtils.h"
+#define MB_BASE 0x00000000
 
-VidorUtils::VidorUtils() {}
+VidorMailboxClass::VidorMailboxClass() {}
 
-int VidorUtils::begin(bool jumpToApp)
+int VidorMailboxClass::begin()
 {
-	// Start clocking the FPGA; this function is declared weak and can be overridden
-	// with a custom implementation (or can be left untouched if FPGA is clocked internally)
-	enableFpgaClock();
+	int ret = jtagInit();
+	mbPinSet();
 
-	int ret = VidorMailbox.begin();
-
-	if (ret == 1 && jumpToApp) {
-		uint32_t evt[1];
-		evt[0] = 0 | 3;
-		VidorMailbox.sendEvent(evt, 1);
-	}
-
-	return ret;
+	return (ret == 0);
 }
 
-void VidorUtils::end()
+void VidorMailboxClass::end()
 {
-	VidorMailbox.end();
-	disableFpgaClock();
+	jtagDeinit();
 }
 
-void VidorUtils::reload()
+void VidorMailboxClass::reload()
 {
-	VidorMailbox.reload();
+	jtagReload();
 }
+
+int VidorMailboxClass::sendCommand(uint32_t data[], size_t len)
+{
+	return mbCmdSend(data, len);
+}
+
+int VidorMailboxClass::sendEvent(uint32_t data[], size_t len)
+{
+	return mbEveSend(data, len);
+}
+
+int VidorMailboxClass::read(uint32_t address, uint32_t data[], size_t len)
+{
+	return mbRead(MB_BASE + address, (uint8_t*)data, len);
+}
+
+int VidorMailboxClass::write(uint32_t address, const uint32_t data[], size_t len)
+{
+	return mbWrite(MB_BASE + address, (const uint8_t*)data, len);
+}
+
+VidorMailboxClass VidorMailbox;

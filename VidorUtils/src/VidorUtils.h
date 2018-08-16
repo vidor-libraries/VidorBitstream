@@ -20,8 +20,6 @@
 #ifndef __VIDOR_UTILS_H__
 #define __VIDOR_UTILS_H__
 
-#include "utility/jtag.h"
-
 // Defines for fpga_bitstream_signature section
 #define no_data		0xFF, 0xFF, 0xFF, 0xFF, \
 					0xFF, 0xFF, 0xFF, 0xFF, \

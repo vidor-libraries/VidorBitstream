@@ -20,9 +20,8 @@
 #ifndef _VIDOR_GFX_H
 #define _VIDOR_GFX_H
 
+#include <Arduino.h>
 
-#include "Arduino.h"
-#include "VidorUtils.h"
 #include "defines.h"
 
 #define VIDOR_WEIGHT 640

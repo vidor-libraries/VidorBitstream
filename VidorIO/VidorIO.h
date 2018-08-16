@@ -17,7 +17,7 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "VidorUtils.h"
+#include "VidorMailbox.h"
 #include "defines.h"
 
 #ifndef __VIDOR_IO_H__
@@ -34,7 +34,7 @@ class VidorIO {
 
 public:
 	static void pinMode(uint32_t pin, uint32_t mode) {
-		uint32_t rpc[256];
+		uint32_t rpc[3];
 		rpc[0] = MB_DEV_GPIO | 0x01;
 		rpc[1] = pin;
 
@@ -48,41 +48,39 @@ public:
 			default:
 				rpc[2] = mode;
 		}
-		mbCmdSend(rpc, 3);
+		VidorMailbox.sendCommand(rpc, 3);
 	}
 
 	static void digitalWrite(uint32_t pin, uint32_t mode) {
-		uint32_t rpc[256];
+		uint32_t rpc[3];
 		rpc[0] = MB_DEV_GPIO | 0x02;
 		rpc[1] = pin;
 		rpc[2] = mode;
-		mbCmdSend(rpc, 3);
+		VidorMailbox.sendCommand(rpc, 3);
 	}
 
 	static int digitalRead(uint32_t pin) {
-		uint32_t rpc[256];
+		uint32_t rpc[2];
 		rpc[0] = MB_DEV_GPIO | 0x03;
 		rpc[1] = pin;
-		return mbCmdSend(rpc, 2);
+		return VidorMailbox.sendCommand(rpc, 2);
 	}
 
 	static int period;
 
 	static void analogWriteResolution(int bits, int frequency) {
-
-		uint32_t rpc[256];
+		uint32_t rpc[3];
 		period = 2 << bits;
 		int prescaler = (2 * F_CPU / frequency) / period;
 
 		rpc[0] = MB_DEV_GPIO | 0x04;
 		rpc[1] = prescaler;    // prescaler
 		rpc[2] =  period;    // period
-		mbCmdSend(rpc, 3);
+		VidorMailbox.sendCommand(rpc, 3);
 	}
 
 	static void analogWrite(uint32_t pin, uint32_t mode) {
-
-		uint32_t rpc[256];
+		uint32_t rpc[4];
 
 		if (period == -1) {
 			// sane default
@@ -93,7 +91,7 @@ public:
 		rpc[1] = pin;
 		rpc[2] = mode;
 		rpc[3] = period - mode;
-		mbCmdSend(rpc, 4);
+		VidorMailbox.sendCommand(rpc, 4);
 	}
 
 	/* I2C functions */
@@ -126,20 +124,20 @@ set_scl:
 i2c_apply:
 		uint32_t rpc[1];
 		rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x01;
-		return mbCmdSend(rpc, 1);
+		return VidorMailbox.sendCommand(rpc, 1);
 	}
 
 	static void setI2CClock(int index, int baud) {
 		uint32_t rpc[2];
 		rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x02;
 		rpc[1] = baud;
-		mbCmdSend(rpc, 2);
+		VidorMailbox.sendCommand(rpc, 2);
 	}
 
 	static void disableI2C(int index) {
 		uint32_t rpc[1];
 		rpc[0] = MB_DEV_I2C | ((index & 0x0F)<<20) | 0x03;
-		mbCmdSend(rpc, 1);
+		VidorMailbox.sendCommand(rpc, 1);
 	}
 
 	/* UART functions */
@@ -163,35 +161,35 @@ i2c_apply:
 	static void disableUART(int index) {}
 
 	static uint8_t readUART(int index) {
-		uint32_t rpc[256];
+		uint32_t rpc[1];
 		rpc[0] = MB_DEV_UART | ((index & 0x0F)<<20) | 0x04;
-		return mbCmdSend(rpc, 1);
+		return VidorMailbox.sendCommand(rpc, 1);
 	}
 
 	static uint8_t readUART(int index, uint8_t* buf, size_t howMany) {
 		uint32_t rpc[256];
 		rpc[0] = MB_DEV_UART | ((index & 0x0F)<<20) | 0x05;
 		rpc[1] = howMany;
-		mbCmdSend(rpc, 2);
+		VidorMailbox.sendCommand(rpc, 2);
 		size_t i;
 		for( i=0; i<1+(howMany+3)/4; i++) {
-			jtagReadBuffer(MB_BASE+2+i, (uint8_t*)&rpc[2+i], 1);
+			VidorMailbox.read(2+i, &rpc[2+i], 1);
 		}
 		memcpy(buf, &rpc[2], howMany);
 		return 0;
 	}
 
 	static uint8_t availableUART(int index) {
-		uint32_t rpc[256];
+		uint32_t rpc[1];
 		rpc[0] = MB_DEV_UART | ((index & 0x0F)<<20) | 0x06;
-		return mbCmdSend(rpc, 1);
+		return VidorMailbox.sendCommand(rpc, 1);
 	}
 
 	static void writeUART(int index, uint8_t data) {
-		uint32_t rpc[256];
+		uint32_t rpc[2];
 		rpc[0] = MB_DEV_UART | ((index & 0x0F)<<20) | 0x07;
 		rpc[1] = data;
-		mbCmdSend(rpc, 2);
+		VidorMailbox.sendCommand(rpc, 2);
 	}
 
 	static void writeUART(int index, uint8_t* buf, size_t howMany) {
@@ -199,7 +197,7 @@ i2c_apply:
 		rpc[0] = MB_DEV_UART | ((index & 0x0F)<<20) | 0x08;
 		rpc[1] = howMany;
 		rpc[2] = (uint32_t)buf;
-		mbCmdSend(rpc, 2+(rpc[1]+3)/4);
+		VidorMailbox.sendCommand(rpc, 2+(rpc[1]+3)/4);
 	}
 
 	static void flushUART(int index) {}
@@ -248,7 +246,7 @@ enable_spi:
 		uint32_t rpc[2];
 		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x01;
 		rpc[1] = index;
-		mbCmdSend(rpc, 2);
+		VidorMailbox.sendCommand(rpc, 2);
 	}
 
 	static void setSPIMode(int index, int baud, int mode, int bitOrder) {
@@ -257,13 +255,13 @@ enable_spi:
 		rpc[1] = baud * 2;
 		rpc[2] = 0;
 		rpc[3] = 0;
-		mbCmdSend(rpc, 4);
+		VidorMailbox.sendCommand(rpc, 4);
 	}
 
 	static void disableSPI(int index) {
 		uint32_t rpc[1];
  		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x03;
- 		mbCmdSend(rpc, 2);
+ 		VidorMailbox.sendCommand(rpc, 1);
 	}
 
 	static uint8_t transferDataSPI(int index, uint8_t* buf, size_t howMany) {
@@ -275,22 +273,15 @@ enable_spi:
 		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x04;
 		rpc[1] = howMany;
 		memcpy(&rpc[2], buf, howMany);
-		int ret = mbCmdSend(rpc, 2+(rpc[1]+3)/4);
+		int ret = VidorMailbox.sendCommand(rpc, 2+(rpc[1]+3)/4);
 
-		jtagReadBuffer(MB_BASE+2, (uint8_t*)&rpc[2], (howMany+3)/4);
+		VidorMailbox.read(2, &rpc[2], (howMany+3)/4);
 		memcpy(buf, &rpc[2], howMany);
 
 		return 0;
 	}
 
 	static uint8_t transferDataSPI(int index, uint8_t data) {
-		/*
-		uint32_t rpc[256];
-		rpc[0] = MB_DEV_SPI | ((index & 0x0F)<<20) | 0x05;
-		rpc[1] = data;
-		uint8_t ret = mbCmdSend(rpc, 2);
-		return ret;
-		*/
 		transferDataSPI(index, &data, 1);
 		return data;
 	}

@@ -23,7 +23,6 @@
 #include "Stream.h"
 #include "RingBuffer.h"
 #include "defines.h"
-#include "VidorIO.h"
 
  // WIRE_HAS_END means Wire has end()
 #define WIRE_HAS_END 1

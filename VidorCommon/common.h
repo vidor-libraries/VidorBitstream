@@ -20,7 +20,8 @@
 #ifndef __COMMON_VIDOR_H__
 #define __COMMON_VIDOR_H__
 
-#define MB_BASE         0x00000000
+#include <stdint.h>
+
 #define MB_DEV_SF       0x01000000
 #define MB_DEV_GPIO     0x02000000
 #define MB_DEV_GFX      0x03000000

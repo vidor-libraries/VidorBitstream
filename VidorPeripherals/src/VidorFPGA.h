@@ -81,7 +81,7 @@ public:
 			// wait one second to make sure jump was ok
 			delay(1000);
 			// reinitilize jtag chain
-			jtagInit();
+			VidorMailbox.begin();
 		}
 
 		return ret;
@@ -92,29 +92,29 @@ public:
 	}
 
 	uint32_t version() {
-		uint32_t ptr[1];
+		uint32_t rpc[1];
 		uint32_t ver;
 
-		ptr[0] = 0 | 1;
-		ver = mbCmdSend(ptr, 1);
+		rpc[0] = 0 | 1;
+		ver = VidorMailbox.sendCommand(rpc, 1);
 		return ver;
 	}
 
 	uint32_t printConfig(void)
 	{
-		uint32_t ptr[1];
+		uint32_t rpc[1];
 		sFpgaCfg cfg;
 		char str[64];
 
-		ptr[0] = 0 | 2;
-		mbCmdSend(ptr, 1);
-		mbRead(1, &cfg, (sizeof(cfg)+3)/4);
+		rpc[0] = 0 | 2;
+		VidorMailbox.sendCommand(rpc, 1);
+		VidorMailbox.read(1, (uint32_t*)&cfg, (sizeof(cfg)+3)/4);
 
 		int i;
-		sprintf(str, "number of devices %d", cfg.num);
+		sprintf(str, "number of devices %u", cfg.num);
 		Serial.println(str);
 		for(i=0; i<cfg.num; i++){
-			sprintf(str, "%d %08X %s", cfg.dev[i].num, cfg.dev[i].cod, configToString(cfg.dev[i].cod));
+			sprintf(str, "%u %08X %s", cfg.dev[i].num, cfg.dev[i].cod, configToString(cfg.dev[i].cod));
 			Serial.println(str);
 		}
 		return 0;

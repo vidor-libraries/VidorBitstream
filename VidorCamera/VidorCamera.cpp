@@ -17,6 +17,9 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#include "VidorI2C.h"
+#include "VidorMailbox.h"
+
 #include "VidorCamera.h"
 
 VidorCamera::VidorCamera(){
@@ -104,7 +107,6 @@ int VidorCamera::write(uint8_t address, uint16_t reg, uint8_t data) {
 }
 
 int VidorCamera::read(uint8_t address, uint16_t reg, uint8_t* data, uint8_t len) {
-  int ret;
   WireEx.beginTransmission(address);
   WireEx.write((uint8_t)(reg>>8));
   WireEx.write((uint8_t)(reg));
@@ -191,34 +193,34 @@ int VidorCamera::set_virtual_channel(int channel) {
 }
 
 void VidorQR::enable(uint8_t on) {
-  uint32_t ptr[2];
-  ptr[0] = MB_DEV_QR | 1;
-  ptr[1] = on;
-  mbCmdSend(ptr, 2);
+  uint32_t rpc[2];
+  rpc[0] = MB_DEV_QR | 1;
+  rpc[1] = on;
+  VidorMailbox.sendCommand(rpc, 2);
 }
 
 void VidorQR::setMode(uint8_t mode) {
-  uint32_t ptr[2];
-  ptr[0] = MB_DEV_QR | 2;
-  ptr[1] = mode;
-  mbCmdSend(ptr, 2);
+  uint32_t rpc[2];
+  rpc[0] = MB_DEV_QR | 2;
+  rpc[1] = mode;
+  VidorMailbox.sendCommand(rpc, 2);
 }
 
 int VidorQR::readQRCode(void){
-  uint32_t ptr[1];
-  ptr[0] = MB_DEV_QR | 3;
-  int ret = mbCmdSend(ptr, 1);
+  uint32_t rpc[1];
+  rpc[0] = MB_DEV_QR | 3;
+  int ret = VidorMailbox.sendCommand(rpc, 1);
   if (ret) {
-	  return 0;
+    return 0;
   } else {
-    mbRead(2, &qr, (sizeof(sQrDet) + 3) / 4);
+    VidorMailbox.read(2, (uint32_t*)&qr, (sizeof(sQrDet) + 3) / 4);
     return 1;
   }
 }
 
 void VidorQR::setThr(uint8_t thr){
-  uint32_t ptr[2];
-  ptr[0] = MB_DEV_QR | 4;
-  ptr[1] = thr;
-  mbCmdSend(ptr, 2);
+  uint32_t rpc[2];
+  rpc[0] = MB_DEV_QR | 4;
+  rpc[1] = thr;
+  VidorMailbox.sendCommand(rpc, 2);
 }

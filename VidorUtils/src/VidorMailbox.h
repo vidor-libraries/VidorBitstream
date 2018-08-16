@@ -1,5 +1,5 @@
 /*
-  This file is part of the VidorPeripherals/VidorGraphics library.
+  This file is part of the VidorBoot/VidorPeripherals/VidorGraphics library.
   Copyright (c) 2018 Arduino SA. All rights reserved.
 
   This library is free software; you can redistribute it and/or
@@ -17,21 +17,25 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef _VIDOR_ENC_H
-#define _VIDOR_ENC_H
+#ifndef __VIDOR_MAILBOX_H__
+#define __VIDOR_MAILBOX_H__
 
-#include "Arduino.h"
-#include "defines.h"
+#include <Arduino.h>
 
-class VidorEncoder {
-  public:
-    VidorEncoder(int index);
-    void write(int32_t p);
-    int32_t read();
-  protected:
-    int32_t offset = 0;
-    int idx;
+class VidorMailboxClass {
+public:
+	VidorMailboxClass();
+
+	int begin();
+	void end();
+	void reload();
+
+	int sendCommand(uint32_t data[], size_t len);
+	int sendEvent(uint32_t data[], size_t len);
+	int read(uint32_t address, uint32_t data[], size_t len);
+	int write(uint32_t address, const uint32_t data[], size_t len);
 };
 
+extern VidorMailboxClass VidorMailbox;
 
-#endif //_VIDOR_ENC_H
+#endif

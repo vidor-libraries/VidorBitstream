@@ -17,8 +17,10 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "Vidor_NeoPixel.h"
 #include "VidorIO.h"
+#include "VidorMailbox.h"
+
+#include "Vidor_NeoPixel.h"
 
 Vidor_NeoPixel::Vidor_NeoPixel(uint16_t howMany, uint8_t pin, uint8_t type) {
 
@@ -29,7 +31,7 @@ Vidor_NeoPixel::Vidor_NeoPixel(uint16_t howMany, uint8_t pin, uint8_t type) {
 
 uint32_t Vidor_NeoPixel::begin()
 {
-  uint32_t ptr[4];
+  uint32_t rpc[4];
 
   switch (pin) {
 #ifdef NEOPIXEL_PIN_0
@@ -100,14 +102,14 @@ uint32_t Vidor_NeoPixel::begin()
     pinModeExtended(pin + 132 + 8, NEOPIXEL_PINMUX);
   }
 
-  ptr[0] = MB_DEV_NP | 1;
-  ptr[1] = msk & 0x007FFFFF;
-  ptr[2] = howMany;
-  ptr[3] = type;
+  rpc[0] = MB_DEV_NP | 1;
+  rpc[1] = msk & 0x007FFFFF;
+  rpc[2] = howMany;
+  rpc[3] = type;
 
   init = true;
 
-  return mbCmdSend(ptr, 4);
+  return VidorMailbox.sendCommand(rpc, 4);
 }
 
 uint32_t Vidor_NeoPixel::setPin(uint8_t pin) {
@@ -126,16 +128,16 @@ uint32_t Vidor_NeoPixel::setPixelColor(uint16_t n, uint32_t red, uint32_t green,
     begin();
   }
 
-  uint32_t ptr[6];
+  uint32_t rpc[6];
 
-  ptr[0] = MB_DEV_NP | ((index & 0x0F)<<20) | 2;
-  ptr[1] = n;
-  ptr[2] = red;
-  ptr[3] = green;
-  ptr[4] = blue;
-  ptr[5] = white;
+  rpc[0] = MB_DEV_NP | ((index & 0x0F)<<20) | 2;
+  rpc[1] = n;
+  rpc[2] = red;
+  rpc[3] = green;
+  rpc[4] = blue;
+  rpc[5] = white;
 
-  return mbCmdSend(ptr, 6);
+  return VidorMailbox.sendCommand(rpc, 6);
 }
 
 /**
@@ -148,12 +150,12 @@ uint32_t Vidor_NeoPixel::setBrightness(uint16_t brg)
     begin();
   }
 
-  uint32_t ptr[2];
+  uint32_t rpc[2];
 
-  ptr[0] = MB_DEV_NP | ((index & 0x0F)<<20) | 3;
-  ptr[1] = brg;
+  rpc[0] = MB_DEV_NP | ((index & 0x0F)<<20) | 3;
+  rpc[1] = brg;
 
-  return mbCmdSend(ptr, 2);
+  return VidorMailbox.sendCommand(rpc, 2);
 }
 
 /**
@@ -166,11 +168,11 @@ uint32_t Vidor_NeoPixel::show(void)
     begin();
   }
 
-  uint32_t ptr[1];
+  uint32_t rpc[1];
 
-  ptr[0] = MB_DEV_NP | 4;
+  rpc[0] = MB_DEV_NP | 4;
 
-  return mbCmdSend(ptr, 1);
+  return VidorMailbox.sendCommand(rpc, 1);
 }
 
 /**

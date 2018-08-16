@@ -19,10 +19,14 @@
  */
 
 extern "C" {
-#include <string.h>
+  #include <string.h>
 }
 
 #include <Arduino.h>
+
+#include "VidorIO.h"
+#include "VidorMailbox.h"
+
 #include "VidorI2C.h"
 
 VidorTwoWire::VidorTwoWire(int index,int _scl,int _sda)
@@ -71,13 +75,13 @@ uint8_t VidorTwoWire::requestFrom(uint8_t address, size_t quantity, bool stopBit
   rpc[0] = MB_DEV_I2C | ((idx & 0x0F)<<20) | 0x05;
   rpc[1] = address;
   rpc[2] = quantity;
-  ret = mbCmdSend(rpc, 3);
+  ret = VidorMailbox.sendCommand(rpc, 3);
   if (ret) {
     return 0;
   }
 
   for(i=0; i<1+(quantity+3)/4; i++){
-    jtagReadBuffer(MB_BASE+2+i, (uint8_t*)&rpc[2+i], 1);
+    VidorMailbox.read(2+i, &rpc[2+i], 1);
   }
 
   ptr = (uint8_t*)&rpc[3];
@@ -117,7 +121,7 @@ uint8_t VidorTwoWire::endTransmission(bool stopBit)
     *ptr = txBuffer.read_char();
     ptr++;
   }
-  ret = mbCmdSend(rpc, 3+(rpc[2]+3)/4);
+  ret = VidorMailbox.sendCommand(rpc, 3+(rpc[2]+3)/4);
   if (ret) {
     return 3;
   }

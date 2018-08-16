@@ -82,9 +82,9 @@ int jtagWriteBuffer(unsigned int address, const uint8_t* data, size_t len);
 int jtagReadBuffer(unsigned int address, uint8_t* data, size_t len);
 void jtagDeinit(void);
 int mbPinSet(void);
-int mbCmdSend(uint32_t* data, int len);
-int mbEveSend(uint32_t* data, int len);
-int mbWrite(uint32_t address, void* data, int len);
+int mbCmdSend(const uint32_t* data, int len);
+int mbEveSend(const uint32_t* data, int len);
+int mbWrite(uint32_t address, const void* data, int len);
 int mbRead(uint32_t address, void* data, int len);
 #ifdef __cplusplus
 }

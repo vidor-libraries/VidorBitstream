@@ -668,7 +668,7 @@ int mbPinSet(void)
 #endif
 }
 
-int mbEveSend(uint32_t* data, int len)
+int mbEveSend(const uint32_t* data, int len)
 {
  long start;
  int ret;
@@ -689,7 +689,7 @@ int mbEveSend(uint32_t* data, int len)
 /**
  * Sends len words (32 bit) via messagebox
  */
-int mbCmdSend(uint32_t* data, int len)
+int mbCmdSend(const uint32_t* data, int len)
 {
   long start;
   int ret;
@@ -721,7 +721,7 @@ int mbCmdSend(uint32_t* data, int len)
 /**
  * Writes len words (32 bit) via messagebox at a specified address
  */
-int mbWrite(uint32_t address, void* data, int len)
+int mbWrite(uint32_t address, const void* data, int len)
 {
   jtagWriteBuffer(MB_BASE + address, (const uint8_t *)data, len);
   return 0;

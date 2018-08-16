@@ -20,10 +20,9 @@
 #ifndef _VIDOR_CAM_H
 #define _VIDOR_CAM_H
 
+#include <Arduino.h>
 
-#include "Arduino.h"
 #include "defines.h"
-#include "VidorI2C.h"
 #include "Vidor_GFX.h"
 
 

@@ -21,7 +21,6 @@
 #define _VIDOR_NEOPIX_H
 
 #include "Arduino.h"
-#include "VidorUtils.h"
 #include "defines.h"
 
 #ifndef ADAFRUIT_NEOPIXEL_H
