@@ -9,6 +9,7 @@ declare -a libs=("FPGA_GFX_COUNT" "FPGA_SPI_INTERFACES_COUNT" "FPGA_I2C_INTERFAC
 declare -a folders=("Vidor_GFX" "VidorSPI" "VidorI2C" "VidorUART" "VidorEncoder" "VidorNeopixel" "VidorCamera")
 
 mkdir -p ./distrib/$LIB_NAME/
+rm -rf ./distrib/$LIB_NAME/*
 
 cp -a $LIB_NAME/* ./distrib/$LIB_NAME/.
 
