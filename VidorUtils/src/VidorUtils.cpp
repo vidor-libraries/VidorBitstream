@@ -17,29 +17,38 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef __VIDOR_UTILS_H__
-#define __VIDOR_UTILS_H__
+#include "VidorUtils.h"
 
-#include "utility/jtag.h"
+__attribute__((weak)) void enableFpgaClock() {}
+__attribute__((weak)) void disableFpgaClock() {}
 
-// Defines for fpga_bitstream_signature section
-#define no_data		0xFF, 0xFF, 0xFF, 0xFF, \
-					0xFF, 0xFF, 0xFF, 0xFF, \
-					0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, \
-					0xFF, 0xFF, 0xFF, 0xFF, \
-					0x00, 0x00, 0x00, 0x00  \
+VidorUtils::VidorUtils() {}
 
-#define NO_BOOTLOADER		no_data
-#define NO_APP				no_data
-#define NO_USER_DATA		no_data
+int VidorUtils::begin(bool jumpToApp)
+{
+	// Start clocking the FPGA; this function is declared weak and can be overridden
+	// with a custom implementation (or can be left untouched if FPGA is clocked internally)
+	enableFpgaClock();
 
-class VidorUtils {
-public:
-	VidorUtils();
+	int ret = jtagInit();
+	mbPinSet();
 
-	int begin(bool jumpToApp = true);
-	void end();
-	void reload();
-};
+	if (ret == 0 && jumpToApp) {
+		uint32_t ptr[1];
+		ptr[0] = 0 | 3;
+		mbEveSend(ptr, 1);
+	}
 
-#endif
+	return (ret == 0);
+}
+
+void VidorUtils::end()
+{
+	disableFpgaClock();
+	jtagDeinit();
+}
+
+void VidorUtils::reload()
+{
+	jtagReload();
+}
