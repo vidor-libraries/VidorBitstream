@@ -50,10 +50,12 @@ wire        wCIR,wPDR,wUIR,wSDR,wCDR,wUDR,wE1DR,wE2DR;
 reg [4:0]   rDATA_CNT;
 reg [1:0]   rADDR_BITS;
 reg         rCDR_DELAYED,rSDR_DELAYED,rUIR_DELAYED ,rUDR_DELAYED  ;
+wire        wISSUE_COMMAND;
 
-assign wTDO   = rBUFFER[0];
-assign oWRITE = !wWR_EMPTY& wWRITE_PHASE;
-assign oREAD  = !wWR_EMPTY&!wWRITE_PHASE;
+assign wTDO           = rBUFFER[0];
+assign oWRITE         = !wWR_EMPTY& wWRITE_PHASE;
+assign oREAD          = !wWR_EMPTY&!wWRITE_PHASE;
+assign wISSUE_COMMAND = rWR_STROBE|(rUIR&&rIR==1)|rRD_STROBE;
 
 sld_virtual_jtag_basic  VJTAG_INST (
   .ir_out             (wIR_OUT),
@@ -109,7 +111,7 @@ begin
     rBITCNT<=rBITCNT+1;
   end
   // if we just wrote some data, increment address 
-  if (rWR_STROBE) begin
+  if (wISSUE_COMMAND) begin
     rADDRESS<=rADDRESS+1;
   end
   case (rIR)
@@ -174,48 +176,58 @@ begin
       if (rCDR) begin
         rBITCNT<=0;
         rBUFFER<=wREAD_DATA;
-        rRD_STROBE<=1;
+        rRD_STROBE<=1; // read data from FIFO and at the same time request next address
       end
       if (rSDR) begin
         if (rBITCNT==31) begin
           rBUFFER<=wREAD_DATA;
-          rRD_STROBE<=1;
+          rRD_STROBE<=1; // read data from FIFO and at the same time request next address
         end
       end
     end
   endcase
 end
 
-  dcfifo  #(
-    .add_usedw_msb_bit      ("ON"),
-    .intended_device_family ("Cyclone 10 LP"),
-    .lpm_numwords           (4),
-    .lpm_showahead          ("ON"),
-    .lpm_type               ("dcfifo"),
-    .lpm_width              (70),
-    .lpm_widthu             (2),
-    .overflow_checking      ("OFF"),
-    .rdsync_delaypipe       (5),
-    .read_aclr_synch        ("ON"),
-    .underflow_checking     ("ON"),
-    .use_eab                ("OFF"),
-    .write_aclr_synch       ("OFF"),
-    .wrsync_delaypipe       (5)
-  ) WRFIFO_INST (
-    .data       ({rADDRESS,rDATA,rDATA_CNT,rWR_STROBE}),
-    .rdclk      (iCLK),
-    .rdreq      (!wWR_EMPTY&&!iWAIT_REQUEST),
-    .wrclk      (wTCK),
-    .wrreq      (rWR_STROBE|(rUIR&&rIR==1)),
-    .q          ({oADDRESS,oWRITE_DATA,oBURST_COUNT,wWRITE_PHASE}),
-    .rdempty    (wWR_EMPTY),
-    .aclr       (),
-    .rdfull     (),
-    .rdusedw    (),
-    .eccstatus  (),
-    .wrempty    (),
-    .wrfull     (),
-    .wrusedw    ());
+// this fifo contains rad/write commands thowards the avalon bus from the jtag interface.
+// each command contains the address, the data (used only in write operations) the read/write
+// flag and a data count that for now is not used.
+dcfifo  #(
+  .add_usedw_msb_bit      ("ON"),
+  .intended_device_family ("Cyclone 10 LP"),
+  .lpm_numwords           (4),
+  .lpm_showahead          ("ON"),
+  .lpm_type               ("dcfifo"),
+  .lpm_width              (70),
+  .lpm_widthu             (2),
+  .overflow_checking      ("OFF"),
+  .rdsync_delaypipe       (5),
+  .read_aclr_synch        ("ON"),
+  .underflow_checking     ("ON"),
+  .use_eab                ("OFF"),
+  .write_aclr_synch       ("OFF"),
+  .wrsync_delaypipe       (5)
+) WRFIFO_INST (
+  .data       ({rADDRESS,rDATA,rDATA_CNT,rWR_STROBE}),
+  .rdclk      (iCLK),
+  .rdreq      (!wWR_EMPTY&&!iWAIT_REQUEST),
+  .wrclk      (wTCK),
+  .wrreq      (wISSUE_COMMAND),
+  .q          ({oADDRESS,oWRITE_DATA,oBURST_COUNT,wWRITE_PHASE}),
+  .rdempty    (wWR_EMPTY),
+  .aclr       (),
+  .rdfull     (),
+  .rdusedw    (),
+  .eccstatus  (),
+  .wrempty    (),
+  .wrfull     (),
+  .wrusedw    ()
+);
+
+// this fifo contains read/write responses from avalon. for read operations only it contains
+// data being read from avalon bus.
+// data is written from FIFO as soon as it is available from avalon bus and is read from FIFO 
+// at the beginning of a read operation and each 32 bits. once exiting read operation the FIFO
+// will be flushed to drop the additional read data request issued at the last cycle.
 
   dcfifo  #(
     .add_usedw_msb_bit      ("ON"),
@@ -235,7 +247,7 @@ end
   ) RDFIFO_INST (
     .data       (iREAD_DATA),
     .rdclk      (wTCK),
-    .rdreq      (rRD_STROBE&&!wRD_EMPTY),
+    .rdreq      ((rRD_STROBE|!(rIR==1))&&!wRD_EMPTY), 
     .wrclk      (iCLK),
     .wrreq      (iREAD_DATA_VALID),
     .q          (wREAD_DATA),
