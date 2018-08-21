@@ -94,9 +94,7 @@ int VidorMailboxClass::sendEvent(const uint32_t data[], size_t len)
 
 int VidorMailboxClass::read(uint32_t address, uint32_t data[], size_t len)
 {
-	for (size_t i = 0; i < len; i++) {
-		VidorJTAG.readBuffer(MB_BASE + address + i, &data[i], 1);
-	}
+	VidorJTAG.readBuffer(MB_BASE + address, data, len);
 
 	return len;
 }

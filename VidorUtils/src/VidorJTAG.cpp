@@ -120,11 +120,6 @@ int VidorJTAGClass::readBuffer(uint32_t address, uint32_t* data, size_t len)
 	address = (address << 2) | 0x00000003;
 	jtag_host_pulse_tdi((uint8_t*)&address, sizeof(address));
 
-	if (len > 1) {
-		address = len - 1;
-		jtag_host_pulse_tdi((uint8_t*)&address, sizeof(address));
-	}
-
 	if (!loadVirtualInstruction(JBC_READ)) {
 		return -1;
 	}
