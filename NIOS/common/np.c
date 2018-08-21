@@ -85,6 +85,8 @@
 
 #define CLOCK   (((float)ALT_CPU_FREQ)/1000000000.0)           // clock in GHz
 
+GFXgc     npGc;
+
 typedef struct {
   alt_u32   trst;     // reset time
   alt_u32   t0h ;     // high time for 0
@@ -208,10 +210,13 @@ void npCmd(void)
     ret = npGfxAtt(rpc[1]);
     break;
   case 12:
+    ret = npGfxDet();
+    break;
+  case 13:
     /* set string where to write */
     ret = npGfxStrSet(rpc[1]);
     break;
-  case 13:
+  case 14:
     /* write pixel */
     ret = npGfxWp(rpc[1], rpc[2], rpc[3]);
     break;
@@ -409,8 +414,9 @@ alt_u32 npLedShow(void)
   npWCntReg |= ((npWrpCnt  << NP_WCNT_WC_OFS ) & NP_WCNT_WC_MSK);
   IOWR(NP_CSR_BASE, NP_REG_WCNT, npWCntReg);
 
+  base = (npBufSize * npBufCur) + npWrpAdr;
   /* set wrap address */
-  IOWR(NP_CSR_BASE, NP_REG_WRAP_ADR, npWrpAdr);
+  IOWR(NP_CSR_BASE, NP_REG_WRAP_ADR, NP_MEM_BASE + base);
 /* TODO move in wrap set routine */
 
   /* start transfer */
@@ -483,20 +489,28 @@ alt_u32 npBufLoop(alt_u32 flg, alt_u32 buf, alt_u32 ms)
  */
 alt_u32 npGfxAtt(alt_u32 flg)
 {
-  GFXgc     npGc;
-
   npGc.width  = npZzlLen;
   npGc.height = npNumLed / npZzlLen;
   npGc.stride = NP_DEV_NUM;
   npGc.bpp    = 32;
-  npGc.fmt    = 0;
-  npGc.fb     = NULL;
+  npGc.fmt    = GFX_GC_FMT_XGRB32;
+  npGc.fb     = NP_MEM_BASE;
   npGc.wp     = npGfxWp;
   npGc.flg    = flg;
+  npGc.cursor_x = 0;
+  npGc.cursor_y = 0;
 
   gcSet(&npGc);
 
   npStrIdx = 0;
+
+  return 0;
+}
+
+alt_u32 npGfxDet(void)
+{
+
+  gcSet(NULL);
 
   return 0;
 }
@@ -517,7 +531,7 @@ alt_u32 npGfxWp(alt_u32 x, alt_u32 y, alt_u32 color)
   alt_u32  *pLed;
 
   led = x + y * npZzlLen;
-  pLed = (alt_u32*)NP_MEM_BASE;
+  pLed = npGc.fb;
   pLed += (npBufSize * npBufCur) >> 2;
   pLed += ((NP_DEV_NUM * led) + npStrIdx);
   *pLed = ((alt_u32)((color >> 16) & 0xFF) << rOffset) |

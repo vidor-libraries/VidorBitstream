@@ -41,6 +41,7 @@ alt_u32 npWrapSet(alt_u32 sAdr, alt_u32 wCnt, alt_u32 wAdr);
 alt_u32 npSeqSet(psNpSeq pSeq);
 alt_u32 npBufLoop(alt_u32 flg, alt_u32 buf, alt_u32 ms);
 alt_u32 npGfxAtt(alt_u32 flg);
+alt_u32 npGfxDet(void);
 alt_u32 npGfxStrSet(alt_u32 idx);
 alt_u32 npGfxWp(alt_u32 x, alt_u32 y, alt_u32 color);
 

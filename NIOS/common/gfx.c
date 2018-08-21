@@ -190,16 +190,22 @@ GFXbmp const arduinoLogo = {
 #endif /* defined(GFX_LOGO) && (GFX_LOGO == 1) */
 
 /**
- * loacl variables
+ * local variables
  */
-GFXgc gfxGc = {
+GFXgc gfxDefaultGc = {
   GFX_FB_WIDTH,
   GFX_FB_HEIGHT,
   1,
   16,
+  GFX_GC_FMT_ARGB16,
   0,
+  0,
+  0xffffffff,
+  1,
   GFX_FB_BASE
 };
+
+GFXgc * gfxGc = &gfxDefaultGc;
 
 /**
  */
@@ -249,6 +255,25 @@ void gfxCmd(void)
   case 7:
     ret = drawTxt(rpc[1], rpc[2], rpc[3], (alt_u8*)rpc[4]);
     break;
+  case 8:
+    ret = setFont(rpc[1]);
+    break;
+  case 9:
+    ret = setCursor(rpc[1],rpc[2]);
+    break;
+  case 10:
+    ret = setTextSize(rpc[1]);
+    break;
+  case 11:
+    ret = setColor(rpc[1]);
+    break;
+  case 12:
+    ret = setAlpha(rpc[1]);
+    break;
+  case 13:
+    ret = drawCharAtCursor(rpc[1]);
+    break;
+
 #endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
   }
   rpc[1] = ret;
@@ -260,51 +285,54 @@ void gfxCmd(void)
 alt_u32 gcSet(GFXgc* pGc)
 {
   if (!pGc) {
-    gfxGc.width  = GFX_FB_WIDTH;
-    gfxGc.height = GFX_FB_HEIGHT;
-    gfxGc.stride = 1;
-    gfxGc.bpp    = 16;
-    gfxGc.fmt    = 0;
-    gfxGc.fb     = GFX_FB_BASE;
-    gfxGc.wp     = NULL;
-    gfxGc.flg    = 0;
+    gfxGc = &gfxDefaultGc;
   }else{
-    memcpy(&gfxGc, pGc, sizeof(GFXgc));
+    gfxGc = pGc;
   }
   return 0;
 }
 
+alt_u32 colorFormat(alt_u32 color)
+{
+  switch (gfxGc->fmt) {
+  case GFX_GC_FMT_ARGB16:
+    color = ((color&0x000000F8)>>3) |
+            ((color&0x0000F800)>>6) | 
+            ((color&0x00F80000)>>9) |
+            ((color&0x80000000)>>16); 
+    break;
+  }
+  return color;
+}
 /**
  * Draw a Point of color at x, y
  */
 alt_u32 writePixel(alt_u16 x, alt_u16 y, alt_u32 color)
 {
-  if (gfxGc.flg & GFX_GC_ROT90) {
+  color = colorFormat(color);
+  if (gfxGc->flg & GFX_GC_ROT90) {
     alt_u16 t;
     t = x;
     x = y;
     y = t;
   }
+  if (x>=gfxGc->width ||
+      y>=gfxGc->height)
+      return -1;
 
-  if (gfxGc.wp) {
-    return gfxGc.wp(x, y, color);
+  if (gfxGc->wp) {
+    return gfxGc->wp(x, y, color);
   }
 
-  switch (gfxGc.fmt) {
-  case GFX_GC_FMT_XGRB32:
-    color = (color & 0xFF0000FF) |
-            ((color & 0x00FF0000)>>8) |
-            ((color & 0x0000FF00)<<8);
-  }
-  if (gfxGc.bpp == 16) {
+  if (gfxGc->bpp == 16) {
     alt_u16 *p;
 
-    p = (alt_u16*)gfxGc.fb + ((x + y*gfxGc.width) * gfxGc.stride);
+    p = (alt_u16*)gfxGc->fb + ((x + y*gfxGc->width) * gfxGc->stride);
     *p = color;
   } else {
     alt_u32 *p;
 
-    p = (alt_u32*)gfxGc.fb + ((x + y*gfxGc.width) * gfxGc.stride);
+    p = (alt_u32*)gfxGc->fb + ((x + y*gfxGc->width) * gfxGc->stride);
     *p = color;
   }
   return 0;
@@ -563,6 +591,45 @@ alt_u32 fillRoundRect(alt_u16 x, alt_u16 y, alt_u16 w,
 /**
  * Draw a character
  */
+alt_u32 setCursor(alt_u32 x, alt_u32 y)
+{
+  gfxGc->cursor_y=y;
+  gfxGc->cursor_x=x;
+  return 0;
+}
+
+alt_u32 setTextSize(alt_u16 size) {
+  gfxGc->size=size;
+}
+
+alt_u32 setColor(alt_u32 color) {
+  gfxGc->color=(gfxGc->color&0xff000000)|(color&0xffffff);
+}
+
+alt_u32 setAlpha(alt_u8 alpha) {
+  gfxGc->color=(gfxGc->color&0xffffff)|((alt_u32)alpha<<24);
+}
+
+/**
+ * Draw a character
+ */
+alt_u32 drawCharAtCursor( alt_u8 c)
+{
+  if(c=='\n') {
+    gfxGc->cursor_y+=gfxGc->size*gfxFont->yAdvance;
+    return 1;
+  } else if (c=='\r') {
+    gfxGc->cursor_x=0;
+    return 1;
+  } else {
+    gfxGc->cursor_x += drawChar(gfxGc->cursor_x,gfxGc->cursor_y,gfxGc->color,gfxGc->size, c);
+    return 1;
+  }
+}
+
+/**
+ * Draw a character
+ */
 alt_u32 drawChar(alt_u16 x, alt_u16 y, alt_u32 color, alt_u8 size, alt_u8 c)
 {
   // Custom font
@@ -638,6 +705,17 @@ alt_u32 drawTxt(alt_u16 x, alt_u16 y, alt_u32 color, alt_u8* txt)
   }
 
   return size;
+}
+
+alt_u32 setFont(alt_u32 num)
+{
+#ifdef GFX_NUM_FONTS
+  if (num<GFX_NUM_FONTS) {
+    gfxFont = gfxFontRepo[num];
+    return 0;
+  }
+#endif
+  return -1;
 }
 
 #endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */

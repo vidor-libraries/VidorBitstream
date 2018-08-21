@@ -21,6 +21,10 @@ typedef struct {
   alt_u32   stride;
   alt_u16   bpp;
   alt_u16   fmt;
+  alt_u16   cursor_x;
+  alt_u16   cursor_y;
+  alt_u32   color;
+  alt_u32   size;
   void     *fb;
   alt_u32 (*wp)(alt_u16 x, alt_u16 y, alt_u32 color);
   alt_u32   flg;
@@ -39,14 +43,19 @@ void gfxCmd(void);
 
 alt_u32 gcSet(GFXgc* pGc);
 
-alt_u32 writePixel(alt_u16 x, alt_u16 y, alt_u32 color);
-alt_u32 writeLine (alt_u16 x0, alt_u16 y0, alt_u16 x1, alt_u16 y1, alt_u32 color);
-alt_u32 drawRect  (alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u32 color);
-alt_u32 fillRect  (alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u32 color);
-alt_u32 drawCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u32 color);
-alt_u32 fillCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u32 color);
-alt_u32 drawChar  (alt_u16 x, alt_u16 y, alt_u32 color, alt_u8 size, alt_u8 c);
-alt_u32 drawTxt   (alt_u16 x, alt_u16 y, alt_u32 color, alt_u8* txt);
-alt_u32 drawBmp   (GFXbmp* bmp, alt_u16 x, alt_u16 y, alt_u32 color);
-
+alt_u32 writePixel       (alt_u16 x, alt_u16 y, alt_u32 color);
+alt_u32 writeLine        (alt_u16 x0, alt_u16 y0, alt_u16 x1, alt_u16 y1, alt_u32 color);
+alt_u32 drawRect         (alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u32 color);
+alt_u32 fillRect         (alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u32 color);
+alt_u32 drawCircle       (alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u32 color);
+alt_u32 fillCircle       (alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u32 color);
+alt_u32 drawChar         (alt_u16 x, alt_u16 y, alt_u32 color, alt_u8 size, alt_u8 c);
+alt_u32 drawTxt          (alt_u16 x, alt_u16 y, alt_u32 color, alt_u8* txt);
+alt_u32 drawBmp          (GFXbmp* bmp, alt_u16 x, alt_u16 y, alt_u32 color);
+alt_u32 setFont          (alt_u32 num);
+alt_u32 drawCharAtCursor (alt_u8 c);
+alt_u32 setAlpha         (alt_u8 alpha);
+alt_u32 setColor         (alt_u32 color);
+alt_u32 setTextSize      (alt_u16 size);
+alt_u32 setCursor        (alt_u32 x, alt_u32 y);
 #endif /* GFX_H_ */

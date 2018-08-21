@@ -13,7 +13,7 @@
 /**
  *
  */
-#define FPGA_VERSION 0x01010105
+#define FPGA_VERSION 0x01010107
 
 
 /**
@@ -42,8 +42,17 @@
   #define GFX_LOGO        1
 
   #define GFX_FONTS       1
-  #define GFX_FONT_FILE   "Fonts/FreeMono12pt7b.h"
+  #define GFX_FONT_FILE   "fonts.h"
   #define GFX_FONT_NAME   FreeMono12pt7b
+  #define FONT_MONO
+  #define FONT_SANS
+  #define FONT_SERIF
+  #define FONT_9PT 
+  #define FONT_12PT 
+  #define FONT_18PT 
+  #define FONT_24PT 
+  //#define FONT_BOLD 
+  //#define FONT_ITALIC 
 
   #define GFX_CMDS        1
 #endif /* defined(GFX_MODULE) && (GFX_MODULE == 1) */
