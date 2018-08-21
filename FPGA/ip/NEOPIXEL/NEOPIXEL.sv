@@ -25,11 +25,11 @@ module NEOPIXEL #(
   input                      iCLOCK,
   input                      iRESET,
 
-  input       [3:0]	         iCSR_ADDRESS,
-  input        	             iCSR_READ,
+  input       [3:0]          iCSR_ADDRESS,
+  input                      iCSR_READ,
   output reg [31:0]          oCSR_READ_DATA,
-  input        	             iCSR_WRITE,
-  input      [31:0]	         iCSR_WRITE_DATA,
+  input                      iCSR_WRITE,
+  input      [31:0]          iCSR_WRITE_DATA,
 
   output reg [31:0]          oDATA_ADDRESS,
   output reg                 oDATA_READ,
@@ -115,7 +115,7 @@ begin
     oDATA_ADDRESS <= rSTART_ADDRESS;
     // also reset the start flag to acknowledge we started updating
     rSTART<= 0;
-	 rHCNT <= 0;
+   rHCNT <= 0;
   end
 
   // if we are reading and slave accepted burst request...
@@ -124,17 +124,17 @@ begin
     oDATA_READ<= 0;
     if (!rZZSTATE)
       oDATA_ADDRESS <= oDATA_ADDRESS+{oDATA_BURST_COUNT,2'b0};
-	 else 
+    else 
       oDATA_ADDRESS <= oDATA_ADDRESS-{oDATA_BURST_COUNT,2'b0};
-	 rHCNT <= rHCNT+1;
-	 if (rZIGZAG&&rHCNT==rLINE_LENGTH) begin
-	   oDATA_ADDRESS <= oDATA_ADDRESS+rZZ_OFFSET;
-		rHCNT <= 0;
-		rZZSTATE<= !rZZSTATE;
-	 end
-    if (rSTRING_LEN==rWRAP_COUNT) 
-      oDATA_ADDRESS <= rWRAP_ADDRESS;
-	 
+    rHCNT <= rHCNT+1;
+    if (rZIGZAG&&rHCNT==rLINE_LENGTH) begin
+      oDATA_ADDRESS <= oDATA_ADDRESS+rZZ_OFFSET;
+    rHCNT <= 0;
+    rZZSTATE<= !rZZSTATE;
+   end
+   if (rSTRING_LEN==rWRAP_COUNT) 
+    oDATA_ADDRESS <= rWRAP_ADDRESS;
+   
   end
   
   // if we are receiving data we requested...
