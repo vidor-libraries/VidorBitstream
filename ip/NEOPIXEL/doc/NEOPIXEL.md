@@ -1,7 +1,5 @@
 # **NEOPIXEL** IP core
 
-Drives multiple neopixel strings of LEDs
-
 ## Ports
 
 <table>
@@ -30,7 +28,9 @@ Drives multiple neopixel strings of LEDs
     <tr><td>pSTART_ADDRESS</td> <td>0x00000000 : 0xFFFFFFFC</td> <td>Memory start address of the neopixel data buffer </td> </tr>   
 </table>
 
-## Description
+## IP CORE Description
 
-**NEOPIXEL** core allows driving neopixel strings via hardware. Once set up the core autonomously reads from memory and serializes data to multiple channels sharing the same setup. This basically means that a single ip core can drive more than one string of LEDs but all of them have to have the same frequency, timing and memory buffer set up.
-Since Avalon master interface supports wait request and burst it can be connected both to on chip RAM and to external DRAM controllers. **Note** that in order to work properly the IP block should receive data to shift out before it is actually required. 
+**NEOPIXEL** core allows driving neopixel strings via hardware. Once set up the core autonomously reads from memory and serializes data to multiple channels sharing the same setup. This basically means that a single ip core can drive more than one LEDs strings but all of them have to have the same frequency, timing and memory buffer set up. Alternatively you can add multiple instances of the core so that each one will have its own settings.
+Since Avalon master interface supports wait request and burst it can be connected both to on chip RAM and to external DRAM controllers. 
+
+**NOTE** that in order for the IP to work properly it should be able to receive data from Avalon Master port some time before it is actually shifted so avalon accesses should be granted low enough latency. 
