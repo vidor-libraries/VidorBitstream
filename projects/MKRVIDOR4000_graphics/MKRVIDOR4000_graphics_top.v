@@ -218,7 +218,7 @@ assign bHDMI_SCL = wHDMI_SCL_EN ? wHDMI_SCL_O : 1'bz;
 assign bMIPI_SDA = wMIPI_SDA_EN ? wMIPI_SDA_O : 1'bz;
 assign bMIPI_SCL = wMIPI_SCL_EN ? wMIPI_SCL_O : 1'bz;
 
-MKRVIDOR4000_graphics u0(
+MKRVIDOR4000_graphics_sys u0(
 		.clk_clk                (wMEM_CLK),               //      clk.clk
 		.reset_reset_n          (rRESETCNT[5]), // reset.reset_n
 		.vid_clk                (wVID_CLK),        //   vid.clk

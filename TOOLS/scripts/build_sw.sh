@@ -31,7 +31,7 @@ APP_SRC_DIR=../../../NIOS/$PROJECT_NAME
 COMMON_SRC_DIR=../../../NIOS/common
 
 # SOPC file definitions
-SOPC_INFO="./$PROJECT_NAME.sopcinfo"
+SOPC_INFO="./"$PROJECT_NAME"_sys.sopcinfo"
 SOPC_CPU_NAME="nios2_gen2_0"
 SOPC_CODE_MEMORY_NAME="flashapp"
 SOPC_DATA_MEMORY_NAME="onchip_memory2_0"
