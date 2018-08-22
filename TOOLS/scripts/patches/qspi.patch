@@ -1,0 +1,961 @@
+diff -Naur pgm/arduino_generic_qspi_controller2/HAL/inc/arduino_generic_quad_spi_controller2.h arduino_generic_qspi_controller2/HAL/inc/arduino_generic_quad_spi_controller2.h
+--- pgm/arduino_generic_qspi_controller2/HAL/inc/arduino_generic_quad_spi_controller2.h	2018-08-22 19:45:29.106330900 +0200
++++ pgm/arduino_generic_qspi_controller2/HAL/inc/arduino_generic_quad_spi_controller2.h	2018-08-22 19:45:06.038615800 +0200
+@@ -68,7 +68,7 @@
+ *   Macros used by alt_sys_init.c to create data storage for driver instance
+ */
+ 
+-#define ALTERA_GENERIC_QUAD_SPI_CONTROLLER2_AVL_MEM_AVL_CSR_INSTANCE(qspi_name, avl_mem, avl_csr, qspi_dev) \
++#define ARDUINO_GENERIC_QUAD_SPI_CONTROLLER2_AVL_MEM_AVL_CSR_INSTANCE(qspi_name, avl_mem, avl_csr, qspi_dev) \
+ static alt_qspi_controller2_dev qspi_dev =                                                       \
+ {                                                                                               \
+   .dev = {                                                                                      \
+@@ -116,14 +116,14 @@
+ /*
+  * Initialization function
+  */
+-extern alt_32 altera_qspi_controller2_init(alt_qspi_controller2_dev *dev);
++extern alt_32 arduino_qspi_controller2_init(alt_qspi_controller2_dev *dev);
+ 
+ /*
+  * alt_sys_init.c will call this macro automatically initialize the driver instance
+  */
+ 
+-#define ALTERA_GENERIC_QUAD_SPI_CONTROLLER2_INIT(name, dev) 	\
+-		altera_qspi_controller2_init(&dev);
++#define ARDUINO_GENERIC_QUAD_SPI_CONTROLLER2_INIT(name, dev) 	\
++		arduino_qspi_controller2_init(&dev);
+ 
+ #ifdef __cplusplus
+ }
+diff -Naur pgm/arduino_generic_qspi_controller2/HAL/src/arduino_generic_quad_spi_controller2.c arduino_generic_qspi_controller2/HAL/src/arduino_generic_quad_spi_controller2.c
+--- pgm/arduino_generic_qspi_controller2/HAL/src/arduino_generic_quad_spi_controller2.c	2018-08-22 19:45:29.111316900 +0200
++++ pgm/arduino_generic_qspi_controller2/HAL/src/arduino_generic_quad_spi_controller2.c	2018-08-22 19:45:06.037599900 +0200
+@@ -34,8 +34,8 @@
+ #include <stddef.h>
+ #include "sys/param.h"
+ #include "alt_types.h"
+-#include "altera_generic_quad_spi_controller2_regs.h"
+-#include "altera_generic_quad_spi_controller2.h"
++#include "arduino_generic_quad_spi_controller2_regs.h"
++#include "arduino_generic_quad_spi_controller2.h"
+ #include "priv/alt_busy_sleep.h"
+ #include "sys/alt_debug.h"
+ #include "sys/alt_cache.h"
+@@ -90,10 +90,10 @@
+     mem_op_value = sectors_to_lock << 8;
+ 
+     /* sector protect commands 0b11 occupies lower 2 bits */
+-    mem_op_value |= ALTERA_QSPI_CONTROLLER2_MEM_OP_SECTOR_PROTECT_CMD;
++    mem_op_value |= ARDUINO_QSPI_CONTROLLER2_MEM_OP_SECTOR_PROTECT_CMD;
+ 
+     /* write sector protect command to QSPI_MEM_OP register to protect sectors */
+-    IOWR_ALTERA_QSPI_CONTROLLER2_MEM_OP(qspi_flash_info->csr_base, mem_op_value);
++    IOWR_ARDUINO_QSPI_CONTROLLER2_MEM_OP(qspi_flash_info->csr_base, mem_op_value);
+     
+     /* poll write in progress to make sure no operation is in progress */
+     status = alt_qspi_poll_for_write_in_progress(qspi_flash_info);
+@@ -102,7 +102,7 @@
+         return status;
+     }
+ 
+-    status = IORD_ALTERA_QSPI_CONTROLLER2_STATUS(qspi_flash_info->csr_base);
++    status = IORD_ARDUINO_QSPI_CONTROLLER2_STATUS(qspi_flash_info->csr_base);
+     result |= (status >> 2) & 0x07; /* extract out BP3 - BP0 */
+     result |= (status >> 3) & 0x08; /* extract out BP4 */
+     result |= (status >> 1) & 0x10; /* extract out TOP/BOTTOM bit */
+@@ -211,34 +211,34 @@
+     sector_number = (block_offset/(qspi_flash_info->sector_size));
+ 
+     /* sector value should occupy bits 23:8 */
+-    mem_op_value = (sector_number << 8) & ALTERA_QSPI_CONTROLLER2_MEM_OP_SECTOR_VALUE_MASK;
++    mem_op_value = (sector_number << 8) & ARDUINO_QSPI_CONTROLLER2_MEM_OP_SECTOR_VALUE_MASK;
+     
+      /* write enable command */
+-    mem_op_value |= ALTERA_QSPI_CONTROLLER2_MEM_OP_WRITE_ENABLE_CMD;
++    mem_op_value |= ARDUINO_QSPI_CONTROLLER2_MEM_OP_WRITE_ENABLE_CMD;
+ 
+     /* write sector erase command to EPCQ_MEM_OP register to erase sector "sector_number" */
+-    IOWR_ALTERA_QSPI_CONTROLLER2_MEM_OP(qspi_flash_info->csr_base, mem_op_value);
++    IOWR_ARDUINO_QSPI_CONTROLLER2_MEM_OP(qspi_flash_info->csr_base, mem_op_value);
+ 
+     /* sector value should occupy bits 23:8 */
+-    mem_op_value = (sector_number << 8) & ALTERA_QSPI_CONTROLLER2_MEM_OP_SECTOR_VALUE_MASK;
++    mem_op_value = (sector_number << 8) & ARDUINO_QSPI_CONTROLLER2_MEM_OP_SECTOR_VALUE_MASK;
+ 
+     /* sector erase commands 0b10 occupies lower 2 bits */
+-    mem_op_value |= ALTERA_QSPI_CONTROLLER2_MEM_OP_SECTOR_ERASE_CMD;
++    mem_op_value |= ARDUINO_QSPI_CONTROLLER2_MEM_OP_SECTOR_ERASE_CMD;
+ 
+     /* write sector erase command to QSPI_MEM_OP register to erase sector "sector_number" */
+-    IOWR_ALTERA_QSPI_CONTROLLER2_MEM_OP(qspi_flash_info->csr_base, mem_op_value);
++    IOWR_ARDUINO_QSPI_CONTROLLER2_MEM_OP(qspi_flash_info->csr_base, mem_op_value);
+     
+     alt_qspi_poll_for_write_in_progress(qspi_flash_info);      
+     
+     /* check whether erase triggered a illegal erase interrupt  */
+-    if((IORD_ALTERA_QSPI_CONTROLLER2_ISR(qspi_flash_info->csr_base) &
+-                    ALTERA_QSPI_CONTROLLER2_ISR_ILLEGAL_ERASE_MASK) ==
+-                            ALTERA_QSPI_CONTROLLER2_ISR_ILLEGAL_ERASE_ACTIVE)
++    if((IORD_ARDUINO_QSPI_CONTROLLER2_ISR(qspi_flash_info->csr_base) &
++                    ARDUINO_QSPI_CONTROLLER2_ISR_ILLEGAL_ERASE_MASK) ==
++                            ARDUINO_QSPI_CONTROLLER2_ISR_ILLEGAL_ERASE_ACTIVE)
+     {
+         /* clear register */
+         /* QSPI_ISR access is write one to clear (W1C) */
+-        IOWR_ALTERA_QSPI_CONTROLLER2_ISR(qspi_flash_info->csr_base,
+-            ALTERA_QSPI_CONTROLLER2_ISR_ILLEGAL_ERASE_MASK );
++        IOWR_ARDUINO_QSPI_CONTROLLER2_ISR(qspi_flash_info->csr_base,
++            ARDUINO_QSPI_CONTROLLER2_ISR_ILLEGAL_ERASE_MASK );
+         return -EIO; /* erase failed, sector might be protected */
+     }
+ 
+@@ -363,13 +363,13 @@
+         }
+               
+         /* check whether write triggered a illegal write interrupt */
+-        if((IORD_ALTERA_QSPI_CONTROLLER2_ISR(qspi_flash_info->csr_base) &
+-                ALTERA_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_MASK) ==
+-                        ALTERA_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_ACTIVE)
++        if((IORD_ARDUINO_QSPI_CONTROLLER2_ISR(qspi_flash_info->csr_base) &
++                ARDUINO_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_MASK) ==
++                        ARDUINO_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_ACTIVE)
+         {
+             /* clear register */
+-            IOWR_ALTERA_QSPI_CONTROLLER2_ISR(qspi_flash_info->csr_base,
+-            ALTERA_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_MASK );
++            IOWR_ARDUINO_QSPI_CONTROLLER2_ISR(qspi_flash_info->csr_base,
++            ARDUINO_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_MASK );
+             return -EIO; /** write failed, sector might be protected */
+         }
+ 
+@@ -535,7 +535,7 @@
+ }
+ 
+ /**
+- * altera_qspi_controller2_init
++ * arduino_qspi_controller2_init
+  *
+  * alt_sys_init.c will call this function automatically through macro
+  *
+@@ -551,7 +551,7 @@
+  * -EINVAL -> Invalid arguments.
+  * -ENODEV -> System is configured incorrectly.
+ **/
+-alt_32 altera_qspi_controller2_init(alt_qspi_controller2_dev *flash)
++alt_32 arduino_qspi_controller2_init(alt_qspi_controller2_dev *flash)
+ {
+     alt_u32 silicon_id = 0;
+     alt_u32 size_in_bytes = 0;
+@@ -585,45 +585,45 @@
+     if(0 == flash->is_epcs)
+     {
+         /* If we're an EPCQ or QSPI, we read QSPI_RD_RDID for the silicon ID */
+-        silicon_id = IORD_ALTERA_QSPI_CONTROLLER2_RDID(flash->csr_base);
++        silicon_id = IORD_ARDUINO_QSPI_CONTROLLER2_RDID(flash->csr_base);
+         silicon_id >>= 16;
+-        silicon_id &=  ALTERA_QSPI_CONTROLLER2_RDID_MASK;
++        silicon_id &=  ARDUINO_QSPI_CONTROLLER2_RDID_MASK;
+ 
+         /* Determine which EPCQ/QSPI device so we can figure out the number of sectors */
+         /*EPCQ and QSPI share the same ID for the same capacity*/
+         switch(silicon_id)
+         {
+-            case ALTERA_QSPI_CONTROLLER2_RDID_QSPI16:
++            case ARDUINO_QSPI_CONTROLLER2_RDID_QSPI16:
+             {
+                 number_of_sectors = 32;
+                 break;
+             }
+-            case ALTERA_QSPI_CONTROLLER2_RDID_QSPI32:
++            case ARDUINO_QSPI_CONTROLLER2_RDID_QSPI32:
+             {
+                 number_of_sectors = 64;
+                 break;
+             }
+-            case ALTERA_QSPI_CONTROLLER2_RDID_QSPI64:
++            case ARDUINO_QSPI_CONTROLLER2_RDID_QSPI64:
+             {
+                 number_of_sectors = 128;
+                 break;
+             }
+-            case ALTERA_QSPI_CONTROLLER2_RDID_QSPI128:
++            case ARDUINO_QSPI_CONTROLLER2_RDID_QSPI128:
+             {
+                 number_of_sectors = 256;
+                 break;
+             }
+-            case ALTERA_QSPI_CONTROLLER2_RDID_QSPI256:
++            case ARDUINO_QSPI_CONTROLLER2_RDID_QSPI256:
+             {
+                 number_of_sectors = 512;
+                 break;
+             }
+-            case ALTERA_QSPI_CONTROLLER2_RDID_QSPI512:
++            case ARDUINO_QSPI_CONTROLLER2_RDID_QSPI512:
+             {
+                 number_of_sectors = 1024;
+                 break;
+             }
+-            case ALTERA_QSPI_CONTROLLER2_RDID_QSPI1024:
++            case ARDUINO_QSPI_CONTROLLER2_RDID_QSPI1024:
+             {
+                 number_of_sectors = 2048;
+                 break;
+@@ -636,23 +636,23 @@
+     }
+     else {
+         /* If we're an EPCS, we read QSPI_RD_SID for the silicon ID */
+-        silicon_id = IORD_ALTERA_QSPI_CONTROLLER2_SID(flash->csr_base);
+-        silicon_id &= ALTERA_QSPI_CONTROLLER2_SID_MASK;
++        silicon_id = IORD_ARDUINO_QSPI_CONTROLLER2_SID(flash->csr_base);
++        silicon_id &= ARDUINO_QSPI_CONTROLLER2_SID_MASK;
+ 
+         /* Determine which EPCS device so we can figure out various properties */
+         switch(silicon_id)
+         {
+-            case ALTERA_QSPI_CONTROLLER2_SID_EPCS16:
++            case ARDUINO_QSPI_CONTROLLER2_SID_EPCS16:
+             {
+                 number_of_sectors = 32;
+                 break;
+             }
+-            case ALTERA_QSPI_CONTROLLER2_SID_EPCS64:
++            case ARDUINO_QSPI_CONTROLLER2_SID_EPCS64:
+             {
+                 number_of_sectors = 128;
+                 break;
+             }
+-            case ALTERA_QSPI_CONTROLLER2_SID_EPCS128:
++            case ARDUINO_QSPI_CONTROLLER2_SID_EPCS128:
+             {
+                 number_of_sectors = 256;
+                 break;
+@@ -771,7 +771,7 @@
+  *
+  * Assumes QSPI was configured correctly.
+  *
+- * If ALTERA_QSPI_CONTROLLER2_1US_TIMEOUT_VALUE is set, the function will time out after
++ * If ARDUINO_QSPI_CONTROLLER2_1US_TIMEOUT_VALUE is set, the function will time out after
+  * a period of time determined by that value.
+  *
+  * Arguments:
+@@ -785,8 +785,8 @@
+ alt_32 static alt_qspi_poll_for_write_in_progress(alt_qspi_controller2_dev* qspi_flash_info)
+ {  
+     /* we'll want to implement timeout if a timeout value is specified */
+-#if ALTERA_QSPI_CONTROLLER2_1US_TIMEOUT_VALUE > 0
+-    alt_u32 timeout = ALTERA_QSPI_CONTROLLER2_1US_TIMEOUT_VALUE;
++#if ARDUINO_QSPI_CONTROLLER2_1US_TIMEOUT_VALUE > 0
++    alt_u32 timeout = ARDUINO_QSPI_CONTROLLER2_1US_TIMEOUT_VALUE;
+     alt_u16 counter = 0;
+ #endif
+ 
+@@ -797,12 +797,12 @@
+     }
+ 
+     /* while Write in Progress bit is set, we wait */
+-    while((IORD_ALTERA_QSPI_CONTROLLER2_STATUS(qspi_flash_info->csr_base) &
+-            ALTERA_QSPI_CONTROLLER2_STATUS_WIP_MASK) ==
+-            ALTERA_QSPI_CONTROLLER2_STATUS_WIP_BUSY)
++    while((IORD_ARDUINO_QSPI_CONTROLLER2_STATUS(qspi_flash_info->csr_base) &
++            ARDUINO_QSPI_CONTROLLER2_STATUS_WIP_MASK) ==
++            ARDUINO_QSPI_CONTROLLER2_STATUS_WIP_BUSY)
+     {
+-        if (counter > (ALTERA_QSPI_CONTROLLER2_1US_TIMEOUT_VALUE>>1)) alt_busy_sleep(2); /* delay 2us */
+-#if ALTERA_QSPI_CONTROLLER2_1US_TIMEOUT_VALUE > 0
++        if (counter > (ARDUINO_QSPI_CONTROLLER2_1US_TIMEOUT_VALUE>>1)) alt_busy_sleep(2); /* delay 2us */
++#if ARDUINO_QSPI_CONTROLLER2_1US_TIMEOUT_VALUE > 0
+         if(timeout <= counter )
+         {
+             return -ETIME;
+diff -Naur pgm/arduino_generic_qspi_controller2/N25Q016.qprs arduino_generic_qspi_controller2/N25Q016.qprs
+--- pgm/arduino_generic_qspi_controller2/N25Q016.qprs	2018-08-22 19:45:29.725676900 +0200
++++ pgm/arduino_generic_qspi_controller2/N25Q016.qprs	2018-08-22 19:45:06.039594000 +0200
+@@ -3,7 +3,7 @@
+  <presets version="12.1">
+   <preset
+      name="N25Q016"
+-     kind="altera_asmi_parallel2"
++     kind="arduino_asmi_parallel2"
+      version="All"
+      description="">
+    <parameter name="COM_DATA_OUT_BYTES" value="0,0,0,1,0,0" />
+@@ -35,7 +35,7 @@
+        value="Read Fast_Read Extended_Dual_Fast_Read Extended_Quad_Fast_Read" />
+    <parameter name="RD_OPCODE" value="03,0B,BB,EB" />
+    <parameter name="RD_EXTEND" value="0,1,1,1" />
+-   <parameter name="RD_DUMMY_BYTES" value="0,8,8,A" />
++   <parameter name="RD_DUMMY_BYTES" value="0,8,8,6" />
+   </preset>
+  </presets>
+ </ip>
+diff -Naur pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface.sv.terp arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface.sv.terp
+--- pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface.sv.terp	2018-08-22 19:45:29.483324400 +0200
++++ pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface.sv.terp	2018-08-22 19:45:06.069514700 +0200
+@@ -13,7 +13,7 @@
+ 
+ 
+ `timescale 1 ns / 1 ns
+-module altera_asmi2_qspi_interface #(
++module arduino_asmi2_qspi_interface #(
+     parameter DEV_FAMILY    = "Arria 10",   
+     parameter NCS_LENGTH    = 3,            // number of FPGA SPI NCS interfaces
+     parameter DATA_LENGTH   = 4,            // number of FPGA SPI Data interfaces
+diff -Naur pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.tcl arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.tcl
+--- pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.tcl	2018-08-22 19:45:29.532193400 +0200
++++ pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.tcl	2018-08-22 19:45:06.061536000 +0200
+@@ -33,13 +33,13 @@
+ # module altera_asmi2_qspi_interface
+ # 
+ set_module_property DESCRIPTION ""
+-set_module_property NAME altera_asmi2_qspi_interface
++set_module_property NAME arduino_asmi2_qspi_interface
+ set_module_property VERSION 18.0
+ set_module_property INTERNAL true
+ set_module_property OPAQUE_ADDRESS_MAP true
+ set_module_property GROUP "Basic Functions/Configuration and Programming"
+ set_module_property AUTHOR "Intel Corporation"
+-set_module_property DISPLAY_NAME "Altera ASMI2 QSPI Interface"
++set_module_property DISPLAY_NAME "Arduino ASMI2 QSPI Interface"
+ set_module_property INSTANTIATE_IN_SYSTEM_MODULE true
+ set_module_property EDITABLE true
+ set_module_property REPORT_TO_TALKBACK false
+@@ -124,17 +124,17 @@
+ # file sets
+ # 
+ add_fileset QUARTUS_SYNTH QUARTUS_SYNTH generate_synth
+-set_fileset_property QUARTUS_SYNTH TOP_LEVEL altera_asmi2_qspi_interface
++set_fileset_property QUARTUS_SYNTH TOP_LEVEL arduino_asmi2_qspi_interface
+ set_fileset_property QUARTUS_SYNTH ENABLE_RELATIVE_INCLUDE_PATHS false
+ set_fileset_property QUARTUS_SYNTH ENABLE_FILE_OVERWRITE_MODE true
+ 
+ add_fileset SIM_VERILOG SIM_VERILOG generate_sim
+-set_fileset_property SIM_VERILOG TOP_LEVEL altera_asmi2_qspi_interface
++set_fileset_property SIM_VERILOG TOP_LEVEL arduino_asmi2_qspi_interface
+ set_fileset_property SIM_VERILOG ENABLE_RELATIVE_INCLUDE_PATHS false
+ set_fileset_property SIM_VERILOG ENABLE_FILE_OVERWRITE_MODE true
+ 
+ add_fileset SIM_VHDL SIM_VHDL generate_sim
+-set_fileset_property SIM_VHDL TOP_LEVEL altera_asmi2_qspi_interface
++set_fileset_property SIM_VHDL TOP_LEVEL arduino_asmi2_qspi_interface
+ set_fileset_property SIM_VHDL ENABLE_RELATIVE_INCLUDE_PATHS false
+ set_fileset_property SIM_VHDL ENABLE_FILE_OVERWRITE_MODE true
+ 
+@@ -173,7 +173,7 @@
+     }
+     
+     set this_dir      [ get_module_property MODULE_DIRECTORY ]
+-    set template_file [ file join $this_dir "altera_asmi2_qspi_interface.sv.terp" ]
++    set template_file [ file join $this_dir "arduino_asmi2_qspi_interface.sv.terp" ]
+     set template      [ read [ open $template_file r ] ]
+     
+     set params(use_gpio)            $use_gpio
+@@ -181,12 +181,12 @@
+     set params(data_width)          [get_parameter_value DATA_WIDTH]
+     set result          [ altera_terp $template params ]
+     
+-    set output_file     [ create_temp_file altera_asmi2_qspi_interface.sv ]
++    set output_file     [ create_temp_file arduino_asmi2_qspi_interface.sv ]
+     set output_handle   [ open $output_file w ]
+     puts $output_handle $result
+     close $output_handle
+     
+-    add_fileset_file altera_asmi2_qspi_interface.sv SYSTEM_VERILOG PATH ${output_file}
++    add_fileset_file arduino_asmi2_qspi_interface.sv SYSTEM_VERILOG PATH ${output_file}
+ }
+ 
+ 
+@@ -360,7 +360,7 @@
+     } else {
+         set ncs_count   1
+ 
+-        if { [check_device_family_equivalence $dev_family $device_28nm] } {
++        if { [check_device_family_equivalence $dev_family $device_28nm] || [check_device_family_equivalence $dev_family "Cyclone 10 LP"]} {
+             set data_count  4
+         } else {
+             set data_count  2
+diff -Naur pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl
+--- pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl	2018-08-22 19:45:29.579068400 +0200
++++ pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl	2018-08-22 19:45:06.073504300 +0200
+@@ -24,7 +24,7 @@
+ # +-----------------------------------
+ # | module ALTASMI_PARALLEL
+ # +-----------------------------------
+-set_module_property NAME                            altera_asmi_parallel2
++set_module_property NAME                            arduino_asmi_parallel2
+ set_module_property AUTHOR                          "Intel Corporation"
+ set_module_property DATASHEET_URL                   "http://www.altera.com/literature/ug/ug_altasmi_parallel.pdf"
+ set_module_property DESCRIPTION                     "The Altera ASMI Parallel megafunction provides access to erasable \
+@@ -44,7 +44,7 @@
+ add_display_item "" "Settings" GROUP tab
+ 
+ # Source files
+-source altera_asmi_parallel2_hw_proc.tcl
++source arduino_asmi_parallel2_hw_proc.tcl
+ source altera_asmi_parallel2_ui_settings.tcl
+ source altera_asmi_parallel2_ui_configuration.tcl
+ 
+diff -Naur pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw_proc.tcl arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw_proc.tcl
+--- pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw_proc.tcl	2018-08-22 19:45:29.630930100 +0200
++++ pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw_proc.tcl	2018-08-22 19:45:06.046575500 +0200
+@@ -251,7 +251,7 @@
+     0 {
+         add_instance asmi2_cmd_generator_0 altera_asmi2_cmd_generator 
+ 
+-        add_instance asmi2_qspi_interface_0 altera_asmi2_qspi_interface 
++        add_instance asmi2_qspi_interface_0 arduino_asmi2_qspi_interface 
+         set_instance_parameter_value asmi2_qspi_interface_0 {DATA_WIDTH} $io_mode
+         set_instance_parameter_value asmi2_qspi_interface_0 {DISABLE_ASMIBLOCK} $disable_asmiblock
+         set_instance_parameter_value asmi2_qspi_interface_0 {USE_GPIO} $use_gpio
+diff -Naur pgm/arduino_generic_qspi_controller2/arduino_generic_qspi_controller2_hw.tcl arduino_generic_qspi_controller2/arduino_generic_qspi_controller2_hw.tcl
+--- pgm/arduino_generic_qspi_controller2/arduino_generic_qspi_controller2_hw.tcl	2018-08-22 19:45:29.190107000 +0200
++++ pgm/arduino_generic_qspi_controller2/arduino_generic_qspi_controller2_hw.tcl	2018-08-22 19:45:06.050565400 +0200
+@@ -17,13 +17,13 @@
+ # module altera_trace_wrapper
+ # 
+ set_module_property DESCRIPTION "This component is a generic QSPI controller which allows user to access any QSPI devices"
+-set_module_property NAME altera_generic_quad_spi_controller2
++set_module_property NAME arduino_generic_quad_spi_controller2
+ set_module_property VERSION 18.0
+ set_module_property INTERNAL false
+ set_module_property OPAQUE_ADDRESS_MAP true
+ set_module_property GROUP "Memory Interfaces and Controllers/Flash"
+ set_module_property AUTHOR "Intel Corporation"
+-set_module_property DISPLAY_NAME "Generic QUAD SPI controller II Intel FPGA IP"
++set_module_property DISPLAY_NAME "Arduino Generic QUAD SPI controller II Intel FPGA IP"
+ set_module_property INSTANTIATE_IN_SYSTEM_MODULE true
+ set_module_property HIDE_FROM_QUARTUS false
+ set_module_property EDITABLE true
+@@ -144,6 +144,13 @@
+ set_parameter_property CHIP_SELS HDL_PARAMETER true
+ set_parameter_property CHIP_SELS AFFECTS_GENERATION true
+ 
++add_parameter ATOM STRING "UNIDIRECTIONAL"
++set_parameter_property ATOM DISPLAY_NAME "export unidirectional interface"
++set_parameter_property ATOM ALLOWED_RANGES {"BIDIRECTIONAL" "UNIDIRECTIONAL"}
++set_parameter_property ATOM DESCRIPTION "selects wether to export unidirectional or bidirectional interface"
++set_parameter_property ATOM HDL_PARAMETER true
++set_parameter_property ATOM AFFECTS_GENERATION true
++
+ # +-----------------------------------
+ 
+ # add system info parameter
+@@ -258,7 +265,7 @@
+     set_instance_parameter_value reset {NUM_RESET_OUTPUTS} {1}
+     set_instance_parameter_value reset {USE_RESET_REQUEST} {0}
+ 
+-	add_instance	asmi2_inst_qspi_ctrl altera_asmi_parallel2 18.0
++	add_instance	asmi2_inst_qspi_ctrl arduino_asmi_parallel2 18.0
+ 	add_instance	addr_adaption_1 altera_qspi_address_adaption 18.0
+ 
+ 	#--------------------------------------------- settings that exist in all procedure ------------------------------------------------
+@@ -270,7 +277,7 @@
+ 	set QSPI_list {"EPCQ16" "EPCQ32" "EPCQ64" "EPCQ128" "EPCQ256" "EPCQL256" "EPCQ512" "EPCQL512" "EPCQL1024" \
+ 							"N25Q16" "N25Q32" "N25Q64" "N25Q128" "N25Q256" "N25Q256-L" "N25Q512" "N25Q512-L" "N25Q1024-L" "Micron512"  "MT25QL256" "MT25QL512" "MT25QU256" "MT25QU512" "MT25QU01"}
+ 	# devices that supported QSPI - Quad/Dual data width, asmi_dataout, asmi_sdoin, asmi_dataoe
+-	set supported_QSPI_devices_list {"Arria 10" "Cyclone V" "Arria V GZ" "Arria V" "Stratix V" "MAX 10 FPGA" "Cyclone 10 GX" "Stratix 10"}
++	set supported_QSPI_devices_list {"Arria 10" "Cyclone V" "Arria V GZ" "Arria V" "Stratix V" "MAX 10 FPGA" "Cyclone 10 LP" "Cyclone 10 GX" "Stratix 10"}
+ 	
+ 	# devices that supported simulation
+ 	set supported_sim_devices_list {"Arria 10" "Cyclone V" "Arria V GZ" "Arria V" "Stratix V" "Cyclone 10 GX"}
+@@ -496,13 +503,20 @@
+ 	# connection point conduit_end
+ 	#
+ 	if {[ get_parameter_value DDASI ] eq "1"} {
+-		# turn on use PSI pin in asmi2_inst_qspi_ctrl
+-		set_instance_parameter_value 	asmi2_inst_qspi_ctrl gui_use_gpio	true
+ 		set_instance_parameter_value 	asmi2_inst_qspi_ctrl CHIP_SELS	$CHIP_SELS
+-		
+-		add_interface qspi_pins conduit end
+-		set_interface_property qspi_pins EXPORT_OF asmi2_inst_qspi_ctrl.qspi_pins
+-		set_interface_property qspi_pins PORT_NAME_MAP "flash_dclk_out qspi_pins_dclk flash_ncs qspi_pins_ncs flash_dataout qspi_pins_data"
++        if {[ get_parameter_value ATOM ] eq "UNIDIRECTIONAL"} {
++			set_instance_parameter_value 	asmi2_inst_qspi_ctrl gui_use_gpio	false
++			set_instance_parameter_value    asmi2_inst_qspi_ctrl gui_use_asmiblock true
++			add_interface qspi_pins conduit end
++			set_interface_property qspi_pins EXPORT_OF asmi2_inst_qspi_ctrl.atom_ports
++			set_interface_property qspi_pins PORT_NAME_MAP "atom_ports_dclk qspi_pins_dclk atom_ports_ncs qspi_pins_ncs atom_ports_dataout qspi_pins_dataout atom_ports_datain qspi_pins_datain atom_ports_dataoe qspi_pins_dataoe atom_ports_oe qspi_pins_oe"
++		} else {
++			# turn on use PSI pin in asmi2_inst_qspi_ctrl
++			set_instance_parameter_value 	asmi2_inst_qspi_ctrl gui_use_gpio	true
++			add_interface qspi_pins conduit end
++			set_interface_property qspi_pins EXPORT_OF asmi2_inst_qspi_ctrl.qspi_pins
++			set_interface_property qspi_pins PORT_NAME_MAP "flash_dclk_out qspi_pins_dclk flash_ncs qspi_pins_ncs flash_dataout qspi_pins_data"
++		}
+ 		#set_interface_property qspi_pins PORT_NAME_MAP "flash_ncs qspi_pins_ncs"
+ 		#set_interface_property qspi_pins PORT_NAME_MAP "flash_dataout qspi_pins_data"
+ 		#add_interface flash_dataout conduit end
+@@ -560,7 +574,7 @@
+             set_interface_property reset PORT_NAME_MAP "reset_n in_reset_n"
+         } else {
+         	# remap port name but not qspi_pins interface since this is in asmi2 component
+-        	if {$interface ne "qspi_pins"} {
++        	if {$interface ne "qspi_pins" && $interface ne "atom_ports"} {
+             	foreach port [get_instance_interface_ports addr_adaption_1 $interface] {
+                 	set the_ports($port) $port
+             	}
+diff -Naur pgm/arduino_generic_qspi_controller2/arduino_generic_quad_spi_controller2_sw.tcl arduino_generic_qspi_controller2/arduino_generic_quad_spi_controller2_sw.tcl
+--- pgm/arduino_generic_qspi_controller2/arduino_generic_quad_spi_controller2_sw.tcl	2018-08-22 19:45:29.112314100 +0200
++++ pgm/arduino_generic_qspi_controller2/arduino_generic_quad_spi_controller2_sw.tcl	2018-08-22 19:45:06.047573800 +0200
+@@ -16,10 +16,10 @@
+ #
+ 
+ # Create a new driver
+-create_driver altera_generic_quad_spi_controller2
++create_driver arduino_generic_quad_spi_controller2
+ 
+-# Associate it with some hardware known as "altera_generic_quad_spi_controller2"
+-set_sw_property hw_class_name altera_generic_quad_spi_controller2
++# Associate it with some hardware known as "arduino_generic_quad_spi_controller2"
++set_sw_property hw_class_name arduino_generic_quad_spi_controller2
+ 
+ # The version of this driver
+ set_sw_property version 18.0
+@@ -50,11 +50,11 @@
+ #
+ 
+ # Header files
+-add_sw_property include_source HAL/inc/altera_generic_quad_spi_controller2.h
+-add_sw_property include_source inc/altera_generic_quad_spi_controller2_regs.h
++add_sw_property include_source HAL/inc/arduino_generic_quad_spi_controller2.h
++add_sw_property include_source inc/arduino_generic_quad_spi_controller2_regs.h
+ 
+ # C/C++ source files
+-add_sw_property c_source HAL/src/altera_generic_quad_spi_controller2.c
++add_sw_property c_source HAL/src/arduino_generic_quad_spi_controller2.c
+ 
+ # This driver supports HAL & UCOSII BSP (OS) types
+ add_sw_property supported_bsp_type HAL 
+diff -Naur pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_controller2_regs.h arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_controller2_regs.h
+--- pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_controller2_regs.h	2018-08-22 19:45:29.194096200 +0200
++++ pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_controller2_regs.h	2018-08-22 19:45:06.054554900 +0200
+@@ -28,8 +28,8 @@
+ *                                                                             *
+ ******************************************************************************/
+ 
+-#ifndef __ALTERA_QSPI_CONTROLLER2_REGS_H__
+-#define __ALTERA_QSPI_CONTROLLER2_REGS_H__
++#ifndef __ARDUINO_QSPI_CONTROLLER2_REGS_H__
++#define __ARDUINO_QSPI_CONTROLLER2_REGS_H__
+ 
+ #include <io.h>
+ 
+@@ -41,31 +41,31 @@
+  * data sheet,
+  *
+  */
+-#define ALTERA_QSPI_CONTROLLER2_STATUS_REG                       (0x0)
++#define ARDUINO_QSPI_CONTROLLER2_STATUS_REG                       (0x0)
+ 
+ /*
+  * QSPI_RD_STATUS register access macros
+  */
+-#define IOADDR_ALTERA_QSPI_CONTROLLER2_STATUS(base) \
+-    __IO_CALC_ADDRESS_DYNAMIC(base, ALTERA_QSPI_CONTROLLER2_STATUS_REG)
++#define IOADDR_ARDUINO_QSPI_CONTROLLER2_STATUS(base) \
++    __IO_CALC_ADDRESS_DYNAMIC(base, ARDUINO_QSPI_CONTROLLER2_STATUS_REG)
+ 
+-#define IORD_ALTERA_QSPI_CONTROLLER2_STATUS(base) \
+-    IORD_32DIRECT(base, ALTERA_QSPI_CONTROLLER2_STATUS_REG)
++#define IORD_ARDUINO_QSPI_CONTROLLER2_STATUS(base) \
++    IORD_32DIRECT(base, ARDUINO_QSPI_CONTROLLER2_STATUS_REG)
+ 
+-#define IOWR_ALTERA_QSPI_CONTROLLER2_STATUS(base, data) \
+-    IOWR_32DIRECT(base, ALTERA_QSPI_CONTROLLER2_STATUS_REG, data)
++#define IOWR_ARDUINO_QSPI_CONTROLLER2_STATUS(base, data) \
++    IOWR_32DIRECT(base, ARDUINO_QSPI_CONTROLLER2_STATUS_REG, data)
+ 
+ /*
+  * QSPI_RD_STATUS register description macros
+  */
+ 
+ /** Write in progress bit */
+-#define ALTERA_QSPI_CONTROLLER2_STATUS_WIP_MASK                  (0x00000001)
+-#define ALTERA_QSPI_CONTROLLER2_STATUS_WIP_AVAILABLE             (0x00000000)
+-#define ALTERA_QSPI_CONTROLLER2_STATUS_WIP_BUSY                  (0x00000001)
++#define ARDUINO_QSPI_CONTROLLER2_STATUS_WIP_MASK                  (0x00000001)
++#define ARDUINO_QSPI_CONTROLLER2_STATUS_WIP_AVAILABLE             (0x00000000)
++#define ARDUINO_QSPI_CONTROLLER2_STATUS_WIP_BUSY                  (0x00000001)
+ /** When to time out a poll of the write in progress bit */
+ /* 0.7 sec time out */
+-#define ALTERA_QSPI_CONTROLLER2_1US_TIMEOUT_VALUE    		    700000 
++#define ARDUINO_QSPI_CONTROLLER2_1US_TIMEOUT_VALUE    		    700000 
+ 
+ /*
+  * QSPI_RD_SID register offset
+@@ -77,19 +77,19 @@
+  * This register is valid only if the device is an EPCS.
+  *
+  */
+-#define ALTERA_QSPI_CONTROLLER2_SID_REG                          (0x4)
++#define ARDUINO_QSPI_CONTROLLER2_SID_REG                          (0x4)
+ 
+ /*
+  * QSPI_RD_SID register access macros
+  */
+-#define IOADDR_ALTERA_QSPI_CONTROLLER2_SID(base) \
+-    __IO_CALC_ADDRESS_DYNAMIC(base, ALTERA_QSPI_CONTROLLER2_SID_REG)
++#define IOADDR_ARDUINO_QSPI_CONTROLLER2_SID(base) \
++    __IO_CALC_ADDRESS_DYNAMIC(base, ARDUINO_QSPI_CONTROLLER2_SID_REG)
+ 
+-#define IORD_ALTERA_QSPI_CONTROLLER2_SID(base) \
+-    IORD_32DIRECT(base, ALTERA_QSPI_CONTROLLER2_SID_REG)
++#define IORD_ARDUINO_QSPI_CONTROLLER2_SID(base) \
++    IORD_32DIRECT(base, ARDUINO_QSPI_CONTROLLER2_SID_REG)
+ 
+-#define IOWR_ALTERA_QSPI_CONTROLLER2_SID(base, data) \
+-    IOWR_32DIRECT(base, ALTERA_QSPI_CONTROLLER2_SID_REG, data)
++#define IOWR_ARDUINO_QSPI_CONTROLLER2_SID(base, data) \
++    IOWR_32DIRECT(base, ARDUINO_QSPI_CONTROLLER2_SID_REG, data)
+ 
+ /*
+  * QSPI_RD_SID register description macros
+@@ -97,10 +97,10 @@
+  * Specific device values obtained from Table 14 of: 
+  * "Serial Configuration (EPCS) Devices Datasheet"
+  */
+-#define ALTERA_QSPI_CONTROLLER2_SID_MASK                         (0x000000FF)
+-#define ALTERA_QSPI_CONTROLLER2_SID_EPCS16                       (0x00000014)
+-#define ALTERA_QSPI_CONTROLLER2_SID_EPCS64                       (0x00000016)
+-#define ALTERA_QSPI_CONTROLLER2_SID_EPCS128                      (0x00000018)
++#define ARDUINO_QSPI_CONTROLLER2_SID_MASK                         (0x000000FF)
++#define ARDUINO_QSPI_CONTROLLER2_SID_EPCS16                       (0x00000014)
++#define ARDUINO_QSPI_CONTROLLER2_SID_EPCS64                       (0x00000016)
++#define ARDUINO_QSPI_CONTROLLER2_SID_EPCS128                      (0x00000018)
+ 
+ /*
+  * QSPI_RD_RDID register offset
+@@ -112,19 +112,19 @@
+  * This register is only valid if the device is an EPCQ/QSPI.
+  *
+  */
+-#define ALTERA_QSPI_CONTROLLER2_RDID_REG                         (0x8)
++#define ARDUINO_QSPI_CONTROLLER2_RDID_REG                         (0x8)
+ 
+ /*
+  * QSPI_RD_RDID register access macros
+  */
+-#define IOADDR_ALTERA_QSPI_CONTROLLER2_RDID(base) \
+-    __IO_CALC_ADDRESS_DYNAMIC(base, ALTERA_QSPI_CONTROLLER2_RDID_REG)
++#define IOADDR_ARDUINO_QSPI_CONTROLLER2_RDID(base) \
++    __IO_CALC_ADDRESS_DYNAMIC(base, ARDUINO_QSPI_CONTROLLER2_RDID_REG)
+ 
+-#define IORD_ALTERA_QSPI_CONTROLLER2_RDID(base) \
+-    IORD_32DIRECT(base, ALTERA_QSPI_CONTROLLER2_RDID_REG)
++#define IORD_ARDUINO_QSPI_CONTROLLER2_RDID(base) \
++    IORD_32DIRECT(base, ARDUINO_QSPI_CONTROLLER2_RDID_REG)
+ 
+-#define IOWR_ALTERA_QSPI_CONTROLLER2_RDID(base, data) \
+-    IOWR_32DIRECT(base, ALTERA_QSPI_CONTROLLER2_RDID_REG, data)
++#define IOWR_ARDUINO_QSPI_CONTROLLER2_RDID(base, data) \
++    IOWR_32DIRECT(base, ARDUINO_QSPI_CONTROLLER2_RDID_REG, data)
+ 
+ /*
+  * QSPI_RD_RDID register description macros
+@@ -133,14 +133,14 @@
+  *  "Quad-Serial Configuration (EPCQ/QSPI? (www.altera.com/literature/hb/cfg/cfg_cf52012.pdf))
+  *  Devices Datasheet"
+  */
+-#define ALTERA_QSPI_CONTROLLER2_RDID_MASK                         (0x000000FF)
+-#define ALTERA_QSPI_CONTROLLER2_RDID_QSPI16                       (0x00000015)
+-#define ALTERA_QSPI_CONTROLLER2_RDID_QSPI32                       (0x00000016)
+-#define ALTERA_QSPI_CONTROLLER2_RDID_QSPI64                       (0x00000017)
+-#define ALTERA_QSPI_CONTROLLER2_RDID_QSPI128                      (0x00000018)
+-#define ALTERA_QSPI_CONTROLLER2_RDID_QSPI256                      (0x00000019)
+-#define ALTERA_QSPI_CONTROLLER2_RDID_QSPI512                      (0x00000020)
+-#define ALTERA_QSPI_CONTROLLER2_RDID_QSPI1024                     (0x00000021)
++#define ARDUINO_QSPI_CONTROLLER2_RDID_MASK                         (0x000000FF)
++#define ARDUINO_QSPI_CONTROLLER2_RDID_QSPI16                       (0x00000015)
++#define ARDUINO_QSPI_CONTROLLER2_RDID_QSPI32                       (0x00000016)
++#define ARDUINO_QSPI_CONTROLLER2_RDID_QSPI64                       (0x00000017)
++#define ARDUINO_QSPI_CONTROLLER2_RDID_QSPI128                      (0x00000018)
++#define ARDUINO_QSPI_CONTROLLER2_RDID_QSPI256                      (0x00000019)
++#define ARDUINO_QSPI_CONTROLLER2_RDID_QSPI512                      (0x00000020)
++#define ARDUINO_QSPI_CONTROLLER2_RDID_QSPI1024                     (0x00000021)
+ 
+ /*
+  * QSPI_MEM_OP register offset
+@@ -148,31 +148,31 @@
+  * The QSPI_MEM_OP register is used to do memory protect and erase operations
+  *
+  */
+-#define ALTERA_QSPI_CONTROLLER2_MEM_OP_REG                       (0xC)
++#define ARDUINO_QSPI_CONTROLLER2_MEM_OP_REG                       (0xC)
+ 
+ /*
+  * QSPI_MEM_OP register access macros
+  */
+-#define IOADDR_ALTERA_QSPI_CONTROLLER2_MEM_OP(base) \
+-    __IO_CALC_ADDRESS_DYNAMIC(base, ALTERA_QSPI_CONTROLLER2_MEM_OP_REG)
++#define IOADDR_ARDUINO_QSPI_CONTROLLER2_MEM_OP(base) \
++    __IO_CALC_ADDRESS_DYNAMIC(base, ARDUINO_QSPI_CONTROLLER2_MEM_OP_REG)
+ 
+-#define IORD_ALTERA_QSPI_CONTROLLER2_MEM_OP(base) \
+-    IORD_32DIRECT(base, ALTERA_QSPI_CONTROLLER2_MEM_OP_REG)
++#define IORD_ARDUINO_QSPI_CONTROLLER2_MEM_OP(base) \
++    IORD_32DIRECT(base, ARDUINO_QSPI_CONTROLLER2_MEM_OP_REG)
+ 
+-#define IOWR_ALTERA_QSPI_CONTROLLER2_MEM_OP(base, data) \
+-    IOWR_32DIRECT(base, ALTERA_QSPI_CONTROLLER2_MEM_OP_REG, data)
++#define IOWR_ARDUINO_QSPI_CONTROLLER2_MEM_OP(base, data) \
++    IOWR_32DIRECT(base, ARDUINO_QSPI_CONTROLLER2_MEM_OP_REG, data)
+ 
+ /*
+  * QSPI_MEM_OP register description macros
+  */
+-#define ALTERA_QSPI_CONTROLLER2_MEM_OP_CMD_MASK                  (0x00000003)
+-#define ALTERA_QSPI_CONTROLLER2_MEM_OP_BULK_ERASE_CMD            (0x00000001)
+-#define ALTERA_QSPI_CONTROLLER2_MEM_OP_SECTOR_ERASE_CMD          (0x00000002)
+-#define ALTERA_QSPI_CONTROLLER2_MEM_OP_SECTOR_PROTECT_CMD        (0x00000003)
+-#define ALTERA_QSPI_CONTROLLER2_MEM_OP_WRITE_ENABLE_CMD          (0x00000004)
++#define ARDUINO_QSPI_CONTROLLER2_MEM_OP_CMD_MASK                  (0x00000003)
++#define ARDUINO_QSPI_CONTROLLER2_MEM_OP_BULK_ERASE_CMD            (0x00000001)
++#define ARDUINO_QSPI_CONTROLLER2_MEM_OP_SECTOR_ERASE_CMD          (0x00000002)
++#define ARDUINO_QSPI_CONTROLLER2_MEM_OP_SECTOR_PROTECT_CMD        (0x00000003)
++#define ARDUINO_QSPI_CONTROLLER2_MEM_OP_WRITE_ENABLE_CMD          (0x00000004)
+ 
+ /** see datasheet for sector values */
+-#define ALTERA_QSPI_CONTROLLER2_MEM_OP_SECTOR_VALUE_MASK         (0x00FFFF00)
++#define ARDUINO_QSPI_CONTROLLER2_MEM_OP_SECTOR_VALUE_MASK         (0x00FFFF00)
+ 
+ /*
+  * QSPI_ISR register offset
+@@ -181,28 +181,28 @@
+  * operation triggered an interrupt
+  *
+  */
+-#define ALTERA_QSPI_CONTROLLER2_ISR_REG                          (0x10)
++#define ARDUINO_QSPI_CONTROLLER2_ISR_REG                          (0x10)
+ 
+ /*
+  * QSPI_ISR register access macros
+  */
+-#define IOADDR_ALTERA_QSPI_CONTROLLER2_ISR(base) \
+-    __IO_CALC_ADDRESS_DYNAMIC(base, ALTERA_QSPI_CONTROLLER2_ISR_REG)
++#define IOADDR_ARDUINO_QSPI_CONTROLLER2_ISR(base) \
++    __IO_CALC_ADDRESS_DYNAMIC(base, ARDUINO_QSPI_CONTROLLER2_ISR_REG)
+ 
+-#define IORD_ALTERA_QSPI_CONTROLLER2_ISR(base) \
+-    IORD_32DIRECT(base, ALTERA_QSPI_CONTROLLER2_ISR_REG)
++#define IORD_ARDUINO_QSPI_CONTROLLER2_ISR(base) \
++    IORD_32DIRECT(base, ARDUINO_QSPI_CONTROLLER2_ISR_REG)
+ 
+-#define IOWR_ALTERA_QSPI_CONTROLLER2_ISR(base, data) \
+-    IOWR_32DIRECT(base, ALTERA_QSPI_CONTROLLER2_ISR_REG, data)
++#define IOWR_ARDUINO_QSPI_CONTROLLER2_ISR(base, data) \
++    IOWR_32DIRECT(base, ARDUINO_QSPI_CONTROLLER2_ISR_REG, data)
+ 
+ /*
+  * QSPI_ISR register description macros
+  */
+-#define ALTERA_QSPI_CONTROLLER2_ISR_ILLEGAL_ERASE_MASK           (0x00000001)
+-#define ALTERA_QSPI_CONTROLLER2_ISR_ILLEGAL_ERASE_ACTIVE         (0x00000001)
++#define ARDUINO_QSPI_CONTROLLER2_ISR_ILLEGAL_ERASE_MASK           (0x00000001)
++#define ARDUINO_QSPI_CONTROLLER2_ISR_ILLEGAL_ERASE_ACTIVE         (0x00000001)
+ 
+-#define ALTERA_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_MASK           (0x00000002)
+-#define ALTERA_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_ACTIVE         (0x00000002)
++#define ARDUINO_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_MASK           (0x00000002)
++#define ARDUINO_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_ACTIVE         (0x00000002)
+ 
+ 
+ /*
+@@ -212,50 +212,50 @@
+  * interrupts.
+  *
+  */
+-#define ALTERA_QSPI_CONTROLLER2_IMR_REG                          (0x14)
++#define ARDUINO_QSPI_CONTROLLER2_IMR_REG                          (0x14)
+ 
+ /*
+  * QSPI_IMR register access macros
+  */
+-#define IOADDR_ALTERA_QSPI_CONTROLLER2_IMR(base) \
+-    __IO_CALC_ADDRESS_DYNAMIC(base, ALTERA_QSPI_CONTROLLER2_IMR_REG)
++#define IOADDR_ARDUINO_QSPI_CONTROLLER2_IMR(base) \
++    __IO_CALC_ADDRESS_DYNAMIC(base, ARDUINO_QSPI_CONTROLLER2_IMR_REG)
+ 
+-#define IORD_ALTERA_QSPI_CONTROLLER2_IMR(base) \
+-    IORD_32DIRECT(base, ALTERA_QSPI_CONTROLLER2_IMR_REG)
++#define IORD_ARDUINO_QSPI_CONTROLLER2_IMR(base) \
++    IORD_32DIRECT(base, ARDUINO_QSPI_CONTROLLER2_IMR_REG)
+ 
+-#define IOWR_ALTERA_QSPI_CONTROLLER2_IMR(base, data) \
+-    IOWR_32DIRECT(base, ALTERA_QSPI_CONTROLLER2_IMR_REG, data)
++#define IOWR_ARDUINO_QSPI_CONTROLLER2_IMR(base, data) \
++    IOWR_32DIRECT(base, ARDUINO_QSPI_CONTROLLER2_IMR_REG, data)
+ 
+ /*
+  * QSPI_IMR register description macros
+  */
+-#define ALTERA_QSPI_CONTROLLER2_IMR_ILLEGAL_ERASE_MASK           (0x00000001)
+-#define ALTERA_QSPI_CONTROLLER2_IMR_ILLEGAL_ERASE_ENABLED        (0x00000001)
++#define ARDUINO_QSPI_CONTROLLER2_IMR_ILLEGAL_ERASE_MASK           (0x00000001)
++#define ARDUINO_QSPI_CONTROLLER2_IMR_ILLEGAL_ERASE_ENABLED        (0x00000001)
+ 
+-#define ALTERA_QSPI_CONTROLLER2_IMR_ILLEGAL_WRITE_MASK           (0x00000002)
+-#define ALTERA_QSPI_CONTROLLER2_IMR_ILLEGAL_WRITE_ENABLED        (0x00000002)
++#define ARDUINO_QSPI_CONTROLLER2_IMR_ILLEGAL_WRITE_MASK           (0x00000002)
++#define ARDUINO_QSPI_CONTROLLER2_IMR_ILLEGAL_WRITE_ENABLED        (0x00000002)
+ 
+ /*
+  * QSPI_CHIP_SELECT register offset
+  *
+  * The QSPI_CHIP_SELECT register is used to issue chip select 
+  */
+-#define ALTERA_QSPI_CHIP_SELECT_REG                          (0x18)
++#define ARDUINO_QSPI_CHIP_SELECT_REG                          (0x18)
+ 
+ /*
+  * QSPI_CHIP_SELECT register access macros
+  */
+-#define IOADDR_ALTERA_QSPI_CHIP_SELECT(base) \
+-    __IO_CALC_ADDRESS_DYNAMIC(base, ALTERA_QSPI_CHIP_SELECT_REG)
++#define IOADDR_ARDUINO_QSPI_CHIP_SELECT(base) \
++    __IO_CALC_ADDRESS_DYNAMIC(base, ARDUINO_QSPI_CHIP_SELECT_REG)
+ 
+-#define IOWR_ALTERA_QSPI_CHIP_SELECT(base, data) \
+-    IOWR_32DIRECT(base, ALTERA_QSPI_CHIP_SELECT_REG, data)
++#define IOWR_ARDUINO_QSPI_CHIP_SELECT(base, data) \
++    IOWR_32DIRECT(base, ARDUINO_QSPI_CHIP_SELECT_REG, data)
+ 
+ /*
+  * QSPI_CHIP_SELECT register description macros
+  */
+-#define ALTERA_QSPI_CHIP1_SELECT        (0x00000001)
+-#define ALTERA_QSPI_CHIP2_SELECT        (0x00000002)
+-#define ALTERA_QSPI_CHIP3_SELECT        (0x00000003)
++#define ARDUINO_QSPI_CHIP1_SELECT        (0x00000001)
++#define ARDUINO_QSPI_CHIP2_SELECT        (0x00000002)
++#define ARDUINO_QSPI_CHIP3_SELECT        (0x00000003)
+ 
+-#endif /* __ALTERA_QSPI_CONTROLLER2_REGS_H__ */
++#endif /* __ARDUINO_QSPI_CONTROLLER2_REGS_H__ */
+--- altera_components.ipx	2018-08-22 19:10:11.799634200 +0200
++++ altera_components.ipx	2018-08-22 19:41:22.760080600 +0200
+@@ -2039,6 +2039,19 @@
+   <tag2 key="PRESET_TYPE" value="altera_asmi_parallel2" />
+  </plugin>
+  <plugin
++   name="N25Q016.qprs"
++   file="pgm/arduino_generic_qspi_controller2/N25Q016.qprs"
++   displayName="N25Q016.qprs"
++   version="0.0"
++   description=""
++   tags=""
++   categories=""
++   type="com.altera.sopcmodel.util.IElementPresetList"
++   subtype=""
++   factory="PresetFactory">
++  <tag2 key="PRESET_TYPE" value="arduino_asmi_parallel2" />
++ </plugin>
++ <plugin
+    name="N25Q032.qprs"
+    file="pgm/altera_asmi_parallel2/presets/N25Q032.qprs"
+    displayName="N25Q032.qprs"
+@@ -9704,6 +9717,25 @@
+   <tag2 key="TCL_PACKAGE_VERSION" value="16.1" />
+  </component>
+  <component
++   name="arduino_asmi2_qspi_interface"
++   file="pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.tcl"
++   displayName="Arduino ASMI2 QSPI Interface"
++   version="18.0"
++   description=""
++   tags="AUTHORSHIP=Intel Corporation /// CONNECTION_TYPES=avalon_streaming,clock,conduit,reset /// INTERNAL_COMPONENT=true"
++   categories="Basic Functions/Configuration and Programming"
++   factory="TclModuleFactory">
++  <tag2 key="ALLOW_GREYBOX_GENERATION" value="false" />
++  <tag2 key="COMPONENT_EDITABLE" value="false" />
++  <tag2 key="COMPONENT_HIDE_FROM_SOPC" value="true" />
++  <tag2 key="ELABORATION_CALLBACK" value="elaboration" />
++  <tag2 key="INSTANTIATE_IN_SYSTEM_MODULE" value="true" />
++  <tag2 key="OPAQUE_ADDRESS_MAP" value="true" />
++  <tag2 key="REPORT_HIERARCHY" value="false" />
++  <tag2 key="SUPPORTED_FILE_SETS" value="QUARTUS_SYNTH,SIM_VERILOG,SIM_VHDL" />
++  <tag2 key="TCL_PACKAGE_VERSION" value="16.1" />
++ </component>
++ <component
+    name="altera_asmi2_xip_controller"
+    file="pgm/altera_asmi_parallel2/xip_controller/altera_asmi2_xip_controller_hw.tcl"
+    displayName="Altera ASMI2 XIP Controller"
+@@ -9778,6 +9810,29 @@
+      url="http://www.altera.com/literature/ug/ug_altasmi_parallel.pdf" />
+  </component>
+  <component
++   name="arduino_asmi_parallel2"
++   file="pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl"
++   displayName="Arduino ASMI Parallel II Core"
++   version="18.0"
++   description="The Altera ASMI Parallel megafunction provides access to erasable  programmable configurable serial (EPCS) and quad-serial configuration  (EPCQ) devices through parallel data input and output ports."
++   tags="AUTHORSHIP=Intel Corporation /// INTERNAL_COMPONENT=true"
++   categories="Basic Functions/Configuration and Programming"
++   factory="TclModuleFactory">
++  <tag2 key="COMPONENT_EDITABLE" value="false" />
++  <tag2 key="COMPONENT_HIDE_FROM_SOPC" value="true" />
++  <tag2 key="COMPOSITION_CALLBACK" value="compose" />
++  <tag2 key="INSTANTIATE_IN_SYSTEM_MODULE" value="true" />
++  <tag2
++     key="SUPPORTED_DEVICE_FAMILIES"
++     value="MAX 10 /// Arria 10 /// Cyclone V /// Arria V GZ /// Arria V /// Stratix V /// Stratix IV /// Cyclone IV GX /// Cyclone IV E /// Cyclone IV GX /// Arria II GZ /// Arria II GX /// Cyclone 10 LP /// Stratix 10" />
++  <tag2 key="TCL_PACKAGE_VERSION" value="16.0" />
++  <tag2 key="VALIDATION_CALLBACK" value="validation" />
++  <documentUrl
++     displayName="DATASHEET"
++     type="DATASHEET"
++     url="http://www.altera.com/literature/ug/ug_altasmi_parallel.pdf" />
++ </component>
++ <component
+    name="altera_asmi_parallel2_top"
+    file="pgm/altera_asmi_parallel2_top/altera_asmi_parallel2_top_hw.tcl"
+    displayName="ASMI Parallel II Intel FPGA IP"
+@@ -16138,6 +16193,48 @@
+    version="18.0"
+    description="This component is a generic QSPI controller which allows user to access any QSPI devices"
+    tags="AUTHORSHIP=Intel Corporation /// INTERNAL_COMPONENT=false"
++   categories="Memory Interfaces and Controllers/Flash"
++   factory="TclModuleFactory">
++  <tag2 key="ALLOW_GREYBOX_GENERATION" value="false" />
++  <tag2 key="COMPONENT_EDITABLE" value="false" />
++  <tag2 key="COMPONENT_HIDE_FROM_QUARTUS" value="false" />
++  <tag2 key="COMPONENT_HIDE_FROM_SOPC" value="true" />
++  <tag2 key="COMPOSITION_CALLBACK" value="compose" />
++  <tag2 key="INSTANTIATE_IN_SYSTEM_MODULE" value="true" />
++  <tag2 key="OPAQUE_ADDRESS_MAP" value="true" />
++  <tag2 key="REPORT_HIERARCHY" value="false" />
++  <tag2
++     key="SUPPORTED_DEVICE_FAMILIES"
++     value="Arria 10 /// Cyclone V /// Arria V GZ /// Arria V /// Stratix V /// MAX 10 /// Cyclone 10 LP /// Stratix 10" />
++  <tag2 key="TCL_PACKAGE_VERSION" value="16.1" />
++  <tag2 key="VALIDATION_CALLBACK" value="validation" />
++  <documentUrl
++     displayName="User Guide"
++     type="OTHER"
++     url="https://documentation.altera.com/#/link/sfo1400787952932/iga1431459053861" />
++  <documentUrl
++     displayName="Release Notes"
++     type="OTHER"
++     url="https://documentation.altera.com/#/link/hco1421698042087/hco1421698013408" />
++ </component>
++ <plugin
++   name="arduino_generic_quad_spi_controller2"
++   file="pgm/arduino_generic_qspi_controller2/arduino_generic_quad_spi_controller2_sw.tcl"
++   displayName="arduino_generic_quad_spi_controller2"
++   version="18.0"
++   description=""
++   tags="SW_DRIVER_OS_TYPE=hal,ucosii /// SW_DRIVER_ASSOCIATED_HW_MODULE=altera_generic_quad_spi_controller2"
++   categories="driver_element"
++   type="com.altera.entityinterfaces.IElementClass"
++   subtype="com.altera.embeddedsw.bsp.elements.IBaseSoftwareElement"
++   factory="EmbeddedSwTclDriverFactory" />
++ <component
++   name="arduino_generic_quad_spi_controller2"
++   file="pgm/arduino_generic_qspi_controller2/arduino_generic_qspi_controller2_hw.tcl"
++   displayName="Arduino Generic QUAD SPI controller II Intel FPGA IP"
++   version="18.0"
++   description="This component is a generic QSPI controller which allows user to access any QSPI devices"
++   tags="AUTHORSHIP=Intel Corporation /// INTERNAL_COMPONENT=false"
+    categories="Memory Interfaces and Controllers/Flash"
+    factory="TclModuleFactory">
+   <tag2 key="ALLOW_GREYBOX_GENERATION" value="false" />
