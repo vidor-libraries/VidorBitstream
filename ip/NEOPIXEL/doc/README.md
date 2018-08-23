@@ -8,5 +8,5 @@ Drives multiple neopixel strings of LEDs
 
 ## Available Documents
 * [IP Documentation](NEOPIXEL.md)
-* [NIOS Software Documentation](NEOPIXEL_sw.md)
+* [Soft Core Software Documentation](NEOPIXEL_sw.md)
 * [Arduino Class Documentation](NEOPIXEL_ino.md)
