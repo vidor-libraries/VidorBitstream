@@ -88,7 +88,54 @@ add_interface_port avalon_master iREAD_DATA readdata Input 32
 add_interface_port avalon_master iWAIT_REQUEST waitrequest Input 1
 add_interface_port avalon_master iREAD_DATA_VALID readdatavalid Input 1
 
+#
+# connection point event
+#
+add_interface event avalon end
+set_interface_property event addressUnits WORDS
+set_interface_property event associatedClock clock
+set_interface_property event associatedReset reset
+set_interface_property event bitsPerSymbol 8
+set_interface_property event burstOnBurstBoundariesOnly false
+set_interface_property event burstcountUnits WORDS
+set_interface_property event explicitAddressSpan 0
+set_interface_property event holdTime 0
+set_interface_property event linewrapBursts false
+set_interface_property event maximumPendingReadTransactions 0
+set_interface_property event maximumPendingWriteTransactions 0
+set_interface_property event readLatency 1
+set_interface_property event readWaitTime 0
+set_interface_property event setupTime 0
+set_interface_property event timingUnits Cycles
+set_interface_property event writeWaitTime 0
+set_interface_property event ENABLED true
+set_interface_property event EXPORT_OF ""
+set_interface_property event PORT_NAME_MAP ""
+set_interface_property event CMSIS_SVD_VARIABLES ""
+set_interface_property event SVD_ADDRESS_GROUP ""
 
+add_interface_port event iEVENT_WRITE_DATA writedata Input 32
+add_interface_port event iEVENT_WRITE write Input 1
+set_interface_assignment event embeddedsw.configuration.isFlash 0
+set_interface_assignment event embeddedsw.configuration.isMemoryDevice 0
+set_interface_assignment event embeddedsw.configuration.isNonVolatileStorage 0
+set_interface_assignment event embeddedsw.configuration.isPrintableDevice 0
+
+#
+# connection point irq
+#
+add_interface irq interrupt end
+set_interface_property irq associatedAddressablePoint "event"
+set_interface_property irq associatedClock clock
+set_interface_property irq bridgedReceiverOffset ""
+set_interface_property irq bridgesToReceiver ""
+set_interface_property irq ENABLED true
+set_interface_property irq EXPORT_OF ""
+set_interface_property irq PORT_NAME_MAP ""
+set_interface_property irq CMSIS_SVD_VARIABLES ""
+set_interface_property irq SVD_ADDRESS_GROUP ""
+
+add_interface_port irq oEVENT_EMPTY irq Output 1
 # 
 # connection point reset
 # 

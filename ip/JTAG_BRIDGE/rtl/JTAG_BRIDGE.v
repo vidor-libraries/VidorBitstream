@@ -34,7 +34,11 @@ module JTAG_BRIDGE (
   input  [31:0] iREAD_DATA,
   output [4:0]  oBURST_COUNT,
   input         iWAIT_REQUEST,
-  input         iREAD_DATA_VALID
+  input         iREAD_DATA_VALID,
+
+  input         iEVENT_WRITE,
+  input [31:0]  iEVENT_WRITE_DATA,
+  output        oEVENT_EMPTY
 );
 
 reg [31:0]  rBUFFER, rADDRESS, rDATA;
@@ -51,6 +55,9 @@ reg [4:0]   rDATA_CNT;
 reg [1:0]   rADDR_BITS;
 reg         rCDR_DELAYED,rSDR_DELAYED,rUIR_DELAYED ,rUDR_DELAYED  ;
 wire        wISSUE_COMMAND;
+reg         rEVENT_AVAIL;
+reg         rEVENT_ACK;
+reg  [31:0] rEVENT_DATA;
 
 assign wTDO           = rBUFFER[0];
 assign oWRITE         = !wWR_EMPTY& wWRITE_PHASE;
@@ -176,14 +183,23 @@ begin
       if (rCDR) begin
         rBITCNT<=0;
         rBUFFER<=wREAD_DATA;
-        rRD_STROBE<=1; // read data from FIFO and at the same time request next address
+        rRD_STROBE<=!wTDI; // read data from FIFO and at the same time request next address
       end
       if (rSDR) begin
         if (rBITCNT==31) begin
           rBUFFER<=wREAD_DATA;
-          rRD_STROBE<=1; // read data from FIFO and at the same time request next address
+          rRD_STROBE<=!wTDI; // read data from FIFO and at the same time request next address
         end
       end
+    end
+    2: if (rCDR || rSDR&&(rBITCNT==31)) begin
+      rBITCNT <= 0;
+      rBUFFER <= rEVENT_AVAIL ? rEVENT_DATA : 0;
+      rEVENT_ACK <= 1;
+    end
+    else if (rSDR) begin
+      if (rEVENT_ACK&&!rEVENT_AVAIL)
+        rEVENT_ACK <= 0;
     end
   endcase
 end
@@ -260,5 +276,23 @@ dcfifo  #(
     .wrfull     (),
     .wrusedw    ());
 
+
+always @(posedge iCLK)
+begin
+  if (iRESET) begin
+    rEVENT_AVAIL <= 0;
+    rEVENT_DATA <= 0;
+  end else begin
+    rPREVIOUS_ACK <= rEVENT_ACK;
+    if (iEVENT_WRITE&&!iEVENT_AVAIL) begin
+      rEVENT_DATA<= iEVENT_WRITE_DATA;
+      rEVENT_AVAIL <= 1;
+    end
+    if (rEVENT_AVAIL&&!rEVENT_ACK&&rPREVIOUS_ACK)
+      rEVENT_AVAIL <= 0;
+  end
+end
+
+assign oEVENT_EMPTY = !rEVENT_AVAIL;
 
 endmodule

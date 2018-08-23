@@ -2,7 +2,7 @@
 
 ## High level description
 The purpose of this software library is to implement high level communication between an external processor and a soft core running on the FPGA. Instantiation of the RPC module automatically instantiates a **MAILBOX** IP core which is used for the lower layer of communication.
-**RPC** APIs add on top of the **MAILBOX** IP core by adding a method to discover IP blocks instantiated in the FPGA, their properties and allows calling functions defined inside drivers running on the soft core.
+**RPC** APIs add on top of the **MAILBOX** IP core by adding a method to discover IP blocks instantiated in the FPGA, their properties and allows calling functions defined inside drivers running on the soft core. Finally this core allows sending events to the external processor to flag internal core status or virtual interrupts.
 
 ## Remote Procedure Call
 RPC is achieved by raising the *message available* pin from the external controller after writing procedure parameters in the mailbox. Procedure parameters are written at the start address of the mailbox and each parameter consists in a 32 bit word, where the first is used to identify the IP block instance, its eventual subchannel and the number of procedure to call. First Parameter is defined as follows:
@@ -24,7 +24,7 @@ Parameters are always encapsulated in 32 bit words (WORD), which are the smalles
 Data types longer than 32 bits but with fixed size are encapsulated with multiple WORDs. Variable length data sizes such as strings are passed as a sequence of WORDS containing a prefix WORD that indicates the length, in bytes of the following data.
 
 ## Return Value
-When function execution completes the soft core flags completion throuh the dedicated pin to the external processor and zeroes the requested instruction at first location of the mailbox. In addition to this return value is written from second WORD with the same convention of parameter passing.
+When function execution completes the soft core flags completion by zering the requested instruction at first location of the mailbox. In addition to this return value is written from second WORD with the same convention of parameter passing.
 
 ## Discovery
 Implementation of the discovery mechanism uses the following assumptions:
@@ -113,3 +113,17 @@ pins are identified by a 11 bit code where the 6 MSBs are the port number and th
 <tr><th>15:11    </th><th>10:5       </th><th>4:0      </th></tr>
 <tr><td>MUX index</td><td>Port number</td><td>Pin number</td><tr>
 </table>
+
+## Events
+
+FPGA is able to send events to the external processor using the dedicated pin from FPGA to processor. Events are stored in a dedicated FIFO which is filled by the IP blocks with their identifier along with an event id. Whenever there is at least 1 event in the queue the soft core will raise the RPC completion steadily until the events are read in full.
+Events are read by using a dedicated JTAG Bridge instruction that allows reading the FIFO. 
+
+<table>
+<tr><th colspan=3> Event ID                                </th></tr>
+<tr><th>31:24             </th><th>23:12  </th><th>11:0    </th></tr>
+<tr><td>Global Instance ID</td><td>Channel</td><td>Event ID</td><tr>
+</table>
+
+on the external processor side data should be read until pin does not get set back to zero.
+
