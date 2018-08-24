@@ -68,57 +68,65 @@
 class VidorFPGA : public VidorUtils, public VidorIO {
 public:
 
-	VidorFPGA() {}
+  VidorFPGA() {}
 
-	static void onInterrupt();
+  static void onInterrupt();
 
-	int begin(bool jumpToApp = true) {
-		int ret = VidorUtils::begin(jumpToApp);
+  int begin(bool jumpToApp = true)
+  {
+    int ret = VidorUtils::begin(jumpToApp);
 
-		attachInterrupt(IRQ_PIN, VidorFPGA::onInterrupt, FALLING);
+    attachInterrupt(IRQ_PIN, VidorFPGA::onInterrupt, FALLING);
 
-		if (jumpToApp) {
-			// wait one second to make sure jump was ok
-			delay(1000);
-			// reinitilize jtag chain
-			VidorMailbox.begin();
-		}
+    if (jumpToApp) {
+      // wait one second to make sure jump was ok
+      delay(1000);
+      // reinitilize jtag chain
+      VidorMailbox.begin();
+    }
+    return ret;
+  }
 
-		return ret;
-	}
+  bool ready() {
+    return (version() != 0) &&  (version() != 0xFFFFFFFF);
+  }
 
-	bool ready() {
-		return (version() != 0) &&  (version() != 0xFFFFFFFF);
-	}
+  uint32_t version()
+  {
+    uint32_t rpc[1];
+    uint32_t ver;
 
-	uint32_t version() {
-		uint32_t rpc[1];
-		uint32_t ver;
+    rpc[0] = MB_CMD(0, 0, 0, 1);
+    ver = VidorMailbox.sendCommand(rpc, 1);
+    return ver;
+  }
 
-		rpc[0] = 0 | 1;
-		ver = VidorMailbox.sendCommand(rpc, 1);
-		return ver;
-	}
+  uint32_t printConfig(void)
+  {
+    uint32_t rpc[1];
+    sFpgaCfg cfg;
+    char str[64];
 
-	uint32_t printConfig(void)
-	{
-		uint32_t rpc[1];
-		sFpgaCfg cfg;
-		char str[64];
+    rpc[0] = MB_CMD(0, 0, 0, 2);
+    VidorMailbox.sendCommand(rpc, 1);
+    VidorMailbox.read(1, (uint32_t*)&cfg, (sizeof(cfg)+3)/4);
 
-		rpc[0] = 0 | 2;
-		VidorMailbox.sendCommand(rpc, 1);
-		VidorMailbox.read(1, (uint32_t*)&cfg, (sizeof(cfg)+3)/4);
+    int i;
+    sprintf(str, "number of devices %u", cfg.num);
+    Serial.println(str);
+    for(i=0; i<cfg.num; i++){
+      sprintf(str, "%u %08X %s", cfg.dev[i].num, cfg.dev[i].cod, configToString(cfg.dev[i].cod));
+      Serial.println(str);
+    }
+    return 0;
+  }
 
-		int i;
-		sprintf(str, "number of devices %u", cfg.num);
-		Serial.println(str);
-		for(i=0; i<cfg.num; i++){
-			sprintf(str, "%u %08X %s", cfg.dev[i].num, cfg.dev[i].cod, configToString(cfg.dev[i].cod));
-			Serial.println(str);
-		}
-		return 0;
-	}
+  uint8_t instance(void)
+  {
+    // TODO try to intance requestested IP
+    return 0xFF;
+  }
+
 };
 
 extern VidorFPGA FPGA;

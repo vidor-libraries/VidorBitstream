@@ -194,21 +194,21 @@ int VidorCamera::set_virtual_channel(int channel) {
 
 void VidorQR::enable(uint8_t on) {
   uint32_t rpc[2];
-  rpc[0] = MB_DEV_QR | 1;
+  rpc[0] = MB_CMD(MB_DEV_QR, 0, 0, 1);
   rpc[1] = on;
   VidorMailbox.sendCommand(rpc, 2);
 }
 
 void VidorQR::setMode(uint8_t mode) {
   uint32_t rpc[2];
-  rpc[0] = MB_DEV_QR | 2;
+  rpc[0] = MB_CMD(MB_DEV_QR, 0, 0, 2);
   rpc[1] = mode;
   VidorMailbox.sendCommand(rpc, 2);
 }
 
 int VidorQR::readQRCode(void){
   uint32_t rpc[1];
-  rpc[0] = MB_DEV_QR | 3;
+  rpc[0] = MB_CMD(MB_DEV_QR, 0, 0, 3);
   int ret = VidorMailbox.sendCommand(rpc, 1);
   if (ret) {
     return 0;
@@ -220,7 +220,7 @@ int VidorQR::readQRCode(void){
 
 void VidorQR::setThr(uint8_t thr){
   uint32_t rpc[2];
-  rpc[0] = MB_DEV_QR | 4;
+  rpc[0] = MB_CMD(MB_DEV_QR, 0, 0, 4);
   rpc[1] = thr;
   VidorMailbox.sendCommand(rpc, 2);
 }

@@ -22,14 +22,15 @@
 
 VidorUart::VidorUart(int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr)
 {
-  index = idx;
-  idx=_idx;
-  tx=_tx;
-  rx=_rx;
-  cts=_cts;
-  rts=_rts;
-  dtr=_dtr;
-  dsr=_dsr;
+  idx = _idx;
+  tx  = _tx;
+  rx  = _rx;
+  cts = _cts;
+  rts = _rts;
+  dtr = _dtr;
+  dsr = _dsr;
+  // TODO nuova implementazione FPGA giid = FPGA.instance(....);
+  devIdx = MB_DEV_UART;
 }
 
 void VidorUart::begin(unsigned long baudrate)
@@ -39,38 +40,104 @@ void VidorUart::begin(unsigned long baudrate)
 
 void VidorUart::begin(unsigned long baudrate, uint16_t config)
 {
-  VidorIO::enableUART(tx,rx);
-  VidorIO::setUART(index, baudrate, config);
+  enableUART(tx, rx);
+  setUART(baudrate, config);
 }
 
 void VidorUart::end()
 {
-  VidorIO::disableUART(index);
+  disableUART();
   rxBuffer.clear();
   txBuffer.clear();
 }
 
-void VidorUart::flush()
-{
+void VidorUart::enableUART(int tx, int rx) {
+  if (tx == -1) {
+    VidorIO::pinMode(FPGA_NINA_RX, 4);
+  } else if (tx <= 14) {
+    tx = tx-0 ;
+    pinModeExtended(tx+140, 4);
+  } else {
+    tx = tx-A0;
+    pinModeExtended(tx+133, 4);
+  }
+  if (rx == -1) {
+    VidorIO::pinMode(FPGA_NINA_TX, INPUT);
+  } else if (rx <= 14) {
+    rx = rx-0 ;
+    pinModeExtended(rx+140, INPUT);
+  } else {
+    rx = rx-A0;
+    pinModeExtended(rx+133, INPUT);
+  }
+  uint32_t rpc[2];
+  rpc[0] = MB_CMD(devIdx, idx, 0, 0x01);
+  rpc[1] = 0; // TX-RX only
+  VidorMailbox.sendCommand(rpc, 2);
+}
+
+void VidorUart::setUART(int baud, int config) {
+  uint32_t rpc[3];
+  rpc[0] = MB_CMD(devIdx, idx, 0, 0x02);
+  rpc[1] = baud;
+  rpc[2] = config;
+  VidorMailbox.sendCommand(rpc, 3);
+}
+
+void VidorUart::disableUART() {
+  uint32_t rpc[1];
+  rpc[0] = MB_CMD(devIdx, idx, 0, 0x03);
+  VidorMailbox.sendCommand(rpc, 1);
+}
+
+void VidorUart::flush() {
+  uint32_t rpc[1];
   while(txBuffer.available()); // wait until TX buffer is empty
-  VidorIO::flushUART(index);
+  rpc[0] = MB_CMD(devIdx, idx, 0, 0x09);
+  VidorMailbox.sendCommand(rpc, 1);
 }
 
 int VidorUart::available()
 {
-  int ret = VidorIO::availableUART(index);
-  if (ret > 0) {
-    // Workaround until we have interrupt capabilities
-    onInterrupt();
+  int ret;
+
+  ret = rxBuffer.available();
+  if (ret) {
+    return ret;
   }
+
+  uint32_t rpc[256];
+  rpc[0] = MB_CMD(devIdx, idx, 0, 0x06);
+  ret = VidorMailbox.sendCommand(rpc, 1);
+  if (ret > 0) {
+    int       i;
+    uint8_t  *ptr;
+
+    rpc[0] = MB_CMD(devIdx, idx, 0, 0x05);
+    rpc[1] = ret;
+    ret = VidorMailbox.sendCommand(rpc, 2);
+    VidorMailbox.read(2, &rpc[2], 1+(ret+3)/4);
+    ptr = (uint8_t*)&rpc[2];
+    for (i=0; i<ret; i++) {
+      rxBuffer.store_char(ptr[i]);
+    }
+  }
+  //if (ret > 0) {
+    // Workaround until we have interrupt capabilities
+  //  onInterrupt();
+  //}
   return ret;
 }
 
 void VidorUart::onInterrupt()
 {
-  int available = VidorIO::availableUART(index);
-  while (available-- > 0) {
-    rxBuffer.store_char(VidorIO::readUART(index));
+  int avail;
+  uint32_t rpc[1];
+
+  rpc[0] = MB_CMD(devIdx, index, 0, 0x06);
+  avail = VidorMailbox.sendCommand(rpc, 1);
+  while (avail-- > 0) {
+    rxBuffer.store_char(read());
   }
 }
 
@@ -86,27 +153,67 @@ int VidorUart::peek()
 
 int VidorUart::read()
 {
-  return VidorIO::readUART(index);
+  if (!rxBuffer.available()) {
+    int ret;
+    uint32_t rpc[1];
+
+    rpc[0] = MB_CMD(devIdx, index, 0, 0x06);
+    ret = VidorMailbox.sendCommand(rpc, 1);
+    if (ret > 0){
+      uint32_t  rpc[256];
+      int       i;
+      uint8_t *ptr;
+
+      rpc[0] = MB_CMD(devIdx, idx, 0, 0x05);
+      rpc[1] = ret;
+      ret = VidorMailbox.sendCommand(rpc, 2);
+      VidorMailbox.read(2, &rpc[2], 1+(ret+3)/4);
+
+      ptr = (uint8_t*)&rpc[2];
+      for (i=0; i<ret; i++) {
+        rxBuffer.store_char(ptr[i]);
+      }
+    }
+  }
+  return rxBuffer.read_char();
+}
+
+int VidorUart::read(uint8_t* data, size_t len)
+{
+  if (rxBuffer.available() >= len) {
+    int     i;
+    for (i=0; i<len; i++) {
+      data[i] = rxBuffer.read_char();
+    }
+    return len;
+  }
+  return -1;
 }
 
 size_t VidorUart::write(const uint8_t data)
 {
-  VidorIO::writeUART(index, data);
+  uint32_t rpc[2];
+  rpc[0] = MB_CMD(devIdx, idx, 0, 0x07);
+  rpc[1] = data;
+  VidorMailbox.sendCommand(rpc, 2);
   return 1;
 }
 
-
 size_t VidorUart::write(const uint8_t* data, size_t len)
 {
-  VidorIO::writeUART(index, (uint8_t*)data, len);
+  uint32_t rpc[256];
+  rpc[0] = MB_CMD(devIdx, idx, 0, 0x08);
+  rpc[1] = len;
+  rpc[2] = (uint32_t)data;
+  VidorMailbox.sendCommand(rpc, 2+(rpc[1]+3)/4);
   return len;
 }
 
 int VidorUart::enableFlowControl(void)
 {
   if(rts>=0 && cts>=0 && dtr>=0 && dsr>=0 ) {
-    VidorIO::enableUART(rts,cts);
-    VidorIO::enableUART(dtr,dsr);
+    enableUART(rts, cts);
+    enableUART(dtr, dsr);
     return 1;
   }
   return 0;
@@ -114,21 +221,24 @@ int VidorUart::enableFlowControl(void)
 
 
 #if FPGA_UART_INTERFACES_COUNT > 0
-VidorUart SerialFPGA0(0,  A0, A1, -1, -1, -1, -1);
+VidorUart SerialEx(   0,  -1, -1, -1, -1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 1
-VidorUart SerialFPGA1(1,  A2, A3, A0, A1, -1, -1);
+VidorUart SerialFPGA0(1,  A0, A1, -1, -1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 2
-VidorUart SerialFPGA2(2,  A4, A5, -1, -1, -1, -1);
+VidorUart SerialFPGA1(2,  A2, A3, A0, A1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 3
-VidorUart SerialFPGA3(3,  A6,  0, A4, A5, A3, A2);
+VidorUart SerialFPGA2(3,  A4, A5, -1, -1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 4
-VidorUart SerialFPGA4(4,   1,  2, -1, -1, -1, -1);
+VidorUart SerialFPGA3(4,  A6,  0, A4, A5, A3, A2);
 #if FPGA_UART_INTERFACES_COUNT > 5
-VidorUart SerialFPGA5(5,   3,  4,  1,  2,  0, A6);
+VidorUart SerialFPGA4(5,   1,  2, -1, -1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 6
-VidorUart SerialFPGA6(6,   5,  6, -1, -1, -1, -1);
+VidorUart SerialFPGA5(6,   3,  4,  1,  2,  0, A6);
 #if FPGA_UART_INTERFACES_COUNT > 7
-VidorUart SerialFPGA7(7,   7,  8,  5,  6,  4,  3);
+VidorUart SerialFPGA6(7,   5,  6, -1, -1, -1, -1);
+#if FPGA_UART_INTERFACES_COUNT > 8
+VidorUart SerialFPGA7(8,   7,  8,  5,  6,  4,  3);
+#endif
 #endif
 #endif
 #endif

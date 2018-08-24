@@ -82,6 +82,7 @@ class VidorTwoWire : public Stream
 
     // TWI clock frequency
     static const uint32_t TWI_CLOCK = 100000;
+    uint8_t devIdx;
 };
 
 extern VidorTwoWire WireFPGA0;

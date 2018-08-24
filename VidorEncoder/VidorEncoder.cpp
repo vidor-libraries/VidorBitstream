@@ -18,11 +18,13 @@
 */
 
 #include "VidorMailbox.h"
-
+#include "VidorFPGA.h"
 #include "VidorEncoder.h"
 
 VidorEncoder::VidorEncoder(int index){
-	idx = index;
+  idx = index;
+  // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_ENCODERS_DID);
+  devIdx = MB_DEV_ENC;
 }
 
 void VidorEncoder::write(int32_t p){
@@ -31,6 +33,6 @@ void VidorEncoder::write(int32_t p){
 
 int32_t VidorEncoder::read(){
 	uint32_t rpc[1];
-	rpc[0] = MB_DEV_ENC | ((idx & 0x0F)<<20) | 1;
+	rpc[0] = MB_CMD(devIdx, idx, 0, 0x01); // TODO move index from sub to chn
 	return (VidorMailbox.sendCommand(rpc, 1) - offset);
 }

@@ -17,16 +17,19 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "VidorIO.h"
+#include "VidorFPGA.h"
 #include "VidorMailbox.h"
 
 #include "Vidor_NeoPixel.h"
 
-Vidor_NeoPixel::Vidor_NeoPixel(uint16_t howMany, uint8_t pin, uint8_t type) {
+Vidor_NeoPixel::Vidor_NeoPixel(uint16_t howMany, uint8_t pin, uint8_t type)
+{
 
   this->howMany = howMany;
   this->type = type;
   this->pin = pin;
+  // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_NEOPIXEL_DID);
+  devIdx = MB_DEV_NP;
 }
 
 uint32_t Vidor_NeoPixel::begin()
@@ -102,7 +105,7 @@ uint32_t Vidor_NeoPixel::begin()
     pinModeExtended(pin + 132 + 8, NEOPIXEL_PINMUX);
   }
 
-  rpc[0] = MB_DEV_NP | 1;
+  rpc[0] = MB_CMD(devIdx, index, 0, 0x01);
   rpc[1] = msk & 0x007FFFFF;
   rpc[2] = howMany;
   rpc[3] = type;
@@ -130,7 +133,7 @@ uint32_t Vidor_NeoPixel::setPixelColor(uint16_t n, uint32_t red, uint32_t green,
 
   uint32_t rpc[6];
 
-  rpc[0] = MB_DEV_NP | ((index & 0x0F)<<20) | 2;
+  rpc[0] = MB_CMD(devIdx, index, 0, 0x02);  // TODO move index from sub to chn
   rpc[1] = n;
   rpc[2] = red;
   rpc[3] = green;
@@ -152,7 +155,7 @@ uint32_t Vidor_NeoPixel::setBrightness(uint16_t brg)
 
   uint32_t rpc[2];
 
-  rpc[0] = MB_DEV_NP | ((index & 0x0F)<<20) | 3;
+  rpc[0] = MB_CMD(devIdx, index, 0, 0x03);  // TODO move index from sub to chn
   rpc[1] = brg;
 
   return VidorMailbox.sendCommand(rpc, 2);
@@ -170,9 +173,111 @@ uint32_t Vidor_NeoPixel::show(void)
 
   uint32_t rpc[1];
 
-  rpc[0] = MB_DEV_NP | 4;
+  rpc[0] = MB_CMD(devIdx, 0, 0, 0x04);
 
   return VidorMailbox.sendCommand(rpc, 1);
+}
+
+
+/**
+ *
+ */
+uint32_t Vidor_NeoPixel::timingSet(uint32_t freq, uint32_t trst, uint32_t t0h, uint32_t t1h, uint32_t ttot)
+{
+
+  if (!init) {
+    begin();
+  }
+
+  uint32_t rpc[6];
+
+  rpc[0] = MB_CMD(devIdx, 0, 0, 5);
+  rpc[1] = freq;
+  rpc[2] = trst;
+  rpc[3] = t0h;
+  rpc[4] = t1h;
+  rpc[5] = ttot;
+
+  return VidorMailbox.sendCommand(rpc, 6);
+}
+
+/**
+ *
+ */
+uint32_t Vidor_NeoPixel::bufferSetup(uint32_t num, uint32_t len, uint32_t zzf, uint32_t zzl)
+{
+
+  if (!init) {
+    begin();
+  }
+
+  uint32_t rpc[5];
+
+  rpc[0] = MB_CMD(devIdx, 0, 0, 6);
+  rpc[1] = num;
+  rpc[2] = len;
+  rpc[3] = zzf;
+  rpc[4] = zzl;
+
+  return VidorMailbox.sendCommand(rpc, 5);
+}
+
+/**
+ *
+ */
+uint32_t Vidor_NeoPixel::bufferSelect(uint32_t num)
+{
+
+  if (!init) {
+    begin();
+  }
+
+  uint32_t rpc[2];
+
+  rpc[0] = MB_CMD(devIdx, 0, 0, 7);
+  rpc[1] = num;
+
+  return VidorMailbox.sendCommand(rpc, 2);
+}
+
+/**
+ *
+ */
+uint32_t Vidor_NeoPixel::wrapSet(uint32_t start, uint32_t len, uint32_t restart)
+{
+
+  if (!init) {
+    begin();
+  }
+
+  uint32_t rpc[4];
+
+  rpc[0] = MB_CMD(devIdx, 0, 0, 8);
+  rpc[1] = start;
+  rpc[2] = len;
+  rpc[3] = restart;
+
+  return VidorMailbox.sendCommand(rpc, 4);
+}
+
+/**
+ *
+ */
+uint32_t Vidor_NeoPixel::bufferLoop(uint32_t flag, uint32_t buffer, uint32_t ms)
+{
+
+  if (!init) {
+    begin();
+  }
+
+  uint32_t rpc[4];
+
+  rpc[0] = MB_CMD(devIdx, 0, 0, 10);
+  rpc[1] = flag;
+  rpc[2] = buffer;
+  rpc[3] = ms;
+
+  return VidorMailbox.sendCommand(rpc, 4);
 }
 
 /**

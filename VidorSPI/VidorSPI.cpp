@@ -19,6 +19,7 @@
  */
 
 #include "VidorSPI.h"
+#include "VidorIO.h"
 #include <Arduino.h>
 #include <wiring_private.h>
 #include <assert.h>
@@ -35,8 +36,10 @@ VidorSPIClass::VidorSPIClass(int index,int _mosi,int _miso,int _sck,int _cs) : s
   this->index = index;
   mosi = _mosi;
   miso = _miso;
-  sck = _sck;
-  cs = _cs;
+  sck  = _sck;
+  cs   = _cs;
+  // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_SPI_DID);
+  devIdx = MB_DEV_SPI;
 }
 
 void VidorSPIClass::begin()
@@ -53,7 +56,61 @@ void VidorSPIClass::init()
   interruptSave = 0;
   interruptMask = 0;
   initialized = true;
-  VidorIO::enableSPI(index, mosi, miso, sck, cs);
+
+  //VidorIO::enableSPI(index, mosi, miso, sck, cs);
+  if (mosi == -1) {
+    VidorIO::pinMode(FPGA_NINA_MOSI, 4);
+  } else if (mosi <= 14) {
+    mosi = mosi - 0;
+    pinModeExtended(mosi + 140, 5);
+  } else {
+    mosi = mosi - A0;
+    pinModeExtended(mosi + 133, 5);
+  }
+  if (miso == -1) {
+    VidorIO::pinMode(FPGA_NINA_MISO, INPUT);
+  } else if (miso <= 14) {
+    miso = miso - 0 ;
+    pinModeExtended(miso + 140, INPUT);
+  } else {
+    miso = miso - A0;
+    pinModeExtended(miso + 133, INPUT);
+  }
+  if (sck == -1) {
+    VidorIO::pinMode(FPGA_NINA_SCK, 4);
+  } else if (sck <= 14) {
+    sck = sck - 0 ;
+    pinModeExtended(sck + 140, 5);
+  } else {
+    sck = sck - A0;
+    pinModeExtended(sck + 133, 5);
+  }
+
+  if (cs == -1) {
+    goto enable_spi;
+  } else if (cs <= 14) {
+    cs = cs - 0;
+    pinModeExtended(cs + 140, 5);
+  } else {
+    cs = cs - A0;
+    pinModeExtended(cs + 133, 5);
+  }
+
+enable_spi:
+  uint32_t rpc[2];
+  rpc[0] = MB_CMD(devIdx, index, 0, 0x01);
+  rpc[1] = index;
+  VidorMailbox.sendCommand(rpc, 2);
+}
+
+void VidorSPIClass::setSPIMode(int index, int baud, int mode, int bitOrder)
+{
+  uint32_t rpc[4];
+  rpc[0] = MB_CMD(devIdx, index, 0, 0x02);
+  rpc[1] = baud * 2;
+  rpc[2] = 0;
+  rpc[3] = 0;
+  VidorMailbox.sendCommand(rpc, 4);
 }
 
 void VidorSPIClass::config(SPISettings settings)
@@ -62,13 +119,16 @@ void VidorSPIClass::config(SPISettings settings)
     this->settings.clockFreq = settings.getClockFreq();
     this->settings.dataMode = settings.getDataMode();
     this->settings.bitOrder = settings.getBitOrder();
-    VidorIO::setSPIMode(index, this->settings.clockFreq, this->settings.dataMode, this->settings.bitOrder);
+    setSPIMode(index, this->settings.clockFreq, this->settings.dataMode, this->settings.bitOrder);
   }
 }
 
 void VidorSPIClass::end()
 {
-  VidorIO::disableSPI(index);
+  uint32_t rpc[1];
+
+  rpc[0] = MB_CMD(devIdx, index, 0, 0x03);
+  VidorMailbox.sendCommand(rpc, 1);
   initialized = false;
 }
 
@@ -156,24 +216,25 @@ void VidorSPIClass::endTransaction(void)
 void VidorSPIClass::setBitOrder(BitOrder order)
 {
   settings.bitOrder = order;
-  VidorIO::setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
+  setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
 }
 
 void VidorSPIClass::setDataMode(uint8_t mode)
 {
   settings.dataMode = mode;
-  VidorIO::setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
+  setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
 }
 
 void VidorSPIClass::setClockDivider(uint8_t div)
 {
   settings.clockFreq = MAX_CLOCK_FREQUENCY / div;
-  VidorIO::setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
+  setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
 }
 
 byte VidorSPIClass::transfer(uint8_t data)
 {
-  return VidorIO::transferDataSPI(index, data);
+  transfer(&data, 1);
+  return data;
 }
 
 uint16_t VidorSPIClass::transfer16(uint16_t data) {
@@ -194,7 +255,18 @@ uint16_t VidorSPIClass::transfer16(uint16_t data) {
 
 void VidorSPIClass::transfer(void *buf, size_t count)
 {
-  VidorIO::transferDataSPI(index, (uint8_t*)buf, count);
+  //VidorIO::transferDataSPI(index, (uint8_t*)buf, count);
+  uint32_t rpc[256];
+  if (count > 128) {
+    return;
+  }
+  rpc[0] = MB_CMD(devIdx, index, 0, 0x04);
+  rpc[1] = count;
+  memcpy(&rpc[2], buf, count);
+  int ret = VidorMailbox.sendCommand(rpc, 2+(rpc[1]+3)/4);
+
+  VidorMailbox.read(2, &rpc[2], (count+3)/4);
+  memcpy(buf, &rpc[2], count);
 }
 
 void VidorSPIClass::attachInterrupt() {

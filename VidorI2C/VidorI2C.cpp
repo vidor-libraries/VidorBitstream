@@ -24,26 +24,60 @@ extern "C" {
 
 #include <Arduino.h>
 
-#include "VidorIO.h"
 #include "VidorMailbox.h"
-
 #include "VidorI2C.h"
 
 VidorTwoWire::VidorTwoWire(int index,int _scl,int _sda)
 {
   this->idx = index;
   transmissionBegun = false;
-  scl= _scl;
-  sda=_sda;
+  scl = _scl;
+  sda = _sda;
+  // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_I2C_DID);
+  devIdx = MB_DEV_I2C;
 }
 
 int VidorTwoWire::begin(void) {
+  int mode;
+
   // Master Mode
-	if(idx<3){
-		return VidorIO::enableI2C(idx,sda,scl,4);
-	}else{
-		VidorIO::enableI2C(idx,sda,scl,5);
-	}
+  if (idx < 3) {
+    mode = 4;
+  }else{
+    mode = 5;
+  }
+  if (sda == -1) {
+    goto set_scl;
+  }
+  if (sda <= 14) {
+    sda = sda-0;
+    pinMode(sda,INPUT);
+    pinMode(sda+140, mode);
+  } else {
+    sda = sda-A0;
+    pinMode(sda,INPUT);
+    pinMode(sda+133, mode);
+  }
+
+set_scl:
+  if (scl == -1) {
+    goto i2c_apply;
+  }
+  if (scl <= 14) {
+    scl = scl-0;
+    pinMode(scl, INPUT);
+    pinMode(scl+140, mode);
+  } else {
+    scl = scl-A0;
+    pinMode(scl, INPUT);
+    pinMode(scl+133, mode);
+  }
+
+i2c_apply:
+  uint32_t rpc[1];
+
+  rpc[0] = MB_CMD(devIdx, idx, 0, 0x01);
+  return VidorMailbox.sendCommand(rpc, 1);
 }
 
 void VidorTwoWire::begin(uint8_t address) {
@@ -52,11 +86,17 @@ void VidorTwoWire::begin(uint8_t address) {
 }
 
 void VidorTwoWire::setClock(uint32_t baudrate) {
-  VidorIO::setI2CClock(idx, baudrate);
+  uint32_t rpc[2];
+  rpc[0] = MB_CMD(devIdx, idx, 0, 0x02);
+  rpc[1] = baudrate;
+  VidorMailbox.sendCommand(rpc, 2);
 }
 
 void VidorTwoWire::end() {
-  VidorIO::disableI2C(idx);
+  uint32_t rpc[1];
+
+  rpc[0] = MB_CMD(devIdx, idx, 0, 0x03);
+  VidorMailbox.sendCommand(rpc, 1);
 }
 
 uint8_t VidorTwoWire::requestFrom(uint8_t address, size_t quantity, bool stopBit)
@@ -72,7 +112,7 @@ uint8_t VidorTwoWire::requestFrom(uint8_t address, size_t quantity, bool stopBit
 
   rxBuffer.clear();
 
-  rpc[0] = MB_DEV_I2C | ((idx & 0x0F)<<20) | 0x05;
+  rpc[0] = MB_CMD(devIdx, idx, 0, 0x05);
   rpc[1] = address;
   rpc[2] = quantity;
   ret = VidorMailbox.sendCommand(rpc, 3);
@@ -112,7 +152,7 @@ uint8_t VidorTwoWire::endTransmission(bool stopBit)
   int ret;
   transmissionBegun = false ;
 
-  rpc[0] = MB_DEV_I2C | ((idx & 0x0F)<<20) | 0x08;
+  rpc[0] = MB_CMD(devIdx, idx, 0, 0x08);
   rpc[1] = txAddress;
   rpc[2] = txBuffer.available();
 

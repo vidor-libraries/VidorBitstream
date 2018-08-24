@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "VidorIO.h"
+#include "VidorFPGA.h"
 #include "defines.h"
 #include "HardwareSerial.h"
 #include "RingBuffer.h"
@@ -29,14 +29,19 @@
 class VidorUart : public HardwareSerial
 {
   public:
-	VidorUart(int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr);
+    VidorUart(int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr);
     void begin(unsigned long baudRate);
     void begin(unsigned long baudrate, uint16_t config);
     void end();
+    void enableUART(int tx, int rx);
+    void setUART(int baud, int config);
+    void disableUART();
+
     int available();
     int availableForWrite();
     int peek();
     int read();
+    int read(uint8_t* data, size_t len);
     void flush();
     size_t write(const uint8_t data);
     int enableFlowControl(void);
@@ -46,8 +51,8 @@ class VidorUart : public HardwareSerial
     void onInterrupt();
 
     operator bool() {
-			return true;
-	}
+      return true;
+    }
 
   private:
     int idx;
@@ -60,8 +65,10 @@ class VidorUart : public HardwareSerial
     int index;
     RingBuffer rxBuffer;
     RingBuffer txBuffer;
+    uint8_t devIdx;
 };
 
+extern VidorUart SerialEx;
 extern VidorUart SerialFPGA0;
 extern VidorUart SerialFPGA1;
 extern VidorUart SerialFPGA2;

@@ -45,6 +45,9 @@
 
 // NINA signals
 #define SPIWIFI              SPIEx
+#define SerialNina           SerialEx
+#define FPGA_NINA_TX         (64 + 16)
+#define FPGA_NINA_RX         (64 + 15)
 #define FPGA_NINA_MOSI       (64 + 19)
 #define FPGA_NINA_MISO       (64 + 20)
 #define FPGA_NINA_SCK        (64 + 18)

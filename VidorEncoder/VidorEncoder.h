@@ -31,6 +31,7 @@ class VidorEncoder {
   protected:
     int32_t offset = 0;
     int idx;
+    uint8_t devIdx;
 };
 
 

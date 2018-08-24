@@ -105,6 +105,8 @@ class VidorSPIClass {
   uint16_t transfer16(uint16_t data);
   void transfer(void *buf, size_t count);
 
+  void setSPIMode(int index, int baud, int mode, int bitOrder);
+
   // Transaction Functions
   void usingInterrupt(int interruptNumber);
   void notUsingInterrupt(int interruptNumber);
@@ -136,6 +138,7 @@ class VidorSPIClass {
   uint8_t interruptMode;
   char interruptSave;
   uint32_t interruptMask;
+  uint8_t devIdx;
 };
 
 extern VidorSPIClass SPIFPGA0;

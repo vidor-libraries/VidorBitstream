@@ -116,6 +116,12 @@ public:
 		}
 		return 0;
 	}
+
+  uint8_t instance(void)
+  {
+    // TODO try to intance requestested IP
+    return 0xFF;
+  }
 };
 
 extern VidorFPGA FPGA;
