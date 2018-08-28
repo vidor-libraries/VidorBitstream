@@ -126,7 +126,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr);
 alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len);
 
-#if defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1)
+#if defined(SF_SECURITY) && (SF_SECURITY == 1)
 
 /**
  * Security Register
@@ -136,7 +136,7 @@ alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfSRLock(alt_u8 reg);
 alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfProtect(void);
-#endif  /* defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1) */
+#endif  /* defined(SF_SECURITY) && (SF_SECURITY == 1) */
 
 #if defined(SF_USE_QSPI) && (SF_USE_QSPI == 1)
 alt_32 static poll_for_wip(void);
@@ -178,7 +178,7 @@ void sfCmd(void)
   case 5:
     ret = sfRead(rpc[1], (alt_u8*)&rpc[3], rpc[2]);
     break;
-#if defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1)
+#if defined(SF_SECURITY) && (SF_SECURITY == 1)
   case 6:
     ret = sfSRErase(rpc[1]);
     break;
@@ -194,7 +194,7 @@ void sfCmd(void)
   case 10:
     ret = sfProtect();
     break;
-#endif  /* defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1) */
+#endif  /* defined(SF_SECURITY) && (SF_SECURITY == 1) */
   }
   rpc[1] = ret;
 }
@@ -564,7 +564,7 @@ alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
 
 #endif /* defined(SF_USE_QSPI) && (SF_USE_QSPI == 1) */
 
-#if defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1)
+#if defined(SF_SECURITY) && (SF_SECURITY == 1)
 /**
  * @param reg Security Register index 0-2
  */
@@ -744,7 +744,7 @@ alt_u32 sfProtect(void)
   return 0;
 }
 
-#else /* defined(SF_SECURITY_CMDSS) && (SF_SECURITY_CMDSS == 1) */
+#else /* defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1) */
 
 alt_u32 sfSRErase(alt_u8 reg)
 {
@@ -767,7 +767,7 @@ alt_u32 sfProtect(void)
   return -1;
 }
 
-#endif /* defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1) */
+#endif /* defined(SF_SECURITY) && (SF_SECURITY == 1) */
 
 #if defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1)
 /**
