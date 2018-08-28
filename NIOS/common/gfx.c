@@ -21,24 +21,7 @@
 #define _swap_int16_t(a,b) {int16_t t=a; a=b; b=t;}
 
 #if defined(GFX_FONTS) && (GFX_FONTS == 1)
-
-typedef struct { // Data stored PER GLYPH
-  alt_u16  bitmapOffset;     // Pointer into GFXfont->bitmap
-  alt_u8   width, height;    // Bitmap dimensions in pixels
-  alt_u8   xAdvance;         // Distance to advance cursor (x axis)
-  alt_8    xOffset, yOffset; // Dist from cursor pos to UL corner
-} GFXglyph;
-
-typedef struct { // Data stored for FONT AS A WHOLE:
-  alt_u8   *bitmap;      // Glyph bitmaps, concatenated
-  GFXglyph *glyph;       // Glyph array
-  alt_u8    first, last; // ASCII extents
-  alt_u8    yAdvance;    // Newline distance (y axis)
-} GFXfont;
-
 #include GFX_FONT_FILE
-GFXfont *gfxFont = (GFXfont*)&GFX_FONT_NAME;
-
 #endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
 
 #if defined(GFX_LOGO) && (GFX_LOGO == 1)
@@ -198,14 +181,26 @@ GFXgc gfxDefaultGc = {
   1,
   16,
   GFX_GC_FMT_ARGB16,
-  0,
-  0,
   0xffffffff,
+  GFX_FB_BASE,
+  wp16,
+  0,
+#if defined(GFX_FONTS) && (GFX_FONTS == 1)
+  (GFXfont*)&GFX_FONT_NAME,
+  0xffffffff,
+  0,
+  0,
   1,
-  GFX_FB_BASE
+#endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
 };
 
-GFXgc * gfxGc = &gfxDefaultGc;
+/**
+ * Graphic context definition
+ *//*
+GFXgc *gfxGc[] = {
+  &gfxDefaultGc,
+  &gfxNpGc,
+};*/
 
 /**
  */
@@ -215,7 +210,7 @@ void gfxInit(int devs)
   memset(GFX_FB_BASE, 0xFF, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
 
 #if defined(GFX_LOGO) && (GFX_LOGO == 1)
-  drawBmp((GFXbmp*)&arduinoLogo, (640-160)/2, (480-110)/2, 33396);
+  drawBmp(&gfxDefaultGc, (GFXbmp*)&arduinoLogo, (640-160)/2, (480-110)/2, 33396);
 #endif
 }
 
@@ -226,54 +221,60 @@ void gfxInit(int devs)
 void gfxCmd(void)
 {
   alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
-  alt_u32 ret;
+  alt_u32           ret;
+  GFXgc            *pGc;
+
+  if (MB_SUB(rpc[0]) >= GFX_GC_NUM) {
+    rpc[1] = -1;
+    return;
+  }
+  pGc = gfxGc[MB_SUB(rpc[0])];
 
   ret = -1;
   switch(MB_CMD(rpc[0])){
   case 0:
-    ret = writePixel(rpc[1], rpc[2], rpc[3]);
+    ret = writePixel(pGc, rpc[1], rpc[2], rpc[3]);
     break;
   case 1:
-    ret = writeLine(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
+    ret = writeLine(pGc, rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
     break;
   case 2:
-    ret = drawRect(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
+    ret = drawRect(pGc, rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
     break;
   case 3:
-    ret = fillRect(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
+    ret = fillRect(pGc, rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
     break;
   case 4:
-    ret = drawCircle(rpc[1], rpc[2], rpc[3], rpc[4]);
+    ret = drawCircle(pGc, rpc[1], rpc[2], rpc[3], rpc[4]);
     break;
   case 5:
-    ret = fillCircle(rpc[1], rpc[2], rpc[3], rpc[4]);
+    ret = fillCircle(pGc, rpc[1], rpc[2], rpc[3], rpc[4]);
     break;
 #if defined(GFX_FONTS) && (GFX_FONTS == 1)
   case 6:
-    ret = drawChar(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
+    ret = drawChar(pGc, rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
     break;
   case 7:
-    ret = drawTxt(rpc[1], rpc[2], rpc[3], (alt_u8*)rpc[4]);
+    ret = drawTxt(pGc, rpc[1], rpc[2], rpc[3], (alt_u8*)rpc[4]);
     break;
   case 8:
-    ret = setFont(rpc[1]);
+    ret = setFont(pGc, rpc[1]);
     break;
   case 9:
-    ret = setCursor(rpc[1],rpc[2]);
+    ret = setCursor(pGc, rpc[1],rpc[2]);
     break;
   case 10:
-    ret = setTextSize(rpc[1]);
+    ret = setTextSize(pGc, rpc[1]);
     break;
   case 11:
-    ret = setColor(rpc[1]);
+    ret = setColor(pGc, rpc[1]);
     break;
   case 12:
-    ret = setAlpha(rpc[1]);
+    ret = setAlpha(pGc, rpc[1]);
     break;
   case 13:
-    ret = drawCharAtCursor(rpc[1]);
+    ret = drawCharAtCursor(pGc, rpc[1]);
     break;
-
 #endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
   }
   rpc[1] = ret;
@@ -281,7 +282,7 @@ void gfxCmd(void)
 #endif /* defined(GFX_CMDS) && (GFX_CMDS == 1) */
 
 /**
- */
+ *//* TODO togliere
 alt_u32 gcSet(GFXgc* pGc)
 {
   if (!pGc) {
@@ -291,48 +292,54 @@ alt_u32 gcSet(GFXgc* pGc)
   }
   return 0;
 }
-
-alt_u32 colorFormat(alt_u32 color)
+*/
+/**
+ * convert color
+ */
+alt_u32 colorFormat(GFXgc* pGc, alt_u32 color)
 {
-  switch (gfxGc->fmt) {
+  switch (pGc->fmt) {
   case GFX_GC_FMT_ARGB16:
-    color = ((color&0x000000F8)>>3) |
-            ((color&0x0000F800)>>6) | 
-            ((color&0x00F80000)>>9) |
-            ((color&0x80000000)>>16); 
+    color = ((color&0x000000F8)>> 3)|
+            ((color&0x0000F800)>> 6)|
+            ((color&0x00F80000)>> 9)|
+            ((color&0x80000000)>>16);
+    break;
+  case GFX_GC_FMT_XGRB32:
+    color = ((color&0x000000FF)   )|
+            ((color&0x0000FF00)<<8)|
+            ((color&0x00FF0000)>>8);
     break;
   }
   return color;
 }
+
 /**
  * Draw a Point of color at x, y
  */
-alt_u32 writePixel(alt_u16 x, alt_u16 y, alt_u32 color)
+alt_u32 writePixel(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color)
 {
-  color = colorFormat(color);
-  if (gfxGc->flg & GFX_GC_ROT90) {
+  color = colorFormat(pGc, color);
+
+  if (pGc->flg & GFX_GC_ROT90) {
     alt_u16 t;
     t = x;
     x = y;
     y = t;
   }
-  if (x>=gfxGc->width ||
-      y>=gfxGc->height)
-      return -1;
-
-  if (gfxGc->wp) {
-    return gfxGc->wp(x, y, color);
+  if (x>=pGc->width || y>=pGc->height) {
+    return -1;
   }
 
-  if (gfxGc->bpp == 16) {
+  if (pGc->bpp == 16) {
     alt_u16 *p;
 
-    p = (alt_u16*)gfxGc->fb + ((x + y*gfxGc->width) * gfxGc->stride);
+    p = (alt_u16*)pGc->fb + ((x + y*pGc->width) * pGc->stride);
     *p = color;
   } else {
     alt_u32 *p;
 
-    p = (alt_u32*)gfxGc->fb + ((x + y*gfxGc->width) * gfxGc->stride);
+    p = (alt_u32*)pGc->fb + ((x + y*pGc->width) * pGc->stride);
     *p = color;
   }
   return 0;
@@ -340,24 +347,63 @@ alt_u32 writePixel(alt_u16 x, alt_u16 y, alt_u32 color)
 
 /**
  */
-alt_u32 writeHLine(alt_u16 x, alt_u16 y, alt_u16 l, alt_u32 color)
+alt_u32 wp16(void* arg, alt_u16 x, alt_u16 y)
+{
+  GFXgc   *pGc = (GFXgc*)arg;
+  alt_u16 *p;
+
+  if (pGc->flg & GFX_GC_ROT90) {
+    alt_u16 t;
+    t = x;
+    x = y;
+    y = t;
+  }
+  p = (alt_u16*)pGc->fb + ((x + y*pGc->width) * pGc->stride);
+  *p = (alt_u16)pGc->color;
+  return 0;
+}
+
+/**
+ */
+alt_u32 wp32(void* arg, alt_u16 x, alt_u16 y)
+{
+  GFXgc   *pGc = (GFXgc*)arg;
+  alt_u32 *p;
+
+  if (pGc->flg & GFX_GC_ROT90) {
+    alt_u16 t;
+    t = x;
+    x = y;
+    y = t;
+  }
+  p = (alt_u32*)pGc->fb + ((x + y*pGc->width) * pGc->stride);
+  *p = pGc->color;
+  return 0;
+}
+
+
+/**
+ */
+alt_u32 writeHLine(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u16 l, alt_u32 color)
 {
   alt_u32 i;
 
+  pGc->color = colorFormat(pGc, color);
   for(i=x; i<x+l; i++){
-    writePixel(i, y, color);
+    pGc->pix(pGc, i, y);
   }
   return 0;
 }
 
 /**
  */
-alt_u32 writeVLine(alt_u16 x, alt_u16 y, alt_u16 l, alt_u32 color)
+alt_u32 writeVLine(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u16 l, alt_u32 color)
 {
   alt_u32 i;
 
+  pGc->color = colorFormat(pGc, color);
   for(i=y; i<y+l; i++){
-    writePixel(x, i, color);
+    pGc->pix(pGc, x, i);
   }
   return 0;
 }
@@ -365,7 +411,7 @@ alt_u32 writeVLine(alt_u16 x, alt_u16 y, alt_u16 l, alt_u32 color)
 /**
  *
  */
-alt_u32 writeLine(alt_u16 x0, alt_u16 y0, alt_u16 x1, alt_u16 y1, alt_u32 color)
+alt_u32 writeLine(GFXgc* pGc, alt_u16 x0, alt_u16 y0, alt_u16 x1, alt_u16 y1, alt_u32 color)
 {
   alt_16 steep = abs(y1 - y0) > abs(x1 - x0);
   alt_16 dx, dy;
@@ -392,11 +438,12 @@ alt_u32 writeLine(alt_u16 x0, alt_u16 y0, alt_u16 x1, alt_u16 y1, alt_u32 color)
     ystep = -1;
   }
 
+  pGc->color = colorFormat(pGc, color);
   for(; x0<=x1; x0++){
     if(steep){
-      writePixel(y0, x0, color);
+      pGc->pix(pGc, y0, x0);
     }else{
-      writePixel(x0, y0, color);
+      pGc->pix(pGc, x0, y0);
     }
     err -= dy;
     if(err<0){
@@ -410,21 +457,23 @@ alt_u32 writeLine(alt_u16 x0, alt_u16 y0, alt_u16 x1, alt_u16 y1, alt_u32 color)
 /**
  * Draw a rectangle
  */
-alt_u32 drawRect(alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u32 color)
+alt_u32 drawRect(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u32 color)
 {
-  writeHLine(x, y, w, color);
-  writeHLine(x, y+h-1, w, color);
-  writeVLine(x, y, h, color);
-  writeVLine(x+w-1, y, h, color);
+  writeHLine(pGc, x, y, w, color);
+  writeHLine(pGc, x, y+h-1, w, color);
+  writeVLine(pGc, x, y, h, color);
+  writeVLine(pGc, x+w-1, y, h, color);
   return 0;
 }
+
 /**
+ * Draw fille rectangle
  */
-alt_u32 fillRect(alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u32 color)
+alt_u32 fillRect(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u32 color)
 {
   alt_u32 i;
   for (i=x; i<x+w; i++) {
-    writeVLine(i, y, h, color);
+    writeVLine(pGc, i, y, h, color);
   }
   return 0;
 }
@@ -432,13 +481,15 @@ alt_u32 fillRect(alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u32 color)
 /**
  *
  */
-alt_u32 drawCircleHelper(alt_16 x0, alt_16 y0, alt_16 r, alt_u8 cornername, alt_u32 color)
+alt_u32 drawCircleHelper(GFXgc* pGc, alt_16 x0, alt_16 y0, alt_16 r, alt_u8 cornername, alt_u32 color)
 {
   alt_16 f     = 1 - r;
   alt_16 ddF_x = 1;
   alt_16 ddF_y = -2 * r;
   alt_16 x     = 0;
   alt_16 y     = r;
+
+  pGc->color = colorFormat(pGc, color);
 
   while (x<y) {
     if (f >= 0) {
@@ -450,20 +501,20 @@ alt_u32 drawCircleHelper(alt_16 x0, alt_16 y0, alt_16 r, alt_u8 cornername, alt_
     ddF_x += 2;
     f     += ddF_x;
     if (cornername & 0x4) {
-      writePixel(x0 + x, y0 + y, color);
-      writePixel(x0 + y, y0 + x, color);
+      pGc->pix(pGc, x0 + x, y0 + y);
+      pGc->pix(pGc, x0 + y, y0 + x);
     }
     if (cornername & 0x2) {
-      writePixel(x0 + x, y0 - y, color);
-      writePixel(x0 + y, y0 - x, color);
+      pGc->pix(pGc, x0 + x, y0 - y);
+      pGc->pix(pGc, x0 + y, y0 - x);
     }
     if (cornername & 0x8) {
-      writePixel(x0 - y, y0 + x, color);
-      writePixel(x0 - x, y0 + y, color);
+      pGc->pix(pGc, x0 - y, y0 + x);
+      pGc->pix(pGc, x0 - x, y0 + y);
     }
     if (cornername & 0x1) {
-      writePixel(x0 - y, y0 - x, color);
-      writePixel(x0 - x, y0 - y, color);
+      pGc->pix(pGc, x0 - y, y0 - x);
+      pGc->pix(pGc, x0 - x, y0 - y);
     }
   }
   return 0;
@@ -472,7 +523,7 @@ alt_u32 drawCircleHelper(alt_16 x0, alt_16 y0, alt_16 r, alt_u8 cornername, alt_
 /**
  * Draw a circle outline
  */
-alt_u32 drawCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u32 color)
+alt_u32 drawCircle(GFXgc* pGc, alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u32 color)
 {
   alt_16 f     =  1 - r;
   alt_16 ddF_x =  1;
@@ -480,10 +531,12 @@ alt_u32 drawCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u32 color)
   alt_16 x     =  0;
   alt_16 y     =  r;
 
-  writePixel(x0  , y0+r, color);
-  writePixel(x0  , y0-r, color);
-  writePixel(x0+r, y0  , color);
-  writePixel(x0-r, y0  , color);
+  pGc->color = colorFormat(pGc, color);
+
+  pGc->pix(pGc, x0  , y0+r);
+  pGc->pix(pGc, x0  , y0-r);
+  pGc->pix(pGc, x0+r, y0  );
+  pGc->pix(pGc, x0-r, y0  );
 
   while(x<y){
     if(f>=0){
@@ -495,14 +548,14 @@ alt_u32 drawCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u32 color)
     ddF_x += 2;
     f += ddF_x;
 
-    writePixel(x0 + x, y0 + y, color);
-    writePixel(x0 - x, y0 + y, color);
-    writePixel(x0 + x, y0 - y, color);
-    writePixel(x0 - x, y0 - y, color);
-    writePixel(x0 + y, y0 + x, color);
-    writePixel(x0 - y, y0 + x, color);
-    writePixel(x0 + y, y0 - x, color);
-    writePixel(x0 - y, y0 - x, color);
+    pGc->pix(pGc, x0 + x, y0 + y);
+    pGc->pix(pGc, x0 - x, y0 + y);
+    pGc->pix(pGc, x0 + x, y0 - y);
+    pGc->pix(pGc, x0 - x, y0 - y);
+    pGc->pix(pGc, x0 + y, y0 + x);
+    pGc->pix(pGc, x0 - y, y0 + x);
+    pGc->pix(pGc, x0 + y, y0 - x);
+    pGc->pix(pGc, x0 - y, y0 - x);
   }
   return 0;
 }
@@ -511,7 +564,7 @@ alt_u32 drawCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u32 color)
  * Used to do circles and roundrects
  *
  */
-alt_u32 fillCircleHelper(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u8 cornername, alt_u16 delta, alt_u32 color)
+alt_u32 fillCircleHelper(GFXgc* pGc, alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u8 cornername, alt_u16 delta, alt_u32 color)
 {
   alt_16 f     =  1 - r;
   alt_16 ddF_x =  1;
@@ -530,12 +583,12 @@ alt_u32 fillCircleHelper(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u8 cornername, a
     f     += ddF_x;
 
     if (cornername & 0x1) {
-      writeVLine(x0+x, y0-y, 2*y+1+delta, color);
-      writeVLine(x0+y, y0-x, 2*x+1+delta, color);
+      writeVLine(pGc, x0+x, y0-y, 2*y+1+delta, color);
+      writeVLine(pGc, x0+y, y0-x, 2*x+1+delta, color);
     }
     if (cornername & 0x2) {
-      writeVLine(x0-x, y0-y, 2*y+1+delta, color);
-      writeVLine(x0-y, y0-x, 2*x+1+delta, color);
+      writeVLine(pGc, x0-x, y0-y, 2*y+1+delta, color);
+      writeVLine(pGc, x0-y, y0-x, 2*x+1+delta, color);
     }
   }
   return 0;
@@ -543,44 +596,44 @@ alt_u32 fillCircleHelper(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u8 cornername, a
 
 /**
  */
-alt_u32 fillCircle(alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u32 color)
+alt_u32 fillCircle(GFXgc* pGc, alt_u16 x0, alt_u16 y0, alt_u16 r, alt_u32 color)
 {
-  writeVLine(x0, y0-r, 2*r+1, color);
-  fillCircleHelper(x0, y0, r, 3, 0, color);
+  writeVLine(pGc, x0, y0-r, 2*r+1, color);
+  fillCircleHelper(pGc, x0, y0, r, 3, 0, color);
   return 0;
 }
 
 /**
  * Draw a rounded rectangle
  */
-alt_u32 drawRoundRect(alt_u16 x, alt_u16 y, alt_u16 w,
+alt_u32 drawRoundRect(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u16 w,
   alt_u16 h, alt_u16 r, alt_u32 color)
 {
   // smarter version
-  writeHLine(x+r  , y    , w-2*r, color); // Top
-  writeHLine(x+r  , y+h-1, w-2*r, color); // Bottom
-  writeVLine(x    , y+r  , h-2*r, color); // Left
-  writeVLine(x+w-1, y+r  , h-2*r, color); // Right
+  writeHLine(pGc, x+r  , y    , w-2*r, color); // Top
+  writeHLine(pGc, x+r  , y+h-1, w-2*r, color); // Bottom
+  writeVLine(pGc, x    , y+r  , h-2*r, color); // Left
+  writeVLine(pGc, x+w-1, y+r  , h-2*r, color); // Right
   // draw four corners
-  drawCircleHelper(x+r    , y+r    , r, 1, color);
-  drawCircleHelper(x+w-r-1, y+r    , r, 2, color);
-  drawCircleHelper(x+w-r-1, y+h-r-1, r, 4, color);
-  drawCircleHelper(x+r    , y+h-r-1, r, 8, color);
+  drawCircleHelper(pGc, x+r    , y+r    , r, 1, color);
+  drawCircleHelper(pGc, x+w-r-1, y+r    , r, 2, color);
+  drawCircleHelper(pGc, x+w-r-1, y+h-r-1, r, 4, color);
+  drawCircleHelper(pGc, x+r    , y+h-r-1, r, 8, color);
   return 0;
 }
 
 /**
  * Fill a rounded rectangle
  */
-alt_u32 fillRoundRect(alt_u16 x, alt_u16 y, alt_u16 w,
+alt_u32 fillRoundRect(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u16 w,
         alt_u16 h, alt_u16 r, alt_u32 color)
 {
   // smarter version
-  fillRect(x+r, y, w-2*r, h, color);
+  fillRect(pGc, x+r, y, w-2*r, h, color);
 
   // draw four corners
-  fillCircleHelper(x+w-r-1, y+r, r, 1, h-2*r-1, color);
-  fillCircleHelper(x+r    , y+r, r, 2, h-2*r-1, color);
+  fillCircleHelper(pGc, x+w-r-1, y+r, r, 1, h-2*r-1, color);
+  fillCircleHelper(pGc, x+r    , y+r, r, 2, h-2*r-1, color);
   return 0;
 }
 
@@ -589,40 +642,55 @@ alt_u32 fillRoundRect(alt_u16 x, alt_u16 y, alt_u16 w,
 // TEXT- AND CHARACTER-HANDLING FUNCTIONS ----------------------------------
 
 /**
- * Draw a character
+ * Set text cursors
  */
-alt_u32 setCursor(alt_u32 x, alt_u32 y)
+alt_u32 setCursor(GFXgc* pGc, alt_u32 x, alt_u32 y)
 {
-  gfxGc->cursor_y=y;
-  gfxGc->cursor_x=x;
+  pGc->cursor_y=y;
+  pGc->cursor_x=x;
   return 0;
 }
 
-alt_u32 setTextSize(alt_u16 size) {
-  gfxGc->size=size;
+/**
+ * Set text size
+ */
+alt_u32 setTextSize(GFXgc* pGc, alt_u16 size)
+{
+  pGc->size = size;
+  return 0;
 }
 
-alt_u32 setColor(alt_u32 color) {
-  gfxGc->color=(gfxGc->color&0xff000000)|(color&0xffffff);
+/**
+ * Set graphic context color
+ */
+alt_u32 setColor(GFXgc* pGc, alt_u32 color)
+{
+  pGc->txtColor = (pGc->txtColor & 0xff000000) | (color & 0xffffff);
+  return 0;
 }
 
-alt_u32 setAlpha(alt_u8 alpha) {
-  gfxGc->color=(gfxGc->color&0xffffff)|((alt_u32)alpha<<24);
+/**
+ * Set graphic context calpha
+ */
+alt_u32 setAlpha(GFXgc* pGc, alt_u8 alpha)
+{
+  pGc->txtColor = (pGc->txtColor & 0xffffff) | ((alt_u32)alpha << 24);
+  return 0;
 }
 
 /**
  * Draw a character
  */
-alt_u32 drawCharAtCursor( alt_u8 c)
+alt_u32 drawCharAtCursor(GFXgc* pGc, alt_u8 c)
 {
   if(c=='\n') {
-    gfxGc->cursor_y+=gfxGc->size*gfxFont->yAdvance;
+    pGc->cursor_y += pGc->size * pGc->pFnt->yAdvance;
     return 1;
   } else if (c=='\r') {
-    gfxGc->cursor_x=0;
+    pGc->cursor_x = 0;
     return 1;
   } else {
-    gfxGc->cursor_x += drawChar(gfxGc->cursor_x,gfxGc->cursor_y,gfxGc->color,gfxGc->size, c);
+    pGc->cursor_x += drawChar(pGc, pGc->cursor_x, pGc->cursor_y, pGc->txtColor, pGc->size, c);
     return 1;
   }
 }
@@ -630,7 +698,7 @@ alt_u32 drawCharAtCursor( alt_u8 c)
 /**
  * Draw a character
  */
-alt_u32 drawChar(alt_u16 x, alt_u16 y, alt_u32 color, alt_u8 size, alt_u8 c)
+alt_u32 drawChar(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color, alt_u8 size, alt_u8 c)
 {
   // Custom font
 
@@ -638,9 +706,9 @@ alt_u32 drawChar(alt_u16 x, alt_u16 y, alt_u32 color, alt_u8 size, alt_u8 c)
   // newlines, returns, non-printable characters, etc.  Calling
   // drawChar() directly with 'bad' characters of font may cause mayhem!
 
-  c -= gfxFont->first;
-  GFXglyph *glyph  = &(gfxFont->glyph[c]);
-  alt_u8  *bitmap = gfxFont->bitmap;
+  c -= pGc->pFnt->first;
+  GFXglyph *glyph  = &(pGc->pFnt->glyph[c]);
+  alt_u8  *bitmap = pGc->pFnt->bitmap;
   alt_u16  bo = glyph->bitmapOffset;
   alt_u8   w  = glyph->width;
   alt_u8   h  = glyph->height;
@@ -671,8 +739,7 @@ alt_u32 drawChar(alt_u16 x, alt_u16 y, alt_u32 color, alt_u8 size, alt_u8 c)
   // this (a canvas object type for MCUs that can afford the RAM and
   // displays supporting setAddrWindow() and pushColors()), but haven't
   // implemented this yet.
-
-
+  pGc->color = colorFormat(pGc, color);
   for(yy=0; yy<h; yy++) {
     for(xx=0; xx<w; xx++) {
       if(!(bit++ & 7)) {
@@ -680,9 +747,9 @@ alt_u32 drawChar(alt_u16 x, alt_u16 y, alt_u32 color, alt_u8 size, alt_u8 c)
       }
       if(bits & 0x80) {
         if(size == 1) {
-          writePixel(x+xo+xx, y+yo+yy, color);
+          pGc->pix(pGc, x+xo+xx, y+yo+yy);
         } else {
-          fillRect(x+(xo16+xx)*size, y+(yo16+yy)*size, size, size, color);
+          fillRect(pGc, x+(xo16+xx)*size, y+(yo16+yy)*size, size, size, color);
         }
       }
       bits <<= 1;
@@ -694,24 +761,26 @@ alt_u32 drawChar(alt_u16 x, alt_u16 y, alt_u32 color, alt_u8 size, alt_u8 c)
 /**
  *
  */
-alt_u32 drawTxt(alt_u16 x, alt_u16 y, alt_u32 color, alt_u8* txt)
+alt_u32 drawTxt(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color, alt_u8* txt)
 {
   int size;
   int i;
 
   size = 0;
   for(i=0; txt[i]; i++){
-    size += drawChar(x+size, y, color, 1, txt[i]);
+    size += drawChar(pGc, x+size, y, color, 1, txt[i]);
   }
 
   return size;
 }
 
-alt_u32 setFont(alt_u32 num)
+/**
+ */
+alt_u32 setFont(GFXgc* pGc, alt_u32 num)
 {
 #ifdef GFX_NUM_FONTS
   if (num<GFX_NUM_FONTS) {
-    gfxFont = gfxFontRepo[num];
+    pGc->pFnt = gfxFontRepo[num];
     return 0;
   }
 #endif
@@ -723,18 +792,19 @@ alt_u32 setFont(alt_u32 num)
 /**
  *
  */
-alt_u32 drawBmp(GFXbmp* bmp, alt_u16 x, alt_u16 y, alt_u32 color)
+alt_u32 drawBmp(GFXgc* pGc, GFXbmp* bmp, alt_u16 x, alt_u16 y, alt_u32 color)
 {
   int xpos = x;
   int i;
   int j;
   alt_u16 tmp;
 
+  pGc->color = colorFormat(pGc, color);
   for(i=0; i<bmp->size; i++) {
     tmp = bmp->bmp[i];
     for(j=0; j<16; j++){
       if(tmp & 0x8000) {
-        writePixel(xpos, y, color);
+        pGc->pix(pGc, xpos, y);
       }
       tmp <<= 1;
       xpos++;
