@@ -39,13 +39,15 @@
 
 ALT_LLIST_HEAD(alt_16550_uart_list);
 
+#define SEC_RAM  __attribute__((__section__(".rwdata")))
+
 /*
  * altera_16550_uart_rxirq() is called by altera_16550_uart_irq() to
  * process a receive interrupt. It transfers the incoming character into
  * the receive circular buffer, and sets the appropriate flags to indicate
  * that there is data ready to be processed.
  */
-void altera_16550_uart_rxirq(altera_16550_uart_state* sp)
+void SEC_RAM altera_16550_uart_rxirq(altera_16550_uart_state* sp)
 {
     alt_u32 next;
     alt_u32 regs;
@@ -196,9 +198,9 @@ IOWR_ALTERA_16550_UART_THR(sp->base, data);
  * data), or altera_16550_uart_txirq() (for outgoing data).
  */
 #ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
-static void altera_16550_uart_irq(void* context)
+static void SEC_RAM altera_16550_uart_irq(void* context)
 #else
-static void altera_16550_uart_irq(void* context, alt_u32 id)
+static void SEC_RAM altera_16550_uart_irq(void* context, alt_u32 id)
 #endif
 {
     alt_u32 status = 0;
