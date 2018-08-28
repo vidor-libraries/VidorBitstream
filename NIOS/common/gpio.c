@@ -9,6 +9,8 @@
 
 #if defined(GPIO_GPIO) && (GPIO_GPIO == 1)
 
+#define SEC_RAM  __attribute__((__section__(".rwdata")))
+
 #include <stdio.h>
 #include <io.h>
 #include <sys/alt_irq.h>
@@ -246,11 +248,11 @@ alt_u32 pwmWrite(alt_u32 pin, alt_u16 mh, alt_u16 ml)
 /**
  *
  */
-alt_u32 irqPinSet(alt_u32 pin, void (*hook)(void))
+alt_u32 SEC_RAM irqPinSet(alt_u32 pin, void (*hook)(void))
 {
-  alt_u32 reg;
-  void* context = 0;
-  int ret;
+  alt_u32   reg;
+  void     *context = (void*)pin;
+  int       ret;
 
   if (hook) {
 #ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
@@ -275,7 +277,7 @@ alt_u32 irqPinSet(alt_u32 pin, void (*hook)(void))
   reg &=~(1 << pin);
   IOWR(IRQ_BASE, PIO_DIR , reg);
 
-  IOWR(IRQ_BASE, PIO_EDET, 0);
+  IOWR(IRQ_BASE, PIO_EDET, 1 << pin);
 
   IOWR(IRQ_BASE, PIO_IMSK, 1 << pin);
 
@@ -288,15 +290,31 @@ alt_u32 irqPinSet(alt_u32 pin, void (*hook)(void))
  *
  */
 #ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
-void irqIsr(void* isr_context)
+void SEC_RAM irqIsr(void* isr_context)
 #else
-void irqIsr(void* isr_context, alt_u32 id)
+void SEC_RAM irqIsr(void* isr_context, alt_u32 id)
 #endif
 {
+  alt_u32 pin = (alt_u32)isr_context;
   if (irqHook) {
     irqHook();
   }
-  IOWR(IRQ_BASE, PIO_EDET, 0);
+  IOWR(IRQ_BASE, PIO_EDET, 1 << pin);
+}
+
+/**
+ */
+alt_u32 SEC_RAM irqPinDet(alt_u32 pin)
+{
+  return (IORD(IRQ_BASE, PIO_EDET) & (1 << pin));
+}
+
+/**
+ */
+alt_u32 SEC_RAM irqPinClr(alt_u32 pin)
+{
+  IOWR(IRQ_BASE, PIO_EDET, 1 << pin);
+  return 0;
 }
 
 /**
@@ -328,4 +346,11 @@ int intPinSet(alt_u32 pin, int val)
 
   }
   return 0;
+}
+
+/**
+ */
+int intPinGet(alt_u32 pin)
+{
+  return IORD(IRQ_BASE, PIO_DATA) & (1 << pin);;
 }
