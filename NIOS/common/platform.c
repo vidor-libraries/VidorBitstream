@@ -86,6 +86,8 @@
   #define REG_DEV
 #endif /* defined(REG_MODULE) && (REG_MODULE == 1) */
 
+#define SEC_RAM  __attribute__((__section__(".rwdata")))
+
 /**
  */
 typedef struct {
@@ -125,6 +127,8 @@ void platformSetup(void)
 {
   int i;
 
+  configInit();
+
   for (i=0; i<sizeof(devHnd)/sizeof(sDevHnd); i++) {
     if (devHnd[i].setup) {
       devHnd[i].setup(devHnd[i].sub_devs);
@@ -134,7 +138,7 @@ void platformSetup(void)
 
 /**
  */
-void platformCmd(void)
+void SEC_RAM platformCmd(void)
 {
   volatile alt_u32 cmd;
 
@@ -159,7 +163,7 @@ void platformCmd(void)
 
 /**
  */
-void platformLoop(void)
+void SEC_RAM platformLoop(void)
 {
   int i;
 
