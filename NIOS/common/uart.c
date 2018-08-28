@@ -10,6 +10,8 @@
 
 #include <iptronix_16550_uart.h>
 
+#define SEC_RAM  __attribute__((__section__(".rwdata")))
+
 #include "mb.h"
 #include "gpio.h"
 #include "uart.h"
@@ -44,7 +46,7 @@ void uartInit(int devs)
 /**
  *
  */
-void uartCmd(void)
+void SEC_RAM uartCmd(void)
 {
   alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
   alt_u32 ret = -1;
@@ -100,18 +102,18 @@ alt_u32 uartEnable(alt_u32 idx, alt_u32 mode)
   if (!pDev->sp) {
     return -1;
   }
-
-  gpioPinMode(pDev->tx, UART_PIN_MUX);
-  gpioPinMode(pDev->rx, 0);
-  if (mode & 0x1) {
-    gpioPinMode(pDev->rts, UART_PIN_MUX);
-    gpioPinMode(pDev->cts, 0);
+  if (pDev->tx != -1) {
+    gpioPinMode(pDev->tx, UART_PIN_MUX);
+    gpioPinMode(pDev->rx, 0);
+    if (mode & 0x1) {
+      gpioPinMode(pDev->rts, UART_PIN_MUX);
+      gpioPinMode(pDev->cts, 0);
+    }
+    if (mode & 0x2) {
+      gpioPinMode(pDev->dtr, UART_PIN_MUX);
+      gpioPinMode(pDev->dsr, 0);
+    }
   }
-  if (mode & 0x2) {
-    gpioPinMode(pDev->dtr, UART_PIN_MUX);
-    gpioPinMode(pDev->dsr, 0);
-  }
-
   return 0;
 }
 
@@ -140,7 +142,8 @@ alt_u32 uartSet(alt_u32 idx, alt_u32 baud, alt_u32 config)
   case  38400: br =  BR38400; break;
   case  57600: br =  BR57600; break;
   case 115200: br = BR115200; break;
-  default: return -1;;
+//  default: return -1;
+  default: br = baud; break;
   }
   switch (config & UART_STOP_BIT_MASK) {
   case UART_STOP_BIT_1  : sb = STOPB_1; break;
@@ -195,7 +198,7 @@ alt_u32 uartDisable(alt_u32 idx)
 /**
  *
  */
-alt_u32 uartGet(alt_u32 idx)
+alt_u32 SEC_RAM uartGet(alt_u32 idx)
 {
   if(idx >= uart_dev_num){
     return -1;
@@ -214,7 +217,7 @@ alt_u32 uartGet(alt_u32 idx)
 /**
  *
  */
-alt_u32 uartRead(alt_u32 idx, alt_u8* buf, alt_u32 len)
+alt_u32 SEC_RAM uartRead(alt_u32 idx, alt_u8* buf, alt_u32 len)
 {
   if(idx >= uart_dev_num){
     return -1;
@@ -226,7 +229,7 @@ alt_u32 uartRead(alt_u32 idx, alt_u8* buf, alt_u32 len)
 /**
  *
  */
-alt_u32 uartAvail(alt_u32 idx)
+alt_u32 SEC_RAM uartAvail(alt_u32 idx)
 {
   if(idx >= uart_dev_num){
     return -1;
@@ -242,7 +245,7 @@ alt_u32 uartAvail(alt_u32 idx)
 /**
  *
  */
-alt_u32 uartPut(alt_u32 idx, alt_u8 data)
+alt_u32 SEC_RAM uartPut(alt_u32 idx, alt_u8 data)
 {
   if(idx >= uart_dev_num){
     return -1;
@@ -254,7 +257,7 @@ alt_u32 uartPut(alt_u32 idx, alt_u8 data)
 /**
  *
  */
-alt_u32 uartWrite(alt_u32 idx, alt_u8* buf, alt_u32 len)
+alt_u32 SEC_RAM uartWrite(alt_u32 idx, alt_u8* buf, alt_u32 len)
 {
   if(idx >= uart_dev_num){
     return -1;
