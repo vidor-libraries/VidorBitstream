@@ -21,13 +21,16 @@
  */
 #define MB_DEV_MSK  0xFF000000
 #define MB_DEV_OFS  24
-#define MB_SUB_MSK  0x00F00000
-#define MB_SUB_OFS  20
-#define MB_CMD_MSK  0x000FFFFF
+#define MB_SUB_MSK  0x00FF0000
+#define MB_SUB_OFS  16
+#define MB_CHN_MSK  0x0000FF00
+#define MB_CHN_OFS  8
+#define MB_CMD_MSK  0x000000FF
 #define MB_CMD_OFS  0
 
 #define MB_DEV(a) ((a & MB_DEV_MSK) >> MB_DEV_OFS)
 #define MB_SUB(a) ((a & MB_SUB_MSK) >> MB_SUB_OFS)
+#define MB_CHN(a) ((a & MB_CHN_MSK) >> MB_CHN_OFS)
 #define MB_CMD(a) ((a & MB_CMD_MSK) >> MB_CMD_OFS)
 
 #define MB_DEV_SF     (0x01<<MB_DEV_OFS)
