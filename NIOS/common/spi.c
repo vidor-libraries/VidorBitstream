@@ -194,8 +194,6 @@ alt_u32 spiTrc(alt_u32 idx, alt_u32 txl, alt_u8* txb, alt_u32 rxl, alt_u8* rxb)
   alt_u32   base = pDev->base;
   int       i;
   alt_u32   bytes = txl+rxl;
-  alt_u8    rx, tx;
-  int       fr;
 
   /* set SS */
   if (pDev->ss_auto) {
