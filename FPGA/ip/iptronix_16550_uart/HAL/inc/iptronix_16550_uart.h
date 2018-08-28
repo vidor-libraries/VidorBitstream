@@ -64,7 +64,7 @@ extern "C"
  * Since the maximun size of HW FIFO available to set is 128, so the ring buffer
  * size need bigger than HW FIFO size.
  */
-#define ALT_16550_UART_BUF_LEN (32)
+#define ALT_16550_UART_BUF_LEN (64)
 
 /*
  * ALT_16550_UART_BUF_MSK is used as an internal convenience for detecting
