@@ -68,5 +68,7 @@
     {FLASH_SPI_BASE,    -1,    -1,    -1,    -1, 1},
 #endif /* defined(SPI_MODULE) && (SPI_MODULE == 1) */
 
+void configInit(void);
+
 #endif /* CONFIG_H_ */
 

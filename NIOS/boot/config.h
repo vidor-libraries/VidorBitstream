@@ -52,5 +52,7 @@
   #define SF_SECURITY_CMDS  1
 #endif /* defined(SF_MODULE) && (SF_MODULE == 1) */
 
+void configInit(void);
+
 #endif /* CONFIG_H_ */
 

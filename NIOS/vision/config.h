@@ -11,9 +11,9 @@
 #include <system.h>
 
 /**
- *
+ * FPGA Version returned by command 0x00000001
  */
-#define FPGA_VERSION 0x01010107
+#define FPGA_VERSION 0x01010108
 
 
 /**
@@ -47,14 +47,23 @@
   #define FONT_MONO
   #define FONT_SANS
   #define FONT_SERIF
-  #define FONT_9PT 
-  #define FONT_12PT 
-  #define FONT_18PT 
-  #define FONT_24PT 
-  //#define FONT_BOLD 
-  //#define FONT_ITALIC 
+  #define FONT_9PT
+  #define FONT_12PT
+  #define FONT_18PT
+  #define FONT_24PT
+  //#define FONT_BOLD
+  //#define FONT_ITALIC
 
   #define GFX_CMDS        1
+
+  /* define graphic context */
+  #include "gfx.h"
+
+  #define GFX_GC_NUM    (1 + NEOPIXEL_0_CHANNELS)
+  extern GFXgc *gfxGc[];
+
+/* TODO define graphic context */
+
 #endif /* defined(GFX_MODULE) && (GFX_MODULE == 1) */
 
 /**
@@ -100,7 +109,7 @@
   #define UART_PIN_MUX 4
   #define UART_DEV_CFG \
     /*      name  cap     tx  rx rts cts dtr dsr*/\
-    {NINA_UART_NAME, 0x0, -1, -1, -1, -1, -1, -1},
+    {NINA_UART_NAME, 0x0, 64+15, 64+16, -1, -1, -1, -1},
 
 #endif /* defined(UART_MODULE) && (UART_MODULE == 1) */
 
@@ -117,7 +126,7 @@
 #define SDRAM_MODULE         1
 
 #if defined(SDRAM_MODULE) && (SDRAM_MODULE == 1)
-  #define SDRAM_BASE  (SDRAM_ARBITER_BASE | 0x80000000)
+  #define SDRAM_BASE  (void*)(SDRAM_ARBITER_BASE | 0x80000000)
   #define SDRAM_SIZE  SDRAM_ARBITER_SPAN
   //#define SDRAM_BASE  (0 | 0x80000000)
   //#define SDRAM_SIZE  0x00800000
@@ -164,6 +173,8 @@
   #define TMR_IRQ_CTR_ID  0
   #define TMR_IRQ         TIMER_0_IRQ
 #endif /* defined(TMR_MODULE) && (TMR_MODULE == 1) */
+
+void configInit(void);
 
 #endif /* CONFIG_H_ */
 

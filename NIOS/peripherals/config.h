@@ -13,7 +13,7 @@
 /**
  *
  */
-#define FPGA_VERSION 0x01020108
+#define FPGA_VERSION 0x01020109
 
 /**
  * GPIO module
@@ -37,10 +37,26 @@
   #define GFX_LOGO        0
 
   #define GFX_FONTS       1
-  #define GFX_FONT_FILE   "Fonts/Org_01.h"
+  #define GFX_FONT_FILE   "fonts.h"
   #define GFX_FONT_NAME   Org_01
+  //#define FONT_MONO
+  //#define FONT_SANS
+  //#define FONT_SERIF
+  //#define FONT_9PT
+  //#define FONT_12PT
+  //#define FONT_18PT
+  //#define FONT_24PT
+  //#define FONT_BOLD
+  //#define FONT_ITALIC
 
   #define GFX_CMDS        1
+
+  /* define graphic context */
+  #include "gfx.h"
+  #define GFX_GC_NUM    (1 + NEOPIXEL_CHANNELS)
+  extern GFXgc *gfxGc[];
+/* TODO define graphic context */
+
 #endif /* defined(GFX_MODULE) && (GFX_MODULE == 1) */
 
 /**
@@ -97,15 +113,15 @@
   #define UART_PIN_MUX 4
   #define UART_DEV_CFG \
     /*      name  cap     tx     rx    rts    cts    dtr    dsr*/\
-    {NINA_UART_NAME, 0x0, -1, -1, -1, -1, -1, -1},\
-    {UART_0_NAME, 0x0, 32+ 1, 32+ 2,    -1,    -1,    -1,    -1},\
-    {UART_1_NAME, 0x1, 32+ 3, 32+ 4, 32+ 2, 32+ 1,    -1,    -1},\
-    {UART_2_NAME, 0x0, 32+ 5, 32+ 6,    -1,    -1,    -1,    -1},\
-    {UART_3_NAME, 0x3, 32+ 7, 32+ 8, 32+ 6, 32+ 5, 32+ 4, 32+ 3},\
-    {UART_4_NAME, 0x0, 32+ 9, 32+10,    -1,    -1,    -1,    -1},\
-    {UART_5_NAME, 0x1, 32+11, 32+12, 32+10, 32+ 9,    -1,    -1},\
-    {UART_6_NAME, 0x0, 32+13, 32+14,    -1,    -1,    -1,    -1},\
-    {UART_7_NAME, 0x3, 32+15, 32+16, 32+14, 32+13, 32+12, 32+11},
+    {NINA_UART_NAME, 0x0, 64+15, 64+16,    -1,    -1,    -1,    -1},\
+    {UART_0_NAME   , 0x0, 32+ 1, 32+ 2,    -1,    -1,    -1,    -1},\
+    {UART_1_NAME   , 0x1, 32+ 3, 32+ 4, 32+ 2, 32+ 1,    -1,    -1},\
+    {UART_2_NAME   , 0x0, 32+ 5, 32+ 6,    -1,    -1,    -1,    -1},\
+    {UART_3_NAME   , 0x3, 32+ 7, 32+ 8, 32+ 6, 32+ 5, 32+ 4, 32+ 3},\
+    {UART_4_NAME   , 0x0, 32+ 9, 32+10,    -1,    -1,    -1,    -1},\
+    {UART_5_NAME   , 0x1, 32+11, 32+12, 32+10, 32+ 9,    -1,    -1},\
+    {UART_6_NAME   , 0x0, 32+13, 32+14,    -1,    -1,    -1,    -1},\
+    {UART_7_NAME   , 0x3, 32+15, 32+16, 32+14, 32+13, 32+12, 32+11},
 
 #endif /* defined(UART_MODULE) && (UART_MODULE == 1) */
 
@@ -166,6 +182,7 @@
   #define TMR_IRQ         TIMER_0_IRQ
 #endif /* defined(TMR_MODULE) && (TMR_MODULE == 1) */
 
+void configInit(void);
 
 #endif /* CONFIG_H_ */
 
