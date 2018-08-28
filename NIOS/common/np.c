@@ -85,7 +85,8 @@
 
 #define CLOCK   (((float)ALT_CPU_FREQ)/1000000000.0)           // clock in GHz
 
-GFXgc     npGc;
+GFXgc gfxNpGc[NP_DEV_NUM];
+
 
 typedef struct {
   alt_u32   trst;     // reset time
@@ -133,7 +134,7 @@ alt_u32   npZzlLen;
 sNpSeq    npSeq;
 alt_u32   npSeqNum;               // sequence number
 
-alt_u32   npStrIdx;               // string index, used in graphic
+//alt_u32   npStrIdx;               // string index, used in graphic
 
 alt_u8    brightness[NP_DEV_NUM];
 alt_u8    rOffset;       // Index of red byte within each 3- or 4-byte pixel
@@ -194,7 +195,7 @@ void npCmd(void)
     ret = npBufSel(rpc[1]);
     break;
   case 8:
-    /* load, start and stop sequence */
+    /*  */
     ret = npWrapSet(rpc[1], rpc[2], rpc[3]);
     break;
   case 9:
@@ -205,21 +206,23 @@ void npCmd(void)
     /* start and stop buffer loop */
     ret = npBufLoop(rpc[1], rpc[2], rpc[3]);
     break;
+    /*
   case 11:
-    /* Attach gfx to np buffer */
+    * Attach gfx to np buffer *
     ret = npGfxAtt(rpc[1]);
     break;
   case 12:
     ret = npGfxDet();
     break;
   case 13:
-    /* set string where to write */
+    * set string where to write *
     ret = npGfxStrSet(rpc[1]);
     break;
   case 14:
-    /* write pixel */
+    / write pixel *
     ret = npGfxWp(rpc[1], rpc[2], rpc[3]);
     break;
+    */
   }
   rpc[1] = ret;
 }
@@ -235,6 +238,25 @@ alt_u32 npBufSet(alt_u32 num, alt_u32 len, alt_u32 zzf, alt_u32 zzl)
   npZzlLen = zzl;
   npZzSts  = 0;
   npZzOfs  = npZzlLen * NP_DEV_NUM * sizeof(alt_u32);
+/* TODO */
+  int i;
+  for (i=0; i<NP_DEV_NUM; i++) {
+    gfxGc[1+i]->width    = npZzlLen;
+    gfxGc[1+i]->height   = npNumLed / npZzlLen;
+    gfxGc[1+i]->stride   = NP_DEV_NUM;
+    gfxGc[1+i]->bpp      = 32;
+    gfxGc[1+i]->fmt      = GFX_GC_FMT_XGRB32;
+    gfxGc[1+i]->color    = 0;
+    gfxGc[1+i]->fb       = (void*)(NP_MEM_BASE + (i*4));
+    gfxGc[1+i]->pix      = wp32;
+    gfxGc[1+i]->flg      = GFX_GC_ROT90;
+    gfxGc[1+i]->pFnt     = NULL;
+    gfxGc[1+i]->txtColor = 0;
+    gfxGc[1+i]->cursor_x = 0;
+    gfxGc[1+i]->cursor_y = 0;
+    gfxGc[1+i]->size     = 0;
+  }
+/* TODO */
   return 0;
 }
 
@@ -381,6 +403,12 @@ alt_u32 npLedSet(alt_u32 idx, alt_u16 LED, alt_u8 r, alt_u8 g, alt_u8 b, alt_u8 
  */
 alt_u32 npBrgSet(alt_u32 idx, alt_u8 brg)
 {
+  if (idx >= NP_DEV_NUM ) {
+    return -1;
+  }
+  if ((npChMsk && (1<<idx))==0) {
+    return -1;
+  }
   brightness[idx] = brg;
   return 0;
 }
@@ -486,7 +514,25 @@ alt_u32 npBufLoop(alt_u32 flg, alt_u32 buf, alt_u32 ms)
 }
 
 /**
- */
+ *//*
+alt_u32 npWp(void* pGc, alt_u16 x, alt_u16 y, alt_u32 color)
+{
+  alt_u16   led;
+  alt_u32  *pLed;
+
+  led = x + y * npZzlLen;
+  pLed = npGc.fb;
+  pLed += (npBufSize * npBufCur) >> 2;
+  pLed += ((NP_DEV_NUM * led) + npStrIdx);
+  *pLed = ((alt_u32)((color >> 16) & 0xFF) << rOffset) |
+          ((alt_u32)((color >>  8) & 0xFF) << gOffset) |
+          ((alt_u32)((color >>  0) & 0xFF) << bOffset) |
+          ((alt_u32)((color >> 24) & 0xFF) << wOffset) ;
+  return 0;
+}
+*/
+/**
+ *//*
 alt_u32 npGfxAtt(alt_u32 flg)
 {
   npGc.width  = npZzlLen;
@@ -494,37 +540,35 @@ alt_u32 npGfxAtt(alt_u32 flg)
   npGc.stride = NP_DEV_NUM;
   npGc.bpp    = 32;
   npGc.fmt    = GFX_GC_FMT_XGRB32;
-  npGc.fb     = NP_MEM_BASE;
-  npGc.wp     = npGfxWp;
+  npGc.fb     = (void*)NP_MEM_BASE;
+  npGc.wp     = npWp;
   npGc.flg    = flg;
   npGc.cursor_x = 0;
   npGc.cursor_y = 0;
 
-  gcSet(&npGc);
+//TODO va messo in config  gcSet(&npGc);
 
   npStrIdx = 0;
 
   return 0;
 }
 
-alt_u32 npGfxDet(void)
+alt_u32 npGfxDet(void) // TODO eliminare
 {
-
-  gcSet(NULL);
-
+//  gcSet(NULL);
   return 0;
 }
-
+*/
 /**
- */
+ *//*
 alt_u32 npGfxStrSet(alt_u32 idx)
 {
   npStrIdx = idx;
   return 0;
 }
-
+*/
 /**
- */
+ *//*
 alt_u32 npGfxWp(alt_u32 x, alt_u32 y, alt_u32 color)
 {
   alt_u16   led;
@@ -540,7 +584,7 @@ alt_u32 npGfxWp(alt_u32 x, alt_u32 y, alt_u32 color)
           ((alt_u32)((color >> 24) & 0xFF) << wOffset) ;
   return 0;
 }
-
+*/
 /**
  */
 static void npTmrCb(void* arg)
