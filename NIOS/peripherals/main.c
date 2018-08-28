@@ -4,9 +4,17 @@
 #include "platform.h"
 #include "gpio.h"
 
+#define SEC_RAM  __attribute__((__section__(".rwdata")))
 
-#if 1
+//#define TEST
+//#define TEST_UART
+//#define TEST_NP
+
+#ifdef TEST
 #include "config.h"
+
+
+#ifdef TEST_NP
 
 #include "np.h"
 void npTest(void)
@@ -224,6 +232,7 @@ void npWrapTest(void)
   npSeqSet(&seq);
 */
 }
+#endif /* TEST_NP */
 
 
 #ifdef TEST_SPI
@@ -269,18 +278,28 @@ void spiTest(alt_u32 idx)
 #ifdef TEST_UART
 
 #include "uart.h"
+#include "mb.h"
 void uartTest(void)
 {
   alt_u32 idx;
-  int c;
-  int i;
-  alt_u8 buf[32];
+  int     c;
+  int     i;
+  //alt_u8  buf[256];
+  alt_u8 *ptr = (alt_u8*)MB_BASE;
+  int     ret;
 
   idx = 0;
 #if 0
-  uartEnable(idx, 0);
-  uartSet(idx, 115200, 0);
-
+  ret = uartEnable(idx, 0);
+  if (ret) {
+    return;
+  }
+  ret = uartSet(idx, 115200, UART_DATA_8 | UART_PARITY_NONE | UART_STOP_BIT_1);
+  //ret = uartSet(idx, 119200, UART_DATA_8 | UART_PARITY_NONE | UART_STOP_BIT_1);
+  if (ret) {
+    return;
+  }
+/*
   for(i=0x20; i<0x80; i++) {
     uartPut(idx, (alt_u8)i);
   }
@@ -288,14 +307,23 @@ void uartTest(void)
   uartPut(idx, 0x0A);
 
   uartWrite(idx, "Hello\r\n", 6);
-
+*/
+  for (i=0; i<16; i++){
+    uartWrite(idx, "0123456789", 10);
+  }
   for(;;){
     i = uartAvail(idx);
 
-    if (i>=16) {
+//    if (i>=16) {
+    if (i > 0) {
       for (c=0; c<i; c++) {
-        buf[c] = uartGet(idx);
+        //buf[c] = uartGet(idx);
+        *ptr++ = uartGet(idx);
+        if (ptr >= (alt_u8*)MB_BASE + 512) {
+          ptr = (alt_u8*)MB_BASE;
+        }
       }
+/*
       uartPut(idx, 0x0D);
       uartPut(idx, 0x0A);
       for (c=0; c<i; c++) {
@@ -303,6 +331,7 @@ void uartTest(void)
       }
       uartPut(idx, 0x0D);
       uartPut(idx, 0x0A);
+*/
     }
   }
 #endif
@@ -312,51 +341,58 @@ void uartTest(void)
 
   //uartEnable(idx, 0);
   mode = 0; // 0-2w, 1-4w, 3-6w
-  rpc[0] = MB_DEV_UART | ((idx & 0x0F)<<20) | 0x01;
+  rpc[0] = MB_DEV_UART | ((idx & 0xFF)<<16) | 0x01;
   rpc[1] = mode;
   platformCmd();
 
   //uartSet(idx, 115200, 0);
   mode = UART_PARITY_NONE | UART_STOP_BIT_1 | UART_DATA_8;
-  rpc[0] = MB_DEV_UART | ((idx & 0x0F)<<20) | 0x02;
-  rpc[1] = 115200;
+  rpc[0] = MB_DEV_UART | ((idx & 0xFF)<<16) | 0x02;
+//  rpc[1] = 115200;
+  rpc[1] = 119200;
   rpc[2] = mode;
   platformCmd();
-
+/*
   //uartWrite(idx, "Hello\r\n", 6);
-  rpc[0] = MB_DEV_UART | ((idx & 0x0F)<<20) | 0x08;
+  rpc[0] = MB_DEV_UART | ((idx & 0xFF)<<16) | 0x08;
   rpc[1] = 7;
   memcpy(&rpc[2], "Hello\r\n", 7);
   platformCmd();
 
   for(i=0x20; i<0x80; i++) {
     // uartPut(idx, character);
-    rpc[0] = MB_DEV_UART | ((idx & 0x0F)<<20) | 0x07;
+    rpc[0] = MB_DEV_UART | ((idx & 0xFF)<<16) | 0x07;
     rpc[1] = (alt_u8)i;
     platformCmd();
   }
   //  uartPut(idx, 0x0D);
-  rpc[0] = MB_DEV_UART | ((idx & 0x0F)<<20) | 0x07;
+  rpc[0] = MB_DEV_UART | ((idx & 0xFF)<<16) | 0x07;
   rpc[1] = 0x0D;
   platformCmd();
   //  uartPut(idx, 0x0A);
-  rpc[0] = MB_DEV_UART | ((idx & 0x0F)<<20) | 0x07;
+  rpc[0] = MB_DEV_UART | ((idx & 0xFF)<<16) | 0x07;
   rpc[1] = 0x0A;
   platformCmd();
-
+*/
   for(;;){
     //i = uartAvail(idx);
-    rpc[0] = MB_DEV_UART | ((idx & 0x0F)<<20) | 0x06;
+    rpc[0] = MB_DEV_UART | ((idx & 0xFF)<<16) | 0x06;
     platformCmd();
     i = rpc[1];
 
-    if (i>=16) {
+    //if (i >= 16) {
+    if (i > 0) {
       for (c=0; c<i; c++) {
         //buf[c] = uartGet(idx);
         rpc[0] = MB_DEV_UART | ((idx & 0x0F)<<20) | 0x04;
         platformCmd();
-        buf[c] = rpc[1];
+        //buf[c] = rpc[1];
+        *ptr++ = rpc[1];
+        if (ptr >= (alt_u8*)MB_BASE + 512) {
+          ptr = (alt_u8*)MB_BASE;
+        }
       }
+/*
       //  uartPut(idx, 0x0D);
       rpc[0] = MB_DEV_UART | ((idx & 0x0F)<<20) | 0x07;
       rpc[1] = 0x0D;
@@ -379,6 +415,7 @@ void uartTest(void)
       rpc[0] = MB_DEV_UART | ((idx & 0x0F)<<20) | 0x07;
       rpc[1] = 0x0A;
       platformCmd();
+*/
     }
   }
 #endif
@@ -387,26 +424,53 @@ void uartTest(void)
 
 #endif
 
+//#define NO_IRQ
+#define PIN_POLL
+
+#ifdef NO_IRQ
+int irq_flag = 0;
+void irqTrigger(void)
+{
+  irq_flag = 1;
+}
+#endif
 /**
  *
  */
-int main(void)
+int SEC_RAM main(void)
 {
   platformSetup();
-
-#if 1
+/*
+#ifdef TEST
   //npTest();
   //npSeqTest();
-  npGfxTest();
-  npWrapTest();
+  //npGfxTest();
+  //npWrapTest();
   //spiTest(2);
-  //uartTest();
+  uartTest();
 #endif
-
+*/
+#ifndef NO_IRQ
   irqPinSet(0, platformCmd);
+#else
+  irqPinSet(0, irqTrigger);
+#endif
   intPinInit(1, 0);
 
   while (1) {
+#ifdef NO_IRQ
+    if (irq_flag) {
+      platformCmd();
+      irq_flag = 0;
+    }
+#endif
+#ifdef PIN_POLL
+    if (irqPinDet(0)) {
+      irqPinClr(0);
+      platformCmd();
+    }
+#endif
+
     platformLoop();
   };
 
