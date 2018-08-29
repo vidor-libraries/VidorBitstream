@@ -21,7 +21,6 @@
 #include "mb.h"
 #include "gpio.h"
 #include "tmr.h"
-#include "gfx.h"
 #include "np.h"
 
 /**
@@ -85,8 +84,10 @@
 
 #define CLOCK   (((float)ALT_CPU_FREQ)/1000000000.0)           // clock in GHz
 
-GFXgc gfxNpGc[NP_DEV_NUM];
-
+#if defined(GFX_MODULE) && (GFX_MODULE == 1)
+  #include "gfx.h"
+  GFXgc gfxNpGc[NP_DEV_NUM];
+#endif
 
 typedef struct {
   alt_u32   trst;     // reset time
@@ -97,16 +98,16 @@ typedef struct {
 
 sNpTmg npTmg[] = {
   {
-      (alt_u32)((float)300000.0*CLOCK),
-      (alt_u32)((float)   480.0*CLOCK),
-      (alt_u32)((float)  2000.0*CLOCK),
-      (alt_u32)((float)  2480.0*CLOCK)
+    (alt_u32)((float)300000.0*CLOCK),
+    (alt_u32)((float)   480.0*CLOCK),
+    (alt_u32)((float)  2000.0*CLOCK),
+    (alt_u32)((float)  2480.0*CLOCK)
   },
   {
-      (alt_u32)((float)300000.0*CLOCK),
-      (alt_u32)((float)   350.0*CLOCK),
-      (alt_u32)((float)   750.0*CLOCK),
-      (alt_u32)((float)  1250.0*CLOCK)
+    (alt_u32)((float)300000.0*CLOCK),
+    (alt_u32)((float)   350.0*CLOCK),
+    (alt_u32)((float)   750.0*CLOCK),
+    (alt_u32)((float)  1250.0*CLOCK)
   },
 };
 
@@ -238,7 +239,7 @@ alt_u32 npBufSet(alt_u32 num, alt_u32 len, alt_u32 zzf, alt_u32 zzl)
   npZzlLen = zzl;
   npZzSts  = 0;
   npZzOfs  = npZzlLen * NP_DEV_NUM * sizeof(alt_u32);
-/* TODO */
+#if defined(GFX_MODULE) && (GFX_MODULE == 1)
   int i;
   for (i=0; i<NP_DEV_NUM; i++) {
     gfxGc[1+i]->width    = npZzlLen;
@@ -256,7 +257,7 @@ alt_u32 npBufSet(alt_u32 num, alt_u32 len, alt_u32 zzf, alt_u32 zzl)
     gfxGc[1+i]->cursor_y = 0;
     gfxGc[1+i]->size     = 0;
   }
-/* TODO */
+#endif /* defined(GFX_MODULE) && (GFX_MODULE == 1) */
   return 0;
 }
 
