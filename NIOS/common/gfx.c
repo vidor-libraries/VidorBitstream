@@ -206,8 +206,10 @@ GFXgc *gfxGc[] = {
  */
 void gfxInit(int devs)
 {
+#if defined(GFX_CLEAR) && (GFX_CLEAR == 1)
   memset(GFX_CAM_BASE, 0, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
   memset(GFX_FB_BASE, 0xFF, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
+#endif
 
 #if defined(GFX_LOGO) && (GFX_LOGO == 1)
   drawBmp(&gfxDefaultGc, (GFXbmp*)&arduinoLogo, (640-160)/2, (480-110)/2, 33396);
@@ -683,6 +685,9 @@ alt_u32 setAlpha(GFXgc* pGc, alt_u8 alpha)
  */
 alt_u32 drawCharAtCursor(GFXgc* pGc, alt_u8 c)
 {
+  if (!pGc->pFnt) {
+    return -1;
+  }
   if(c=='\n') {
     pGc->cursor_y += pGc->size * pGc->pFnt->yAdvance;
     return 1;
@@ -700,6 +705,9 @@ alt_u32 drawCharAtCursor(GFXgc* pGc, alt_u8 c)
  */
 alt_u32 drawChar(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color, alt_u8 size, alt_u8 c)
 {
+  if (!pGc->pFnt) {
+    return -1;
+  }
   // Custom font
 
   // Character is assumed previously filtered by write() to eliminate
@@ -779,7 +787,7 @@ alt_u32 drawTxt(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color, alt_u8* txt)
 alt_u32 setFont(GFXgc* pGc, alt_u32 num)
 {
 #ifdef GFX_NUM_FONTS
-  if (num<GFX_NUM_FONTS) {
+  if (num < GFX_NUM_FONTS) {
     pGc->pFnt = gfxFontRepo[num];
     return 0;
   }

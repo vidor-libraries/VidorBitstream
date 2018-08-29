@@ -78,15 +78,17 @@ alt_u32 drawRect         (GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h
 alt_u32 fillRect         (GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u16 w, alt_u16 h, alt_u32 color);
 alt_u32 drawCircle       (GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u16 r, alt_u32 color);
 alt_u32 fillCircle       (GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u16 r, alt_u32 color);
+#if defined(GFX_FONTS) && (GFX_FONTS == 1)
 alt_u32 drawChar         (GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color, alt_u8 size, alt_u8 c);
 alt_u32 drawTxt          (GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color, alt_u8* txt);
-alt_u32 drawBmp          (GFXgc* pGc, GFXbmp* bmp, alt_u16 x, alt_u16 y, alt_u32 color);
 alt_u32 setFont          (GFXgc* pGc, alt_u32 num);
-alt_u32 drawCharAtCursor (GFXgc* pGc, alt_u8 c);
-alt_u32 setAlpha         (GFXgc* pGc, alt_u8 alpha);
-alt_u32 setColor         (GFXgc* pGc, alt_u32 color);
-alt_u32 setTextSize      (GFXgc* pGc, alt_u16 size);
 alt_u32 setCursor        (GFXgc* pGc, alt_u32 x, alt_u32 y);
+alt_u32 setTextSize      (GFXgc* pGc, alt_u16 size);
+alt_u32 setColor         (GFXgc* pGc, alt_u32 color);
+alt_u32 setAlpha         (GFXgc* pGc, alt_u8 alpha);
+alt_u32 drawCharAtCursor (GFXgc* pGc, alt_u8 c);
+#endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
+alt_u32 drawBmp          (GFXgc* pGc, GFXbmp* bmp, alt_u16 x, alt_u16 y, alt_u32 color);
 
 #endif /* GFX_H_ */
 
