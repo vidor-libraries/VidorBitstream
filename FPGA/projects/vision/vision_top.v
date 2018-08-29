@@ -287,7 +287,7 @@ vision u0(
 		.nina_spi_SCLK          (wNINA_SCLK),    //          .SCLK
 		.nina_spi_CS            (wNINA_SS),     //          .SS_n
 
-		.nina_uart_sin          (wNINA_TX),     //  nina_uart.sin
+		.nina_uart_sin          (wWM_PIO_IN[16]),     //  nina_uart.sin
 		.nina_uart_sout         (wNINA_RX),    //           .sout
 		//.nina_uart_sout_oe, //           .sout_oe
 
@@ -320,18 +320,17 @@ assign oSAM_INT         = wIRQ_OUT[1];
 assign wWM_OUT2[11]     = wNINA_SS;
 assign wWM_OUT2[18]     = wNINA_SCLK;
 assign wWM_OUT2[19]     = wNINA_MOSI;
-assign wWM_OUT2[16]     = wNINA_RX;
+assign wWM_OUT2[15]     = wNINA_RX;
 
-assign wWM_OUT1[16]     = wSAM_PIO_IN[22]; // D14 for NINA_RX in bypass
+assign wWM_OUT1[15]     = wSAM_PIO_IN[22]; // D14 for NINA_RX in bypass
 assign wWM_OUT1[0]      = wSAM_PIO_IN[15]; // D7 for NINA_RESET in bypass
 assign wWM_OUT1[10]     = wSAM_PIO_IN[14]; // D6 for NINA_GPIO0 in bypass
 
 assign wNINA_MISO       = wWM_PIO_IN[20]; // route NINA_MISO to internal SPI
 
-
 // MIPI input
 assign bMIPI_GP[0]=1'b1;
-assign bMIPI_GP[1]=1'b1;
+assign bMIPI_GP[1]=1'bz;
 
 wire        wDUMMY1,wDUMMY0;
 wire [31:0] wSAM_PIN_OUT,wSAM_OUT1,wSAM_OUT2,wSAM_OUT3;
