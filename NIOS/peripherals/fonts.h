@@ -222,11 +222,9 @@ const GFXfont *gfxFontRepo[] = {
 #endif // FONT_24PT
 
   &Org_01,
-/*
   &Picopixel,
   &Tiny3x3a2pt7b,
   &TomThumb,
-*/
 };
 
 #define GFX_NUM_FONTS (sizeof(gfxFontRepo)/sizeof(GFXfont *))
