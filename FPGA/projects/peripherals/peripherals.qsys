@@ -393,14 +393,6 @@
          type = "int";
       }
    }
-   element nios2_gen2_0.debug_mem_slave
-   {
-      datum baseAddress
-      {
-         value = "10518528";
-         type = "String";
-      }
-   }
    element onchip_memory2_0
    {
       datum _sortIndex
@@ -1076,7 +1068,7 @@
   <parameter name="dataAddrWidth" value="24" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sdram.s1' start='0x0' end='0x800000' type='altera_avalon_new_sdram_controller.s1' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_mem' start='0x800000' end='0xA00000' type='iptronix_generic_quad_spi_controller2.avl_mem' /><slave name='nios2_gen2_0.debug_mem_slave' start='0xA08000' end='0xA08800' type='altera_nios2_gen2.debug_mem_slave' /><slave name='vic_0.csr_access' start='0xA08800' end='0xA08C00' type='altera_vic.csr_access' /><slave name='dpram.s1' start='0xA09000' end='0xA09400' type='altera_avalon_onchip_memory2.s1' /><slave name='sam_pio.s1' start='0xA09400' end='0xA09420' type='PIO.s1' /><slave name='pex_pio.s1' start='0xA09420' end='0xA09440' type='PIO.s1' /><slave name='wm_pio.s1' start='0xA09440' end='0xA09460' type='PIO.s1' /><slave name='sam_pwm.avalon_slave_0' start='0xA09480' end='0xA09500' type='PWM.avalon_slave_0' /><slave name='QUAD_ENCODER_0.avalon_slave_0' start='0xA09500' end='0xA09540' type='QUAD_ENCODER.avalon_slave_0' /><slave name='irq.s1' start='0xA095C0' end='0xA095D0' type='altera_avalon_pio.s1' /><slave name='uart_0.avalon_slave' start='0xA0A000' end='0xA0A200' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_1.avalon_slave' start='0xA0A200' end='0xA0A400' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_2.avalon_slave' start='0xA0A400' end='0xA0A600' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_3.avalon_slave' start='0xA0A600' end='0xA0A800' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_4.avalon_slave' start='0xA0A800' end='0xA0AA00' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_5.avalon_slave' start='0xA0AA00' end='0xA0AC00' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_6.avalon_slave' start='0xA0AC00' end='0xA0AE00' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_7.avalon_slave' start='0xA0AE00' end='0xA0B000' type='iptronix_16550_uart.avalon_slave' /><slave name='i2c_0.avalon_slave_0' start='0xA0B000' end='0xA0B020' type='o_i2c_master_pads.avalon_slave_0' /><slave name='i2c_1.avalon_slave_0' start='0xA0B020' end='0xA0B040' type='o_i2c_master_pads.avalon_slave_0' /><slave name='i2c_2.avalon_slave_0' start='0xA0B040' end='0xA0B060' type='o_i2c_master_pads.avalon_slave_0' /><slave name='i2c_3.avalon_slave_0' start='0xA0B060' end='0xA0B080' type='o_i2c_master_pads.avalon_slave_0' /><slave name='spi_0.d' start='0xA0B100' end='0xA0B120' type='tiny_spi.d' /><slave name='spi_1.d' start='0xA0B120' end='0xA0B140' type='tiny_spi.d' /><slave name='spi_2.d' start='0xA0B140' end='0xA0B160' type='tiny_spi.d' /><slave name='spi_3.d' start='0xA0B160' end='0xA0B180' type='tiny_spi.d' /><slave name='spi_4.d' start='0xA0B180' end='0xA0B1A0' type='tiny_spi.d' /><slave name='NEOPIXEL.csr' start='0xA0B200' end='0xA0B240' type='NEOPIXEL.csr' /><slave name='flash_spi.d' start='0xA0B240' end='0xA0B260' type='tiny_spi.d' /><slave name='nina_spi.d' start='0xA0B260' end='0xA0B280' type='tiny_spi.d' /><slave name='timer_0.s1' start='0xA0B300' end='0xA0B320' type='altera_avalon_timer.s1' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_csr' start='0xA0B400' end='0xA0B440' type='iptronix_generic_quad_spi_controller2.avl_csr' /><slave name='nina_uart.avalon_slave' start='0xA0B600' end='0xA0B800' type='iptronix_16550_uart.avalon_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sdram.s1' start='0x0' end='0x800000' type='altera_avalon_new_sdram_controller.s1' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_mem' start='0x800000' end='0xA00000' type='iptronix_generic_quad_spi_controller2.avl_mem' /><slave name='vic_0.csr_access' start='0xA08800' end='0xA08C00' type='altera_vic.csr_access' /><slave name='dpram.s1' start='0xA09000' end='0xA09400' type='altera_avalon_onchip_memory2.s1' /><slave name='sam_pio.s1' start='0xA09400' end='0xA09420' type='PIO.s1' /><slave name='pex_pio.s1' start='0xA09420' end='0xA09440' type='PIO.s1' /><slave name='wm_pio.s1' start='0xA09440' end='0xA09460' type='PIO.s1' /><slave name='sam_pwm.avalon_slave_0' start='0xA09480' end='0xA09500' type='PWM.avalon_slave_0' /><slave name='QUAD_ENCODER_0.avalon_slave_0' start='0xA09500' end='0xA09540' type='QUAD_ENCODER.avalon_slave_0' /><slave name='irq.s1' start='0xA095C0' end='0xA095D0' type='altera_avalon_pio.s1' /><slave name='uart_0.avalon_slave' start='0xA0A000' end='0xA0A200' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_1.avalon_slave' start='0xA0A200' end='0xA0A400' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_2.avalon_slave' start='0xA0A400' end='0xA0A600' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_3.avalon_slave' start='0xA0A600' end='0xA0A800' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_4.avalon_slave' start='0xA0A800' end='0xA0AA00' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_5.avalon_slave' start='0xA0AA00' end='0xA0AC00' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_6.avalon_slave' start='0xA0AC00' end='0xA0AE00' type='iptronix_16550_uart.avalon_slave' /><slave name='uart_7.avalon_slave' start='0xA0AE00' end='0xA0B000' type='iptronix_16550_uart.avalon_slave' /><slave name='i2c_0.avalon_slave_0' start='0xA0B000' end='0xA0B020' type='o_i2c_master_pads.avalon_slave_0' /><slave name='i2c_1.avalon_slave_0' start='0xA0B020' end='0xA0B040' type='o_i2c_master_pads.avalon_slave_0' /><slave name='i2c_2.avalon_slave_0' start='0xA0B040' end='0xA0B060' type='o_i2c_master_pads.avalon_slave_0' /><slave name='i2c_3.avalon_slave_0' start='0xA0B060' end='0xA0B080' type='o_i2c_master_pads.avalon_slave_0' /><slave name='spi_0.d' start='0xA0B100' end='0xA0B120' type='tiny_spi.d' /><slave name='spi_1.d' start='0xA0B120' end='0xA0B140' type='tiny_spi.d' /><slave name='spi_2.d' start='0xA0B140' end='0xA0B160' type='tiny_spi.d' /><slave name='spi_3.d' start='0xA0B160' end='0xA0B180' type='tiny_spi.d' /><slave name='spi_4.d' start='0xA0B180' end='0xA0B1A0' type='tiny_spi.d' /><slave name='NEOPIXEL.csr' start='0xA0B200' end='0xA0B240' type='NEOPIXEL.csr' /><slave name='flash_spi.d' start='0xA0B240' end='0xA0B260' type='tiny_spi.d' /><slave name='nina_spi.d' start='0xA0B260' end='0xA0B280' type='tiny_spi.d' /><slave name='timer_0.s1' start='0xA0B300' end='0xA0B320' type='altera_avalon_timer.s1' /><slave name='iptronix_generic_quad_spi_controller2_0.avl_csr' start='0xA0B400' end='0xA0B440' type='iptronix_generic_quad_spi_controller2.avl_csr' /><slave name='nina_uart.avalon_slave' start='0xA0B600' end='0xA0B800' type='iptronix_16550_uart.avalon_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -1091,7 +1083,7 @@
   <parameter name="debug_assignJtagInstanceID" value="false" />
   <parameter name="debug_datatrigger" value="0" />
   <parameter name="debug_debugReqSignals" value="false" />
-  <parameter name="debug_enabled" value="true" />
+  <parameter name="debug_enabled" value="false" />
   <parameter name="debug_hwbreakpoint" value="4" />
   <parameter name="debug_jtagInstanceID" value="0" />
   <parameter name="debug_traceStorage" value="onchip_trace" />
@@ -1115,7 +1107,7 @@
   <parameter name="icache_tagramBlockType" value="Automatic" />
   <parameter name="impl" value="Fast" />
   <parameter name="instAddrWidth" value="24" />
-  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='iptronix_generic_quad_spi_controller2_0.avl_mem' start='0x800000' end='0xA00000' type='iptronix_generic_quad_spi_controller2.avl_mem' /><slave name='nios2_gen2_0.debug_mem_slave' start='0xA08000' end='0xA08800' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
+  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='iptronix_generic_quad_spi_controller2_0.avl_mem' start='0x800000' end='0xA00000' type='iptronix_generic_quad_spi_controller2.avl_mem' /></address-map>]]></parameter>
   <parameter name="instructionMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="instructionMasterHighPerformanceMapParam" value="" />
   <parameter name="instruction_master_high_performance_paddr_base" value="0" />
@@ -1713,15 +1705,6 @@
    kind="avalon"
    version="18.0"
    start="nios2_gen2_0.data_master"
-   end="nios2_gen2_0.debug_mem_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a08000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.data_master"
    end="dpram.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x00a09000" />
@@ -1788,15 +1771,6 @@
    end="iptronix_generic_quad_spi_controller2_0.avl_mem">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x00800000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.0"
-   start="nios2_gen2_0.instruction_master"
-   end="nios2_gen2_0.debug_mem_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a08000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1869,9 +1843,6 @@
    version="18.0"
    start="flash_clk.clk"
    end="iptronix_generic_quad_spi_controller2_0.clock_sink" />
- <connection kind="interrupt" version="18.0" start="vic_0.irq_input" end="irq.irq">
-  <parameter name="irqNumber" value="3" />
- </connection>
  <connection
    kind="interrupt"
    version="18.0"
@@ -2065,11 +2036,6 @@
    version="18.0"
    start="clk.clk_reset"
    end="nina_uart.reset_sink" />
- <connection
-   kind="reset"
-   version="18.0"
-   start="nios2_gen2_0.debug_reset_request"
-   end="nios2_gen2_0.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
