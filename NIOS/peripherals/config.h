@@ -34,6 +34,7 @@
   #define GFX_FB_WIDTH  640
   #define GFX_FB_HEIGHT 480
 
+  #define GFX_CLEAR       0
   #define GFX_LOGO        0
 
   #define GFX_FONTS       1
