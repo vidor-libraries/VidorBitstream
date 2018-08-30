@@ -27,6 +27,13 @@ Vidor_GFX::Vidor_GFX(int index) {
   devIdx = MB_DEV_GFX;
 }
 
+Vidor_GFX::Vidor_GFX(Vidor_NeoPixel& instance) {
+  text = Vidor_GFXtext(NEOPIXEL_FB_INDEX);
+  idx = NEOPIXEL_FB_INDEX;
+  // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_GFX_DID);
+  devIdx = MB_DEV_GFX;
+}
+
 Vidor_GFXtext::Vidor_GFXtext(int index) {
   idx = index;
   // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_GFX_DID);

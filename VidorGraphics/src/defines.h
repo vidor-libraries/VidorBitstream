@@ -29,6 +29,7 @@
 #define NEOPIXEL_PIN_10				3
 
 #define NEOPIXEL_PINMUX				4
+#define NEOPIXEL_FB_INDEX			1
 
 // NINA signals
 #define SPIWIFI              SPIEx

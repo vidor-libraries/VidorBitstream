@@ -23,6 +23,7 @@
 #include <Arduino.h>
 #include "VidorUtils.h"
 #include "defines.h"
+#include "Vidor_NeoPixel.h"
 
 #define VIDOR_WIDTH  640
 #define VIDOR_HEIGHT 480
@@ -60,6 +61,7 @@ class Vidor_GFXtext {
 class Vidor_GFX : public Print {
   public:
     Vidor_GFX(int index=0);
+    Vidor_GFX(Vidor_NeoPixel& instance);
     void drawPixel(uint16_t x, uint16_t y, uint32_t color, uint8_t alpha=0xff);
     void drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint32_t    color, uint8_t alpha=0xff);
     void drawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color, uint8_t alpha=0xff);
