@@ -1,0 +1,32 @@
+= DVI_OUT IP core
+
+Produces DVI (TMDS) output using generic pins (set up as LVDS outputs).
+
+== Ports
+.Ports
+[%autowidth]
+|=====================================================================================================================
+    ^|Signal Group    ^|Signal Name ^|Direction ^|Width ^|Description
+
+.2+^.^|Clock/Reset   .^|iPCLK      ^|Input    ^|  1  |Pixel clock                   
+                     .^|iSCLK      ^|Input    ^|  1  |Shift Clock (10x Pixel Clock) 
+.6+^.^|Video Port    .^|iRED       ^|Input    ^|  8  |Red color input               
+                     .^|iGRN       ^|Input    ^|  8  |Green color input             
+                     .^|iBLU       ^|Input    ^|  8  |Blue color input              
+                     .^|iHS        ^|Input    ^|  1  |Horizontal Sync input         
+                     .^|iVS        ^|Input    ^|  1  |Vertical Sync input           
+                     .^|iDE        ^|Input    ^|  1  |Data Enable input             
+.2+^.^|TMDS Output   .^|oDVI_DATA  ^|Output   ^|  3  |TMDS Output Data              
+                     .^|oDVI_CLK   ^|Output   ^|  1  |TMDS Output Clock             
+|=====================================================================================================================
+
+== Parameters
+
+The IP has no parameters
+
+== Description
+
+*DVI_OUT* core allows inputting a video stream and outputting a TMDS formatted stream that can directly be connected to FPGA pins.
+Input video stream should be the output of a _CRT Controller_ such as link:../../FBST/doc/FBST.adoc[*FBST*], that produces red, green and blue color components in addition to timing signals (HS/VS/DE).
+Output video stream is a serialization of the input data after being converted to TMDS. for this reason the IP block requires two different clocks, the Pixel clock at pixel rate, and the Shift clock at 10 times the pixel clock rate, used to produce TMDS bits.
+TMDS outputs should (data and clock) should be connected to LVDS capable pins and should be capacitively decoupled in order to be compatible with TMDS standard.

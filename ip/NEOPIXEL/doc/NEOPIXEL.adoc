@@ -1,0 +1,46 @@
+=  IP core
+
+== Ports
+
+.Ports
+[%autowidth]
+|=====================================================================================================
+     ^|Signal Group       ^|Signal Name           ^|Direction ^|Width ^|Description
+
+.2+^.^|Clock/Reset         .^|iCLOCK                ^|Input     ^|   1   |Clock input
+                           .^|iRESET                ^|Input     ^|   1   |Reset input
+.6+^.^|Avalon Slave        .^|iCSR_ADDRESS          ^|Input     ^|  32   |Address                       
+                           .^|iCSR_WRITE            ^|Input     ^|   1   |Write request                 
+                           .^|iCSR_READ             ^|Input     ^|   1   |Read request                  
+                           .^|iCSR_WRITE_DATA       ^|Input     ^|  32   |Fata to be written            
+                           .^|oCSR_READ_DATA        ^|Output    ^|  32   |Fata being read               
+                           .^|oCSR_READ_DATA_VALID  ^|Output    ^|   1   |data valid flag from slave    
+.6+^.^|Avalon Master       .^|oDATA_ADDRESS         ^|Output    ^|  32   |Address                       
+                           .^|oDATA_READ            ^|Output    ^|   1   |Read request                  
+                           .^|iDATA_READ_DATA       ^|Input     ^|  32   |Fata being read               
+                           .^|oDATA_BURST_COUNT     ^|Output    ^|   5   |Number of words to read/write 
+                           .^|iDATA_WAIT_REQUEST    ^|Input     ^|   1   |Wait request from slave       
+                           .^|iDATA_READ_DATA_VALID ^|Input     ^|   1   |data valid flag from slave    
+|=====================================================================================================
+
+== Parameters
+
+
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Allowed range        ^|Description          
+
+|pCHANNELS       ^|    any               |Number of LED strings to drive                      
+|pSTART_ADDRESS  ^|0x00000000:0xFFFFFFFC |Memory start address of the neopixel data buffer    
+|=====================================================================================================
+
+== IP CORE Description
+
+*NEOPIXEL* core allows driving neopixel strings via hardware. Once set up the core autonomously reads from memory and serializes data to multiple channels sharing the same setup. This basically means that a single ip core can drive more than one LEDs strings but all of them have to have the same frequency, timing and memory buffer set up. Alternatively you can add multiple instances of the core so that each one will have its own settings.
+Since Avalon master interface supports wait request and burst it can be connected both to on chip RAM and to external DRAM controllers. 
+
+[NOTE]
+====
+In order for the IP to work properly it should be able to receive data from Avalon Master port some time before it is actually shifted so avalon accesses should be granted low enough latency. 
+====

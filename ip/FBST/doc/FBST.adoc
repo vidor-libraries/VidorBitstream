@@ -1,0 +1,43 @@
+= FBST IP core
+
+CRT Controller that translates a streaming video input port into a displayable output stream
+
+== Ports
+
+|=====================================================================================================================
+     ^|Signal Group   ^|Signal Name    ^|Direction ^|Width ^|Description
+
+     ^|Clock/Reset     |iCLK           ^|Output    ^|   1   |Pixel clock                      
+.6+^.^|Video Port      |oRED           ^|Output    ^|   8   |Red color output                 
+                       |oGRN           ^|Output    ^|   8   |Green color output               
+                       |oBLU           ^|Output    ^|   8   |Blue color output                
+                       |oHS            ^|Output    ^|   1   |Horizontal Sync output           
+                       |oVS            ^|Output    ^|   1   |Vertical Sync output             
+                       |oDE            ^|Output    ^|   1   |Data Enable output               
+.4+^.^|Streaming Input |iFB_START      ^|Input     ^|   1   |Stream start flag                
+                       |iFB_DATA       ^|Input     ^|  31   |Stream data                   
+                       |iFB_DATA_VALID ^|Input     ^|   1   |Stream data valid flag        
+                       |oFB_READY      ^|Output    ^|   1   |Stream ready flag             
+|=====================================================================================================================
+
+== Parameters
+
+|=====================================================================================================================
+     ^|Group        ^|Parameter   ^|Allowed range ^|Description   
+.8+^.^|Video Timings |pHRES       ^|    0-2043    ^|Active video horizontal resolution             
+                     |pVRES       ^|    0-2043    ^|Active video vertical resolution               
+                     |pHTOTAL     ^|    0-2043    ^|Total number of clocks per line                
+                     |pVTOTAL     ^|    0-2043    ^|Total number of lines per frame                
+                     |pHSS        ^|    0-2043    ^|Horizontal Sync Start                          
+                     |pHSE        ^|    0-2043    ^|Horizontal Sync End                            
+                     |pVSS        ^|    0-2043    ^|Vertical Sync Start                            
+                     |pVSE        ^|    0-2043    ^|Vertical Sync End                              
+|=====================================================================================================================
+
+== Description
+
+*FBST* core is a _CRT Controller_ that inputs streaming video and outputs RGB data plus timing signals (HS/VS/DE). can be used in conjunction with DVI_OUT to produce video output directly connectable to a DVI/HDMI monitor.
+The streaming video port accepts 31 bits formed as two 15 bit video ports and 1 video select flag. this allows blending two streams using a 1 bit alpha channel.
+In order to reduce core size and simplify its structure it requires streaming data to be at pixel clock rate and has timings parametrizable at compilation time.
+Video timings are specified by assuming active video window starts at coordinates (0,0). This means that horizontal sync must be specified to start after at least pHRES clocks and to end at least after pHSS and before pHTOTAL.
+

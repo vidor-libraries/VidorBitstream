@@ -1,0 +1,39 @@
+= MIPI_RX_ST IP core
+:stem:
+
+MIPI CSI2 Receiver.
+
+== Ports
+
+.Ports
+[%autowidth]
+|=====================================================================================================
+     ^|Signal Group    ^|Signal Name     ^|Direction ^|Width ^|Description
+
+.2+^.^|MIPI CSI2 input |iMIPI_D          ^|Input     ^|   2   |MIPI Data lanes              
+                       |iMIPI_CLK        ^|Input     ^|   1   |MIPI Clock lane              
+.3+^.^|Avalon Master   |oMIPI_DATA       ^|Output    ^|  24   |RGB Data                     
+                       |oMIPI_START      ^|Output    ^|   1   |Frame start flag             
+                       |oMIPI_DATA_VALID ^|Output    ^|   1   |Data valid flag              
+|=====================================================================================================
+
+== Parameters
+
+The IP has no parameters
+
+== Description
+
+*MIPI_RX_ST* IP extracts 8 bit raw (bayer encoded) data from MIPI CSI2 and outputs a video stream containing 4:4:4 RGB video.
+
+Video data is extracted exclusively from cMIPI_HT_RAW8 (decimal 42) packets and is converted from bayer to 4:4:4: RGB by using bidimensional interpolation; to do this we record data in a line buffer to have memory of the previous two lines. line buffer has 32 bits and its 16 lower bits contain pevious line while its 16 upper bits contain the second last line. With a total of 3 lines it's possible to interpolate using up to 5 pixels, depending on the kind of data. Interpolation being done is represented in the following table:
+
+.Interpolation patterns
+[%autowidth]
+|=====================================================================================================
+3.+^.^|Green Pattern 1                       | 3.+^.^|Green Pattern 2                      |  3.+^.^|Red/Blue Pattern 1  | 3.+^.^|Red/Blue Pattern 2           | 3.+^.^|Red/Blue Pattern 3        | 3.+^.^|Red/Blue Pattern 4
+
+     ^|R/B          ^|*stem:[1/4]* ^|R/B          | ^|*stem:[1/8]* ^|R/B          ^|*stem:[1/8]* | ^| G  ^|*stem:[1/2]* ^| G  | ^| G           ^|R/B ^| G           | ^|R/B    ^|     G     ^|   R/B  |  ^|*stem:[1/4]* ^| G  ^|*stem:[1/4]* 
+     ^|*stem:[1/4]* ^|B/R          ^|*stem:[1/4]* | ^|B/R          ^|*stem:[1/2]* ^|B/R          | ^|R/B ^| G           ^|R/B | ^|*stem:[1/2]* ^| G  ^|*stem:[1/2]* | ^| G     ^|    *1*    ^|    G   |  ^| G  ^|R/B ^| G  
+     ^|R/B          ^|*stem:[1/4]* ^|R/B          | ^|*stem:[1/8]* ^|R/B          ^|*stem:[1/8]* | ^| G  ^|*stem:[1/2]* ^| G  | ^| G           ^|R/B ^| G           | ^|R/B    ^|     G     ^|   R/B  |  ^|*stem:[1/4]* ^| G  ^|*stem:[1/4]*
+|=====================================================================================================
+
