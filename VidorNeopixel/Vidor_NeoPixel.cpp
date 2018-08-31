@@ -30,12 +30,11 @@ Vidor_NeoPixel::Vidor_NeoPixel(uint16_t howMany, uint8_t pin, uint8_t type)
   this->pin = pin;
   // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_NEOPIXEL_DID);
   devIdx = MB_DEV_NP;
+  initIdx();
 }
 
-uint32_t Vidor_NeoPixel::begin()
+int Vidor_NeoPixel::initIdx()
 {
-  uint32_t rpc[4];
-
   switch (pin) {
 #ifdef NEOPIXEL_PIN_0
     case NEOPIXEL_PIN_0:
@@ -95,6 +94,16 @@ uint32_t Vidor_NeoPixel::begin()
     default:
       // no default case allowed
       return -1;
+  }
+  return 0;
+}
+
+uint32_t Vidor_NeoPixel::begin()
+{
+  uint32_t rpc[4];
+
+  if (index == -1) {
+    return 0;
   }
 
   if (pin >= A0) {

@@ -118,6 +118,9 @@ class Vidor_NeoPixel {
     uint8_t pin;
   private:
     uint8_t devIdx;
+    int initIdx();
+
+  friend class Vidor_GFX;
 };
 
 #endif //_VIDOR_NEOPIX_H

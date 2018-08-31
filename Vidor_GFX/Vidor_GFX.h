@@ -70,6 +70,9 @@ class Vidor_GFX : public Print {
     void fillCircle(uint16_t x0, uint16_t y0, uint16_t r, uint32_t color, uint8_t alpha=0xff);
     void drawChar(uint16_t x, uint16_t y, uint32_t color, uint8_t size,unsigned char c, uint8_t alpha=0xff);
     void setFont(uint32_t num);
+    int getIndex() {
+      return idx;
+    }
     virtual size_t write(uint8_t c);
     uint32_t Color(uint8_t r, uint8_t g, uint8_t b);
     uint32_t Red();
