@@ -15,8 +15,7 @@
   by Riccardo Rizzo
 */
 
-//#_INCLUDE_PARENT_LIB_
-#include "VidorGraphics.h"
+#_INCLUDE_PARENT_LIB_
 #include "Vidor_NeoPixel.h"
 
 Vidor_NeoPixel np(256, A6); // The constructor allows you to set the control pin and the number of the LED's.
