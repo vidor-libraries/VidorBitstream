@@ -59,6 +59,9 @@ void VidorMailboxClass::reload()
 
 int VidorMailboxClass::sendCommand(const uint32_t data[], size_t len)
 {
+	if (data[0] == 0) {
+		return -1;
+	}
 	if (write(0x00, data, len) != (int)len) {
 		return -1;
 	}

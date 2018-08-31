@@ -129,8 +129,8 @@ int VidorJTAGClass::readBuffer(uint32_t address, uint32_t* data, size_t len)
 	}
 	libxsvf_tap_walk(&_libxsvfHost, LIBXSVF_TAP_DRSHIFT);
 
+	jtag_host_pulse_tdo((uint8_t*)data,  sizeof(data[0]));
 	jtag_host_pulse_tdo((uint8_t*)data, len * sizeof(data[0]));
- 
 	return len;
 }
 
@@ -215,7 +215,7 @@ int VidorJTAGClass::loadVirtualInstruction(uint32_t instruction)
 	uint32_t code = ((_id + 1) << _virSize) | instruction;
 
 	jtag_host_pulse_tdi_instruction(_virSize + _numSlaveBits, code);
-	
+
 	libxsvf_tap_walk(&_libxsvfHost, LIBXSVF_TAP_DRUPDATE);
 
 	_lastVIR = instruction;
