@@ -19,7 +19,8 @@ Full examples of working FPGAs, along with instructions to create a library and 
 
 ## Getting started
 The prerequisite to compile MKRVIDOR4000 board FPGA images is Quartus II 18.0 Lite or Standard which can be downloaded from Altera/Intel web site.
-Once Quartus is installed you need to patch it as we had to modify some IP blocks to optimize their functionality. In order to do it you need to open NIOS II Command shell, move to the TOOLS/scripts directory and launch the apply_quartus_patches.sh
+Once Quartus is installed you need to patch it as we had to modify some IP blocks to optimize their functionality. In order to do it you need to open NIOS II Command shell, move to the TOOLS/scripts directory and launch the apply_quartus_patches.sh.
+Download the Go Programming Language and compile MakeCompositeBinary, move to TOOLS/makeCompositeBinary and build make_composite_binary.go with go build -o MakeCompositeBinary make_composite_binary.go.
 **NOTE** This step is required only once
 
 Once setup is complete you can open a NIOS II Command shell, add the TOOLS/scripts directory to your PATH environment variable and you're ready to compile a project.
