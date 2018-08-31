@@ -95,7 +95,7 @@ static inline char* Did2Str(uint32_t did)
 
 static const char* configToString(uint32_t cod)
 {
-	switch(cod){
+	switch(cod  >> MB_DID_OFS ){
 		case MB_DEV_SF: 	return "MB_DEV_SF";
 		case MB_DEV_GPIO: 	return "MB_DEV_GPIO";
 		case MB_DEV_GFX: 	return "MB_DEV_GFX";
