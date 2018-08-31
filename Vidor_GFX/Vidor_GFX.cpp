@@ -40,6 +40,56 @@ Vidor_GFXtext::Vidor_GFXtext(int index) {
   devIdx = MB_DEV_GFX;
 }
 
+void Vidor_GFXbuffer::scroll(int delay) {
+  privateScroll(NP_SEQ_FLG_START | NP_SEQ_FLG_BUF_LOOP | NP_SEQ_FLG_INV_LOOP, delay);
+}
+
+void Vidor_GFXbuffer::noScroll() {
+  privateScroll(NP_SEQ_FLG_STOP, 0);
+}
+
+void Vidor_GFXbuffer::privateScroll(int flags, int delay) {
+  if (!init) {
+    begin();
+  }
+
+  select();
+  uint32_t rpc[4];
+
+  rpc[0] = MB_CMD(devIdx, 0, 0, 10);
+  rpc[1] = flags;
+  rpc[2] = 0;     // unused ???
+  rpc[3] = delay;
+
+  VidorMailbox.sendCommand(rpc, 4);
+}
+
+void Vidor_GFXbuffer::select() {
+  uint32_t rpc[2];
+
+  rpc[0] = MB_CMD(devIdx, 0, 0, 7);
+  rpc[1] = idx;
+
+  VidorMailbox.sendCommand(rpc, 2);
+}
+
+void Vidor_GFXbuffer::begin() {
+  uint32_t rpc[5];
+
+  rpc[0] = MB_CMD(devIdx, 0, 0, 6);
+  rpc[1] = idx;
+  rpc[2] = x*y;
+  rpc[3] = zigzag?1:0;
+  rpc[4] = y;
+
+  VidorMailbox.sendCommand(rpc, 5);
+  setup = true;
+
+  // late init of neopixel core
+  np->init = false;
+  np->begin();
+};
+
 void Vidor_GFX::drawPixel(uint16_t x, uint16_t y, uint32_t color, uint8_t alpha) {
   uint32_t rpc[5];
   if(x<=VIDOR_WIDTH && y<=VIDOR_HEIGHT) {

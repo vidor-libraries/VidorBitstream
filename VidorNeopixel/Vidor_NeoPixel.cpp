@@ -102,7 +102,7 @@ uint32_t Vidor_NeoPixel::begin()
 {
   uint32_t rpc[4];
 
-  if (index == -1) {
+  if (index == -1 || init == true) {
     return 0;
   }
 
@@ -191,7 +191,7 @@ uint32_t Vidor_NeoPixel::show(void)
 /**
  *
  */
-uint32_t Vidor_NeoPixel::timingSet(uint32_t freq, uint32_t trst, uint32_t t0h, uint32_t t1h, uint32_t ttot)
+uint32_t Vidor_NeoPixel::setTimings(uint32_t freq, uint32_t trst, uint32_t t0h, uint32_t t1h, uint32_t ttot)
 {
 
   if (!init) {
@@ -213,46 +213,7 @@ uint32_t Vidor_NeoPixel::timingSet(uint32_t freq, uint32_t trst, uint32_t t0h, u
 /**
  *
  */
-uint32_t Vidor_NeoPixel::bufferSetup(uint32_t num, uint32_t len, uint32_t zzf, uint32_t zzl)
-{
-
-  if (!init) {
-    begin();
-  }
-
-  uint32_t rpc[5];
-
-  rpc[0] = MB_CMD(devIdx, 0, 0, 6);
-  rpc[1] = num;
-  rpc[2] = len;
-  rpc[3] = zzf;
-  rpc[4] = zzl;
-
-  return VidorMailbox.sendCommand(rpc, 5);
-}
-
-/**
- *
- */
-uint32_t Vidor_NeoPixel::bufferSelect(uint32_t num)
-{
-
-  if (!init) {
-    begin();
-  }
-
-  uint32_t rpc[2];
-
-  rpc[0] = MB_CMD(devIdx, 0, 0, 7);
-  rpc[1] = num;
-
-  return VidorMailbox.sendCommand(rpc, 2);
-}
-
-/**
- *
- */
-uint32_t Vidor_NeoPixel::wrapSet(uint32_t start, uint32_t len, uint32_t restart)
+uint32_t Vidor_NeoPixel::setWrap(uint32_t start, uint32_t len, uint32_t restart)
 {
 
   if (!init) {
@@ -267,40 +228,4 @@ uint32_t Vidor_NeoPixel::wrapSet(uint32_t start, uint32_t len, uint32_t restart)
   rpc[3] = restart;
 
   return VidorMailbox.sendCommand(rpc, 4);
-}
-
-/**
- *
- */
-uint32_t Vidor_NeoPixel::bufferLoop(uint32_t flag, uint32_t buffer, uint32_t ms)
-{
-
-  if (!init) {
-    begin();
-  }
-
-  uint32_t rpc[4];
-
-  rpc[0] = MB_CMD(devIdx, 0, 0, 10);
-  rpc[1] = flag;
-  rpc[2] = buffer;
-  rpc[3] = ms;
-
-  return VidorMailbox.sendCommand(rpc, 4);
-}
-
-/**
- */
-uint32_t Vidor_NeoPixel::test(void)
-{
-  // call test() on a device created with Vidor_NeoPixel(128, A0, NEO_BRG)
-
-  //setPin(0x00000001, 256, 0x0058);
-
-  for (int i=0; i<256; i++) {
-    setPixelColor(i, i*4, 255-i*4, i*8, 0);
-  }
-  show();
-  return 0;
-
 }

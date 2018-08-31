@@ -55,7 +55,6 @@ class Vidor_GFXtext {
     uint8_t devIdx;
   protected:
     friend class Vidor_GFX;
-
 };
 
 class Vidor_GFX : public Print {
@@ -87,9 +86,50 @@ class Vidor_GFX : public Print {
     void Cross(uint16_t x, uint16_t y, uint32_t c, uint8_t alpha=0xff);
     Vidor_GFXtext text;
   private:
-    int idx;
     uint8_t devIdx;
   protected:
-    friend class Vidor_CAM;
+    int idx;
+
+  friend class Vidor_CAM;
+  friend class Vidor_GFXbuffer;
 };
+
+
+#define NP_SEQ_FLG_START      0x00000001
+#define NP_SEQ_FLG_STOP       0x00000002
+#define NP_SEQ_FLG_SINGLE     0x00000004
+#define NP_SEQ_FLG_LOOP       0x00000008
+#define NP_SEQ_FLG_BUF_LOOP   0x00000010
+#define NP_SEQ_FLG_INV_LOOP   0x00000020
+
+class Vidor_GFXbuffer {
+  public:
+    Vidor_GFXbuffer(Vidor_NeoPixel& np, Vidor_GFX& gfx, int x, int y, bool zigzag) {
+      devIdx = np.devIdx;
+      np.init = true;
+      idx = gfx.idx;
+      this->x = x;
+      this->y = y;
+      this->zigzag = zigzag;
+      this->np = &np;
+    }
+    void scroll(int delay = 100);
+    void noScroll();
+    void begin();
+  private:
+    int idx;
+    uint8_t devIdx;
+    int x;
+    int y;
+    bool zigzag;
+    bool setup = false;
+    Vidor_NeoPixel* np;
+    void select();
+    void privateScroll(int flags, int delay);
+  protected:
+    friend class Vidor_GFX;
+    friend class Vidor_NeoPixel;
+};
+
+
 #endif // _VIDOR_GFX_H
