@@ -1,9 +1,12 @@
-BASEDIR=$(dirname "$0")
+BASEDIR="`dirname \"$0\"`"              # relative
+BASEDIR="`( cd \"$BASEDIR\" && pwd )`"  # absolutized and normalized
 
 if [ "${_IS_WINDOWS}" = "1" ] && [ -n "$(which cygpath 2>/dev/null)" ]; then
   QUARTUS_ROOTDIR="$(cygpath -u "${QUARTUS_ROOTDIR}" 2>/dev/null)"
-fi
   QUARTUS_IPDIR="$(cygpath -u "${QUARTUS_ROOTDIR}" 2>/dev/null)"/../ip/altera
+else
+  QUARTUS_IPDIR="${QUARTUS_ROOTDIR}"/../ip/altera
+fi
 cd $QUARTUS_IPDIR
 rm -rf pgm/arduino_generic_qspi_controller2
 mkdir pgm/arduino_generic_qspi_controller2
