@@ -204,7 +204,7 @@ size_t VidorUart::write(const uint8_t* data, size_t len)
   uint32_t rpc[256];
   rpc[0] = MB_CMD(devIdx, idx, 0, 0x08);
   rpc[1] = len;
-  rpc[2] = (uint32_t)data;
+  memcpy(&rpc[2], data, len);
   VidorMailbox.sendCommand(rpc, 2+(rpc[1]+3)/4);
   return len;
 }
