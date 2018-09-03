@@ -16,26 +16,21 @@
 #_INCLUDE_PARENT_LIB_
 #include "Vidor_NeoPixel.h"
 
-Vidor_NeoPixel    np(256, A6); // The constructor allows you to set the control pin and the number of the LED's.
+Vidor_NeoPixel    np(16*16, A6); // The constructor allows you to set the control pin and the number of the LED's.
 Vidor_GFX         vdgfx(np);
-Vidor_GFXbuffer   matrix(np, vdgfx, 128, 16, true);  // Specify a buffer that will be used by the NeoPixel core (think about it as a canvas)
 
-int count = 0;
+// Specify a buffer that will be used by the NeoPixel core
+// To initialize a Neopixel matrix specify x and y dimensions of the virtual canvas (128 and 16 in this case) and the strip arrangement (true if zigzag)
+Vidor_GFXbuffer   matrix(np, vdgfx, 128, 16, true);
 
 void setup() {
 
-  Serial.begin(115200);
+  Serial.begin(9600);
   while (!Serial) {}
   if (!FPGA.begin()) {
     Serial.println("Initialization failed!");
     while (1) {}
   }
-
-  Serial.println("FPGA Initialization Done!");
-  Serial.println(FPGA.version(), HEX);
-
-  FPGA.printConfig();
-  Serial.println("Initialize NeoPixels");
 
   np.begin();
   matrix.begin();
@@ -45,6 +40,12 @@ void setup() {
     np.setPixelColor(i, 0, 0, 0, 0);
   }
   np.show();
+
+  Serial.println("Available commands:");
+  Serial.println("* \"draw\" : displays a string");
+  Serial.println("* \"scroll\" : start scrolling the virtual canvas");
+  Serial.println("* \"stop\" : stop scrolling");
+  Serial.println("* \"paint\" : paint a rectangle using GFX APIs");
 }
 
 void loop()  {
@@ -54,9 +55,10 @@ void loop()  {
   while (Serial.available()) {
     s += (char)Serial.read();
   }
-  npTest(s);
+  executeAction(s);
 }
-void npTest(String action)
+
+void executeAction(String action)
 {
   action.toLowerCase();
   action.trim();
