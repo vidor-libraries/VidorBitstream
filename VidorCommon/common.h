@@ -38,7 +38,7 @@
 #define FPGA_ENCODERS_DID   0x00000A00
 #define FPGA_REG_DID        0x00000B00
 
-static inline char* Did2Str(uint32_t did)
+static inline const char* Did2Str(uint32_t did)
 {
   switch (did) {
   case FPGA_GPIO_DID    : return "GPIO";
