@@ -110,35 +110,17 @@ int VidorUart::available()
   rpc[0] = MB_CMD(devIdx, idx, 0, 0x06);
   ret = VidorMailbox.sendCommand(rpc, 1);
   if (ret > 0) {
-    int       i;
-    uint8_t  *ptr;
-
     rpc[0] = MB_CMD(devIdx, idx, 0, 0x05);
     rpc[1] = ret;
     ret = VidorMailbox.sendCommand(rpc, 2);
     VidorMailbox.read(2, &rpc[2], 1+(ret+3)/4);
-    ptr = (uint8_t*)&rpc[2];
-    for (i=0; i<ret; i++) {
-      rxBuffer.store_char(ptr[i]);
+    uint8_t* data = (uint8_t*)&rpc[2];
+    for (int i = 0; i < ret; i++) {
+      rxBuffer.store_char(data[i]);
     }
   }
-  //if (ret > 0) {
-    // Workaround until we have interrupt capabilities
-  //  onInterrupt();
-  //}
+
   return ret;
-}
-
-void VidorUart::onInterrupt()
-{
-  int avail;
-  uint32_t rpc[1];
-
-  rpc[0] = MB_CMD(devIdx, index, 0, 0x06);
-  avail = VidorMailbox.sendCommand(rpc, 1);
-  while (avail-- > 0) {
-    rxBuffer.store_char(read());
-  }
 }
 
 int VidorUart::availableForWrite()
@@ -153,41 +135,30 @@ int VidorUart::peek()
 
 int VidorUart::read()
 {
-  if (!rxBuffer.available()) {
-    int ret;
-    uint32_t rpc[1];
-
-    rpc[0] = MB_CMD(devIdx, index, 0, 0x06);
-    ret = VidorMailbox.sendCommand(rpc, 1);
-    if (ret > 0){
-      uint32_t  rpc[256];
-      int       i;
-      uint8_t *ptr;
-
-      rpc[0] = MB_CMD(devIdx, idx, 0, 0x05);
-      rpc[1] = ret;
-      ret = VidorMailbox.sendCommand(rpc, 2);
-      VidorMailbox.read(2, &rpc[2], 1+(ret+3)/4);
-
-      ptr = (uint8_t*)&rpc[2];
-      for (i=0; i<ret; i++) {
-        rxBuffer.store_char(ptr[i]);
-      }
-    }
+  if (!available()) {
+    return -1;
   }
+
   return rxBuffer.read_char();
 }
 
 int VidorUart::read(uint8_t* data, size_t len)
 {
-  if (rxBuffer.available() >= len) {
-    int     i;
-    for (i=0; i<len; i++) {
-      data[i] = rxBuffer.read_char();
-    }
-    return len;
+  int avail = available();
+
+  if (!avail) {
+    return -1;
   }
-  return -1;
+
+  if ((int)len > avail) {
+    avail = len;
+  }
+
+  for (size_t i = 0; i < len; i++) {
+    data[i] = rxBuffer.read_char();
+  }
+
+  return len;
 }
 
 size_t VidorUart::write(const uint8_t data)
