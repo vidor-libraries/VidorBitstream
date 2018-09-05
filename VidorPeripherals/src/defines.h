@@ -28,7 +28,7 @@
 #define FPGA_ENCODERS_COUNT			11
 #define FPGA_NEOPIXEL_COUNT			4
 #define FPGA_CAMERA_COUNT			0
-#define FPGA_GFX_COUNT				1
+#define FPGA_GFX_COUNT				0
 #define FPGA_QR_COUNT				0
 
 #define GPIO_NUM_OFFSET				100
