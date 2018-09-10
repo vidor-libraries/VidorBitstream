@@ -21,12 +21,13 @@
 module PIO #(
   parameter pBITS =32,
   parameter pMUX_BITS = 2
+  localparam cADDRESS_BITS = $clog2(4+(pMUX_BITS*pBITS+31)/32)
 ) 
 (
-  input                                 iCLK,
+  input                                 iCLOCK,
   input                                 iRESET,
                            
-  input      [3:0]                      iADDRESS,
+  input      [cADDRESS_BITS-1:0]                      iADDRESS,
   input                                 iWRITE,
   input                                 iREAD,
   input      [31:0]                     iWRITE_DATA,
@@ -38,7 +39,7 @@ module PIO #(
   output reg [pBITS*pMUX_BITS-1:0]      oMUXSEL
 );
 
-always @(posedge iCLK)
+always @(posedge iCLOCK)
 begin
   if (iWRITE) begin
     case (iADDRESS)

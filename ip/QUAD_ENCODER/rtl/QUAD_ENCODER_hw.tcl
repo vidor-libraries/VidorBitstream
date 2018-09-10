@@ -59,6 +59,7 @@ set_parameter_property pENCODERS DISPLAY_NAME "Number of Encoders"
 set_parameter_property pENCODERS TYPE INTEGER
 set_parameter_property pENCODERS UNITS None
 set_parameter_property pENCODERS HDL_PARAMETER true
+set_parameter_property pENCODERS ALLOWED_RANGES {1:32}
 
 add_parameter pENCODER_PRECISION INTEGER 32
 set_parameter_property pENCODER_PRECISION DEFAULT_VALUE 32
@@ -66,6 +67,7 @@ set_parameter_property pENCODER_PRECISION DISPLAY_NAME "Counter Bits"
 set_parameter_property pENCODER_PRECISION TYPE INTEGER
 set_parameter_property pENCODER_PRECISION UNITS None
 set_parameter_property pENCODER_PRECISION HDL_PARAMETER true
+set_parameter_property pENCODER_PRECISION ALLOWED_RANGES {1:32}
 
 # 
 # display items
@@ -117,7 +119,7 @@ set_interface_property clock_sink PORT_NAME_MAP ""
 set_interface_property clock_sink CMSIS_SVD_VARIABLES ""
 set_interface_property clock_sink SVD_ADDRESS_GROUP ""
 
-add_interface_port clock_sink iCLK clk Input 1
+add_interface_port clock_sink iCLOCK clk Input 1
 
 
 # 

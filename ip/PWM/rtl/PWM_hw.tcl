@@ -59,18 +59,21 @@ set_parameter_property pCHANNELS DISPLAY_NAME pCHANNELS
 set_parameter_property pCHANNELS TYPE INTEGER
 set_parameter_property pCHANNELS UNITS None
 set_parameter_property pCHANNELS HDL_PARAMETER true
+set_parameter_property pCHANNELS ALLOWED_RANGES {1:32}
 add_parameter pPRESCALER_BITS INTEGER 32
 set_parameter_property pPRESCALER_BITS DEFAULT_VALUE 32
 set_parameter_property pPRESCALER_BITS DISPLAY_NAME pPRESCALER_BITS
 set_parameter_property pPRESCALER_BITS TYPE INTEGER
 set_parameter_property pPRESCALER_BITS UNITS None
 set_parameter_property pPRESCALER_BITS HDL_PARAMETER true
+set_parameter_property pPRESCALER_BITS ALLOWED_RANGES {1:32}
 add_parameter pMATCH_BITS INTEGER 32
 set_parameter_property pMATCH_BITS DEFAULT_VALUE 32
 set_parameter_property pMATCH_BITS DISPLAY_NAME pMATCH_BITS
 set_parameter_property pMATCH_BITS TYPE INTEGER
 set_parameter_property pMATCH_BITS UNITS None
 set_parameter_property pMATCH_BITS HDL_PARAMETER true
+set_parameter_property pMATCH_BITS ALLOWED_RANGES {1:32}
 
 
 # 
@@ -123,7 +126,7 @@ set_interface_property clock_sink PORT_NAME_MAP ""
 set_interface_property clock_sink CMSIS_SVD_VARIABLES ""
 set_interface_property clock_sink SVD_ADDRESS_GROUP ""
 
-add_interface_port clock_sink iCLK clk Input 1
+add_interface_port clock_sink iCLOCK clk Input 1
 
 
 # 

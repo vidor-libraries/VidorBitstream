@@ -1,0 +1,12 @@
+= QUAD_ENCODER IP core
+
+Decodes inputs from quadrature encoders
+
+== Description
+
+*QUAD_ENCODER* core inputs signals from multiple quadrature encoders and provides an hardware counter that is incremented or decremented at each step.
+
+== Available Documents
+* link:QUAD_ENCODER.adoc[IP Documentation]
+* link:QUAD_ENCODER_sw.adoc[Soft Core Software Documentation]
+* link:QUAD_ENCODER_ino.adoc[Arduino Class Documentation]

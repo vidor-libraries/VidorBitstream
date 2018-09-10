@@ -25,7 +25,7 @@ module PWM #(
 
 ) 
 (
-  input                              iCLK,
+  input                              iCLOCK,
   input                              iRESET,
   
   input [$clog2(2*pCHANNELS+2)-1:0]  iADDRESS,
@@ -47,7 +47,7 @@ reg rTICK;
 
 integer i;
 
-always @(posedge iCLK)
+always @(posedge iCLOCK)
 begin
   // logic to interface with bus.
   // register map is as follows:

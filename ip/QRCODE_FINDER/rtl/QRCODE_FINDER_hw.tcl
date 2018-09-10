@@ -158,7 +158,7 @@ set_interface_property clock PORT_NAME_MAP ""
 set_interface_property clock CMSIS_SVD_VARIABLES ""
 set_interface_property clock SVD_ADDRESS_GROUP ""
 
-add_interface_port clock iCLK clk Input 1
+add_interface_port clock iCLOCK clk Input 1
 
 
 # 
@@ -177,7 +177,7 @@ add_interface_port vid_in iVID_DATA data Input 24
 add_interface_port vid_in iVID_DATA_VALID dv Input 1
 add_interface_port vid_in iVID_START start Input 1
 add_interface_port vid_in iVID_RESET reset Input 1
-add_interface_port vid_in iVID_CLK clk Input 1
+add_interface_port vid_in iVID_CLOCK clk Input 1
 
 
 # 

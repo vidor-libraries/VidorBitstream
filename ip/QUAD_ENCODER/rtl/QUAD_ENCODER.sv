@@ -22,7 +22,7 @@ module QUAD_ENCODER #(
     pENCODERS=2,
     pENCODER_PRECISION=32
   )(
-    input                             iCLK,
+    input                             iCLOCK,
     input                             iRESET,
     // AVALON SLAVE INTERFACE
     input  [$clog2(pENCODERS)-1:0]	  iAVL_ADDRESS,
@@ -61,7 +61,7 @@ integer i;
 
 initial rSTEPS <=0;
 
-always @(posedge iCLK)
+always @(posedge iCLOCK)
 begin
   if (iRESET) begin
     rSTEPS<=0;

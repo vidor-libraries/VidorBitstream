@@ -1,0 +1,12 @@
+= PWM IP core
+
+Drives multiple PWM pins
+
+== Description
+
+*PWM* core generates multiple PWM outputs
+
+== Available Documents
+* link:PWM.adoc[IP Documentation]
+* link:PWM_sw.adoc[Soft Core Software Documentation]
+* link:PWM_ino.adoc[Arduino Class Documentation]

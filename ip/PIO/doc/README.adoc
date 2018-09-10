@@ -1,0 +1,12 @@
+= PIO IP core
+
+Drives multiple PIO pins
+
+== Description
+
+*PIO* core is the interface to FPGA pins and allows using them as GPIOs or to multiplex internal functions
+
+== Available Documents
+* link:PIO.adoc[IP Documentation]
+* link:PIO_sw.adoc[Soft Core Software Documentation]
+* link:PIO_ino.adoc[Arduino Class Documentation]

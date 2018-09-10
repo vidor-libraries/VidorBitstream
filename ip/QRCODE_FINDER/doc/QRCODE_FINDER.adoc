@@ -1,0 +1,69 @@
+=QRCODE_FINDER IP core
+
+== Ports
+
+.Ports
+[%autowidth]
+|=====================================================================================================
+     ^|Signal Group       ^|Signal Name           ^|Direction ^|Width ^|Description
+
+.2+^.^|Clock/Reset         .^|iCLOCK                ^|Input     ^|   1   |Clock input
+                           .^|iRESET                ^|Input     ^|   1   |Reset input
+.2+^.^|Clock/Reset         .^|iVID_CLOCK            ^|Input     ^|   1   |Video Port Clock input
+                           .^|iVID_RESET            ^|Input     ^|   1   |Video Port Reset input
+.6+^.^|Avalon Slave        .^|iADDRESS              ^|Input     ^|   *   |Address                       
+                           .^|iWRITE                ^|Input     ^|   1   |Write request                 
+                           .^|iREAD                 ^|Input     ^|   1   |Read request                  
+                           .^|iWRITE_DATA           ^|Input     ^|  32   |Data to be written            
+                           .^|oREAD_DATA            ^|Output    ^|  32   |Data being read               
+.3+^.^|Video Input         .^|iVID_DATA             ^|Input     ^|  24   |Video Data input     
+                           .^|iVID_START            ^|Input     ^|   1   |Flag determining first pixel of the frame
+                           .^|iVID_DATA_VALID       ^|Inout     ^|   1   |Indicates current data is valid 
+.3+^.^|Video Output        .^|oVID_DATA             ^|Ouput     ^|  24   |Video Data output
+                           .^|oVID_START            ^|Output    ^|   1   |Flag determining first pixel of the frame
+                           .^|oVID_DATA_VALID       ^|Outout    ^|   1   |Indicates current data is valid 
+|=====================================================================================================
+
+== Parameters
+
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Allowed range ^|Description          
+
+|pHRES           ^| any           |Number of horizontal pixels for the input image
+|pVRES           ^| any           |Number of vertical pixels for the input image
+|pTHRESHOLD      ^| any           |Initial threshold value
+|=====================================================================================================
+
+.Registers
+[%autowidth]
+[cols=",a,a"]
+|=====================================================================================================
+^|Address   ^|    Bits            ^|Description
+
+.2+^.^|0        ^.^|  0  | Refresh request. when written to 1 the IP starts looking for QR Code markers. When reading this bit is set to 1 if a new set of marker data has been collected. 
+                ^.^| 2:1 | Output mode. 
+[cols=","]
+[%autowidth]
+!===
+! Value ! meaning
+! 0     ! bypass. outupt is equal to input
+! 1     ! Luminance plus edges
+! 2     ! 2 color showing either black or white depending on previous edge
+! 3     ! edges only
+!===
+
+^|1            ^.^|  31:0  | Threshold value above which edges are accepted
+.4+^.^|1024-2047    ^.^|  9: 0  | Horizontal End pixel
+                    ^.^| 19:10  | Horizontal Start pixel   
+                    ^.^| 29:20  | Vertical Position   
+
+|=====================================================================================================
+
+== IP CORE Description
+
+*QRCODE_FINDER* core looks for QR Code markers in a video stream. The core uses Sobel filter to extract edges from the input picture and whenever it finds a positive edge (white to black) it starts measuring subsequent pulses to determine if the QR Code Marker pattern is found. The pattern itself is the following sequence: BLACK WHITE BLACK WHITE WHITE WHITE BLACK WHITE BLACK. In order to validate pattern the duration of the first BLACK pulse is measured and subsequent slots are compared with the initial measure. If the measure is not within +/- 1/8 of the original measure the state machine resets and starts looking for the first pulse again.
+once a sequence is found the IP stores the start and end position of the central pulse (the three consecutive WHITEs) and its vertical position in the dual port RAM; up to 1024 candidates can be acquired per frame.
+It is up to the embedded processor to read back data and aggregate detections so that detections with similar positions but consecutive vertical positions are considered a single marker (even if there are small differences or gaps).
+Note that it is up to the embedded processor to clear the dual port memory before issuing an update command.

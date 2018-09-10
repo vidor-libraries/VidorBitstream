@@ -1,0 +1,43 @@
+=QUAD_ENCODER IP core
+
+== Ports
+
+.Ports
+[%autowidth]
+|=====================================================================================================
+     ^|Signal Group       ^|Signal Name           ^|Direction ^|Width ^|Description
+
+.2+^.^|Clock/Reset         .^|iCLOCK                ^|Input     ^|   1       |Clock input
+                           .^|iRESET                ^|Input     ^|   1       |Reset input
+.3+^.^|Avalon Slave        .^|iADDRESS              ^|Input     ^|   *       |Address                       
+                           .^|iREAD                 ^|Input     ^|   1       |Read request                  
+                           .^|oREAD_DATA            ^|Output    ^| pENCODER_PRECISION |Data being read               
+.2+^.^|exports             .^|iENCODER_A            ^|Input     ^| pENCODERS |input signals                       
+                           .^|iENCODER_B            ^|Input     ^| pENCODERS |quadrature input signals                  
+|=====================================================================================================
+
+[NOTE] Address bits depend on the parameters set for the IP. There is one register per channel
+
+== Parameters
+
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Allowed range ^|Description          
+
+|pENCODERS          ^| 1-32          |Number of encoder channels
+|pENCODER_PRECISION ^| 1-32       |Number of bits for the counter register
+|=====================================================================================================
+
+.Registers
+[%autowidth]
+|=====================================================================================================
+^|Address   ^|    Bits               ^|Description
+
+^|n        .^| pENCODER_PRECISION-1:0 | channel counter
+|=====================================================================================================
+
+== IP CORE Description
+
+*QUAD_ENCODER* core inputs encoder phases and counts steps for each channel. each channel exposes a register whose precision is compile time programmable with pENCODER_PRECISION. Note that counter wraps around so care must be taken when registers with their previous values.
+Note that all inputs are synchronized so there's no need to synchronize them externally.
