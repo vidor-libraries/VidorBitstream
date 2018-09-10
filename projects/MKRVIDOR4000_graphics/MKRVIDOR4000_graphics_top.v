@@ -160,7 +160,8 @@ DVI_OUT
   .iDE (wDVI_DE),
 
   .oDVI_DATA(oHDMI_TX),
-  .oDVI_CLK(oHDMI_CLK)
+  .oDVI_CLK(oHDMI_CLK),
+  .iDVI_HPD(iDVI_HPD)
 );
 
 
@@ -235,12 +236,12 @@ MKRVIDOR4000_graphics_sys u0(
 		.sdram_ras_n            (oSDRAM_RASn), //         .ras_n
 		.sdram_we_n             (oSDRAM_WEn),   //         .we_n
 
+		.fb_vport_red           (wDVI_RED),     //      .red
+		.fb_vport_grn           (wDVI_GRN),     //      .grn
  		.fb_vport_blu           (wDVI_BLU),     // vport.blu
 		.fb_vport_de            (wDVI_DE),      //      .de
-		.fb_vport_grn           (wDVI_GRN),     //      .grn
 		.fb_vport_hs            (wDVI_HS),      //      .hs
 		.fb_vport_vs            (wDVI_VS),      //      .vs
-		.fb_vport_red           (wDVI_RED),     //      .red
 		.hdmi_i2c_scl_i         (bHDMI_SCL),    //   hdmi_i2c.scl_i
 		.hdmi_i2c_scl_o         (wHDMI_SCL_O),    //           .scl_o
 		.hdmi_i2c_scl_en        (wHDMI_SCL_EN),   //           .scl_en
