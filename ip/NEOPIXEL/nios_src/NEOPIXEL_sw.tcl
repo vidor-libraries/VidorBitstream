@@ -39,7 +39,7 @@ set_sw_property isr_preemption_supported true
 set_sw_property supported_interrupt_apis "legacy_interrupt_api enhanced_interrupt_api"
 
 # Initialize the driver in alt_sys_init()
-set_sw_property auto_initialize false
+set_sw_property auto_initialize true
 
 # Location in generated BSP that above sources will be copied into
 set_sw_property bsp_subdirectory drivers

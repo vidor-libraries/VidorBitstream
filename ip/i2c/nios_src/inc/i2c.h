@@ -20,15 +20,20 @@
 #ifndef I2C_H_
 #define I2C_H_
 
-#include <alt_types.h>
+#define I2C_BASE  0xa0554
+#define I2C_UID   0x15540
 
-void i2cInit(int);
-void i2cCmd(void);
+#define I2C_IP_VER   0x0101
+#define I2C_DRV_VER  0x0203
+#define I2C_VER      (((I2C_IP_VER)<<16)|(I2C_DRV_VER))
 
-alt_u32 i2cEnable(alt_u32 index);
-alt_u32 i2cClockSet(alt_u32 index, alt_u32 baud);
-alt_u32 i2cDisable(alt_u32 index);
-alt_u32 i2cRead(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len);
-alt_u32 i2cWrite(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len);
+#define I2C_0_CHNS  1
+#define I2C_1_CHNS  1
+
+#define I2C_PIN_FNC_SCL PIN_FNC(0x01, PIN_DIR_O)
+#define I2C_PIN_FNC_SDA PIN_FNC(0x02, PIN_DIR_I)
+
+
+void i2cRpc(void);
 
 #endif /* I2C_H_ */

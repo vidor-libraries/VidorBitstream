@@ -16,10 +16,10 @@
 # a commercial license, send an email to license@arduino.cc.
 
 # Create a new driver
-create_driver PIO
+create_driver UART
 
-# Associate it with some hardware known as "PIO"
-set_sw_property hw_class_name PIO
+# Associate it with some hardware known as "UART"
+set_sw_property hw_class_name UART
 
 # The version of this driver
 set_sw_property version 1.0
@@ -40,9 +40,9 @@ set_sw_property auto_initialize false
 set_sw_property bsp_subdirectory drivers
 
 # C/C++ source files
-add_sw_property c_source src/pio.c
+add_sw_property c_source src/uart.c
 
 # Include files
-add_sw_property include_source inc/pio.h
+add_sw_property include_source inc/uart.h
 
 add_sw_property supported_bsp_type HAL

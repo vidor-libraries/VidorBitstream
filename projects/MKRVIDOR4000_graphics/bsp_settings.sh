@@ -43,14 +43,14 @@ BSP_FLAGS=" \
 --set hal.sys_clk_timer none \
 --set altera_vic_driver.linker_section .rwdata \
 --script set_app_regions.tcl \
---cmd set_driver none iptronix_generic_quad_spi_controller2_0 \
+--cmd set_driver none qspi \
 --cmd set_driver none flash_spi \
 --cmd add_section_mapping .rwdata onchip_memory2_0 \
 --cmd add_section_mapping .bss onchip_memory2_0 \
 --cmd add_section_mapping .heap onchip_memory2_0 \
---cmd add_section_mapping .entry iptronix_generic_quad_spi_controller2_0_avl_mem \
---cmd add_section_mapping .text iptronix_generic_quad_spi_controller2_0_avl_mem \
---cmd add_section_mapping .rodata iptronix_generic_quad_spi_controller2_0_avl_mem \
---cmd add_section_mapping .data iptronix_generic_quad_spi_controller2_0_avl_mem \
+--cmd add_section_mapping .entry qspi_avl_mem \
+--cmd add_section_mapping .text qspi_avl_mem \
+--cmd add_section_mapping .rodata qspi_avl_mem \
+--cmd add_section_mapping .data qspi_avl_mem \
 --cmd add_section_mapping .stack onchip_memory2_0  \
 "

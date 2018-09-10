@@ -7,12 +7,20 @@
 #ifndef NP_H_
 #define NP_H_
 
+#define NEOPIXEL_UID  0xa0894
+
+#define NEOPIXEL_IP_VER   0x0302
+#define NEOPIXEL_DRV_VER  0x0406
+#define NEOPIXEL_VER      (((NEOPIXEL_IP_VER)<<16)|(NEOPIXEL_DRV_VER))
+
+#define NEOPIXEL_PIN_FNC_OUT PIN_FNC(0x01, PIN_DIR_O)
+
 typedef struct {
   alt_u32   flg;
   alt_u32   num;
   struct {
     alt_u32   ms;
-    alt_u16   nBuf;
+    alt_u16   ofs;
     alt_u16   sAdr;
     alt_u16   wCnt;
     alt_u16   wAdr;
@@ -26,24 +34,8 @@ typedef struct {
 #define NP_SEQ_FLG_BUF_LOOP   0x00000010
 #define NP_SEQ_FLG_INV_LOOP   0x00000020
 
-void npInit(int);
-void npCmd(void);
 
-alt_u32 npTmgSet(alt_u32 frq, alt_u32 trst, alt_u32 t0h, alt_u32 t1h, alt_u32 ttot);
-alt_u32 npSet(alt_u32 mask, alt_u16 numLEDs, alt_u32 type);
-alt_u32 npLedSet(alt_u32 idx, alt_u16 LED, alt_u8 r, alt_u8 g, alt_u8 b, alt_u8 w);
-alt_u32 npBrgSet(alt_u32 idx, alt_u8 brg);
-alt_u32 npLedShow(void);
-
-alt_u32 npBufSet(alt_u32 num, alt_u32 len, alt_u32 zzf, alt_u32 zzl);
-alt_u32 npBufSel(alt_u32 idx);
-alt_u32 npWrapSet(alt_u32 sAdr, alt_u32 wCnt, alt_u32 wAdr);
-alt_u32 npSeqSet(psNpSeq pSeq);
-alt_u32 npBufLoop(alt_u32 flg, alt_u32 buf, alt_u32 ms);
-alt_u32 npGfxAtt(alt_u32 flg);
-alt_u32 npGfxDet(void);
-alt_u32 npGfxStrSet(alt_u32 idx);
-alt_u32 npGfxWp(alt_u32 x, alt_u32 y, alt_u32 color);
+void npRpc(void);
 
 #endif /* NP_H_ */
 

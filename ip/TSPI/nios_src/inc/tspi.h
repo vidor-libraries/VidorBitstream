@@ -17,13 +17,50 @@
 *
 */
 
-#ifndef SPI_H_
-#define SPI_H_
+#ifndef TSPI_H_
+#define TSPI_H_
 
 #include <alt_types.h>
 
-void spiInit(int);
-void spiCmd(void);
+
+#define TSPI_UID 0xEBCE5
+
+#define TSPI_IP_VER   0x0105
+#define TSPI_DRV_VER  0x0004
+#define TSPI_VER (((TSPI_IP_VER)<<16)|(TSPI_DRV_VER))
+
+#define TSPI_0_BASE   SPI_0_BASE
+#define TSPI_1_BASE   SPI_1_BASE
+#define TSPI_2_BASE   SPI_2_BASE
+#define TSPI_3_BASE   SPI_3_BASE
+#define TSPI_4_BASE   SPI_4_BASE
+
+#define TSPI_0_CHNS  1
+#define TSPI_1_CHNS  1
+#define TSPI_2_CHNS  1
+#define TSPI_3_CHNS  1
+#define TSPI_4_CHNS  1
+
+#define TSPI_PIN_FNC_MOSI PIN_FNC(0x01, PIN_DIR_O)
+#define TSPI_PIN_FNC_MISO PIN_FNC(0x02, PIN_DIR_I)
+#define TSPI_PIN_FNC_CLK  PIN_FNC(0x03, PIN_DIR_O)
+#define TSPI_PIN_FNC_SS   PIN_FNC(0x04, PIN_DIR_O)
+
+
+typedef struct tspi_dev_s{
+  alt_u8    ss_auto;
+  alt_u8    mode;
+  alt_u8    bit_order;
+} sTspiDev, *psTspiDev;
+
+#define TSPI_DEV(name) sTspiDev name##_DEV
+
+
+
+
+
+
+void tspiRpc(void);
 
 alt_u32 spiEnable(alt_u32 idx);
 alt_u32 spiModeSet(alt_u32 idx, alt_u32 baud, alt_u32 mode, alt_u32 bitOrder);
@@ -31,4 +68,4 @@ alt_u32 spiDisable(alt_u32 idx);
 alt_u32 spiTrx(alt_u32 idx, alt_u8* buf, alt_u32 len);
 alt_u32 spiTrc(alt_u32 idx, alt_u32 txl, alt_u8* txb, alt_u32 rxl, alt_u8* rxb);
 
-#endif /* SPI_H_ */
+#endif /* TSPI_H_ */

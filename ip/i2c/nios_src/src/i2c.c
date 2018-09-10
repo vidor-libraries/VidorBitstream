@@ -17,15 +17,14 @@
 *
 */
 
-#include "config.h"
-
-#if defined(I2C_MODULE) && (I2C_MODULE == 1)
 
 #include <stdio.h>
 #include <io.h>
 
-#include "i2c.h"
+#include "config.h"
 #include "mb.h"
+#include "rpc.h"
+#include "i2c.h"
 
 // Overall status and control
 #define IOWR_I2C_PRERLO(port,data)  IOWR(port, 0, data)
@@ -64,71 +63,52 @@
 #define I2C_FLAG_RD    1
 #define I2C_FLAG_WR    0
 
-alt_u32 const i2c_baseaddr[] = {
-  I2C_DEV_BASE
-};
-alt_u32 i2c_dev_num;
-
 void _i2c_wait_tip(alt_u32 base);
 
-alt_u32 i2cEnable(alt_u32 index);
-alt_u32 i2cClockSet(alt_u32 index, alt_u32 baud);
-alt_u32 i2cDisable(alt_u32 index);
-alt_u32 i2cWrite(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len);
-alt_u32 i2cRead(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len);
+alt_u32 i2cSetup(alt_u32 cmd, alt_u32 baud);
+alt_u32 i2cEnd(alt_u32 cmd);
+
+alt_u32 i2cWrite(alt_u32 giid, alt_u8 address, alt_u8* data, alt_u32 len);
+alt_u32 i2cRead(alt_u32 giid, alt_u8 address, alt_u8* data, alt_u32 len);
 
 /**
  *
  */
-void i2cInit(int devs)
+void i2cRpc(void)
 {
-  i2c_dev_num = devs;
-}
-
-/**
- *
- */
-void i2cCmd(void)
-{
-  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
+  alt_u32 volatile *rpc = mbPtrGet();
   alt_u32 ret;
 
   ret = -1;
-  switch(MB_CMD(rpc[0])){
-  case 1:
-    /* enableI2C(int index) */
-    ret = i2cEnable(MB_SUB(rpc[0]));
-    break;
+  if ((fpgaIp[RPC_GIID(rpc[0])].disc & 0xFFFFF) != I2C_UID) {
+    rpc[1] = ret;
+    return ;
+  }
+  switch (RPC_PID(rpc[0])) {
   case 2:
-    /* setI2CClock(int index, int baud) */
-    ret = i2cClockSet(MB_SUB(rpc[0]), rpc[1]);
+    ret = i2cSetup(rpc[0], rpc[1]);
     break;
-  case 3:
-    /* disableI2C(int index) */
-    ret = i2cDisable(MB_SUB(rpc[0]));
+  case 4:
+    ret = i2cEnd(rpc[0]);
     break;
   case 5:
-    ret = i2cRead(MB_SUB(rpc[0]), rpc[1], (alt_u8*)&rpc[3], rpc[2]);
+    ret = i2cRead(RPC_GIID(rpc[0]), rpc[1], (alt_u8*)&rpc[3], rpc[2]);
     break;
-  case 8:
-    ret = i2cWrite(MB_SUB(rpc[0]), rpc[1], (alt_u8*)&rpc[3], rpc[2]);
+  case 6:
+    ret = i2cWrite(RPC_GIID(rpc[0]), rpc[1], (alt_u8*)&rpc[3], rpc[2]);
     break;
   }
   rpc[1] = ret;
 }
 
 /**
- *
  */
-alt_u32 i2cEnable(alt_u32 index)
+alt_u32 i2cSetup(alt_u32 cmd, alt_u32 baud)
 {
-  if(index >= i2c_dev_num){
-    return -1;
-  }
-  alt_u32 baseaddr = i2c_baseaddr[index];
-
-  /* Setup prescaler for 100KHz with sysclk of 154MHz */
-  int prescale = 154000000/(5*100000);
+  alt_u32 baseaddr = (alt_u32)fpgaIp[RPC_GIID(cmd)].base;
+// TODO check pins and locks
+  /* Setup prescaler for baud with sysclk of 154MHz */
+  int prescale = 154000000/(5*baud);
 
   IOWR_I2C_CTR(baseaddr, 0x00); /* Disable core */
 
@@ -136,41 +116,16 @@ alt_u32 i2cEnable(alt_u32 index)
   IOWR_I2C_PRERHI(baseaddr, (prescale & 0xff00)>>8);
 
   IOWR_I2C_CTR(baseaddr, OC_I2C_EN); /* Enable core */
+
   return 0;
 }
 
 /**
- *
  */
-alt_u32 i2cClockSet(alt_u32 index, alt_u32 baud)
+alt_u32 i2cEnd(alt_u32 cmd)
 {
-  if(index >= i2c_dev_num){
-    return -1;
-  }
-  alt_u32 baseaddr = i2c_baseaddr[index];
-  int prescale = 154000000/(5*baud);	/* Setup prescaler for baud with sysclk of 154MHz */
-
-  /* disable core */
-  IOWR_I2C_CTR(baseaddr, 0x00);
-
-  IOWR_I2C_PRERLO(baseaddr,  prescale & 0xFF);
-  IOWR_I2C_PRERHI(baseaddr, (prescale & 0xFF00)>>8);
-
-  /* enable core */
-  IOWR_I2C_CTR(baseaddr, OC_I2C_EN);
-  return 0;
-}
-
-/**
- *
- */
-alt_u32 i2cDisable(alt_u32 index)
-{
-  if(index >= i2c_dev_num){
-    return -1;
-  }
-  alt_u32 baseaddr = i2c_baseaddr[index];
-
+  alt_u32 baseaddr = (alt_u32)fpgaIp[RPC_GIID(cmd)].base;
+// TODO free pins
   /* disable core */
   IOWR_I2C_CTR(baseaddr, I2C_CR_STO);
   return 0;
@@ -179,12 +134,9 @@ alt_u32 i2cDisable(alt_u32 index)
 /**
  *
  */
-alt_u32 i2cRead(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
+alt_u32 i2cRead(alt_u32 giid, alt_u8 address, alt_u8* data, alt_u32 len)
 {
-  if(index >= i2c_dev_num){
-    return -1;
-  }
-  alt_u32 baseaddr = i2c_baseaddr[index];
+  alt_u32 baseaddr = (alt_u32)fpgaIp[giid].base;
   int i;
 
   _i2c_wait_tip(baseaddr);
@@ -214,12 +166,9 @@ alt_u32 i2cRead(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
 /**
  *
  */
-alt_u32 i2cWrite(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
+alt_u32 i2cWrite(alt_u32 giid, alt_u8 address, alt_u8* data, alt_u32 len)
 {
-  if(index >= i2c_dev_num){
-    return -1;
-  }
-  alt_u32 baseaddr = i2c_baseaddr[index];
+  alt_u32 baseaddr = (alt_u32)fpgaIp[giid].base;
   alt_u32 i;
 
   _i2c_wait_tip(baseaddr);
@@ -246,6 +195,7 @@ alt_u32 i2cWrite(alt_u32 index, alt_u8 address, alt_u8* data, alt_u32 len)
   if(IORD_I2C_SR(baseaddr) & I2C_SR_RXACK){
     return -2;
   }
+
   return 0;
 }
 
@@ -256,5 +206,3 @@ void _i2c_wait_tip(alt_u32 base)
 {
   while(IORD_I2C_SR(base) & I2C_SR_TIP);
 }
-
-#endif /* defined(I2C_MODULE) && (I2C_MODULE == 1) */

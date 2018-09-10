@@ -4,7 +4,7 @@
 # Authors: Dario Pennisi
 #
 # This software is released under:
-# The GNU General Public License, which covers the main part of 
+# The GNU General Public License, which covers the main part of
 # Vidor IP
 # The terms of this license can be found at:
 # https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -28,7 +28,7 @@ set_sw_property version 18.0
 # than specified below. Updates to hardware and device drivers
 # rendering the driver incompatible with older versions of
 # hardware are noted with this property assignment.
-# 
+#
 # Multiple-Version compatibility was introduced in version 13.1;
 # prior versions are therefore excluded.
 set_sw_property min_compatible_hw_version 1.0
@@ -45,9 +45,9 @@ set_sw_property auto_initialize false
 set_sw_property bsp_subdirectory drivers
 
 # C/C++ source files
-add_sw_property c_source src/spi.c
+add_sw_property c_source src/tspi.c
 
 # Include files
-add_sw_property include_source inc/spi.h
+add_sw_property include_source inc/tspi.h
 
 add_sw_property supported_bsp_type HAL

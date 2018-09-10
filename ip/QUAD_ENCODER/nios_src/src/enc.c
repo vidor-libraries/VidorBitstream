@@ -17,36 +17,43 @@
 *
 */
 
-#include "config.h"
-
-#if defined(ENC_MODULE) && (ENC_MODULE == 1)
 
 #include <string.h>
 #include <stdlib.h>
 #include <io.h>
 
+#include "config.h"
 #include "mb.h"
+#include "rpc.h"
+#include "enc.h"
 
-alt_u32 encGet(alt_u32 index);
+alt_u32 encSetup(alt_u32 cmd);
+alt_u32 encEnd(alt_u32 cmd);
+alt_u32 encGet(alt_u32 cmd);
+
 
 /**
  */
-void encInit(int devs)
+void encRpc(void)
 {
-}
-
-/**
- */
-void encCmd(void)
-{
-  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
+  alt_u32 volatile *rpc = mbPtrGet();
   alt_u32 ret;
 
   ret = -1;
-  switch(MB_CMD(rpc[0])){
-  case 1:
+  if ((fpgaIp[RPC_GIID(rpc[0])].disc & 0xFFFFF) != ENC_UID) {
+    rpc[1] = ret;
+    return ;
+  }
+  switch (RPC_PID(rpc[0])) {
+  case 2:
+    ret = encSetup(rpc[0]);
+    break;
+  case 4:
+    ret = encEnd(rpc[0]);
+    break;
+  case 5:
     /* Read encoder */
-    ret = encGet(MB_SUB(rpc[0]));
+    ret = encGet(rpc[0]);
     break;
   }
   rpc[1] = ret;
@@ -54,12 +61,24 @@ void encCmd(void)
 
 /**
  */
-alt_u32 encGet(alt_u32 index)
+alt_u32 encSetup(alt_u32 cmd)
 {
-  if (index >= ENC_DEV_NUM) {
-    return -1;
-  }
-  return IORD(ENC_BASE, index);
+  return 0;
 }
 
-#endif /* defined(ENC_MODULE) && (ENC_MODULE == 1) */
+/**
+ */
+alt_u32 encEnd(alt_u32 cmd)
+{
+  return 0;
+}
+
+/**
+ */
+alt_u32 encGet(alt_u32 cmd)
+{
+  alt_u8 giid = RPC_GIID(cmd);
+  alt_u16 chn = RPC_CHN(cmd);
+
+  return IORD(fpgaIp[giid].base, chn);
+}

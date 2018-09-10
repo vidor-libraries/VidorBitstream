@@ -20,8 +20,20 @@
 #ifndef ENC_H_
 #define ENC_H_
 
-void encInit(int);
-void encCmd(void);
+#define ENC_UID 0x0D645
+
+#define ENC_IP_VER   0x0105
+#define ENC_DRV_VER  0x0004
+#define ENC_VER (((ENC_IP_VER)<<16)|(ENC_DRV_VER))
+
+#define ENC_CHNS   10
+
+#define ENC_BASE   0x00
+
+#define ENC_PIN_FNC_A     PIN_FNC(0x01, PIN_DIR_I)
+#define ENC_PIN_FNC_B     PIN_FNC(0x02, PIN_DIR_I)
+
+void encRpc(void);
 
 #endif /* ENC_H_ */
 
