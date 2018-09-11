@@ -15,7 +15,8 @@
 .1+^.^|exports             .^|oPWM                  ^|Output    ^| pCHANNELS |input signals                       
 |=====================================================================================================
 
-[NOTE] Address bits depend on the parameters set for the IP. there are 2 fixed registers plus a 2 registers for each PWM channel
+[NOTE]
+Address bits depend on the parameters set for the IP. there are 2 fixed registers plus a 2 registers for each PWM channel
 
 == Parameters
 

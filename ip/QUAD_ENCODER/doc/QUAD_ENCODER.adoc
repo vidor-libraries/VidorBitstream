@@ -16,7 +16,8 @@
                            .^|iENCODER_B            ^|Input     ^| pENCODERS |quadrature input signals                  
 |=====================================================================================================
 
-[NOTE] Address bits depend on the parameters set for the IP. There is one register per channel
+[NOTE]
+Address bits depend on the parameters set for the IP. There is one register per channel
 
 == Parameters
 
