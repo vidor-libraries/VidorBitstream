@@ -168,6 +168,6 @@ proc log2 {value} {
 proc elaboration_callback {} {
   set bits [get_parameter_value pBITS] 
   set mux_bits [get_parameter_value pMUX_BITS] 
-  add_interface_port avalon_slave_0 iADDRESS address Input [log2 expr[ 4+(31+$bits*mux_bits)/32 ]] 
-  add_interface_port pio oMUXSEL msel Output expr[ $bits*mux_bits ]
+  add_interface_port s1 iADDRESS address Input [log2 [expr 4+ ( 31 + $bits * $mux_bits )/32 ]]
+  add_interface_port pio oMUXSEL msel Output [expr  $bits * $mux_bits ]
 }

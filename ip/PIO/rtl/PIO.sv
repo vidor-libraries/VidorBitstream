@@ -21,7 +21,6 @@
 module PIO #(
   parameter pBITS =32,
   parameter pMUX_BITS = 2
-  localparam cADDRESS_BITS = $clog2(4+(pMUX_BITS*pBITS+31)/32)
 ) 
 (
   input                                 iCLOCK,
@@ -38,6 +37,8 @@ module PIO #(
   output reg [pBITS-1:0]                oDIR,
   output reg [pBITS*pMUX_BITS-1:0]      oMUXSEL
 );
+
+localparam cADDRESS_BITS = $clog2(4+(pMUX_BITS*pBITS+31)/32);
 
 always @(posedge iCLOCK)
 begin
