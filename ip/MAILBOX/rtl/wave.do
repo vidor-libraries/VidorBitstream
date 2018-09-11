@@ -26,16 +26,26 @@ add wave -noupdate -radix hexadecimal /mailbox_tb/mbox/rRET_AVAIL
 add wave -noupdate -radix hexadecimal /mailbox_tb/mbox/wRD_USED
 add wave -noupdate -radix hexadecimal /mailbox_tb/mbox/wWR_FREE
 add wave -noupdate -divider memory
-add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[772]}
-add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[771]}
-add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[770]}
-add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[769]}
-add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[768]}
-add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[767]}
 add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1]}
 add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[0]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1023]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1022]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1021]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1020]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1019]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1018]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1017]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1016]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1015]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1014]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1013]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1012]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1011]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1010]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1009]}
+add wave -noupdate -radix hexadecimal {/mailbox_tb/mbox/rDPRAM[1008]}
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {21 ps} 0}
+WaveRestoreCursors {{Cursor 1} {109 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 349
 configure wave -valuecolwidth 100
@@ -51,4 +61,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {56 ps}
+WaveRestoreZoom {0 ps} {144 ps}

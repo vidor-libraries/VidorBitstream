@@ -19,7 +19,7 @@
 */
 
 module MAILBOX #(
-  parameter pDPRAM_BITS=10,
+  parameter pDPRAM_BITS=9,
   parameter pFIFO_BITS =4
 ) (
   input              iCLOCK,
@@ -29,13 +29,13 @@ module MAILBOX #(
   input              iMST_WRITE,
   input              iMST_READ,
   input       [31:0] iMST_WRITE_DATA,
-  output  reg [31:0] oMST_READ_DATA,
+  output      [31:0] oMST_READ_DATA,
 
   input       [pDPRAM_BITS-1:0] iSLV_ADDRESS,
   input              iSLV_WRITE,
   input              iSLV_READ,
   input       [31:0] iSLV_WRITE_DATA,
-  output reg  [31:0] oSLV_READ_DATA,
+  output      [31:0] oSLV_READ_DATA,
 
   output reg         oMST_AK,
   input              iMST_RQ
@@ -51,6 +51,12 @@ reg [pFIFO_BITS-1:0]  rWR_PTR;
 reg [2:0]  rRESYNC_MST_RQ;
 reg        rPERSIST_MST_RQ;
 reg        rRET_AVAIL;
+reg [31:0] rMST_READ_DATA;
+reg [31:0] rMST_FIFO_DATA;
+reg [31:0] rSLV_READ_DATA;
+reg [31:0] rSLV_FIFO_DATA;
+reg        rMST_FIFO;
+reg        rSLV_FIFO;
 
 wire unsigned [pFIFO_BITS-1:0] wRD_USED;
 wire unsigned [pFIFO_BITS-1:0] wWR_FREE;
@@ -59,6 +65,35 @@ assign wRD_USED = rWR_PTR-rRD_PTR;
 assign wWR_FREE = (1<<pFIFO_BITS)-1-rWR_PTR+rRD_PTR;
 
 assign oMST_AK = rRET_AVAIL || (wRD_USED>0);
+assign oMST_READ_DATA = rMST_FIFO ? rMST_FIFO_DATA : rMST_READ_DATA;
+assign oSLV_READ_DATA = rSLV_FIFO ? rSLV_FIFO_DATA : rSLV_READ_DATA;
+
+wire [pDPRAM_BITS-1:0] wMST_ADDRESS;
+wire [pDPRAM_BITS-1:0] wSLV_ADDRESS;
+
+assign wMST_ADDRESS = (iMST_ADDRESS<cFIFO_START_ADDR) ? iMST_ADDRESS : rRD_PTR+cFIFO_START_ADDR;
+assign wSLV_ADDRESS = (iSLV_ADDRESS<cFIFO_START_ADDR) ? iSLV_ADDRESS : rWR_PTR+cFIFO_START_ADDR;
+
+
+always @(posedge iCLOCK) begin
+  if (iMST_WRITE) begin
+    rDPRAM[wMST_ADDRESS] <= iMST_WRITE_DATA;
+    rMST_READ_DATA <= iMST_WRITE_DATA;
+  end
+  else begin
+    rMST_READ_DATA <= rDPRAM[wMST_ADDRESS];
+  end
+end
+
+always @(posedge iCLOCK) begin
+  if (iSLV_WRITE) begin
+      rDPRAM[wSLV_ADDRESS] <= iSLV_WRITE_DATA;
+      rSLV_READ_DATA <= iSLV_WRITE_DATA;
+  end
+  else begin
+    rSLV_READ_DATA <= rDPRAM[wSLV_ADDRESS];
+  end
+end
 
 always @(posedge iCLOCK) begin
   if (iRESET) begin
@@ -75,11 +110,8 @@ always @(posedge iCLOCK) begin
       rPERSIST_MST_RQ <= rPERSIST_MST_RQ|rRESYNC_MST_RQ[2];
 
     if (iMST_ADDRESS<cFIFO_START_ADDR) begin
-      if (iMST_WRITE) begin
-        rDPRAM[iMST_ADDRESS] <= iMST_WRITE_DATA;
-      end 
-      else if (iMST_READ) begin
-        oMST_READ_DATA <= rDPRAM[iMST_ADDRESS];
+      if (iMST_READ) begin
+        rMST_FIFO <= 0;
         if (iMST_ADDRESS==0) begin
           rRET_AVAIL<=0;
         end
@@ -87,37 +119,38 @@ always @(posedge iCLOCK) begin
     end else begin
       if (iMST_READ) begin
         if (iMST_ADDRESS==cLAST_ADDRESS) begin
-          oMST_READ_DATA <= {rRET_AVAIL,wRD_USED};
+          rMST_FIFO_DATA <= {rRET_AVAIL,wRD_USED};
+          rMST_FIFO <= 1;
         end
         else if (wRD_USED>0) begin
-          oMST_READ_DATA <= rDPRAM[rRD_PTR+cFIFO_START_ADDR];
           rRD_PTR <= rRD_PTR+1;
+			    rMST_FIFO <= 1;
         end else begin
-          oMST_READ_DATA <= 32'hDEADBEEF;
+			    rMST_FIFO <= 1;
+          rMST_FIFO_DATA <= 32'hDEADBEEF;
         end
       end
     end
 
     if (iSLV_ADDRESS<cFIFO_START_ADDR) begin
       if (iSLV_WRITE) begin
-        rDPRAM[iSLV_ADDRESS] <= iSLV_WRITE_DATA;
         if (iSLV_ADDRESS==0) begin
           rPERSIST_MST_RQ<=0;
           rRET_AVAIL<=1;
         end
       end
       else if (iSLV_READ) begin
-        oSLV_READ_DATA <= rDPRAM[iSLV_ADDRESS];
+        rSLV_FIFO<= 0;
       end
     end else begin
       if (iSLV_READ) begin
         if (iSLV_ADDRESS==cFIFO_START_ADDR) begin
-          oSLV_READ_DATA <= wWR_FREE;
+          rSLV_FIFO_DATA <= wWR_FREE;
+          rSLV_FIFO<= 1;
         end
       end
-      if (iSLV_WRITE) begin
+      else if (iSLV_WRITE) begin
         if (wWR_FREE>0) begin
-          rDPRAM[rWR_PTR+cFIFO_START_ADDR] <= iSLV_WRITE_DATA;
           rWR_PTR <= rWR_PTR+1;
         end
       end
