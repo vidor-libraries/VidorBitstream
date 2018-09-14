@@ -53,7 +53,10 @@
 #include "Fonts/TomThumb.h"
 
 const GFXfont *gfxFontRepo[] = {
-
+  &Org_01,
+  &Picopixel,
+  &Tiny3x3a2pt7b,
+  &TomThumb,
 #ifdef FONT_9PT
 
 #ifdef FONT_MONO
@@ -220,11 +223,6 @@ const GFXfont *gfxFontRepo[] = {
 #endif
 #endif //FONT_SERIF
 #endif // FONT_24PT
-
-  &Org_01,
-  &Picopixel,
-  &Tiny3x3a2pt7b,
-  &TomThumb,
 };
 
 #define GFX_NUM_FONTS (sizeof(gfxFontRepo)/sizeof(GFXfont *))
