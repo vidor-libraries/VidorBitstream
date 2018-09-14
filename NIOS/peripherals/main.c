@@ -2,7 +2,7 @@
  *
  */
 #include "platform.h"
-#include "gpio.h"
+#include "irq.h"
 
 #define SEC_RAM  __attribute__((__section__(".rwdata")))
 

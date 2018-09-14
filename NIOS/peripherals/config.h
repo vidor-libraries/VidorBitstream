@@ -20,14 +20,35 @@
  */
 #define GPIO_MODULE       1
 #if defined(GPIO_MODULE) && (GPIO_MODULE == 1)
-  #define GPIO_GPIO       1
+  #define GPIO_DID  0x00000100
+  #define GPIO_VER  0x0003
+  #define GPIO_SUB  0x03
+  #define GPIO_CHN  0x20
 #endif /* defined(GPIO_MODULE) && (GPIO_MODULE == 1) */
+
+/**
+ * PWM module
+ */
+#define PWM_MODULE 1
+#if defined(PWM_MODULE) && (PWM_MODULE == 1)
+  #define PWM_DID  0x00000110
+  #define PWM_VER  0x0003
+  #define PWM_SUB  0x03
+  #define PWM_CHN  0x20
+
+  #define PWM_BASE SAM_PWM_BASE
+#endif /* defined(PWM_MODULE) && (PWM_MODULE == 1) */
 
 /**
  * graphic module
  */
 #define GFX_MODULE      1
 #if defined(GFX_MODULE) && (GFX_MODULE == 1)
+  #define GFX_DID  0x00000200
+  #define GFX_VER  0x0001
+  #define GFX_SUB  0x01
+  #define GFX_CHN  0x00
+
   #define GFX_FB_BASE   (alt_u16*)SDRAM_BASE
   #define GFX_CAM_BASE  (alt_u16*)SDRAM_BASE
 
@@ -65,6 +86,11 @@
  */
 #define SF_MODULE         0
 #if defined(SF_MODULE) && (SF_MODULE == 1)
+  #define SF_DID  0x00000300
+  #define SF_VER  0x0001
+  #define SF_SUB  0x01
+  #define SF_CHN  0x00
+
   #define SF_USE_QSPI       0
   #define SF_SPI_IDX        6
   #define SF_INVERT_BIT     0
@@ -75,6 +101,11 @@
  */
 #define I2C_MODULE    1
 #if defined(I2C_MODULE) && (I2C_MODULE == 1)
+  #define I2C_DID  0x00000400
+  #define I2C_VER  0x0004
+  #define I2C_SUB  0x04
+  #define I2C_CHN  0x00
+
   #define I2C_DEV_NUM   4
   #define I2C_DEV_BASE  I2C_0_BASE, I2C_1_BASE, I2C_2_BASE, I2C_3_BASE,
 #endif /* defined(I2C_MODULE) && (I2C_MODULE == 1) */
@@ -84,6 +115,11 @@
  */
 #define SPI_MODULE  1
 #if defined(SPI_MODULE) && (SPI_MODULE == 1)
+  #define SPI_DID  0x00000500
+  #define SPI_VER  0x0006
+  #define SPI_SUB  0x06
+  #define SPI_CHN  0x00
+
   #define SPI_DEV_NUM 6
   #define SPI_DEV_CFG \
     /*         BASE   MOSI   MISO    CLK     SS  A */ \
@@ -110,6 +146,11 @@
  */
 #define UART_MODULE  1
 #if defined(UART_MODULE) && (UART_MODULE == 1)
+  #define UART_DID  0x00000600
+  #define UART_VER  0x0009
+  #define UART_SUB  0x09
+  #define UART_CHN  0x00
+
   #define UART_DEV_NUM 9
   #define UART_PIN_MUX 4
   #define UART_DEV_CFG \
@@ -131,6 +172,11 @@
  */
 #define QR_MODULE 0
 #if defined(QR_MODULE) && (QR_MODULE == 1)
+  #define QR_DID  0x00000700
+  #define QR_VER  0x0001
+  #define QR_SUB  0x01
+  #define QR_CHN  0x00
+
 #endif /* defined(QR_MODULE) && (QR_MODULE == 1) */
 
 /**
@@ -138,6 +184,11 @@
  */
 #define SDRAM_MODULE         1
 #if defined(SDRAM_MODULE) && (SDRAM_MODULE == 1)
+  #define SDRAM_DID  0x00000800
+  #define SDRAM_VER  0x0001
+  #define SDRAM_SUB  0x01
+  #define SDRAM_CHN  0x00
+
 //  #define SDRAM_BASE  (SDRAM_ARBITER_BASE | 0x80000000)
 //  #define SDRAM_SIZE  SDRAM_ARBITER_SPAN
   //#define SDRAM_BASE  (0 | 0x80000000)
@@ -150,6 +201,11 @@
  */
 #define NP_MODULE         1
 #if defined(NP_MODULE) && (NP_MODULE == 1)
+  #define NP_DID  0x00000900
+  #define NP_VER  0x0010
+  #define NP_SUB  0x01
+  #define NP_CHN  NEOPIXEL_CHANNELS
+
   #define NP_DEV_NUM      NEOPIXEL_CHANNELS
   #define NP_CSR_BASE     NEOPIXEL_BASE
   #define NP_MEM_BASE     (SDRAM_BASE + 0x00000000)
@@ -163,6 +219,11 @@
  */
 #define ENC_MODULE  1
 #if defined(ENC_MODULE) && (ENC_MODULE == 1)
+  #define ENC_DID  0x00000A00
+  #define ENC_VER  0x0001
+  #define ENC_SUB  0x01
+  #define ENC_CHN  11
+
   #define ENC_DEV_NUM     11
   #define ENC_BASE        QUAD_ENCODER_0_BASE
 #endif /* defined(ENC_MODULE) && (ENC_MODULE == 1) */
@@ -171,6 +232,12 @@
  * register module
  */
 #define REG_MODULE  1
+#if defined(REG_MODULE) && (REG_MODULE == 1)
+  #define REG_DID  0x00000B00
+  #define REG_VER  0x0001
+  #define REG_SUB  0x01
+  #define REG_CHN  0x00
+#endif /* defined(ENC_MODULE) && (ENC_MODULE == 1) */
 
 /**
  * timer module
