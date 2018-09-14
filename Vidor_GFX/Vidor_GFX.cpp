@@ -48,6 +48,15 @@ void Vidor_GFXbuffer::noScroll() {
   privateScroll(NP_SEQ_FLG_STOP, 0);
 }
 
+void Vidor_GFXbuffer::mirror() {
+  uint32_t rpc[2];
+
+  rpc[0] = MB_CMD(devIdx, 0, 0, 11);
+  rpc[1] = idx;
+
+  VidorMailbox.sendCommand(rpc, 2);
+}
+
 void Vidor_GFXbuffer::privateScroll(int flags, int delay) {
   if (!init) {
     begin();

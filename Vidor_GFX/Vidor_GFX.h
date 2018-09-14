@@ -121,6 +121,7 @@ class Vidor_GFXbuffer {
     void scroll(int delay = 100, ScrollDirection direction = LEFT_TO_RIGHT);
     void noScroll();
     void begin();
+    void mirror();
   private:
     int idx;
     uint8_t devIdx;
