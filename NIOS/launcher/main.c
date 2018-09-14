@@ -7,7 +7,6 @@
 
 #include "sf.h"
 #include "sign.h"
-#include "gpio.h"
 
 #define SEC_START(section) (&_alt_partition_##section##_start)
 #define SEC_SIZE(section) (&_alt_partition_##section##_end-&_alt_partition_##section##_start)
@@ -21,6 +20,7 @@ SEC_EXTERN(data2)
 
 #if 0
 #include "platform.h"
+#include "irq.h"
 #endif
 
 /**

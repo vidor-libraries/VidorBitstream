@@ -20,15 +20,35 @@
  */
 #define GPIO_MODULE       1
 #if defined(GPIO_MODULE) && (GPIO_MODULE == 1)
-  #define GPIO_GPIO       1
+  #define GPIO_DID  0x00000100
+  #define GPIO_VER  0x0003
+  #define GPIO_SUB  0x03
+  #define GPIO_CHN  0x20
 #endif /* defined(GPIO_MODULE) && (GPIO_MODULE == 1) */
+
+/**
+ * PWM module
+ */
+#define PWM_MODULE 1
+#if defined(PWM_MODULE) && (PWM_MODULE == 1)
+  #define PWM_DID  0x00000110
+  #define PWM_VER  0x0003
+  #define PWM_SUB  0x03
+  #define PWM_CHN  0x20
+
+  #define PWM_BASE SAM_PWM_BASE
+#endif /* defined(PWM_MODULE) && (PWM_MODULE == 1) */
 
 /**
  * graphic module
  */
 #define GFX_MODULE      0
-
 #if defined(GFX_MODULE) && (GFX_MODULE == 1)
+  #define GFX_DID  0x00000200
+  #define GFX_VER  0x0001
+  #define GFX_SUB  0x01
+  #define GFX_CHN  0x00
+
   #define GFX_FB_BASE (alt_u16*)((SDRAM_ARBITER_BASE + \
                               SDRAM_ARBITER_FB_OFFSET*sizeof(short)) | \
                              0x80000000)
@@ -49,8 +69,12 @@
  * serial flash module
  */
 #define SF_MODULE         1
-
 #if defined(SF_MODULE) && (SF_MODULE == 1)
+  #define SF_DID  0x00000300
+  #define SF_VER  0x0001
+  #define SF_SUB  0x01
+  #define SF_CHN  0x00
+
   #define SF_USE_QSPI       0
   #define SF_SPI_IDX        0
   #define SF_INVERT_BIT     0
@@ -62,6 +86,11 @@
  */
 #define SPI_MODULE  1
 #if defined(SPI_MODULE) && (SPI_MODULE == 1)
+  #define SPI_DID  0x00000500
+  #define SPI_VER  0x0006
+  #define SPI_SUB  0x06
+  #define SPI_CHN  0x00
+
   #define SPI_DEV_NUM 0
   #define SPI_DEV_CFG \
     /*         BASE   MOSI   MISO    CLK     SS  A*/ \
