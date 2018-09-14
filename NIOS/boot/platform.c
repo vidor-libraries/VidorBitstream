@@ -11,7 +11,7 @@
 #include "config.h"
 
 #include "mb.h"
-#include "gpio.h"
+#include "irq.h"
 #include "sf.h"
 #include "ru.h"
 

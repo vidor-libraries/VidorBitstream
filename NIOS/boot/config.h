@@ -34,6 +34,7 @@
   #define GFX_FB_WIDTH    640
   #define GFX_FB_HEIGHT   480
 
+  #define GFX_CLEAR       0
   #define GFX_LOGO        1
 
   #define GFX_FONTS       0
@@ -41,9 +42,8 @@
   #define GFX_FONT_NAME   FreeMono12pt7b
 
   #define GFX_CMDS        0
-#endif /* defined(GFX_MODULE) && (GFX_MODULE == 1) */
 
-#define GPIO_GPIO       0
+#endif /* defined(GFX_MODULE) && (GFX_MODULE == 1) */
 
 #define SF_MODULE         1
 #if defined(SF_MODULE) && (SF_MODULE == 1)

@@ -126,26 +126,29 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr);
 alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len);
 
-#if defined(SF_SECURITY) && (SF_SECURITY == 1)
 
 /**
  * Security Register
  */
+#if defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1)
 alt_u32 sfSRErase(alt_u8 reg);
 alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfSRLock(alt_u8 reg);
 alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len);
 alt_u32 sfProtect(void);
-#endif  /* defined(SF_SECURITY) && (SF_SECURITY == 1) */
+#endif  /* defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1) */
 
 #if defined(SF_USE_QSPI) && (SF_USE_QSPI == 1)
 alt_32 static poll_for_wip(void);
 #endif /* defined(SF_USE_QSPI) && (SF_USE_QSPI == 1) */
 
-#if defined(SF_INVERT_BIT) && (SF_SF_INVERT_BIT == 1)
+#if defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1)
 void memcpyr(char *dst, char* src, int size);
 int memcmpr(char *dst, char* src, int size);
-#endif /* defined(SF_INVERT_BIT) && (SF_SF_INVERT_BIT == 1) */
+#endif /* defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1) */
+
+#define spiTrc(idx,tl,tb,rlrb)   alt_avalon_spi_command(idx, 0, tl, tb, rl, rb, 0)
+#define SF_SPI_IDX FLASH_SPI_BASE
 
 /**
  *
@@ -178,7 +181,7 @@ void sfCmd(void)
   case 5:
     ret = sfRead(rpc[1], (alt_u8*)&rpc[3], rpc[2]);
     break;
-#if defined(SF_SECURITY) && (SF_SECURITY == 1)
+#if defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1)
   case 6:
     ret = sfSRErase(rpc[1]);
     break;
@@ -194,24 +197,20 @@ void sfCmd(void)
   case 10:
     ret = sfProtect();
     break;
-#endif  /* defined(SF_SECURITY) && (SF_SECURITY == 1) */
+#endif  /* defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1) */
   }
   rpc[1] = ret;
 }
 
 /**
- * for AT25SF081 rxb must be:
- * MANUFACTURER ID 0x1F
- * DEVICE ID BYTE1 0x85
- * DEVICE ID BYTE2 0x01
- * @return for AT25SF081 0x001F8501
+ * @return  MANUFACTURER ID DEVICE ID BYTE1 DEVICE ID BYTE2
  */
 alt_u32 sfJedecId(void)
 {
   alt_u8  txb[]={0x9f};
   alt_u8  rxb[4];
 
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 3, rxb, 0);
+  spiTrc(SF_SPI_IDX, 1, txb, 3, rxb);
 
   return (rxb[0]<<16) | (rxb[1]<<8) | (rxb[2]);
 }
@@ -229,7 +228,7 @@ alt_u32 sfUniqueId(alt_u8* id)
   txb[3] = 0;
   txb[4] = 0;
 
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+4, txb, 8, id, 0);
+  spiTrc(FLASH_SPI_BASE, 1+4, txb, 8, id);
   return 0;
 }
 
@@ -258,8 +257,8 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 
     /* check whether erase triggered a illegal erase interrupt  */
     if((IORD_ALTERA_QSPI_CONTROLLER_ISR(QSPI_CSR_BASE) &
-                  ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_MASK) ==
-                      ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_ACTIVE) {
+        ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_MASK) ==
+            ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_ERASE_ACTIVE) {
       /* clear register */
       /* QSPI_ISR access is write one to clear (W1C) */
       IOWR_ALTERA_QSPI_CONTROLLER_ISR(QSPI_CSR_BASE,
@@ -308,10 +307,10 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
   alt_u32 remaining_length = len; /** length left to write */
   alt_u32 write_offset = adr; /** offset into flash to write too */
   /*
-    * Do writes one 32-bit word at a time.
-    * We need to make sure that we pad the first few bytes so they're word aligned if they are
-    * not already.
-    */
+   * Do writes one 32-bit word at a time.
+   * We need to make sure that we pad the first few bytes so they're word aligned if they are
+   * not already.
+   */
   while (remaining_length > 0) {
     alt_u32 word_to_write = 0xFFFFFFFF; /** initialize word to write to blank word */
     alt_u32 padding = 0; /** bytes to pad the next word that is written */
@@ -362,7 +361,7 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
     if ((IORD_ALTERA_QSPI_CONTROLLER_ISR(QSPI_CSR_BASE) &
           ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_WRITE_MASK) ==
             ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_WRITE_ACTIVE) {
-    /* clear register */
+      /* clear register */
       IOWR_ALTERA_QSPI_CONTROLLER_ISR(QSPI_CSR_BASE,
               ALTERA_QSPI_CONTROLLER_ISR_ILLEGAL_WRITE_MASK );
       return -1; /** write failed, sector might be protected */
@@ -430,7 +429,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 
   //write enable 0x06
   txb[0] = 0x06;
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
+  spiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
 
   switch(mode){
   case 0:
@@ -468,11 +467,11 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
   default:
     return -1;
   }
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, txl, txb, 0, rxb, 0);
+  spiTrc(SF_SPI_IDX, txl, txb, 0, rxb);
 
   // wait tCHPE 12/20/30 sec
   txb[0] = 0x05;
-  do {alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);} while (rxb[0]&1);
+  do {spiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
 
   return 0;
 }
@@ -490,7 +489,7 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
   do{
     //write enable 0x06
     txb[0] = 0x06;
-    alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
+    spiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
 
     //program      0x02 address (3 byte) data (1-256)
     //max data length is 256 byte
@@ -505,13 +504,13 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
 #else
     memcpy((char*)txb+4, (char*)data+ptr, cnt);
 #endif
-    alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+3+cnt, txb, 0, rxb, 0);
+    spiTrc(SF_SPI_IDX, 1+3+cnt, txb, 0, rxb);
     len -= cnt;
     adr += cnt;
     ptr += cnt;
 
     txb[0] = 0x05;
-    do { alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);} while (rxb[0]&1);
+    do { spiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
   }while(len>0);
 
   return 0;
@@ -549,9 +548,9 @@ alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
     txb[3] = adr;
 
 #ifdef SF_FAST_RD
-    alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+3+1, txb, cnt, data+ptr, 0);
+    spiTrc(SF_SPI_IDX, 1+3+1, txb, cnt, data+ptr);
 #else
-    alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+3, txb, cnt, data+ptr, 0);
+    spiTrc(SF_SPI_IDX, 1+3, txb, cnt, data+ptr);
 #endif
 
     len -= cnt;
@@ -564,7 +563,7 @@ alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
 
 #endif /* defined(SF_USE_QSPI) && (SF_USE_QSPI == 1) */
 
-#if defined(SF_SECURITY) && (SF_SECURITY == 1)
+#if defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1)
 /**
  * @param reg Security Register index 0-2
  */
@@ -576,9 +575,12 @@ alt_u32 sfSRErase(alt_u8 reg)
   alt_u8  txb[1+3];
   alt_u8  rxb[1];
 
+  txb[0] = 0x05;
+  do { spiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
+
   //write enable 0x06
   txb[0] = 0x06;
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
+  spiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
 
   //Erase Security Registers (44h)
   txb[0] = 0x44;
@@ -586,10 +588,10 @@ alt_u32 sfSRErase(alt_u8 reg)
   txb[2] = (reg+1)<<4;
   txb[3] = 0;
 
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+3, txb, 0, rxb, 0);
+  spiTrc(SF_SPI_IDX, 1+3, txb, 0, rxb);
 
   txb[0] = 0x05;
-  do { alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);} while (rxb[0]&1);
+  do { spiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
 
   return 0;
 }
@@ -608,9 +610,12 @@ alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
   alt_u8  txb[1+3+256];
   alt_u8  rxb[1];
 
+  txb[0] = 0x05;
+  do { spiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
+
   //write enable 0x06
   txb[0] = 0x06;
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
+  spiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
 
   //Program Security Registers
   txb[0] = 0x42;
@@ -619,10 +624,10 @@ alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
   txb[3] = adr;
   memcpy((char*)txb+4, (char*)data, len);
 
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+3+len, txb, 0, rxb, 0);
+  spiTrc(SF_SPI_IDX, 1+3+len, txb, 0, rxb);
 
   txb[0] = 0x05;
-  do { alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);} while (rxb[0]&1);
+  do { spiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
 
   return 0;
 }
@@ -657,17 +662,17 @@ alt_u32 sfSRLock(alt_u8 reg)
 
   // Read Status Register 1
   txb[0] = 0x05;
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);
+  spiTrc(SF_SPI_IDX, 1, txb, 1, rxb);
   sts1 = rxb[0];
 
   // Read Status Register 2
   txb[0] = 0x35;
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);
+  spiTrc(SF_SPI_IDX, 1, txb, 1, rxb);
   sts2 = rxb[0];
 
   // write enable 0x06
   txb[0] = 0x06;
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
+  spiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
 
   // set LB bit
   sts2 |= 0x08 << reg;
@@ -676,10 +681,10 @@ alt_u32 sfSRLock(alt_u8 reg)
   txb[0] = 0x01;
   txb[1] = sts1;
   txb[2] = sts2;
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 3, txb, 0, rxb, 0);
+  spiTrc(SF_SPI_IDX, 3, txb, 0, rxb);
 
   txb[0] = 0x05;
-  do { alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);} while (rxb[0]&1);
+  do { spiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
 
   return 0;
 }
@@ -700,7 +705,7 @@ alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
   txb[2] = (reg+1)<<4;
   txb[3] = adr;
   txb[4] = 0; // dummy byte
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1+4, txb, len, data, 0);
+  spiTrc(SF_SPI_IDX, 1+4, txb, len, data);
 
   return 0;
 }
@@ -717,12 +722,12 @@ alt_u32 sfProtect(void)
 
   // Read Status Register 1
   txb[0] = 0x05;
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);
+  spiTrc(SF_SPI_IDX, 1, txb, 1, rxb);
   sts1 = rxb[0];
 
   // Read Status Register 2
   txb[0] = 0x35;
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);
+  spiTrc(SF_SPI_IDX, 1, txb, 1, rxb);
   sts2 = rxb[0];
 
   // set SEC(6)=0 TB(5)=1 BP(4-2)=100
@@ -731,16 +736,16 @@ alt_u32 sfProtect(void)
 
   // write enable 0x06
   txb[0] = 0x06;
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 0, rxb, 0);
+  spiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
 
   // Write Status Register 1 and 2 (0x01)
   txb[0] = 0x01;
   txb[1] = sts1;
   txb[2] = sts2;
-  alt_avalon_spi_command(FLASH_SPI_BASE, 0, 3, txb, 0, rxb, 0);
+  spiTrc(SF_SPI_IDX, 3, txb, 0, rxb);
 
   txb[0] = 0x05;
-  do { alt_avalon_spi_command(FLASH_SPI_BASE, 0, 1, txb, 1, rxb, 0);} while (rxb[0]&1);
+  do { spiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
   return 0;
 }
 
@@ -767,7 +772,7 @@ alt_u32 sfProtect(void)
   return -1;
 }
 
-#endif /* defined(SF_SECURITY) && (SF_SECURITY == 1) */
+#endif /* defined(SF_SECURITY_CMDS) && (SF_SECURITY_CMDS == 1) */
 
 #if defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1)
 /**

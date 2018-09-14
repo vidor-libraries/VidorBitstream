@@ -12,7 +12,7 @@
 
 #include "gfx.h"
 #include "sign.h"
-#include "gpio.h"
+#include "irq.h"
 #include "platform.h"
 
 #define SEC_START(section) (&_alt_partition_##section##_start)
@@ -20,10 +20,12 @@
 
 #define SEC_EXTERN(section) \
     extern void _alt_partition_##section##_start;                 \
-    extern void _alt_partition_##section##_end;                   
+    extern void _alt_partition_##section##_end;
 
 SEC_EXTERN(text2)
 SEC_EXTERN(data2)
+
+extern GFXgc gfxDefaultGc;
 
 /**
  *
@@ -44,10 +46,10 @@ int main()
 
   // verifica la validità della firma
   if(ret){
-    fillRect(630, 0, 10, 10, 0xFC00);
+    fillRect(&gfxDefaultGc, 630, 0, 10, 10, 0xFC00);
     while(1);
   } else {
-    fillRect(630, 0, 10, 10, 0x83E0);
+    fillRect(&gfxDefaultGc, 630, 0, 10, 10, 0x83E0);
   }
   // start command manager
   irqPinSet(0, platformCmd);
