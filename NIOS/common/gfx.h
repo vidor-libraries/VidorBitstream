@@ -18,6 +18,9 @@
 #define GFX_GC_FMT_XGRB32 2
 
 #define GFX_GC_ROT90    0x00000001
+#define GFX_GC_ROT270   0x00000002
+#define GFX_GC_FLIP_H   0x00000004
+#define GFX_GC_FLIP_V   0x00000008
 
 #if defined(GFX_FONTS) && (GFX_FONTS == 1)
 
