@@ -48,15 +48,6 @@ void Vidor_GFXbuffer::noScroll() {
   privateScroll(NP_SEQ_FLG_STOP, 0);
 }
 
-void Vidor_GFXbuffer::mirror() {
-  uint32_t rpc[2];
-
-  rpc[0] = MB_CMD(devIdx, 0, 0, 11);
-  rpc[1] = idx;
-
-  VidorMailbox.sendCommand(rpc, 2);
-}
-
 void Vidor_GFXbuffer::privateScroll(int flags, int delay) {
   if (!init) {
     begin();
@@ -82,16 +73,17 @@ void Vidor_GFXbuffer::select() {
   VidorMailbox.sendCommand(rpc, 2);
 }
 
-void Vidor_GFXbuffer::begin() {
-  uint32_t rpc[5];
+void Vidor_GFXbuffer::begin(bool rotate90, bool flipV, bool flipH) {
+  uint32_t rpc[6];
 
   rpc[0] = MB_CMD(devIdx, 0, 0, 6);
   rpc[1] = idx;
   rpc[2] = x*y;
   rpc[3] = zigzag?1:0;
   rpc[4] = y;
+  rpc[5] = (rotate90 ? GFX_GC_ROT90 : 0) | (flipV ? GFX_GC_FLIP_V : 0) | (flipH ? GFX_GC_FLIP_H : 0);
 
-  VidorMailbox.sendCommand(rpc, 5);
+  VidorMailbox.sendCommand(rpc, 6);
   setup = true;
 
   // late init of neopixel core

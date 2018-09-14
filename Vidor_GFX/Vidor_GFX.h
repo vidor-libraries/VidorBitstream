@@ -102,6 +102,11 @@ class Vidor_GFX : public Print {
 #define NP_SEQ_FLG_BUF_LOOP   0x00000010
 #define NP_SEQ_FLG_INV_LOOP   0x00000020
 
+#define GFX_GC_ROT90    0x00000001
+#define GFX_GC_ROT270   0x00000002
+#define GFX_GC_FLIP_H   0x00000004
+#define GFX_GC_FLIP_V   0x00000008
+
 typedef enum ScrollDirection {
   LEFT_TO_RIGHT = 0,
   RIGHT_TO_LEFT
@@ -120,7 +125,7 @@ class Vidor_GFXbuffer {
     }
     void scroll(int delay = 100, ScrollDirection direction = LEFT_TO_RIGHT);
     void noScroll();
-    void begin();
+    void begin(bool rotate90 = false, bool mirrorX = false, bool mirrorY = false);
     void mirror();
   private:
     int idx;
