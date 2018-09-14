@@ -242,57 +242,57 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
      * we need to make sure the write is word aligned
      * this should only be true at most 1 time
      */
-        if (0 != (write_offset & (sizeof(alt_u32) - 1))) {
-          /*
-           * data is not word aligned
-           * calculate padding bytes need to add before start of a data offset
-           */
-            padding = write_offset & (sizeof(alt_u32) - 1);
+    if (0 != (write_offset & (sizeof(alt_u32) - 1))) {
+      /*
+       * data is not word aligned
+       * calculate padding bytes need to add before start of a data offset
+       */
+      padding = write_offset & (sizeof(alt_u32) - 1);
 
-            /* update variables to account for padding being added */
-            bytes_to_copy -= padding;
+      /* update variables to account for padding being added */
+      bytes_to_copy -= padding;
 
-            if (bytes_to_copy > remaining_length) {
-              bytes_to_copy = remaining_length;
-            }
+      if (bytes_to_copy > remaining_length) {
+        bytes_to_copy = remaining_length;
+      }
 
-            write_offset = write_offset - padding;
-            if (0 != (write_offset & (sizeof(alt_u32) - 1))) {
-              return -1;
-            }
-        } else {
-            if (bytes_to_copy > remaining_length) {
-              bytes_to_copy = remaining_length;
-            }
-        }
-
-        /* prepare the word to be written */
-#if defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1)
-        memcpyr((((void*)&word_to_write)) + padding, ((void*)data) + buffer_offset, bytes_to_copy);
-#else
-        memcpy((((void*)&word_to_write)) + padding, ((void*)data) + buffer_offset, bytes_to_copy);
-#endif
-        /* update offset and length variables */
-        buffer_offset += bytes_to_copy;
-        remaining_length -= bytes_to_copy;
-
-        /* write to flash 32 bits at a time */
-        IOWR_32DIRECT(QSPI_MEM_BASE, write_offset, word_to_write);
-
-        /* check whether write triggered a illegal write interrupt */
-        if ((IORD_IPTRONIX_QSPI_CONTROLLER2_ISR(QSPI_CSR_BASE) &
-            IPTRONIX_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_MASK) ==
-                IPTRONIX_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_ACTIVE) {
-        /* clear register */
-          IOWR_IPTRONIX_QSPI_CONTROLLER2_ISR(QSPI_CSR_BASE,
-              IPTRONIX_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_MASK );
-          return -1; /** write failed, sector might be protected */
-        }
-        poll_for_wip();
-
-        /* update current offset */
-        write_offset = write_offset + sizeof(alt_u32);
+      write_offset = write_offset - padding;
+      if (0 != (write_offset & (sizeof(alt_u32) - 1))) {
+        return -1;
+      }
+    } else {
+      if (bytes_to_copy > remaining_length) {
+        bytes_to_copy = remaining_length;
+      }
     }
+
+    /* prepare the word to be written */
+#if defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1)
+    memcpyr((((void*)&word_to_write)) + padding, ((void*)data) + buffer_offset, bytes_to_copy);
+#else
+    memcpy((((void*)&word_to_write)) + padding, ((void*)data) + buffer_offset, bytes_to_copy);
+#endif
+    /* update offset and length variables */
+    buffer_offset += bytes_to_copy;
+    remaining_length -= bytes_to_copy;
+
+    /* write to flash 32 bits at a time */
+    IOWR_32DIRECT(QSPI_MEM_BASE, write_offset, word_to_write);
+
+    /* check whether write triggered a illegal write interrupt */
+    if ((IORD_IPTRONIX_QSPI_CONTROLLER2_ISR(QSPI_CSR_BASE) &
+         IPTRONIX_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_MASK) ==
+                IPTRONIX_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_ACTIVE) {
+      /* clear register */
+      IOWR_IPTRONIX_QSPI_CONTROLLER2_ISR(QSPI_CSR_BASE,
+              IPTRONIX_QSPI_CONTROLLER2_ISR_ILLEGAL_WRITE_MASK );
+      return -1; /** write failed, sector might be protected */
+    }
+    poll_for_wip();
+
+    /* update current offset */
+    write_offset = write_offset + sizeof(alt_u32);
+  }
 
   return 0;
 }
@@ -319,7 +319,7 @@ alt_32 static poll_for_wip(void)
   while ((IORD_IPTRONIX_QSPI_CONTROLLER2_STATUS(QSPI_CSR_BASE) &
       IPTRONIX_QSPI_CONTROLLER2_STATUS_WIP_MASK) ==
       IPTRONIX_QSPI_CONTROLLER2_STATUS_WIP_BUSY) {
-        alt_busy_sleep(1); /* delay 1us */
+    alt_busy_sleep(1); /* delay 1us */
 #if QSPI_CONTROLLER_1US_TIMEOUT_VALUE > 0
     if (timeout <= counter) {
       return -1;
@@ -355,7 +355,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 
   switch(mode){
   case 0:
-    // Sector Erase    4K sector address  0x020
+    // Sector Erase     4K sector address  0x020
     //adr >>= 12;
     txb[0] = 0x020;
     txb[1] = adr>>16;
@@ -399,7 +399,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 }
 
 /**
-*/
+ */
 alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
 {
   alt_u8  txb[1+3+256];
