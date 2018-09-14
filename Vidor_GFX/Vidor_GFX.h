@@ -102,6 +102,11 @@ class Vidor_GFX : public Print {
 #define NP_SEQ_FLG_BUF_LOOP   0x00000010
 #define NP_SEQ_FLG_INV_LOOP   0x00000020
 
+typedef enum ScrollDirection {
+  LEFT_TO_RIGHT = 0,
+  RIGHT_TO_LEFT
+};
+
 class Vidor_GFXbuffer {
   public:
     Vidor_GFXbuffer(Vidor_NeoPixel& np, Vidor_GFX& gfx, int x, int y, bool zigzag) {
@@ -113,7 +118,7 @@ class Vidor_GFXbuffer {
       this->zigzag = zigzag;
       this->np = &np;
     }
-    void scroll(int delay = 100);
+    void scroll(int delay = 100, ScrollDirection direction = LEFT_TO_RIGHT);
     void noScroll();
     void begin();
   private:

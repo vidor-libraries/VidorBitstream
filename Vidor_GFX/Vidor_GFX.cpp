@@ -40,8 +40,8 @@ Vidor_GFXtext::Vidor_GFXtext(int index) {
   devIdx = MB_DEV_GFX;
 }
 
-void Vidor_GFXbuffer::scroll(int delay) {
-  privateScroll(NP_SEQ_FLG_START | NP_SEQ_FLG_BUF_LOOP | NP_SEQ_FLG_INV_LOOP, delay);
+void Vidor_GFXbuffer::scroll(int delay, ScrollDirection direction) {
+  privateScroll(NP_SEQ_FLG_START | NP_SEQ_FLG_BUF_LOOP | ((direction == LEFT_TO_RIGHT) ? NP_SEQ_FLG_INV_LOOP : 0), delay);
 }
 
 void Vidor_GFXbuffer::noScroll() {
