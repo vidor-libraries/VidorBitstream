@@ -189,7 +189,7 @@ void npCmd(void)
     break;
   case 6:
     /* set number of work buffers, buffers lenght, zigZag mode and zigzag line len */
-    ret = npBufSet(rpc[1], rpc[2], rpc[3], rpc[4]);
+    ret = npBufSet(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
     break;
   case 7:
     /* select work buffer */
@@ -199,6 +199,7 @@ void npCmd(void)
     /*  */
     ret = npWrapSet(rpc[1], rpc[2], rpc[3]);
     break;
+#if defined(TMR_MODULE) && (TMR_MODULE == 1)
   case 9:
     /* load, start and stop sequence */
     ret = npSeqSet((psNpSeq)&rpc[1]);
@@ -207,23 +208,7 @@ void npCmd(void)
     /* start and stop buffer loop */
     ret = npBufLoop(rpc[1], rpc[2], rpc[3]);
     break;
-    /*
-  case 11:
-    * Attach gfx to np buffer *
-    ret = npGfxAtt(rpc[1]);
-    break;
-  case 12:
-    ret = npGfxDet();
-    break;
-  case 13:
-    * set string where to write *
-    ret = npGfxStrSet(rpc[1]);
-    break;
-  case 14:
-    / write pixel *
-    ret = npGfxWp(rpc[1], rpc[2], rpc[3]);
-    break;
-    */
+#endif /* defined(TMR_MODULE) && (TMR_MODULE == 1) */
   }
   rpc[1] = ret;
 }
@@ -231,7 +216,7 @@ void npCmd(void)
 /**
  * Set number of work buffers
  */
-alt_u32 npBufSet(alt_u32 num, alt_u32 len, alt_u32 zzf, alt_u32 zzl)
+alt_u32 npBufSet(alt_u32 num, alt_u32 len, alt_u32 zzf, alt_u32 zzl, alt_u32 flg)
 {
   npBufNum = num;
   npBufLen = len;
@@ -243,14 +228,14 @@ alt_u32 npBufSet(alt_u32 num, alt_u32 len, alt_u32 zzf, alt_u32 zzl)
   int i;
   for (i=0; i<NP_DEV_NUM; i++) {
     gfxGc[1+i]->width    = npZzlLen;
-    gfxGc[1+i]->height   = npNumLed / npZzlLen;
+    gfxGc[1+i]->height   = npBufLen / npZzlLen; //npNumLed / npZzlLen;
     gfxGc[1+i]->stride   = NP_DEV_NUM;
     gfxGc[1+i]->bpp      = 32;
     gfxGc[1+i]->fmt      = GFX_GC_FMT_XGRB32;
     gfxGc[1+i]->color    = 0;
     gfxGc[1+i]->fb       = (void*)(NP_MEM_BASE + (i*4));
     gfxGc[1+i]->pix      = wp32;
-    gfxGc[1+i]->flg      = GFX_GC_ROT90;
+    gfxGc[1+i]->flg      = flg;//GFX_GC_ROT90;
     gfxGc[1+i]->pFnt     = NULL;
     gfxGc[1+i]->txtColor = 0;
     gfxGc[1+i]->cursor_x = 0;
@@ -475,6 +460,8 @@ alt_u32 npWrapSet(alt_u32 sAdr, alt_u32 wCnt, alt_u32 wAdr)
   return 0;
 }
 
+#if defined(TMR_MODULE) && (TMR_MODULE == 1)
+
 /**
  */
 alt_u32 npSeqSet(psNpSeq pSeq)
@@ -515,83 +502,15 @@ alt_u32 npBufLoop(alt_u32 flg, alt_u32 buf, alt_u32 ms)
 }
 
 /**
- *//*
-alt_u32 npWp(void* pGc, alt_u16 x, alt_u16 y, alt_u32 color)
-{
-  alt_u16   led;
-  alt_u32  *pLed;
-
-  led = x + y * npZzlLen;
-  pLed = npGc.fb;
-  pLed += (npBufSize * npBufCur) >> 2;
-  pLed += ((NP_DEV_NUM * led) + npStrIdx);
-  *pLed = ((alt_u32)((color >> 16) & 0xFF) << rOffset) |
-          ((alt_u32)((color >>  8) & 0xFF) << gOffset) |
-          ((alt_u32)((color >>  0) & 0xFF) << bOffset) |
-          ((alt_u32)((color >> 24) & 0xFF) << wOffset) ;
-  return 0;
-}
-*/
-/**
- *//*
-alt_u32 npGfxAtt(alt_u32 flg)
-{
-  npGc.width  = npZzlLen;
-  npGc.height = npNumLed / npZzlLen;
-  npGc.stride = NP_DEV_NUM;
-  npGc.bpp    = 32;
-  npGc.fmt    = GFX_GC_FMT_XGRB32;
-  npGc.fb     = (void*)NP_MEM_BASE;
-  npGc.wp     = npWp;
-  npGc.flg    = flg;
-  npGc.cursor_x = 0;
-  npGc.cursor_y = 0;
-
-//TODO va messo in config  gcSet(&npGc);
-
-  npStrIdx = 0;
-
-  return 0;
-}
-
-alt_u32 npGfxDet(void) // TODO eliminare
-{
-//  gcSet(NULL);
-  return 0;
-}
-*/
-/**
- *//*
-alt_u32 npGfxStrSet(alt_u32 idx)
-{
-  npStrIdx = idx;
-  return 0;
-}
-*/
-/**
- *//*
-alt_u32 npGfxWp(alt_u32 x, alt_u32 y, alt_u32 color)
-{
-  alt_u16   led;
-  alt_u32  *pLed;
-
-  led = x + y * npZzlLen;
-  pLed = npGc.fb;
-  pLed += (npBufSize * npBufCur) >> 2;
-  pLed += ((NP_DEV_NUM * led) + npStrIdx);
-  *pLed = ((alt_u32)((color >> 16) & 0xFF) << rOffset) |
-          ((alt_u32)((color >>  8) & 0xFF) << gOffset) |
-          ((alt_u32)((color >>  0) & 0xFF) << bOffset) |
-          ((alt_u32)((color >> 24) & 0xFF) << wOffset) ;
-  return 0;
-}
-*/
-/**
  */
 static void npTmrCb(void* arg)
 {
   if (npSeq.flg & NP_SEQ_FLG_BUF_LOOP) {
-    npWrapSet(npSeqNum, (npBufLen / npZzlLen) - npSeqNum, 0);
+    if ((npSeqNum + npNumLed / npZzlLen) > (npBufLen / npZzlLen)) {
+      npWrapSet(npSeqNum, (npBufLen / npZzlLen) - npSeqNum, 0);
+    } else {
+      npWrapSet(npSeqNum, npNumLed / npZzlLen, 0);
+    }
     npLedShow();
     if (npSeq.flg & NP_SEQ_FLG_INV_LOOP) {
       if (npSeqNum == 0) {
@@ -621,5 +540,6 @@ static void npTmrCb(void* arg)
     tmrStart(npSeq.seq[npSeqNum].ms, npTmrCb, NULL);
   }
 }
+#endif /* defined(TMR_MODULE) && (TMR_MODULE == 1) */
 
 #endif /* defined(NP_MODULE) && (NP_MODULE == 1) */
