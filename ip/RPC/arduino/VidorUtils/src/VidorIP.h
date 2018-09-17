@@ -1,5 +1,5 @@
 /*
-  This file is part of the VidorGraphics library.
+  This file is part of the VidorBoot/VidorPeripherals/VidorGraphics library.
   Copyright (c) 2018 Arduino SA. All rights reserved.
 
   This library is free software; you can redistribute it and/or
@@ -17,17 +17,41 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "VidorFPGA.h"
+#ifndef __VIDOR_IP_H__
+#define __VIDOR_IP_H__
 
-VidorFPGA FPGA;
+#define FPGA_UID        0x00000
+#define PIO_UID         0xE0C45
+#define PWM_UID         0x08A55
+#define UART_UID        0x01345
+#define I2C_UID         0x15540
+#define NEOPIXEL_UID    0xa0894
+#define ENC_UID         0x0D645
+#define TSPI_UID        0xEBCE5
 
-#if 1
-__attribute__ ((used, section(".fpga_bitstream_signature")))
-const unsigned char signatures[4096] = {
-	#include "signature.h"
-};
-__attribute__ ((used, section(".fpga_bitstream")))
-const unsigned char bitstream[] = {
-	#include "app.ttf"
-};
-#endif
+class VidorIP {
+public:
+	VidorIP();
+	~VidorIP() {
+		deinit();
+	}
+
+	virtual begin() = 0;
+	int version();
+	int init(int uid, uint16_t pins...);
+	int deinit();
+	int callback(void(*fn)(void*, int)) {
+		cb = fn;
+	}
+
+protected:
+	int giid;
+	int uid;
+	int chn;
+	int availableChannels;
+	void(*cb)(void*, int) = NULL;
+
+friend VidorUtils;
+}
+
+#endif //__VIDOR_IP_H__

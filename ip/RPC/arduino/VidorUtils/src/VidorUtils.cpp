@@ -37,7 +37,61 @@ int VidorUtils::begin(bool jumpToApp)
 		VidorMailbox.sendEvent(evt, 1);
 	}
 
+	attachInterrupt(IRQ_PIN, VidorFPGA::onInterrupt, FALLING);
+
+	discover();
+
 	return ret;
+}
+
+int VidorUtils::discover() {
+	uint32_t  buf[256];
+	uint32_t  rpc[1];
+
+	rpc[0] = RPC_CMD(0, 0, 2);
+  	howMany = VidorMailbox.sendCommand(rpc, 1);
+
+  	if (howMany == -1) {
+  		return -1;
+  	}
+
+  	VidorMailbox.read(2, buf, howMany);
+
+	for (int i = 0; i<howMany; i++) {
+		VidorIP* ip = new VidorIP();
+		ip->uid = buf[i] & 0xFFFF;
+		ip->availableChannels = (buf[i] >> 20) & 0xFFF;
+		IPList.append(ip);
+	}
+}
+
+void VidorUtils::onInterrupt() {
+
+	// Call VidorMailbox to retrieve the uid
+	int uid = VidorMailbox.sendCommand(GET_IRQ_SOURCE);
+
+	for (int i = 0; i < IPList.size(); i++) {
+		VidorIP* ip = IPList.get(i);
+		if (ip->uid == uid && ip->cb != NULL) {
+			uint8_t data[256];
+			int ret = VidorMailbox.sendCommand(GET_IRQ_DATA, data);
+			ip->cb(data, ret);
+			break;
+		}
+	}
+}
+
+bool VidorUtils::ready() {
+	return (version() != 0) &&  (version() != 0xFFFFFFFF);
+}
+
+uint32_t VidorUtils::version() {
+	uint32_t rpc[1];
+	uint32_t ver;
+
+	rpc[0] = 0 | 1;
+	ver = VidorMailbox.sendCommand(rpc, 1);
+	return ver;
 }
 
 void VidorUtils::end()

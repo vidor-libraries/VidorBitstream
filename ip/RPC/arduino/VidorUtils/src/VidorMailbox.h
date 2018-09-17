@@ -22,6 +22,10 @@
 
 #include <Arduino.h>
 
+#define RPC_CMD(g,c,p)     ((((g)&0x0FF)<<24) | \
+                            (((c)&0xFFF)<<12) | \
+                            (((p)&0xFFF)<< 0) )
+
 class VidorMailboxClass {
 public:
 	VidorMailboxClass();

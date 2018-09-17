@@ -20,6 +20,9 @@
 #ifndef __VIDOR_UTILS_H__
 #define __VIDOR_UTILS_H__
 
+#include "VidorIP.h"
+#include "LinkedList.h"
+
 // Defines for fpga_bitstream_signature section
 #define no_data		0xFF, 0xFF, 0xFF, 0xFF, \
 					0xFF, 0xFF, 0xFF, 0xFF, \
@@ -40,7 +43,14 @@ public:
 
 	int begin(bool jumpToApp = true);
 	void end();
-	void reload();
+  void reload();
+  int init(int uid, uint16_t pins...);
+  bool ready();
+  static LinkedList<VidorIP*> IPList;
+  static void onInterrupt();
+
+private:
+  int discover();
 };
 
 #endif
