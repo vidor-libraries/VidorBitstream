@@ -4,3 +4,4 @@
 **/output_files
 **/*.sopcinfo
 **/*_sys
+distrib/Vidor*
