@@ -37,49 +37,96 @@ int VidorUtils::begin(bool jumpToApp)
 		VidorMailbox.sendEvent(evt, 1);
 	}
 
-	attachInterrupt(IRQ_PIN, VidorFPGA::onInterrupt, FALLING);
-
-	discover();
+	attachInterrupt(IRQ_PIN, VidorUtils::onInterrupt, FALLING);
 
 	return ret;
 }
 
-int VidorUtils::discover() {
+static bool bufContains(uint32_t* buf, uint32_t el, size_t size) {
+	for (int i=0; i<size; i++) {
+		if (buf[i] == el) {
+			return true;
+		}
+	}
+	return false;
+}
+
+int VidorUtils::discover(IPInfo* info, va_list args) {
 	uint32_t  buf[256];
 	uint32_t  rpc[1];
 
 	rpc[0] = RPC_CMD(0, 0, 2);
-  	howMany = VidorMailbox.sendCommand(rpc, 1);
+	int howMany = VidorMailbox.sendCommand(rpc, 1);
 
-  	if (howMany == -1) {
-  		return -1;
-  	}
-
-  	VidorMailbox.read(2, buf, howMany);
-
-	for (int i = 0; i<howMany; i++) {
-		VidorIP* ip = new VidorIP();
-		ip->uid = buf[i] & 0xFFFF;
-		ip->availableChannels = (buf[i] >> 20) & 0xFFF;
-		IPList.append(ip);
+	if (howMany == -1) {
+		return -1;
 	}
+
+	VidorMailbox.read(2, buf, howMany);
+
+	for (int giid = 0; giid<howMany; giid++) {
+		int uid = buf[giid] & 0xFFFFF;
+		int channels = (buf[giid] >> 20) & 0xFFF;
+		if (info->uid != uid) {
+			continue;
+		}
+		for (int chn=0; chn<channels; chn++) {
+			rpc[0] = RPC_CMD(giid, chn, 3);
+			int ret = VidorMailbox.sendCommand(rpc, 1);
+			if (ret==-1) {
+				break;
+			}
+			uint32_t* discoverPins = (uint32_t*)malloc(ret * sizeof(uint32_t));
+			VidorMailbox.read(2, discoverPins, ret);
+
+			int j;
+			for (j = 0; j < ret; j++) {
+				int pin = va_arg(args, uint16_t);
+				// search pin in discoverPins
+				if (!bufContains(discoverPins, pin, ret)) {
+					break;
+				}
+			}
+			free(discoverPins);
+
+			if (j == ret) {
+				// all pins are in the buffer
+				info->giid = giid;
+				info->chn = chn;
+				return 1;
+			}
+		}
+	}
+	return -1;
 }
+
+// TEMP: decide the proper RPC number
+#define GET_IRQ_SOURCE 	123
+#define GET_IRQ_DATA	456
+static LinkedList<VidorIP*> list;
 
 void VidorUtils::onInterrupt() {
 
-	// Call VidorMailbox to retrieve the uid
-	int uid = VidorMailbox.sendCommand(GET_IRQ_SOURCE);
+	uint32_t data[128];
+	data[0] = GET_IRQ_SOURCE;
 
-	for (int i = 0; i < IPList.size(); i++) {
-		VidorIP* ip = IPList.get(i);
-		if (ip->uid == uid && ip->cb != NULL) {
-			uint8_t data[256];
-			int ret = VidorMailbox.sendCommand(GET_IRQ_DATA, data);
+	// Call VidorMailbox to retrieve the uid
+	int giid = VidorMailbox.sendCommand(data, 1);
+
+	for (int i = 0; i < list.size(); i++) {
+		VidorIP* ip = list.get(i);
+		if (ip->info.giid == giid && ip->cb != NULL) {
+			data[0] = GET_IRQ_DATA;
+			int ret = VidorMailbox.sendCommand(data, 128);
 			ip->cb(data, ret);
 			break;
 		}
 	}
 }
+
+void VidorUtils::addToList(VidorIP* ip) {
+	list.add(ip);
+};
 
 bool VidorUtils::ready() {
 	return (version() != 0) &&  (version() != 0xFFFFFFFF);

@@ -20,6 +20,9 @@
 #ifndef __VIDOR_IP_H__
 #define __VIDOR_IP_H__
 
+#include "Arduino.h"
+#include <cstdarg>
+
 #define FPGA_UID        0x00000
 #define PIO_UID         0xE0C45
 #define PWM_UID         0x08A55
@@ -28,30 +31,31 @@
 #define NEOPIXEL_UID    0xa0894
 #define ENC_UID         0x0D645
 #define TSPI_UID        0xEBCE5
+#define GFX_UID         0xE9422
+
+typedef struct IPInfo {
+	int giid;
+	int uid;
+	int chn;
+};
 
 class VidorIP {
 public:
-	VidorIP();
+	VidorIP() {};
 	~VidorIP() {
 		deinit();
 	}
 
-	virtual begin() = 0;
+	virtual int begin() = 0;
 	int version();
-	int init(int uid, uint16_t pins...);
+	int init(int uid, ...);
 	int deinit();
 	int callback(void(*fn)(void*, int)) {
 		cb = fn;
 	}
 
-protected:
-	int giid;
-	int uid;
-	int chn;
-	int availableChannels;
 	void(*cb)(void*, int) = NULL;
-
-friend VidorUtils;
-}
+	IPInfo info;
+};
 
 #endif //__VIDOR_IP_H__

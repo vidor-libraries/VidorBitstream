@@ -5,64 +5,35 @@
 int VidorIP::version() {
 	uint32_t  rpc[1];
 
-	rpc[0] = RPC_CMD(giid, 0, 1);
+	rpc[0] = RPC_CMD(info.giid, 0, 1);
 	return VidorMailbox.sendCommand(rpc, 1);
 }
 
-int VidorIP::init(int uid, uint16_t pins...) {
+int VidorIP::init(int uid, ...) {
 
 	// MUST be called after FPGA.init()
-	this->uid = uid;
+	this->info.uid = uid;
 	uint32_t rpc[1];
 
+	va_list args;
+	va_start(args, uid);
 	// scan list and replace self with matching uid 
-	LinkedList<VidorIP*> list = VidorUtils::IPList;
-	for (int i=0; i < list.size(); i++) {
-		if (list.get(i)->uid == uid) {
-			// ask for matching pins
-			for (int c = 0; c < list.get(i)->availableChannels; c++) {
-				rpc[0] = RPC_CMD(giid, c, 3);
-				int ret = VidorMailbox.sendCommand(rpc, 1);
-				if (ret==-1) {
-					break;
-				}
-				uint32_t* discoverPins = (uint32_t*)malloc(ret * sizeof(uint32_t));
+	int ret = VidorUtils::discover(&info, args);
+	va_end(args);
 
-				VidorMailbox.read(2, discoverPins, ret);
-
-				va_list args;
-				va_start(args, pins);
-
-				int j;
-				for (j = 0; j < ret; j++) {
-					int pin = va_arg(args, uint16_t);
-					// search pin in discoverPins
-					if (!bufContains(discoverPins, pin, ret)) {
-						break;
-					}
-				}
-				va_end(args);
-
-				free(discoverPins);
-
-				if (ret != j) {
-					continue;
-				}
-				// we got a gid!
-				gid = i;
-				chn = c;
-				list.remove(i);
-				list.add(this);
-				return 1;
-			}
-		}
+	if (ret != -1) {
+		// TODO: here a call should exist to multiplex and lock pins for a specific giid/chn
+		// rpc[0] = RPC_CMD(info.giid, info.chn, 4);
+		// int ret = VidorMailbox.sendCommand(rpc, 1);
+		VidorUtils::addToList(static_cast<VidorIP *>(this));
 	}
-	return -1;
+
+	return ret;
 }
 
 int VidorIP::deinit() {
 	uint32_t  rpc[1];
 
-	rpc[0] = RPC_CMD(giid, chn, 4);
+	rpc[0] = RPC_CMD(info.giid, info.chn, 4);
 	return VidorMailbox.sendCommand(rpc, 1);
 }

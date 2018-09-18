@@ -22,6 +22,7 @@
 
 #include <Arduino.h>
 #include "VidorUtils.h"
+#include "VidorIP.h"
 #include "defines.h"
 #include "Vidor_NeoPixel.h"
 
@@ -57,10 +58,13 @@ class Vidor_GFXtext {
     friend class Vidor_GFX;
 };
 
-class Vidor_GFX : public Print {
+class Vidor_GFX : public Print, public VidorIP {
   public:
     Vidor_GFX(int index=0);
     Vidor_GFX(Vidor_NeoPixel& instance);
+    int begin() {
+      return init(GFX_UID);
+    }
     void drawPixel(uint16_t x, uint16_t y, uint32_t color, uint8_t alpha=0xff);
     void drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint32_t    color, uint8_t alpha=0xff);
     void drawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color, uint8_t alpha=0xff);
