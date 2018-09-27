@@ -397,7 +397,7 @@ alt_u32 npBrgSet(alt_u32 cmd, alt_u8 brg)
   alt_u16 chn = RPC_CHN(cmd);
 
   if (chn >= NEOPIXEL_CHANNELS ) {
-    return -1;
+//     return -1;
   }
   if ((npChMsk && (1<<chn))==0) {
     return -1;
@@ -502,8 +502,16 @@ alt_u32 npBufScroll(alt_u32 flg, alt_u32 buf, alt_u32 ms)
 static void npTmrCb(void* arg)
 {
   if (npSeq.flg & NP_SEQ_FLG_BUF_LOOP) {
-    npWrapSet(npSeqNum, (npBufLen / npZzlLen) - npSeqNum, 0);
+/**/
+    if ((npSeqNum + npNumLed / npZzlLen) > (npBufLen / npZzlLen)) {
+      npWrapSet(npSeqNum, (npBufLen / npZzlLen) - npSeqNum, 0);
+    } else {
+      npWrapSet(npSeqNum, npNumLed / npZzlLen, 0);
+    }
+/**/
+//    npWrapSet(npSeqNum, (npBufLen / npZzlLen) - npSeqNum, 0);
     npLedShow(0);
+/**/
     if (npSeq.flg & NP_SEQ_FLG_INV_LOOP) {
       if (npSeqNum == 0) {
         npSeqNum = npBufLen / npZzlLen;

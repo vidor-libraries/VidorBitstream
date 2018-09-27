@@ -178,7 +178,7 @@ void SEC_RAM qrLoop(void)
           pt[j].ys = ty;
           pt[j].ye = ty;
         }
-        else if (j==QR_PT_NUM && gc) {
+        else if (j==QR_PT_NUM && gc!=-1) {
           pt[gc].valid = 1;
           pt[gc].xs = txs;
           pt[gc].xe = txe;
