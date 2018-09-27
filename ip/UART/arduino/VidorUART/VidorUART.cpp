@@ -29,8 +29,11 @@ VidorUart::VidorUart(int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _ds
   rts = _rts;
   dtr = _dtr;
   dsr = _dsr;
-  // TODO nuova implementazione FPGA giid = FPGA.instance(....);
-  devIdx = MB_DEV_UART;
+}
+
+int VidorUart::begin()
+{
+  return init(UART_UID, tx, rx, cts, rts, dtr, dsr);
 }
 
 void VidorUart::begin(unsigned long baudrate)
@@ -40,6 +43,11 @@ void VidorUart::begin(unsigned long baudrate)
 
 void VidorUart::begin(unsigned long baudrate, uint16_t config)
 {
+  int ret = begin();
+  if (ret < 0) {
+    return;
+  }
+  callback(onInterrupt);
   enableUART(tx, rx);
   setUART(baudrate, config);
 }
@@ -52,24 +60,6 @@ void VidorUart::end()
 }
 
 void VidorUart::enableUART(int tx, int rx) {
-  if (tx == -1) {
-    VidorIO::pinMode(FPGA_NINA_RX, 4);
-  } else if (tx <= 14) {
-    tx = tx-0 ;
-    pinModeExtended(tx+140, 4);
-  } else {
-    tx = tx-A0;
-    pinModeExtended(tx+133, 4);
-  }
-  if (rx == -1) {
-    VidorIO::pinMode(FPGA_NINA_TX, INPUT);
-  } else if (rx <= 14) {
-    rx = rx-0 ;
-    pinModeExtended(rx+140, INPUT);
-  } else {
-    rx = rx-A0;
-    pinModeExtended(rx+133, INPUT);
-  }
   uint32_t rpc[2];
   rpc[0] = MB_CMD(devIdx, idx, 0, 0x01);
   rpc[1] = 0; // TX-RX only
@@ -95,6 +85,16 @@ void VidorUart::flush() {
   while(txBuffer.available()); // wait until TX buffer is empty
   rpc[0] = MB_CMD(devIdx, idx, 0, 0x09);
   VidorMailbox.sendCommand(rpc, 1);
+}
+
+int VidorUart::onInterrupt(void* buf, int n, VidorIP* ip) {
+
+  VidorUart* uart = (VidorUart*)ip;
+
+  uint8_t* data = (uint8_t*)buf;
+  for (int i = 0; i < n; i++) {
+    uart->rxBuffer.store_char(data[i]);
+  }
 }
 
 int VidorUart::available()

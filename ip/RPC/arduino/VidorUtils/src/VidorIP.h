@@ -51,7 +51,7 @@ public:
 		this->info.uid = uid;
 		// scan list and replace self with matching uid 
 		int ret = VidorUtils::discover(&info, pins...);
-		if (ret != -1) {
+		if (ret >= 0) {
 			// TODO: here a call should exist to multiplex and lock pins for a specific giid/chn
 			// rpc[0] = RPC_CMD(info.giid, info.chn, 4);
 			// int ret = VidorMailbox.sendCommand(rpc, 1);
@@ -61,11 +61,11 @@ public:
 	}
 
 	int deinit();
-	int callback(void(*fn)(void*, int)) {
+	int callback(int(*fn)(void*, int, VidorIP*)) {
 		cb = fn;
 	}
 
-	void(*cb)(void*, int) = NULL;
+	int(*cb)(void*, int, VidorIP*) = NULL;
 };
 
 #endif //__VIDOR_IP_H__

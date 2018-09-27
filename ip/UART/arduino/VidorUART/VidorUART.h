@@ -20,16 +20,18 @@
 #pragma once
 
 #include "VidorFPGA.h"
+#include "VidorIP.h"
 #include "defines.h"
 #include "HardwareSerial.h"
 #include "RingBuffer.h"
 
 #include <cstddef>
 
-class VidorUart : public HardwareSerial
+class VidorUart : public HardwareSerial, public VidorIP
 {
   public:
     VidorUart(int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr);
+    int begin();
     void begin(unsigned long baudRate);
     void begin(unsigned long baudrate, uint16_t config);
     void end();
@@ -48,7 +50,7 @@ class VidorUart : public HardwareSerial
     using Print::write; // pull in write(str) and write(buf, size) from Print
     size_t write(const uint8_t* data, size_t len);
 
-    void onInterrupt();
+    static int onInterrupt(void* data, int n, VidorIP* ip);
 
     operator bool() {
       return true;

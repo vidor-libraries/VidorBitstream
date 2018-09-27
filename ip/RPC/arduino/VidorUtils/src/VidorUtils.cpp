@@ -60,7 +60,7 @@ void VidorUtils::onInterrupt() {
 		if (ip->info.giid == giid && ip->cb != NULL) {
 			data[0] = GET_IRQ_DATA;
 			int ret = VidorMailbox.sendCommand(data, 128);
-			ip->cb(data, ret);
+			ip->cb(data, ret, ip);
 			break;
 		}
 	}
