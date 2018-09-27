@@ -22,6 +22,7 @@
 
 #include "Arduino.h"
 #include <cstdarg>
+#include "VidorUtils.h"
 
 #define FPGA_UID        0x00000
 #define PIO_UID         0xE0C45
@@ -33,12 +34,6 @@
 #define TSPI_UID        0xEBCE5
 #define GFX_UID         0xE9422
 
-typedef struct IPInfo {
-	int giid;
-	int uid;
-	int chn;
-};
-
 class VidorIP {
 public:
 	VidorIP() {};
@@ -48,14 +43,29 @@ public:
 
 	virtual int begin() = 0;
 	int version();
-	int init(int uid, ...);
+	void addToList();
+	IPInfo info;
+
+	template <typename... Args> int init(int uid, Args&&... pins) {
+		// MUST be called after FPGA.init()
+		this->info.uid = uid;
+		// scan list and replace self with matching uid 
+		int ret = VidorUtils::discover(&info, pins...);
+		if (ret != -1) {
+			// TODO: here a call should exist to multiplex and lock pins for a specific giid/chn
+			// rpc[0] = RPC_CMD(info.giid, info.chn, 4);
+			// int ret = VidorMailbox.sendCommand(rpc, 1);
+			addToList();
+		}
+		return ret;
+	}
+
 	int deinit();
 	int callback(void(*fn)(void*, int)) {
 		cb = fn;
 	}
 
 	void(*cb)(void*, int) = NULL;
-	IPInfo info;
 };
 
 #endif //__VIDOR_IP_H__

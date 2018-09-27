@@ -20,9 +20,9 @@
 #ifndef __VIDOR_UTILS_H__
 #define __VIDOR_UTILS_H__
 
-#include "VidorIP.h"
 #include "LinkedList.h"
 #include "defines.h"
+#include "VidorMailbox.h"
 
 // Defines for fpga_bitstream_signature section
 #define no_data		0xFF, 0xFF, 0xFF, 0xFF, \
@@ -38,6 +38,12 @@
 __attribute__((weak)) void enableFpgaClock() {}
 __attribute__((weak)) void disableFpgaClock() {}
 
+typedef struct IPInfo {
+  int giid;
+  int uid;
+  int chn;
+};
+
 class VidorUtils {
 public:
 	VidorUtils();
@@ -49,11 +55,22 @@ public:
   uint32_t version();
   static void onInterrupt();
 
-protected:
-  static int discover(IPInfo* info, va_list args);
-  static void addToList(VidorIP* ip);
+  template <typename... Args> static int discover(IPInfo* info, Args&&... pins) {
+    uint32_t  rpc[32];
 
-friend class VidorIP;
+    rpc[0] = RPC_CMD(0, 0, 3);
+    rpc[1] = info->uid;
+
+    uint32_t dummy[] = {pins...};
+    rpc[2] = sizeof(dummy);
+    memcpy(&rpc[3], dummy, sizeof(dummy));
+    int ret = VidorMailbox.sendCommand(rpc, 3+(rpc[2]+3)/4);
+
+    info->giid = ((ret >> 24) & 0xFF);
+    info->chn =  ((ret >> 12) & 0xFFF);
+
+    return info->giid;
+  }
 };
 
 #endif

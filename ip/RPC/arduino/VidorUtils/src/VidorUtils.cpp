@@ -17,9 +17,10 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "VidorMailbox.h"
-
+#include "VidorIP.h"
 #include "VidorUtils.h"
+
+LinkedList<VidorIP*> IPList;
 
 VidorUtils::VidorUtils() {}
 
@@ -42,68 +43,9 @@ int VidorUtils::begin(bool jumpToApp)
 	return ret;
 }
 
-static bool bufContains(uint32_t* buf, uint32_t el, size_t size) {
-	for (int i=0; i<size; i++) {
-		if (buf[i] == el) {
-			return true;
-		}
-	}
-	return false;
-}
-
-int VidorUtils::discover(IPInfo* info, va_list args) {
-	uint32_t  buf[256];
-	uint32_t  rpc[1];
-
-	rpc[0] = RPC_CMD(0, 0, 2);
-	int howMany = VidorMailbox.sendCommand(rpc, 1);
-
-	if (howMany == -1) {
-		return -1;
-	}
-
-	VidorMailbox.read(2, buf, howMany);
-
-	for (int giid = 0; giid<howMany; giid++) {
-		int uid = buf[giid] & 0xFFFFF;
-		int channels = (buf[giid] >> 20) & 0xFFF;
-		if (info->uid != uid) {
-			continue;
-		}
-		for (int chn=0; chn<channels; chn++) {
-			rpc[0] = RPC_CMD(giid, chn, 3);
-			int ret = VidorMailbox.sendCommand(rpc, 1);
-			if (ret==-1) {
-				break;
-			}
-			uint32_t* discoverPins = (uint32_t*)malloc(ret * sizeof(uint32_t));
-			VidorMailbox.read(2, discoverPins, ret);
-
-			int j;
-			for (j = 0; j < ret; j++) {
-				int pin = va_arg(args, uint16_t);
-				// search pin in discoverPins
-				if (!bufContains(discoverPins, pin, ret)) {
-					break;
-				}
-			}
-			free(discoverPins);
-
-			if (j == ret) {
-				// all pins are in the buffer
-				info->giid = giid;
-				info->chn = chn;
-				return 1;
-			}
-		}
-	}
-	return -1;
-}
-
 // TEMP: decide the proper RPC number
 #define GET_IRQ_SOURCE 	123
 #define GET_IRQ_DATA	456
-static LinkedList<VidorIP*> list;
 
 void VidorUtils::onInterrupt() {
 
@@ -113,8 +55,8 @@ void VidorUtils::onInterrupt() {
 	// Call VidorMailbox to retrieve the uid
 	int giid = VidorMailbox.sendCommand(data, 1);
 
-	for (int i = 0; i < list.size(); i++) {
-		VidorIP* ip = list.get(i);
+	for (int i = 0; i < IPList.size(); i++) {
+		VidorIP* ip = IPList.get(i);
 		if (ip->info.giid == giid && ip->cb != NULL) {
 			data[0] = GET_IRQ_DATA;
 			int ret = VidorMailbox.sendCommand(data, 128);
@@ -123,10 +65,6 @@ void VidorUtils::onInterrupt() {
 		}
 	}
 }
-
-void VidorUtils::addToList(VidorIP* ip) {
-	list.add(ip);
-};
 
 bool VidorUtils::ready() {
 	return (version() != 0) &&  (version() != 0xFFFFFFFF);
