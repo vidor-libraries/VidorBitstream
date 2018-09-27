@@ -60,15 +60,14 @@ void VidorUart::end()
 }
 
 void VidorUart::enableUART(int tx, int rx) {
-  uint32_t rpc[2];
-  rpc[0] = MB_CMD(devIdx, idx, 0, 0x01);
-  rpc[1] = 0; // TX-RX only
-  VidorMailbox.sendCommand(rpc, 2);
+  uint32_t rpc[1];
+  rpc[0] = RPC_CMD(info.giid, info.chn, 2);
+  VidorMailbox.sendCommand(rpc, 1);
 }
 
 void VidorUart::setUART(int baud, int config) {
   uint32_t rpc[3];
-  rpc[0] = MB_CMD(devIdx, idx, 0, 0x02);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 5);
   rpc[1] = baud;
   rpc[2] = config;
   VidorMailbox.sendCommand(rpc, 3);
@@ -173,7 +172,7 @@ size_t VidorUart::write(const uint8_t data)
 size_t VidorUart::write(const uint8_t* data, size_t len)
 {
   uint32_t rpc[256];
-  rpc[0] = MB_CMD(devIdx, idx, 0, 0x08);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 10);
   rpc[1] = len;
   memcpy(&rpc[2], data, len);
   VidorMailbox.sendCommand(rpc, 2+(rpc[1]+3)/4);
