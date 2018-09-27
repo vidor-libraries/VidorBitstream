@@ -19,9 +19,14 @@
  * @brief Mailbox
  */
 
+#include "irq.h"
 #include "rpc.h"
 #include "mb.h"
 
+#define MB_BASE (0x80000000 | DPRAM_BASE)
+
+/**
+ */
 alt_u32* mbPtrGet(void)
 {
   return (alt_u32*)MB_BASE;
@@ -31,7 +36,9 @@ alt_u32* mbPtrGet(void)
  */
 int mbInit(void)
 {
-  //irqPinSet(0, NULL);
+  irqPinSet(0, rpcCmd);
+  intPinInit(1, 0);
+
   return 0;
 }
 
@@ -39,9 +46,17 @@ int mbInit(void)
  */
 void mbLoop(void)
 {
-  //if (irqPinDet(0)) {
-  //  irqPinClr(0);
+  if (irqPinDet(0)) {
+    irqPinClr(0);
     rpcCmd();
-  //}
+  }
 }
 
+/**
+ * Put an event on mailbox event FIFO
+ * @return 0 on success, -1 on error
+ */
+alt_u32 mbEve(alt_u32 eve)
+{
+
+}

@@ -17,12 +17,10 @@
 *
 */
 
-
 #include <io.h>
 
 #include "config.h"
 #include "mb.h"
-#include "pio.h"
 #include "tspi.h"
 
 #define TSPI_RXDATA    0
@@ -44,30 +42,11 @@
 #define TSPI_MODE_1    (0|TSPI_CPHA)
 #define TSPI_MODE_2    (TSPI_CPOL|0)
 #define TSPI_MODE_3    (TSPI_CPOL|TSPI_CPHA)
-/*
-typedef struct {
-  alt_u32   base;
-  alt_u32   mosi;
-  alt_u32   miso;
-  alt_u32   clk;
-  alt_u32   ss;
-  alt_u32   ss_auto;
-  alt_u32   mode;
-}sSpiDev, *psSpiDev;
-*/
-//sSpiDev spi_dev[] = {
-//  TSPI_DEV_CFG
-//};
-
-alt_u32 spi_dev_num;
-
-
 
 alt_u32 tspiSetup(alt_u32 cmd);
 alt_u32 tspiEnd(alt_u32 cmd);
 alt_u32 tspiModeSet(alt_u32 cmd, alt_u32 baud, alt_u32 mode, alt_u32 bit_order, alt_u32 ss_auto);
 alt_u32 tspiTrx(alt_u32 cmd, alt_u8* buf, alt_u32 len);
-
 
 /**
  *
@@ -117,26 +96,6 @@ alt_u32 tspiEnd(alt_u32 cmd)
 {
   return 0;
 }
-
-/**
- *//* TODO l'impostazione dei pin chi la fa??????
-alt_u32 spiEnable(alt_u32 idx)
-{
-  if(idx >= (sizeof(spi_dev)/sizeof(sSpiDev))){
-    return -1;
-  }
-  psSpiDev pDev = &spi_dev[idx];
-  /* gpio mux * /
-  if (pDev->mosi != -1) {
-    gpioPinMode(pDev->mosi, 5); // MOSI
-    gpioPinMode(pDev->miso, 0); // MISO
-    gpioPinMode(pDev->clk , 5); // CLK
-    gpioPinMode(pDev->ss  , 5); // SS
-    IOWR(pDev->base, TSPI_CONTROL, TSPI_SS_H);
-  }
-  return 0;
-}
-*/
 
 /**
  */

@@ -23,17 +23,10 @@
 
 #include "config.h"
 
-/**
- *
- */
-#define MB_BASE (0x80000000 | DPRAM_BASE)
-
-
-int mbInit(void);
 alt_u32* mbPtrGet(void);
+int mbInit(void);
+void mbLoop(void);
 
-
-alt_u32 mbCmdSend(alt_u32* data, alt_u32 len);
-alt_u32 mbRead(alt_u32 address, alt_u32* data, alt_u32 len);
+alt_u32 mbEve(alt_u32 eve);
 
 #endif /* __MB_H */

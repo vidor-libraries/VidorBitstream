@@ -355,7 +355,10 @@ sFpgaIpPin TSPI_0_PIN[] = {
   {0, TSPI_PIN_FNC_MOSI, PIN(3, 1,  3)},
   {0, TSPI_PIN_FNC_MISO, PIN(0, 1,  7)},
   {0, TSPI_PIN_FNC_CLK , PIN(3, 1,  4)},
-  {0, TSPI_PIN_FNC_SS  , PIN(3, 1,  5)},
+  {1, TSPI_PIN_FNC_MOSI, PIN(3, 1,  3)},
+  {1, TSPI_PIN_FNC_MISO, PIN(0, 1,  7)},
+  {1, TSPI_PIN_FNC_CLK , PIN(3, 1,  4)},
+  {1, TSPI_PIN_FNC_SS  , PIN(3, 1,  5)},
 };
 sFpgaIpChn TSPI_0_CHN[] = {
   {NPIN(TSPI_0_PIN), TSPI_0_PIN},
@@ -365,7 +368,10 @@ sFpgaIpPin TSPI_1_PIN[] = {
   {0, TSPI_PIN_FNC_MOSI, PIN(3, 1,  6)},
   {0, TSPI_PIN_FNC_MISO, PIN(0, 1,  8)},
   {0, TSPI_PIN_FNC_CLK , PIN(3, 1,  9)},
-  {0, TSPI_PIN_FNC_SS  , PIN(3, 1, 10)},
+  {1, TSPI_PIN_FNC_MOSI, PIN(3, 1,  6)},
+  {1, TSPI_PIN_FNC_MISO, PIN(0, 1,  8)},
+  {1, TSPI_PIN_FNC_CLK , PIN(3, 1,  9)},
+  {1, TSPI_PIN_FNC_SS  , PIN(3, 1, 10)},
 };
 sFpgaIpChn TSPI_1_CHN[] = {
   {NPIN(TSPI_1_PIN), TSPI_1_PIN},
@@ -375,7 +381,10 @@ sFpgaIpPin TSPI_2_PIN[] = {
   {0, TSPI_PIN_FNC_MOSI, PIN(3, 1, 11)},
   {0, TSPI_PIN_FNC_MISO, PIN(0, 1, 15)},
   {0, TSPI_PIN_FNC_CLK , PIN(3, 1, 12)},
-  {0, TSPI_PIN_FNC_SS  , PIN(3, 1, 13)},
+  {1, TSPI_PIN_FNC_MOSI, PIN(3, 1, 11)},
+  {1, TSPI_PIN_FNC_MISO, PIN(0, 1, 15)},
+  {1, TSPI_PIN_FNC_CLK , PIN(3, 1, 12)},
+  {1, TSPI_PIN_FNC_SS  , PIN(3, 1, 13)},
 };
 sFpgaIpChn TSPI_2_CHN[] = {
   {NPIN(TSPI_2_PIN), TSPI_2_PIN},
@@ -385,7 +394,10 @@ sFpgaIpPin TSPI_3_PIN[] = {
   {0, TSPI_PIN_FNC_MOSI, PIN(3, 1, 14)},
   {0, TSPI_PIN_FNC_MISO, PIN(0, 1, 16)},
   {0, TSPI_PIN_FNC_CLK , PIN(3, 1, 17)},
-  {0, TSPI_PIN_FNC_SS  , PIN(3, 1, 18)},
+  {1, TSPI_PIN_FNC_MOSI, PIN(3, 1, 14)},
+  {1, TSPI_PIN_FNC_MISO, PIN(0, 1, 16)},
+  {1, TSPI_PIN_FNC_CLK , PIN(3, 1, 17)},
+  {1, TSPI_PIN_FNC_SS  , PIN(3, 1, 18)},
 };
 sFpgaIpChn TSPI_3_CHN[] = {
   {NPIN(TSPI_3_PIN), TSPI_3_PIN},
@@ -395,7 +407,10 @@ sFpgaIpPin TSPI_4_PIN[] = {
   {0, TSPI_PIN_FNC_MOSI, PIN(3, 1, 19)},
   {0, TSPI_PIN_FNC_MISO, PIN(0, 1, 20)},
   {0, TSPI_PIN_FNC_CLK , PIN(3, 1, 21)},
-  {0, TSPI_PIN_FNC_SS  , PIN(3, 1, 22)},
+  {1, TSPI_PIN_FNC_MOSI, PIN(3, 1, 19)},
+  {1, TSPI_PIN_FNC_MISO, PIN(0, 1, 20)},
+  {1, TSPI_PIN_FNC_CLK , PIN(3, 1, 21)},
+  {1, TSPI_PIN_FNC_SS  , PIN(3, 1, 22)},
 };
 sFpgaIpChn TSPI_4_CHN[] = {
   {NPIN(TSPI_4_PIN), TSPI_4_PIN},
