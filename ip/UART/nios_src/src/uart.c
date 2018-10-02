@@ -24,7 +24,7 @@
 
 #include <io.h>
 #include <sys/alt_irq.h>
-#include <iptronix_16550_uart.h>
+#include <arduino_16550_uart.h>
 
 #include "config.h"
 #include "mb.h"
@@ -95,7 +95,7 @@ alt_u32 uartSetup(alt_u32 cmd)
   alt_u8    giid = RPC_GIID(cmd);
   psUartDev pDev = (psUartDev)fpgaIp[giid].priv;
 
-  pDev->sp = altera_16550_uart_open(pDev->name);
+  pDev->sp = arduino_16550_uart_open(pDev->name);
   if (!pDev->sp) {
     return -1;
   }
@@ -108,7 +108,7 @@ alt_u32 uartEnd(alt_u32 cmd)
 {
   alt_u8    giid = RPC_GIID(cmd);
   psUartDev pDev = (psUartDev)fpgaIp[giid].priv;
-  return altera_16550_uart_close(pDev->sp, 0); // TODO flags;
+  return arduino_16550_uart_close(pDev->sp, 0); // TODO flags;
 }
 
 /**
@@ -178,7 +178,7 @@ alt_u32 SEC_RAM uartGet(alt_u32 cmd)
   alt_u8    c;
   int       ret;
 
-  ret = altera_16550_uart_read(pDev->sp, &c, 1, 0);
+  ret = arduino_16550_uart_read(pDev->sp, &c, 1, 0);
   if (ret != 1) {
     return -1;
   }
@@ -193,7 +193,7 @@ alt_u32 SEC_RAM uartRead(alt_u32 cmd, alt_u8* buf, alt_u32 len)
   alt_u8    giid = RPC_GIID(cmd);
   psUartDev pDev = (psUartDev)fpgaIp[giid].priv;
 
-  return altera_16550_uart_read(pDev->sp, buf, len, 0);
+  return arduino_16550_uart_read(pDev->sp, buf, len, 0);
 }
 
 /**
@@ -218,7 +218,7 @@ alt_u32 SEC_RAM uartPut(alt_u32 cmd, alt_u8 data)
   alt_u8    giid = RPC_GIID(cmd);
   psUartDev pDev = (psUartDev)fpgaIp[giid].priv;
 
-  return altera_16550_uart_write(pDev->sp, &data, 1, 0);
+  return arduino_16550_uart_write(pDev->sp, &data, 1, 0);
 }
 
 /**
@@ -229,7 +229,7 @@ alt_u32 SEC_RAM uartWrite(alt_u32 cmd, alt_u8* buf, alt_u32 len)
   alt_u8    giid = RPC_GIID(cmd);
   psUartDev pDev = (psUartDev)fpgaIp[giid].priv;
 
-  return altera_16550_uart_write(pDev->sp, buf, len, 0);
+  return arduino_16550_uart_write(pDev->sp, buf, len, 0);
 }
 
 /**
@@ -240,6 +240,6 @@ alt_u32 uartFlush(alt_u32 cmd)
   alt_u8    giid = RPC_GIID(cmd);
   psUartDev pDev = (psUartDev)fpgaIp[giid].priv;
 
-  altera_16550_uart_flush(pDev->sp);
+  arduino_16550_uart_flush(pDev->sp);
   return 0;
 }

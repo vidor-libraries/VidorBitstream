@@ -15,11 +15,8 @@
 # software without disclosing the source code of your own applications. To purchase
 # a commercial license, send an email to license@arduino.cc.
 
-# Create a new driver
-create_driver RPC
-
-# Associate it with some hardware known as "RPC"
-set_sw_property hw_class_name RPC
+# Create a new software package
+create_sw_package RPC
 
 # The version of this driver
 set_sw_property version 18.0

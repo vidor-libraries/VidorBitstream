@@ -19,11 +19,3 @@
  * @brief send evet to JTAG FIFO
  *
  */
-
-/**
- *
- * Event ID
- *  31:24                 23:12     11:0
- *  Global Instance ID    Channel   Event ID
- *
- */

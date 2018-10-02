@@ -20,6 +20,7 @@
  *
  */
 
+//#define NP_USE_TMR
 
 #include <string.h>
 #include <stdlib.h>
@@ -27,16 +28,17 @@
 
 #include "config.h"
 #include "mb.h"
+#ifdef NP_USE_TMR
 #include "tmr.h"
+#endif
 #include "np.h"
 
 #ifdef NP_GFX
 #include "gfx.h"
 #endif
 
-#define NP_CSR_BASE NEOPIXEL_BASE
-#define NP_MEM_BASE SDRAM_BASE
-#define NP_MEM_SIZE SDRAM_SPAN
+#define NP_MEM_BASE SDRAM_ARBITER_BASE
+#define NP_MEM_SIZE SDRAM_ARBITER_SPAN
 
 /**
  * NEOPIXEL CSR registers
@@ -146,24 +148,28 @@ alt_u32   npZzlLen;
 sNpSeq    npSeq;
 alt_u32   npSeqNum;               // sequence number
 
-alt_u8    brightness[NEOPIXEL_CHANNELS];
+//alt_u8    brightness[NEOPIXEL_CHANNELS];
+alt_u8    brightness[11];  // TODO
+
 alt_u8    rOffset;       // Index of red byte within each 3- or 4-byte pixel
 alt_u8    gOffset;       // Index of green byte
 alt_u8    bOffset;       // Index of blue byte
 alt_u8    wOffset;       // Index of white byte (same as rOffset if no white)
 
-static void npTmrCb(void* arg);
-
 alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt_u32 zzf, alt_u32 zzl);
 alt_u32 npEnd(alt_u32 cmd);
 
-alt_u32 npTmgSet(alt_u32 frq, alt_u32 trst, alt_u32 t0h, alt_u32 t1h, alt_u32 ttot);
+alt_u32 npTmgSet(alt_u32 cmd, alt_u32 frq, alt_u32 trst, alt_u32 t0h, alt_u32 t1h, alt_u32 ttot);
 alt_u32 npLedSet(alt_u32 cmd, alt_u16 LED, alt_u8 r, alt_u8 g, alt_u8 b, alt_u8 w);
 alt_u32 npBrgSet(alt_u32 cmd, alt_u8 brg);
-alt_u32 npLedShow(alt_u32 ofs);
-alt_u32 npWrapSet(alt_u32 sAdr, alt_u32 wCnt, alt_u32 wAdr);
+alt_u32 npLedShow(alt_u32 cmd, alt_u32 ofs);
+alt_u32 npWrapSet(alt_u32 cmd, alt_u32 sAdr, alt_u32 wCnt, alt_u32 wAdr);
+
+#ifdef NP_USE_TMR
+static void npTmrCb(void* arg);
 alt_u32 npSeqSet(psNpSeq pSeq);
 alt_u32 npBufScroll(alt_u32 flg, alt_u32 buf, alt_u32 ms);
+#endif
 
 /**
  */
@@ -186,7 +192,7 @@ void npRpc(void)
     break;
   case 5:
     /* set timing */
-    ret = npTmgSet(rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
+    ret = npTmgSet(rpc[0], rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
     break;
   case 6:
     /* set single LED */
@@ -198,12 +204,13 @@ void npRpc(void)
     break;
   case 8:
     /* show actual configuration */
-    ret = npLedShow(rpc[1]);
+    ret = npLedShow(rpc[0], rpc[1]);
     break;
   case 9:
     /* set buffer wrapping */
-    ret = npWrapSet(rpc[1], rpc[2], rpc[3]);
+    ret = npWrapSet(rpc[0], rpc[1], rpc[2], rpc[3]);
     break;
+#ifdef NP_USE_TMR
   case 10:
     /* load, start and stop sequence */
     ret = npSeqSet((psNpSeq)&rpc[1]);
@@ -212,6 +219,7 @@ void npRpc(void)
     /* start and stop buffer loop */
     ret = npBufScroll(rpc[1], rpc[2], rpc[3]);
     break;
+#endif
   }
   rpc[1] = ret;
 }
@@ -235,12 +243,14 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt
   alt_u32   bpp;                    // bit per pixel
   psNpTmg   tmg;                    // timeing structure pointer
   int       i;
+  alt_u32   base = fpgaIp[giid].base;
+  alt_u32   chns = RPC_CHN_GET(fpgaIp[giid].disc);
 
   if (!led_num) {
     return 0;
   }
 
-  if ((NEOPIXEL_CHANNELS * buf_len * sizeof(alt_u32)) > NP_MEM_SIZE) {
+  if ((chns * buf_len * sizeof(alt_u32)) > NP_MEM_SIZE) {
     return -1;
   }
 
@@ -256,12 +266,12 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt
   npZigZag = zzf;
   npZzlLen = zzl;
 
-  npZzOfs   = npZzlLen * NEOPIXEL_CHANNELS * sizeof(alt_u32);
+  npZzOfs   = npZzlLen * chns * sizeof(alt_u32);
   npWrpAdr  = 0;
   npWrpCnt  = led_num + 1;
-  npBufSize = NEOPIXEL_CHANNELS * npBufLen * sizeof(alt_u32);
+  npBufSize = chns * npBufLen * sizeof(alt_u32);
 
-  for (i=0; i<NEOPIXEL_CHANNELS; i++) {
+  for (i=0; i<chns; i++) {
     brightness[i] = 0;
   }
 
@@ -286,11 +296,11 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt
 
 #ifdef NP_GFX
   GFXgc    *gc;
-  for (i=0; i<NEOPIXEL_CHANNELS; i++) {
+  for (i=0; i<chns; i++) {
     gc = &gfxNpGc[i];
     gc->width    = npZzlLen;
     gc->height   = npNumLed / npZzlLen;
-    gc->stride   = NEOPIXEL_CHANNELS;
+    gc->stride   = chns;
     gc->bpp      = 32;
     gc->fmt      = GFX_GC_FMT_XGRB32;   // TODO
     gc->color    = 0;
@@ -312,16 +322,16 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt
               (((npZzlLen-1) << NP_WCNT_LL_OFS ) & NP_WCNT_LL_MSK )|
               (( npWrpCnt    << NP_WCNT_WC_OFS ) & NP_WCNT_WC_MSK );
 
-  while (IORD(NP_CSR_BASE, NP_REG_STATUS) != NP_STATUS_IDLE);
-  IOWR(NP_CSR_BASE, NP_REG_CH_MSK  , npChMsk  );
-  IOWR(NP_CSR_BASE, NP_REG_CTRL    , 0        );
-  IOWR(NP_CSR_BASE, NP_REG_TRESET  , tmg->trst);
-  IOWR(NP_CSR_BASE, NP_REG_T0H     , tmg->t0h );
-  IOWR(NP_CSR_BASE, NP_REG_T1H     , tmg->t1h );
-  IOWR(NP_CSR_BASE, NP_REG_TTOT    , tmg->ttot);
-  IOWR(NP_CSR_BASE, NP_REG_WCNT    , npWCntReg);
-  IOWR(NP_CSR_BASE, NP_REG_WRAP_ADR, npWrpAdr );
-  IOWR(NP_CSR_BASE, NP_REG_ZZ_OFS  , npZzOfs  );
+  while (IORD(base, NP_REG_STATUS) != NP_STATUS_IDLE);
+  IOWR(base, NP_REG_CH_MSK  , npChMsk  );
+  IOWR(base, NP_REG_CTRL    , 0        );
+  IOWR(base, NP_REG_TRESET  , tmg->trst);
+  IOWR(base, NP_REG_T0H     , tmg->t0h );
+  IOWR(base, NP_REG_T1H     , tmg->t1h );
+  IOWR(base, NP_REG_TTOT    , tmg->ttot);
+  IOWR(base, NP_REG_WCNT    , npWCntReg);
+  IOWR(base, NP_REG_WRAP_ADR, npWrpAdr );
+  IOWR(base, NP_REG_ZZ_OFS  , npZzOfs  );
 
   return 0;
 }
@@ -336,8 +346,11 @@ alt_u32 npEnd(alt_u32 cmd)
 /**
  * Timing set
  */
-alt_u32 npTmgSet(alt_u32 frq, alt_u32 trst, alt_u32 t0h, alt_u32 t1h, alt_u32 ttot)
+alt_u32 npTmgSet(alt_u32 cmd, alt_u32 frq, alt_u32 trst, alt_u32 t0h, alt_u32 t1h, alt_u32 ttot)
 {
+  alt_u8    giid = RPC_GIID(cmd);
+  alt_u32   base = fpgaIp[giid].base;
+
   if (frq>1) {
     return -1;
   }
@@ -346,11 +359,11 @@ alt_u32 npTmgSet(alt_u32 frq, alt_u32 trst, alt_u32 t0h, alt_u32 t1h, alt_u32 tt
   npTmg[frq].t1h  = (alt_u32)((float)t1h *CLOCK);
   npTmg[frq].ttot = (alt_u32)((float)ttot*CLOCK);
 
-  while (IORD(NP_CSR_BASE, NP_REG_STATUS) != NP_STATUS_IDLE);
-  IOWR(NP_CSR_BASE, NP_REG_TRESET  , npTmg[frq].trst);
-  IOWR(NP_CSR_BASE, NP_REG_T0H     , npTmg[frq].t0h );
-  IOWR(NP_CSR_BASE, NP_REG_T1H     , npTmg[frq].t1h );
-  IOWR(NP_CSR_BASE, NP_REG_TTOT    , npTmg[frq].ttot);
+  while (IORD(base, NP_REG_STATUS) != NP_STATUS_IDLE);
+  IOWR(base, NP_REG_TRESET  , npTmg[frq].trst);
+  IOWR(base, NP_REG_T0H     , npTmg[frq].t0h );
+  IOWR(base, NP_REG_T1H     , npTmg[frq].t1h );
+  IOWR(base, NP_REG_TTOT    , npTmg[frq].ttot);
 
   return 0;
 }
@@ -360,9 +373,11 @@ alt_u32 npTmgSet(alt_u32 frq, alt_u32 trst, alt_u32 t0h, alt_u32 t1h, alt_u32 tt
  */
 alt_u32 npLedSet(alt_u32 cmd, alt_u16 LED, alt_u8 r, alt_u8 g, alt_u8 b, alt_u8 w)
 {
-  alt_u16 chn = RPC_CHN(cmd);
+  alt_u8  giid = RPC_GIID(cmd);
+  alt_u32 chns = RPC_CHN_GET(fpgaIp[giid].disc);
+  alt_u16 chn  = RPC_CHN(cmd);
 
-  if (chn >= NEOPIXEL_CHANNELS ) {
+  if (chn >= chns ) {
     return -1;
   }
   if ((npChMsk && (1<<chn))==0) {
@@ -382,7 +397,7 @@ alt_u32 npLedSet(alt_u32 cmd, alt_u16 LED, alt_u8 r, alt_u8 g, alt_u8 b, alt_u8 
   alt_u32 *pLed;
 
   pLed = (alt_u32*)NP_MEM_BASE;
-  pLed += ((NEOPIXEL_CHANNELS * LED) + chn);
+  pLed += ((chns * LED) + chn);
   *pLed = ((alt_u32)r << rOffset) |
           ((alt_u32)g << gOffset) |
           ((alt_u32)b << bOffset) |
@@ -394,10 +409,12 @@ alt_u32 npLedSet(alt_u32 cmd, alt_u16 LED, alt_u8 r, alt_u8 g, alt_u8 b, alt_u8 
  */
 alt_u32 npBrgSet(alt_u32 cmd, alt_u8 brg)
 {
+  alt_u8  giid = RPC_GIID(cmd);
+  alt_u32 chns = RPC_CHN_GET(fpgaIp[giid].disc);
   alt_u16 chn = RPC_CHN(cmd);
 
-  if (chn >= NEOPIXEL_CHANNELS ) {
-//     return -1;
+  if (chn >= chns ) {
+    return -1;
   }
   if ((npChMsk && (1<<chn))==0) {
     return -1;
@@ -409,55 +426,62 @@ alt_u32 npBrgSet(alt_u32 cmd, alt_u8 brg)
 /**
  * Show
  */
-alt_u32 npLedShow(alt_u32 ofs)
+alt_u32 npLedShow(alt_u32 cmd, alt_u32 ofs)
 {
+  alt_u8    giid = RPC_GIID(cmd);
+  alt_u32   base = fpgaIp[giid].base;
+
   /* check for idle state */
-  if (IORD(NP_CSR_BASE, NP_REG_STATUS) != NP_STATUS_IDLE) {
+  if (IORD(base, NP_REG_STATUS) != NP_STATUS_IDLE) {
     return -1;
   }
 
   ofs = ofs * npZzlLen;
 
   /* set base address */
-  IOWR(NP_CSR_BASE, NP_REG_START_ADR, NP_MEM_BASE + npBufAdr + ofs);
+  IOWR(base, NP_REG_START_ADR, NP_MEM_BASE + npBufAdr + ofs);
 
 /* TODO move in wrap set routine */
   /* set wrap count */
   npWCntReg &= ~NP_WCNT_WC_MSK;
   npWCntReg |= ((npWrpCnt  << NP_WCNT_WC_OFS ) & NP_WCNT_WC_MSK);
-  IOWR(NP_CSR_BASE, NP_REG_WCNT, npWCntReg);
+  IOWR(base, NP_REG_WCNT, npWCntReg);
 
   /* set wrap address */
-  IOWR(NP_CSR_BASE, NP_REG_WRAP_ADR, NP_MEM_BASE + npWrpAdr + ofs);
+  IOWR(base, NP_REG_WRAP_ADR, NP_MEM_BASE + npWrpAdr + ofs);
 /* TODO move in wrap set routine */
 
   /* start transfer */
-  IOWR(NP_CSR_BASE, NP_REG_CTRL, npCtrlReg);
+  IOWR(base, NP_REG_CTRL, npCtrlReg);
 
   /* wait for transfer to complete */
-  while (IORD(NP_CSR_BASE, NP_REG_STATUS) != NP_STATUS_IDLE);
+  while (IORD(base, NP_REG_STATUS) != NP_STATUS_IDLE);
 
   return 0;
 }
 
 /**
  */
-alt_u32 npWrapSet(alt_u32 sAdr, alt_u32 wCnt, alt_u32 wAdr)
+alt_u32 npWrapSet(alt_u32 cmd, alt_u32 sAdr, alt_u32 wCnt, alt_u32 wAdr)
 {
-  npBufAdr = sAdr * npZzlLen * sizeof(alt_u32) * NEOPIXEL_CHANNELS;
+  alt_u8    giid = RPC_GIID(cmd);
+  alt_u32   chns = RPC_CHN_GET(fpgaIp[giid].disc);
+
+  npBufAdr = sAdr * npZzlLen * sizeof(alt_u32) * chns;
   /**
    * lunghezza va messa -1, il wrap viene confrontato dopo un giro
    * per cui va a -2
    */
   npWrpCnt = npNumLed - wCnt * npZzlLen + 2;
   if (wCnt & 1) {
-    npWrpAdr = ((wAdr+1) * npZzlLen-1) * sizeof(alt_u32) * NEOPIXEL_CHANNELS;
+    npWrpAdr = ((wAdr+1) * npZzlLen-1) * sizeof(alt_u32) * chns;
   } else {
-    npWrpAdr = wAdr * npZzlLen * sizeof(alt_u32) * NEOPIXEL_CHANNELS;
+    npWrpAdr = wAdr * npZzlLen * sizeof(alt_u32) * chns;
   }
   return 0;
 }
 
+#ifdef NP_USE_TMR
 /**
  */
 alt_u32 npSeqSet(psNpSeq pSeq)
@@ -502,16 +526,8 @@ alt_u32 npBufScroll(alt_u32 flg, alt_u32 buf, alt_u32 ms)
 static void npTmrCb(void* arg)
 {
   if (npSeq.flg & NP_SEQ_FLG_BUF_LOOP) {
-/**/
-    if ((npSeqNum + npNumLed / npZzlLen) > (npBufLen / npZzlLen)) {
-      npWrapSet(npSeqNum, (npBufLen / npZzlLen) - npSeqNum, 0);
-    } else {
-      npWrapSet(npSeqNum, npNumLed / npZzlLen, 0);
-    }
-/**/
-//    npWrapSet(npSeqNum, (npBufLen / npZzlLen) - npSeqNum, 0);
+    npWrapSet(npSeqNum, (npBufLen / npZzlLen) - npSeqNum, 0);
     npLedShow(0);
-/**/
     if (npSeq.flg & NP_SEQ_FLG_INV_LOOP) {
       if (npSeqNum == 0) {
         npSeqNum = npBufLen / npZzlLen;
@@ -539,3 +555,4 @@ static void npTmrCb(void* arg)
     tmrStart(npSeq.seq[npSeqNum].ms, npTmrCb, NULL);
   }
 }
+#endif

@@ -15,14 +15,8 @@
 # software without disclosing the source code of your own applications. To purchase
 # a commercial license, send an email to license@arduino.cc.
 
-# Create a new driver
-create_driver TSPI
-
-# Associate it with some hardware known as "TSPI"
-set_sw_property hw_class_name TSPI
-
-# The version of this driver
-set_sw_property version 18.0
+# Create a new software package
+create_sw_package GFX
 
 # This driver may be incompatible with versions of hardware less
 # than specified below. Updates to hardware and device drivers
@@ -45,9 +39,10 @@ set_sw_property auto_initialize false
 set_sw_property bsp_subdirectory drivers
 
 # C/C++ source files
-add_sw_property c_source src/tspi.c
+add_sw_property c_source src/gfx.c
 
 # Include files
-add_sw_property include_source inc/tspi.h
+add_sw_property include_source inc/gfx.h
+add_sw_property include_source inc/Org_01.h
 
 add_sw_property supported_bsp_type HAL

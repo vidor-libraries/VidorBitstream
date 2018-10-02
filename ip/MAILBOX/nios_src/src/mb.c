@@ -52,11 +52,3 @@ void mbLoop(void)
   }
 }
 
-/**
- * Put an event on mailbox event FIFO
- * @return 0 on success, -1 on error
- */
-alt_u32 mbEve(alt_u32 eve)
-{
-
-}
