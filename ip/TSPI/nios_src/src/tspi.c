@@ -17,10 +17,17 @@
 *
 */
 
+#define TSPI_RPC_CMD  1
+
 #include <io.h>
 
+
 #include "config.h"
-#include "mb.h"
+
+#if defined(TSPI_RPC_CMD) && (TSPI_RPC_CMD == 1)
+  #include "mb.h"
+#endif /* defined(TSPI_RPC_CMD) && (TSPI_RPC_CMD == 1) */
+
 #include "tspi.h"
 
 #define TSPI_RXDATA    0
@@ -43,10 +50,7 @@
 #define TSPI_MODE_2    (TSPI_CPOL|0)
 #define TSPI_MODE_3    (TSPI_CPOL|TSPI_CPHA)
 
-alt_u32 tspiSetup(alt_u32 cmd);
-alt_u32 tspiEnd(alt_u32 cmd);
-alt_u32 tspiModeSet(alt_u32 cmd, alt_u32 baud, alt_u32 mode, alt_u32 bit_order, alt_u32 ss_auto);
-alt_u32 tspiTrx(alt_u32 cmd, alt_u8* buf, alt_u32 len);
+#if defined(TSPI_RPC_CMD) && (TSPI_RPC_CMD == 1)
 
 /**
  *
@@ -81,6 +85,7 @@ void tspiRpc(void)
   }
   rpc[1] = ret;
 }
+#endif /* defined(TSPI_RPC_CMD) && (TSPI_RPC_CMD == 1) */
 
 /**
  */
@@ -161,7 +166,7 @@ alt_u32 tspiTrx(alt_u32 cmd, alt_u8* buf, alt_u32 len)
 
 /**
  */
-alt_u32 spiTrc(alt_u32 cmd, alt_u32 txl, alt_u8* txb, alt_u32 rxl, alt_u8* rxb)
+alt_u32 tspiTrc(alt_u32 cmd, alt_u32 txl, alt_u8* txb, alt_u32 rxl, alt_u8* rxb)
 {
   alt_u8    giid = RPC_GIID(cmd);
   psTspiDev pDev = (psTspiDev)fpgaIp[giid].priv;

@@ -43,16 +43,21 @@ LDFLAGS_USER="-Wl,-gc-sections"
 CFLAGS_USER="-fdata-sections -ffunction-sections"
 APP_FLAGS="--set APP_CFLAGS_OPTIMIZATION $OPTIMIZATION_LEVEL --set APP_CFLAGS_USER_FLAGS $CFLAGS_USER --set APP_LDFLAGS_USER $LDFLAGS_USER"
 
-if [ -f bsp_settings.sh ]; then 
+if [ -f bsp_settings.sh ]; then
 echo "##########################################"
 echo "#        using local bsp settings        #"
 echo "##########################################"
-source bsp_settings.sh 
+source bsp_settings.sh
 else
 # BSP options
 SIMULATION_OPTIMIZED_SUPPORT="false"
 BSP_TYPE=hal
 BSP_FLAGS=" \
+--cmd enable_sw_package CFG \
+--cmd enable_sw_package MAILBOX \
+--cmd enable_sw_package RPC  \
+--cmd enable_sw_package GFX  \
+--cmd enable_sw_package UART  \
 --set hal.enable_c_plus_plus 0 \
 --set hal.enable_clean_exit 0 \
 --set hal.enable_exit 0 \
@@ -109,11 +114,10 @@ BSP_FLAGS=" \
 fi
 
 mkdir -p $APP_DIR
-# copy common files
-# cp -f $COMMON_SRC_DIR/* $APP_DIR
 
-# make a copy of standard project sources
-#cp -r $APP_SRC_DIR/* $APP_DIR
+# copy main
+cp -f main.c $APP_DIR
+
 
 # generate the BSP in the $BSP_DIR
 cmd="nios2-bsp $BSP_TYPE $BSP_DIR $SOPC_INFO $BSP_FLAGS"

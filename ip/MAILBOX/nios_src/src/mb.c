@@ -20,10 +20,12 @@
  */
 
 #include "irq.h"
-#include "rpc.h"
+//#include "rpc.h"
 #include "mb.h"
 
 #define MB_BASE (0x80000000 | DPRAM_BASE)
+
+#define SEC_RAM  __attribute__((__section__(".rwdata")))
 
 /**
  */
@@ -43,20 +45,23 @@ int mbInit(void)
 }
 
 /**
- */
-void mbLoop(void)
+ *//*
+void SEC_RAM mbLoop(void)
 {
   if (irqPinDet(0)) {
     irqPinClr(0);
     rpcCmd();
   }
-}
+}*/
 
 /**
- * Put an event on mailbox event FIFO
- * @return 0 on success, -1 on error
  */
-alt_u32 mbEve(alt_u32 eve)
+alt_u32* SEC_RAM mbMsgRx(void)
 {
-
+  if (irqPinDet(0)) {
+    irqPinClr(0);
+    return (alt_u32*)MB_BASE;
+  }
+  return (alt_u32*)0;
 }
+

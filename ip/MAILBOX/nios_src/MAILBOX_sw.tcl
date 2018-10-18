@@ -15,14 +15,8 @@
 # software without disclosing the source code of your own applications. To purchase
 # a commercial license, send an email to license@arduino.cc.
 
-# Create a new driver
-create_driver MAILBOX
-
-# Associate it with some hardware known as "MAILBOX"
-set_sw_property hw_class_name MAILBOX
-
-# The version of this driver
-set_sw_property version 18.0
+# Create a new software package
+create_sw_package MAILBOX
 
 # This driver may be incompatible with versions of hardware less
 # than specified below. Updates to hardware and device drivers
@@ -31,12 +25,12 @@ set_sw_property version 18.0
 #
 # Multiple-Version compatibility was introduced in version 13.1;
 # prior versions are therefore excluded.
-set_sw_property min_compatible_hw_version 1.0
+# set_sw_property min_compatible_hw_version 1.0
 
 # Interrupt properties: This driver supports both legacy and enhanced
 # interrupt APIs, as well as ISR preemption.
-set_sw_property isr_preemption_supported true
-set_sw_property supported_interrupt_apis "legacy_interrupt_api enhanced_interrupt_api"
+# set_sw_property isr_preemption_supported true
+# set_sw_property supported_interrupt_apis "legacy_interrupt_api enhanced_interrupt_api"
 
 # Initialize the driver in alt_sys_init()
 set_sw_property auto_initialize false
@@ -46,8 +40,10 @@ set_sw_property bsp_subdirectory drivers
 
 # C/C++ source files
 add_sw_property c_source src/mb.c
+add_sw_property c_source src/irq.c
 
 # Include files
 add_sw_property include_source inc/mb.h
+add_sw_property include_source inc/irq.h
 
 add_sw_property supported_bsp_type HAL

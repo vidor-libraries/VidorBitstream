@@ -44,7 +44,6 @@ void fpgaRpc(void)
   case 1: ret = FPGA_VER; break;
   case 2: ret = IPDiscover((alt_u32*)&rpc[2]); break;
   case 3: ret = Begin(rpc[1], rpc[2], (alt_u16*)&rpc[3]); break;
-//  case 3: ret = Begin(rpc[1], rpc[2], rpc[3]); break;
   case 4: ret = Assignment((alt_u32*)&rpc[2]); break;
   }
   rpc[1] = ret;
@@ -66,65 +65,6 @@ alt_u32 IPDiscover(alt_u32 *ipd)
 /**
  * locks a channel of the IP initializing it with passed parameters
  */
-/*
-alt_u32 Begin(alt_u32 giid, alt_u32 chn, alt_u32 grp)
-{
-  int p;
-  int n;
-  int num;
-  alt_u16 pins[32];
-
-  // count group pis
-  num = 0;
-  for (p=0; p<fpgaIp[giid].chn[chn].npin; p++) {
-    if (fpgaIp[giid].chn[chn].pin[p].grp == grp) {
-      pins[num] = fpgaIp[giid].chn[chn].pin[p].pin;
-      num++;
-    }
-  }
-  if (!num) {
-    return -1;
-  }
-
-  // verify that the pins are not assigned
-  for (n=0; n<num; n++){
-    for (p=0; p<FPGA_PINS_NUM; p++){
-      if ((fpgaPin[p].port == PIN_PORT(pins[n])) &&
-          (fpgaPin[p].pin  == PIN_PIN(pins[n]))) {
-        if (fpgaPin[p].giid || fpgaPin[p].chn || fpgaPin[p].lock) {
-          return -1;
-        }
-        break;
-      }
-    }
-  }
-
-  // assign pins to giid
-  for (n=0; n<num; n++){
-    for (p=0; p<FPGA_PINS_NUM; p++){
-      if ((fpgaPin[p].port == PIN_PORT(pins[n])) &&
-          (fpgaPin[p].pin  == PIN_PIN(pins[n]))) {
-        fpgaPin[p].giid = giid;
-        fpgaPin[p].chn  = chn;
-        fpgaPin[p].lock = 1;
-        break;
-      }
-    }
-  }
-
-  // Set pin, direction value mux
-  for (p=0; p<fpgaIp[giid].chn[chn].npin; p++) {
-    if (fpgaIp[giid].chn[chn].pin[p].grp == grp) {
-      n = fpgaIp[giid].chn[chn].pin[p].pin;
-      pioMode(PIN_PORT(n), PIN_PIN(n), PIN_MUX(n),
-              fpgaIp[giid].chn[chn].pin[p].fid & PIN_DIR_MSK,
-              0);
-    }
-  }
-
-  return 0;
-}
-*/
 alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
 {
   int i;
@@ -190,15 +130,18 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
 
             // Set pin, direction value mux
             p = fpgaIp[i].chn[chn].pin[pin_idx[n]].pin;
-            pioMode(PIN_PORT(p), PIN_PIN(p), PIN_MUX(p),
-                    fpgaIp[i].chn[chn].pin[pin_idx[n]].fid & PIN_DIR_MSK,
-                    0);
+            if (p != NOPIN) {
+              pioMode(PIN_PORT(p), PIN_PIN(p), PIN_MUX(p),
+                      fpgaIp[i].chn[chn].pin[pin_idx[n]].fid & PIN_DIR_MSK,
+                      0);
+            }
           }
           return (i<<24) | (c<<12);
         }
       }
     }
   }
+
   return -1;
 }
 

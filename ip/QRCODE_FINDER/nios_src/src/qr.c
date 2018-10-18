@@ -17,13 +17,18 @@
 *
 */
 
+//#define QR_USE_GFX
+
+
 #include <stdio.h>
 #include <io.h>
 #include <string.h>
 #include <system.h>
 
 #include "mb.h"
+#ifdef QR_USE_GFX
 #include "gfx.h"
+#endif
 #include "qr.h"
 
 #define QR_CNT_MAX 1000
@@ -49,13 +54,60 @@ int     qrDraw;
 sQrDet  qr;
 alt_u32 qrCnt;
 
+alt_u32 qrSetup(void);
+alt_u32 qrEnd(void);
+
 alt_u32 qrMode(alt_u32 mode);
 alt_u32 qrGet(alt_u32* data);
 alt_u32 qrThrSet(alt_u32 data);
 
 /**
  */
-void qrInit(int devs)
+void qrRpc(void)
+{
+  alt_u32 volatile *rpc = mbPtrGet();
+  alt_u32 ret;
+
+  ret = -1;
+  if ((fpgaIp[RPC_GIID(rpc[0])].disc & 0xFFFFF) != QR_UID) {
+    rpc[1] = ret;
+    return ;
+  }
+  switch (RPC_PID(rpc[0])) {
+  case 2:
+    ret = qrSetup();
+    break;
+  case 4:
+    ret = qrEnd();
+    break;
+  case 5:
+    /* enable QR Code detection */
+    qrEnable = rpc[1];
+    ret = 0;
+    break;
+  case 6:
+    /* set display mode */
+    ret = qrMode(rpc[1]);
+    break;
+  case 7:
+    /* get qr detect */
+    ret = qrGet((alt_u32*)&rpc[2]);
+    break;
+  case 8:
+    /* set qr threshold */
+    ret = qrThrSet(rpc[1]);
+    break;
+  case 9:
+    /* set cross drawing */
+    qrDraw = rpc[1];
+    break;
+  }
+  rpc[1] = ret;
+}
+
+/**
+ */
+alt_u32 qrSetup(void)
 {
 #ifdef QR_DEBUG
   /*
@@ -80,42 +132,19 @@ void qrInit(int devs)
   //qrThrSet(120);
   qr.sts = QR_STS_NOQR;
   qrCnt = 0;
+// TODO start loop
+  return 0;
 }
 
 /**
  */
-void qrCmd(void)
+alt_u32 qrEnd(void)
 {
-  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
-  alt_u32 ret;
-
-  ret = -1;
-  switch(MB_CMD(rpc[0])){
-  case 1:
-    /* enable QR Code detection */
-    qrEnable = rpc[1];
-    ret = 0;
-    break;
-  case 2:
-    /* set display mode */
-    ret = qrMode(rpc[1]);
-    break;
-  case 3:
-    /* get qr detect */
-    ret = qrGet((alt_u32*)&rpc[2]);
-    break;
-  case 4:
-    /* set qr threshold */
-    ret = qrThrSet(rpc[1]);
-    break;
-  case 5:
-    /* set cross drawing */
-    qrDraw = rpc[1];
-    break;
-  }
-  rpc[1] = ret;
+  return 0;
 }
 
+
+#ifdef QR_USE_GFX
 /**
  */
 void qrCross(alt_u32 x, alt_u32 y, alt_u32 c)
@@ -125,6 +154,7 @@ void qrCross(alt_u32 x, alt_u32 y, alt_u32 c)
    writeLine(x-4, y, x+4, y, c);
    writeLine(x, y-4, x, y+4, c);
 }
+#endif
 
 /**
  */
@@ -188,11 +218,13 @@ void SEC_RAM qrLoop(void)
       }
 
       for (i=0; i<QR_PT_DET_NUM; i++) {
+#ifdef QR_USE_GFX
         if (qrDraw) {
           if (qr.pt[i].valid==1) {
             qrCross((qr.pt[i].xe+qr.pt[i].xs)/2, (qr.pt[i].ye+qr.pt[i].ys)/2, 0);
           }
         }
+#endif
         qr.pt[i].valid = 0;
       }
 
@@ -207,9 +239,11 @@ void SEC_RAM qrLoop(void)
           qr.pt[j].ye = pt[i].ye;
           pt[i].valid = 0;
           qr.pt[j].valid = 1;
+#ifdef QR_USE_GFX
           if (qrDraw) {
             qrCross((qr.pt[j].xe+qr.pt[j].xs)/2, (qr.pt[j].ye+qr.pt[j].ys)/2, 0xffff);
           }
+#endif
           j++;
           if (j==QR_PT_DET_NUM) {
             break;

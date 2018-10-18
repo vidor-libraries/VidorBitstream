@@ -46,12 +46,12 @@
 
 
 
-#include <iptronix_16550_uart.h>
+#include <arduino_16550_uart.h>
 
 
 typedef struct uart_dev_s{
   char                     *name;
-  altera_16550_uart_state  *sp;
+  arduino_16550_uart_state *sp;
 } sUartDev, *psUartDev;
 
 #define UART_DEV(name) sUartDev name##_DEV = {name##_NAME, 0}

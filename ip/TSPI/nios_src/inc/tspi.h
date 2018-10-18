@@ -62,10 +62,10 @@ typedef struct tspi_dev_s{
 
 void tspiRpc(void);
 
-alt_u32 spiEnable(alt_u32 idx);
-alt_u32 spiModeSet(alt_u32 idx, alt_u32 baud, alt_u32 mode, alt_u32 bitOrder);
-alt_u32 spiDisable(alt_u32 idx);
-alt_u32 spiTrx(alt_u32 idx, alt_u8* buf, alt_u32 len);
-alt_u32 spiTrc(alt_u32 idx, alt_u32 txl, alt_u8* txb, alt_u32 rxl, alt_u8* rxb);
+alt_u32 tspiSetup(alt_u32 cmd);
+alt_u32 tspiModeSet(alt_u32 cmd, alt_u32 baud, alt_u32 mode, alt_u32 bit_order, alt_u32 ss_auto);
+alt_u32 tspiEnd(alt_u32 cmd);
+alt_u32 tspiTrx(alt_u32 cmd, alt_u8* buf, alt_u32 len);
+alt_u32 tspiTrc(alt_u32 cmd, alt_u32 txl, alt_u8* txb, alt_u32 rxl, alt_u8* rxb);
 
 #endif /* TSPI_H_ */

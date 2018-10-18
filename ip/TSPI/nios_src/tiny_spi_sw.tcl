@@ -16,10 +16,10 @@
 # a commercial license, send an email to license@arduino.cc.
 
 # Create a new driver
-create_driver NEOPIXEL
+create_driver TSPI
 
-# Associate it with some hardware known as "NEOPIXEL"
-set_sw_property hw_class_name NEOPIXEL
+# Associate it with some hardware known as "TSPI"
+set_sw_property hw_class_name tiny_spi
 
 # The version of this driver
 set_sw_property version 18.0
@@ -45,9 +45,9 @@ set_sw_property auto_initialize false
 set_sw_property bsp_subdirectory drivers
 
 # C/C++ source files
-add_sw_property c_source src/np.c
+add_sw_property c_source src/tspi.c
 
 # Include files
-add_sw_property include_source inc/np.h
+add_sw_property include_source inc/tspi.h
 
 add_sw_property supported_bsp_type HAL

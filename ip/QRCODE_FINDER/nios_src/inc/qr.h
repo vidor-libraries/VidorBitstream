@@ -23,6 +23,9 @@
 
 #include <alt_types.h>
 
+#define QR_UID  0xa2C68
+
+
 /**
  *
  */
@@ -43,8 +46,6 @@ typedef struct{
   sQrPnt  pt[QR_PT_DET_NUM];
 }sQrDet, *psQrDet;
 
-void qrInit(int devs);
-void qrCmd(void);
-void qrLoop(void);
+void qrRpc(void);
 
 #endif /* QR_H_ */

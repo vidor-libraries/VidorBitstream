@@ -15,11 +15,8 @@
 # software without disclosing the source code of your own applications. To purchase
 # a commercial license, send an email to license@arduino.cc.
 
-# Create a new driver
-create_driver UART
-
-# Associate it with some hardware known as "UART"
-set_sw_property hw_class_name UART
+# Create a new software package
+create_sw_package UART
 
 # The version of this driver
 set_sw_property version 1.0
@@ -31,7 +28,7 @@ set_sw_property version 1.0
 #
 # Multiple-Version compatibility was introduced in version 13.1;
 # prior versions are therefore excluded.
-set_sw_property min_compatible_hw_version 1.0
+# set_sw_property min_compatible_hw_version 1.0
 
 # Initialize the driver in alt_sys_init()
 set_sw_property auto_initialize false

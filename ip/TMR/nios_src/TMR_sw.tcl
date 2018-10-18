@@ -16,10 +16,10 @@
 # a commercial license, send an email to license@arduino.cc.
 
 # Create a new driver
-create_driver TSPI
+create_driver TMR
 
-# Associate it with some hardware known as "TSPI"
-set_sw_property hw_class_name TSPI
+# Associate it with some hardware known as "TMR"
+set_sw_property hw_class_name altera_avalon_timer
 
 # The version of this driver
 set_sw_property version 18.0
@@ -45,9 +45,9 @@ set_sw_property auto_initialize false
 set_sw_property bsp_subdirectory drivers
 
 # C/C++ source files
-add_sw_property c_source src/tspi.c
+add_sw_property c_source src/tmr.c
 
 # Include files
-add_sw_property include_source inc/tspi.h
+add_sw_property include_source inc/tmr.h
 
 add_sw_property supported_bsp_type HAL

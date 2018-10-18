@@ -5,6 +5,13 @@
  *      Author: max
  */
 
+#define GFX_CMDS       1
+#define GFX_FONTS      1
+#define GFX_FONT_FILE  "Org_01.h"
+#define GFX_FONT_NAME  Org_01
+#define GFX_LOGO       1
+#define GFX_CLEAR      1
+
 
 #include <stdio.h>
 #include <stdint.h>
@@ -197,8 +204,10 @@ GFXgc gfxDefaultGc = {
 void gfxInit(int devs)
 {
 #if defined(GFX_CLEAR) && (GFX_CLEAR == 1)
+  /* TODO
   memset(GFX_CAM_BASE, 0, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
   memset(GFX_FB_BASE, 0xFF, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
+  TODO */
 #endif
 
 #if defined(GFX_LOGO) && (GFX_LOGO == 1)
@@ -210,20 +219,28 @@ void gfxInit(int devs)
 /**
  *
  */
-void gfxCmd(void)
+void gfxRpc(void)
 {
-  alt_u32 volatile *rpc = (alt_u32*)MB_BASE;
+  alt_u32 volatile *rpc = mbPtrGet();
   alt_u32           ret;
   GFXgc            *pGc;
 
+  ret = -1;
+  if ((fpgaIp[RPC_GIID(rpc[0])].disc & 0xFFFFF) != GFX_UID) {
+    rpc[1] = ret;
+    return ;
+  }
+/* TODO
   if (MB_SUB(rpc[0]) >= GFX_GC_NUM) {
     rpc[1] = -1;
     return;
   }
   pGc = gfxGc[MB_SUB(rpc[0])];
-
+*/
+  pGc = &gfxDefaultGc;
+/* TODO */
   ret = -1;
-  switch(MB_CMD(rpc[0])){
+  switch (RPC_PID(rpc[0])) {
   case 0:
     ret = writePixel(pGc, rpc[1], rpc[2], rpc[3]);
     break;
