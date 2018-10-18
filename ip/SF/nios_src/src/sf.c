@@ -9,7 +9,6 @@
 #include <system.h>
 
 #define SF_RPC_CMD        1
-#define SF_SPI_IDX        0
 #define SF_USE_QSPI       1
 #define SF_SECURITY_CMDS  1
 
@@ -78,6 +77,8 @@ void memcpyr(char *dst, char* src, int size);
 int memcmpr(char *dst, char* src, int size);
 #endif /* defined(SF_INVERT_BIT) && (SF_INVERT_BIT == 1) */
 
+alt_u32 sfSpiGiid;
+
 #if defined(SF_RPC_CMD) && (SF_RPC_CMD == 1)
 
 /**
@@ -144,8 +145,16 @@ void sfRpc(void)
  */
 alt_u32 sfSetup(alt_u32 cmd)
 {
-  tspiSetup(SF_SPI_IDX);
-  tspiModeSet(SF_SPI_IDX, 50000000, 0, 0, 1);
+  int i;
+  sfSpiGiid = 0;
+  for (i=0; i<GIID_MAX; i++) {
+    if (fpgaIp[i].base == FLASH_SPI_BASE) {
+      sfSpiGiid = i << 24;
+      break;
+    }
+  }
+  tspiSetup(sfSpiGiid);
+  tspiModeSet(sfSpiGiid, 50000000, 0, 0, 1);
 
   return 0;
 }
@@ -166,7 +175,7 @@ alt_u32 sfJedecId(void)
   alt_u8  txb[]={0x9f};
   alt_u8  rxb[4];
 
-  tspiTrc(SF_SPI_IDX, 1, txb, 3, rxb);
+  tspiTrc(sfSpiGiid, 1, txb, 3, rxb);
 
   return (rxb[0]<<16) | (rxb[1]<<8) | (rxb[2]);
 }
@@ -184,7 +193,7 @@ alt_u32 sfUniqueId(alt_u8* id)
   txb[3] = 0;
   txb[4] = 0;
 
-  tspiTrc(SF_SPI_IDX, 1+4, txb, 8, id);
+  tspiTrc(sfSpiGiid, 1+4, txb, 8, id);
   return 0;
 }
 
@@ -385,7 +394,7 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
 
   //write enable 0x06
   txb[0] = 0x06;
-  tspiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
+  tspiTrc(sfSpiGiid, 1, txb, 0, rxb);
 
   switch(mode){
   case 0:
@@ -423,11 +432,11 @@ alt_u32 sfErase(alt_u32 mode, alt_u32 adr)
   default:
     return -1;
   }
-  tspiTrc(SF_SPI_IDX, txl, txb, 0, rxb);
+  tspiTrc(sfSpiGiid, txl, txb, 0, rxb);
 
   // wait tCHPE 12/20/30 sec
   txb[0] = 0x05;
-  do {tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
+  do {tspiTrc(sfSpiGiid, 1, txb, 1, rxb);} while (rxb[0]&1);
 
   return 0;
 }
@@ -445,7 +454,7 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
   do{
     //write enable 0x06
     txb[0] = 0x06;
-    tspiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
+    tspiTrc(sfSpiGiid, 1, txb, 0, rxb);
 
     //program      0x02 address (3 byte) data (1-256)
     //max data length is 256 byte
@@ -460,13 +469,13 @@ alt_u32 sfProgram(alt_u32 adr, alt_u8* data, alt_u32 len)
 #else
     memcpy((char*)txb+4, (char*)data+ptr, cnt);
 #endif
-    tspiTrc(SF_SPI_IDX, 1+3+cnt, txb, 0, rxb);
+    tspiTrc(sfSpiGiid, 1+3+cnt, txb, 0, rxb);
     len -= cnt;
     adr += cnt;
     ptr += cnt;
 
     txb[0] = 0x05;
-    do { tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
+    do { tspiTrc(sfSpiGiid, 1, txb, 1, rxb);} while (rxb[0]&1);
   }while(len>0);
 
   return 0;
@@ -504,9 +513,9 @@ alt_u32 sfRead(alt_u32 adr, alt_u8* data, alt_u32 len)
     txb[3] = adr;
 
 #ifdef SF_FAST_RD
-    tspiTrc(SF_SPI_IDX, 1+3+1, txb, cnt, data+ptr);
+    tspiTrc(sfSpiGiid, 1+3+1, txb, cnt, data+ptr);
 #else
-    tspiTrc(SF_SPI_IDX, 1+3, txb, cnt, data+ptr);
+    tspiTrc(sfSpiGiid, 1+3, txb, cnt, data+ptr);
 #endif
 
     len -= cnt;
@@ -533,11 +542,11 @@ alt_u32 sfSRErase(alt_u8 reg)
   alt_u8  rxb[1];
 
   txb[0] = 0x05;
-  do { tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
+  do { tspiTrc(sfSpiGiid, 1, txb, 1, rxb);} while (rxb[0]&1);
 
   //write enable 0x06
   txb[0] = 0x06;
-  tspiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
+  tspiTrc(sfSpiGiid, 1, txb, 0, rxb);
 
   //Erase Security Registers (44h)
   txb[0] = 0x44;
@@ -545,10 +554,10 @@ alt_u32 sfSRErase(alt_u8 reg)
   txb[2] = (reg+1)<<4;
   txb[3] = 0;
 
-  tspiTrc(SF_SPI_IDX, 1+3, txb, 0, rxb);
+  tspiTrc(sfSpiGiid, 1+3, txb, 0, rxb);
 
   txb[0] = 0x05;
-  do { tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
+  do { tspiTrc(sfSpiGiid, 1, txb, 1, rxb);} while (rxb[0]&1);
 
   return 0;
 }
@@ -568,11 +577,11 @@ alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
   alt_u8  rxb[1];
 
   txb[0] = 0x05;
-  do { tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
+  do { tspiTrc(sfSpiGiid, 1, txb, 1, rxb);} while (rxb[0]&1);
 
   //write enable 0x06
   txb[0] = 0x06;
-  tspiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
+  tspiTrc(sfSpiGiid, 1, txb, 0, rxb);
 
   //Program Security Registers
   txb[0] = 0x42;
@@ -581,10 +590,10 @@ alt_u32 sfSRProgram(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
   txb[3] = adr;
   memcpy((char*)txb+4, (char*)data, len);
 
-  tspiTrc(SF_SPI_IDX, 1+3+len, txb, 0, rxb);
+  tspiTrc(sfSpiGiid, 1+3+len, txb, 0, rxb);
 
   txb[0] = 0x05;
-  do { tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
+  do { tspiTrc(sfSpiGiid, 1, txb, 1, rxb);} while (rxb[0]&1);
 
   return 0;
 }
@@ -619,17 +628,17 @@ alt_u32 sfSRLock(alt_u8 reg)
 
   // Read Status Register 1
   txb[0] = 0x05;
-  tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);
+  tspiTrc(sfSpiGiid, 1, txb, 1, rxb);
   sts1 = rxb[0];
 
   // Read Status Register 2
   txb[0] = 0x35;
-  tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);
+  tspiTrc(sfSpiGiid, 1, txb, 1, rxb);
   sts2 = rxb[0];
 
   // write enable 0x06
   txb[0] = 0x06;
-  tspiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
+  tspiTrc(sfSpiGiid, 1, txb, 0, rxb);
 
   // set LB bit
   sts2 |= 0x08 << reg;
@@ -638,10 +647,10 @@ alt_u32 sfSRLock(alt_u8 reg)
   txb[0] = 0x01;
   txb[1] = sts1;
   txb[2] = sts2;
-  tspiTrc(SF_SPI_IDX, 3, txb, 0, rxb);
+  tspiTrc(sfSpiGiid, 3, txb, 0, rxb);
 
   txb[0] = 0x05;
-  do { tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
+  do { tspiTrc(sfSpiGiid, 1, txb, 1, rxb);} while (rxb[0]&1);
 
   return 0;
 }
@@ -662,7 +671,7 @@ alt_u32 sfSRRead(alt_u8 reg, alt_u8 adr, alt_u8* data, alt_u32 len)
   txb[2] = (reg+1)<<4;
   txb[3] = adr;
   txb[4] = 0; // dummy byte
-  tspiTrc(SF_SPI_IDX, 1+4, txb, len, data);
+  tspiTrc(sfSpiGiid, 1+4, txb, len, data);
 
   return 0;
 }
@@ -679,12 +688,12 @@ alt_u32 sfProtect(void)
 
   // Read Status Register 1
   txb[0] = 0x05;
-  tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);
+  tspiTrc(sfSpiGiid, 1, txb, 1, rxb);
   sts1 = rxb[0];
 
   // Read Status Register 2
   txb[0] = 0x35;
-  tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);
+  tspiTrc(sfSpiGiid, 1, txb, 1, rxb);
   sts2 = rxb[0];
 
   // set SEC(6)=0 TB(5)=1 BP(4-2)=100
@@ -693,16 +702,16 @@ alt_u32 sfProtect(void)
 
   // write enable 0x06
   txb[0] = 0x06;
-  tspiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
+  tspiTrc(sfSpiGiid, 1, txb, 0, rxb);
 
   // Write Status Register 1 and 2 (0x01)
   txb[0] = 0x01;
   txb[1] = sts1;
   txb[2] = sts2;
-  tspiTrc(SF_SPI_IDX, 3, txb, 0, rxb);
+  tspiTrc(sfSpiGiid, 3, txb, 0, rxb);
 
   txb[0] = 0x05;
-  do { tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);} while (rxb[0]&1);
+  do { tspiTrc(sfSpiGiid, 1, txb, 1, rxb);} while (rxb[0]&1);
   return 0;
 }
 
@@ -742,20 +751,20 @@ alt_u32 sfEnableQuad(void)
 
   //read status register 0
   txb[0] = 0x5;
-  tspiTrc(SF_SPI_IDX, 1, txb, 1, rxb);
+  tspiTrc(sfSpiGiid, 1, txb, 1, rxb);
 
   //read status register 1
   txb[0] = 0x35;
-  tspiTrc(SF_SPI_IDX, 1, txb, 1, &rxb[1]);
+  tspiTrc(sfSpiGiid, 1, txb, 1, &rxb[1]);
 
   // if QE bit is not set enable it using method for
   if ((rxb[1] & 2) == 0) {
    txb[0] = 0x06;
-   tspiTrc(SF_SPI_IDX, 1, txb, 0, rxb);
+   tspiTrc(sfSpiGiid, 1, txb, 0, rxb);
    txb[0] = 0x1;
    txb[1] = rxb[0];
    txb[2] = rxb[1]|2;
-   tspiTrc(SF_SPI_IDX, 3, txb, 0, rxb);
+   tspiTrc(sfSpiGiid, 3, txb, 0, rxb);
   }
 
   return 0;

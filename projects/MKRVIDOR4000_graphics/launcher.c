@@ -26,6 +26,7 @@ int main(void)
   int ret;
 
   // enable quad spi access to flash
+  sfSetup(0);
   sfEnableQuad();
 
   // sign check

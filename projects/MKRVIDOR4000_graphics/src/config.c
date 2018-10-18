@@ -366,5 +366,6 @@ sFpgaIp fpgaIp[] = {
    * TSPI
    */
   {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), NINA_SPI_BASE, TSPI_0_CHN, &TSPI_0_DEV},
+  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), FLASH_SPI_BASE, NULL, NULL},
 };
 int fpgaIpGiidNum = (sizeof(fpgaIp)/sizeof(sFpgaIp));
