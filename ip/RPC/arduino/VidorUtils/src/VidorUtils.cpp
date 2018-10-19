@@ -49,6 +49,7 @@ int VidorUtils::begin(bool jumpToApp)
 
 void VidorUtils::onInterrupt() {
 
+/*
 	uint32_t data[128];
 	data[0] = GET_IRQ_SOURCE;
 
@@ -64,6 +65,7 @@ void VidorUtils::onInterrupt() {
 			break;
 		}
 	}
+	*/
 }
 
 bool VidorUtils::ready() {
