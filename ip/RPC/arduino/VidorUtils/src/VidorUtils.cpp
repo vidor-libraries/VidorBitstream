@@ -36,6 +36,8 @@ int VidorUtils::begin(bool jumpToApp)
 		uint32_t evt[1];
 		evt[0] = 0 | 3;
 		VidorMailbox.sendEvent(evt, 1);
+		delay(100);
+		ret = VidorMailbox.begin();
 	}
 
 	attachInterrupt(IRQ_PIN, VidorUtils::onInterrupt, FALLING);
