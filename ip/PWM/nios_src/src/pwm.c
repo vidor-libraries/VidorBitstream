@@ -61,9 +61,8 @@ void pwmRpc(void)
     ret = pwmFrqSet(rpc[1], rpc[2]);
     break;
   case 6:
-    ret = pwmWrite(rpc[1], rpc[2], rpc[3]);
+    ret = pwmWrite(rpc[0], rpc[1], rpc[2]);
     break;
-//  case 2: ret = pwmWrite(MB_CHN(rpc[0]), rpc[1], rpc[2]); break;
   }
   rpc[1] = ret;
 }
@@ -95,12 +94,14 @@ alt_u32 pwmFrqSet(alt_u32 prescaler, alt_u16 period)
 /**
  *
  */
-alt_u32 pwmWrite(alt_u32 pin, alt_u16 mh, alt_u16 ml)
+alt_u32 pwmWrite(alt_u32 cmd, alt_u16 mh, alt_u16 ml)
 {
-  alt_u32 pad;
+  alt_u8  giid = RPC_GIID(cmd);
+  alt_u16 chn  = RPC_CHN(cmd);
+  alt_u32 base;
 
-  pad = pin & 0x1F;
-  IOWR(SAM_PWM_BASE, PWM_MATCH_H(pad), mh);
-  IOWR(SAM_PWM_BASE, PWM_MATCH_L(pad), ml);
+  base = fpgaIp[giid-1].base;
+  IOWR(base, PWM_MATCH_H(chn), mh);
+  IOWR(base, PWM_MATCH_L(chn), ml);
   return 0;
 }

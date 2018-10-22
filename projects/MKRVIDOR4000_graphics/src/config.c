@@ -29,6 +29,7 @@
 #include "enc.h"
 #include "uart.h"
 #include "tspi.h"
+#include "gfx.h"
 
 /**
  * FPGA pins assignment
@@ -315,8 +316,15 @@ sFpgaIpRpc fpgaIpRpc[] = {
   {encRpc , ENC_VER     },
   {uartRpc, UART_VER    },
   {tspiRpc, TSPI_VER    },
+  {gfxRpc , GFX_VER     },
 #endif
 };
+
+/* TODO va preso da system.h */
+#define PEX_PIO_CHNS  25
+#define SAM_PIO_CHNS  18
+#define WM_PIO_CHNS   18
+
 
 /**
  */
@@ -330,9 +338,9 @@ sFpgaIp fpgaIp[] = {
   /**
    * PIO
    */
-  {1, IP_DISC(PIO_0_CHNS, PIO_UID), PIO_0_BASE, 0},
-  {1, IP_DISC(PIO_1_CHNS, PIO_UID), PIO_1_BASE, 0},
-  {1, IP_DISC(PIO_2_CHNS, PIO_UID), PIO_2_BASE, 0},
+  {1, IP_DISC(PEX_PIO_CHNS, PIO_UID), PEX_PIO_BASE, 0},
+  {1, IP_DISC(SAM_PIO_CHNS, PIO_UID), SAM_PIO_BASE, 0},
+  {1, IP_DISC(WM_PIO_CHNS , PIO_UID), WM_PIO_BASE, 0},
 
   /**
    * PWM
@@ -366,6 +374,12 @@ sFpgaIp fpgaIp[] = {
    * TSPI
    */
   {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), NINA_SPI_BASE, TSPI_0_CHN, &TSPI_0_DEV},
-  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), FLASH_SPI_BASE, NULL, NULL},
+//  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), FLASH_SPI_BASE, NULL, NULL},
+  {7, IP_DISC(0, 0), FLASH_SPI_BASE, NULL, NULL},
+
+  /**
+   * GFX
+   */
+  {8, IP_DISC(0, GFX_UID), 0, NULL, NULL},
 };
 int fpgaIpGiidNum = (sizeof(fpgaIp)/sizeof(sFpgaIp));

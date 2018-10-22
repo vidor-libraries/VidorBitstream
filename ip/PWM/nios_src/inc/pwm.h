@@ -40,22 +40,12 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
 #define PWM_PIN_FNC_OUT   PIN_FNC(0x01, PIN_DIR_O)
 
 
 void pwmRpc(void);
 
 alt_u32 pwmFrqSet(alt_u32 prescaler, alt_u16 period);
-alt_u32 pwmWrite(alt_u32 pin, alt_u16 mh, alt_u16 ml);
+alt_u32 pwmWrite(alt_u32 cmd, alt_u16 mh, alt_u16 ml);
 
 #endif /* PWM_H_ */
