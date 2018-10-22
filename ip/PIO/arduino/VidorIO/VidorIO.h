@@ -18,6 +18,7 @@
 */
 
 #include "VidorMailbox.h"
+#include "VidorIP.h"
 #include "defines.h"
 
 #ifndef __VIDOR_IO_H__
@@ -30,11 +31,15 @@ extern "C" {
 	void analogWriteExtended( uint32_t pin, uint32_t value );
 }
 
-class VidorIO {
+class VidorIO : public VidorIP {
 
 public:
 	static void pinMode(uint32_t pin, uint32_t mode) {
 		uint32_t rpc[256];
+
+		// get giid for required pin
+
+
 		rpc[0] = MB_CMD(MB_DEV_GPIO, 0, 0, 0x01);
 		rpc[1] = pin;
 
@@ -96,11 +101,13 @@ public:
 		VidorMailbox.sendCommand(rpc, 4);
 	}
 
+	int begin() {};
+
 	/* I2C functions moved*/
 	/* UART functions moved */
 	/* SPI functions moved */
   private:
-//TODO    uint8_t devIdx;
+
 };
 
 #endif
