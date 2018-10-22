@@ -61,30 +61,10 @@
 #include "Vidor_GFX.h"
 #endif
 
-class VidorFPGA : public VidorUtils {
+class VidorFPGA : public VidorUtils, public VidorIOContainer {
 	// get all methods from Utils
   // wrap VidorIO so the user can call
 	// FPGA.begin() as well as FPGA.pinMode()
-public:
-  void pinMode(int pin, int mode) {
-    pio_instance.pinMode(pin, mode);
-  }
-  void digitalWrite(int pin, int level) {
-    pio_instance.digitalWrite(pin, level);
-  }
-  int digitalRead(int pin) {
-    return pio_instance.digitalRead(pin);
-  }
-  void analogWrite(int pin, int duty) {
-    pio_instance.analogWrite(pin, duty);
-  }
-  void analogWriteResolution(int bits, int frequency) {
-    pio_instance.analogWriteResolution(bits, frequency);
-  }
-
-private:
-  VidorIO pio_instance;
-  //VidorPWM pwm_instance;
 };
 
 extern VidorFPGA FPGA;

@@ -34,13 +34,20 @@ extern "C" {
 class VidorIO : public VidorIP {
 
 public:
-	static void pinMode(uint32_t pin, uint32_t mode) {
+
+	VidorIO(int _base) : base(_base) {}
+
+	void pinMode(uint32_t pin, uint32_t mode) {
 		uint32_t rpc[256];
 
-		// get giid for required pin
+		// get giid and chan for required pin (pin here has the complete numbering scheme)
+		// TODO: should I ask this to UID 0 == FPGA ?
+		int ret = init(PIO_UID, pin + 32*base);
+		if (ret < 0) {
+			return;
+		}
 
-
-		rpc[0] = MB_CMD(MB_DEV_GPIO, 0, 0, 0x01);
+		rpc[0] = RPC_CMD(info.giid, info.chn, 0x01);
 		rpc[1] = pin;
 
 		switch (mode) {
@@ -56,7 +63,7 @@ public:
 		VidorMailbox.sendCommand(rpc, 3);
 	}
 
-	static void digitalWrite(uint32_t pin, uint32_t mode) {
+	void digitalWrite(uint32_t pin, uint32_t mode) {
 		uint32_t rpc[256];
 		rpc[0] = MB_CMD(MB_DEV_GPIO, 0, 0, 0x02);
 		rpc[1] = pin;
@@ -64,16 +71,16 @@ public:
 		VidorMailbox.sendCommand(rpc, 3);
 	}
 
-	static int digitalRead(uint32_t pin) {
+	int digitalRead(uint32_t pin) {
 		uint32_t rpc[256];
 		rpc[0] = MB_CMD(MB_DEV_GPIO, 0, 0, 0x03);
 		rpc[1] = pin;
 		return VidorMailbox.sendCommand(rpc, 2);
 	}
 
-	static int period;
+	int period;
 
-	static void analogWriteResolution(int bits, int frequency) {
+	void analogWriteResolution(int bits, int frequency) {
 
 		uint32_t rpc[256];
 		period = 2 << bits;
@@ -85,7 +92,7 @@ public:
 		VidorMailbox.sendCommand(rpc, 3);
 	}
 
-	static void analogWrite(uint32_t pin, uint32_t mode) {
+	void analogWrite(uint32_t pin, uint32_t mode) {
 
 		uint32_t rpc[256];
 
@@ -101,13 +108,44 @@ public:
 		VidorMailbox.sendCommand(rpc, 4);
 	}
 
-	int begin() {};
+	int begin() {
+		return 0;
+	};
 
 	/* I2C functions moved*/
 	/* UART functions moved */
 	/* SPI functions moved */
   private:
-
+	int base;
 };
+
+static VidorIO* instance[3] = {NULL, NULL, NULL};
+class VidorIOContainer {
+	public:
+
+		static void pinMode(int pin, int mode) {
+			if (instance[pin/32] == NULL) {
+				instance[pin/32] = new VidorIO(pin/32);
+			}
+			instance[pin/32]->pinMode(pin % 32, mode);
+		}
+
+		static void digitalWrite(int pin, int value) {
+			instance[pin/32]->digitalWrite(pin % 32, value);
+		}
+
+		static int digitalRead(int pin) {
+			return instance[pin/32]->digitalRead(pin);
+
+		}
+		static void analogWriteResolution(int bits, int frequency) {
+			instance[0]->analogWriteResolution(bits, frequency);
+		}
+
+		static void analogWrite(int pin, int mode) {
+			instance[pin/32]->analogWrite(pin % 32, mode);
+		}
+};
+
 
 #endif

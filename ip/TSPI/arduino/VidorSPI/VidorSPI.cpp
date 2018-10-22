@@ -59,7 +59,7 @@ void VidorSPIClass::init()
 
   //VidorIO::enableSPI(index, mosi, miso, sck, cs);
   if (mosi == -1) {
-    VidorIO::pinMode(FPGA_NINA_MOSI, 4);
+    pinModeExtended(FPGA_NINA_MOSI + GPIO_NUM_OFFSET, 4);
   } else if (mosi <= 14) {
     mosi = mosi - 0;
     pinModeExtended(mosi + 140, 5);
@@ -68,7 +68,7 @@ void VidorSPIClass::init()
     pinModeExtended(mosi + 133, 5);
   }
   if (miso == -1) {
-    VidorIO::pinMode(FPGA_NINA_MISO, INPUT);
+    pinModeExtended(FPGA_NINA_MISO + GPIO_NUM_OFFSET, INPUT);
   } else if (miso <= 14) {
     miso = miso - 0 ;
     pinModeExtended(miso + 140, INPUT);
@@ -77,7 +77,7 @@ void VidorSPIClass::init()
     pinModeExtended(miso + 133, INPUT);
   }
   if (sck == -1) {
-    VidorIO::pinMode(FPGA_NINA_SCK, 4);
+    pinModeExtended(FPGA_NINA_SCK + GPIO_NUM_OFFSET, 4);
   } else if (sck <= 14) {
     sck = sck - 0 ;
     pinModeExtended(sck + 140, 5);
