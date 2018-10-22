@@ -42,12 +42,15 @@ public:
 
 		// get giid and chan for required pin (pin here has the complete numbering scheme)
 		// TODO: should I ask this to UID 0 == FPGA ?
-		int ret = init(PIO_UID, pin + 32*base);
-		if (ret < 0) {
-			return;
+		if (!initialized) {
+			int ret = init(PIO_UID, pin + 32*base);
+			if (ret < 0) {
+				return;
+			}
+			initialized = true;
 		}
 
-		rpc[0] = RPC_CMD(info.giid, info.chn, 0x01);
+		rpc[0] = RPC_CMD(info.giid, info.chn, 5);
 		rpc[1] = pin;
 
 		switch (mode) {
@@ -65,7 +68,7 @@ public:
 
 	void digitalWrite(uint32_t pin, uint32_t mode) {
 		uint32_t rpc[256];
-		rpc[0] = MB_CMD(MB_DEV_GPIO, 0, 0, 0x02);
+		rpc[0] = RPC_CMD(info.giid, info.chn, 6);
 		rpc[1] = pin;
 		rpc[2] = mode;
 		VidorMailbox.sendCommand(rpc, 3);
@@ -73,12 +76,12 @@ public:
 
 	int digitalRead(uint32_t pin) {
 		uint32_t rpc[256];
-		rpc[0] = MB_CMD(MB_DEV_GPIO, 0, 0, 0x03);
+		rpc[0] = RPC_CMD(info.giid, info.chn, 7);
 		rpc[1] = pin;
 		return VidorMailbox.sendCommand(rpc, 2);
 	}
 
-	int period;
+	int period = -1;
 
 	void analogWriteResolution(int bits, int frequency) {
 
@@ -86,7 +89,7 @@ public:
 		period = 2 << bits;
 		int prescaler = (2 * F_CPU / frequency) / period;
 
-		rpc[0] = MB_CMD(MB_DEV_GPIO, 0, 0, 0x04);
+		rpc[0] = RPC_CMD(info.giid, info.chn, 8);
 		rpc[1] = prescaler;
 		rpc[2] = period;
 		VidorMailbox.sendCommand(rpc, 3);
@@ -100,8 +103,9 @@ public:
 			// sane default
 			analogWriteResolution(8, 490);
 		}
+		pinMode(pin, 3);
 
-		rpc[0] = MB_CMD(MB_DEV_GPIO, 0, 0, 0x05);
+		rpc[0] = RPC_CMD(info.giid, info.chn, 9);
 		rpc[1] = pin;
 		rpc[2] = mode;
 		rpc[3] = period - mode;
@@ -117,6 +121,7 @@ public:
 	/* SPI functions moved */
   private:
 	int base;
+	bool initialized = false;
 };
 
 static VidorIO* instance[3] = {NULL, NULL, NULL};
