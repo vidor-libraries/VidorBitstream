@@ -97,7 +97,6 @@ BSP_FLAGS=" \
 --set hal.stdin none \
 --set hal.stdout none \
 --set hal.sys_clk_timer none \
---set altera_vic_driver.linker_section .rwdata \
 --script set_app_regions.tcl \
 --cmd set_driver none remote_update_0 \
 --cmd set_driver none qspi \
