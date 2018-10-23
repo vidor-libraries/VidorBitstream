@@ -27,57 +27,23 @@ extern "C" {
 #include "VidorMailbox.h"
 #include "VidorI2C.h"
 
-VidorTwoWire::VidorTwoWire(int index,int _scl,int _sda)
+VidorTwoWire::VidorTwoWire(int _scl, int _sda)
 {
-  this->idx = index;
   transmissionBegun = false;
   scl = _scl;
   sda = _sda;
-  // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_I2C_DID);
-  devIdx = MB_DEV_I2C;
 }
 
 int VidorTwoWire::begin(void) {
-  int mode;
-
-  // Master Mode
-  if (idx < 3) {
-    mode = 4;
-  }else{
-    mode = 5;
-  }
-  if (sda == -1) {
-    goto set_scl;
-  }
-  if (sda <= 14) {
-    sda = sda-0;
-    pinMode(sda,INPUT);
-    pinMode(sda+140, mode);
-  } else {
-    sda = sda-A0;
-    pinMode(sda,INPUT);
-    pinMode(sda+133, mode);
+  int ret = init(I2C_UID, sda, scl);
+  if (ret < 0) {
+    return ret;
   }
 
-set_scl:
-  if (scl == -1) {
-    goto i2c_apply;
-  }
-  if (scl <= 14) {
-    scl = scl-0;
-    pinMode(scl, INPUT);
-    pinMode(scl+140, mode);
-  } else {
-    scl = scl-A0;
-    pinMode(scl, INPUT);
-    pinMode(scl+133, mode);
-  }
-
-i2c_apply:
-  uint32_t rpc[1];
-
-  rpc[0] = MB_CMD(devIdx, idx, 0, 0x01);
-  return VidorMailbox.sendCommand(rpc, 1);
+  uint32_t rpc[2];
+  rpc[0] = RPC_CMD(info.giid, info.chn, 2);
+  rpc[0] = 400000;
+  return VidorMailbox.sendCommand(rpc, 2);
 }
 
 void VidorTwoWire::begin(uint8_t address) {
@@ -87,7 +53,7 @@ void VidorTwoWire::begin(uint8_t address) {
 
 void VidorTwoWire::setClock(uint32_t baudrate) {
   uint32_t rpc[2];
-  rpc[0] = MB_CMD(devIdx, idx, 0, 0x02);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 2);
   rpc[1] = baudrate;
   VidorMailbox.sendCommand(rpc, 2);
 }
@@ -95,7 +61,7 @@ void VidorTwoWire::setClock(uint32_t baudrate) {
 void VidorTwoWire::end() {
   uint32_t rpc[1];
 
-  rpc[0] = MB_CMD(devIdx, idx, 0, 0x03);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 4);
   VidorMailbox.sendCommand(rpc, 1);
 }
 
@@ -112,7 +78,7 @@ uint8_t VidorTwoWire::requestFrom(uint8_t address, size_t quantity, bool stopBit
 
   rxBuffer.clear();
 
-  rpc[0] = MB_CMD(devIdx, idx, 0, 0x05);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 5);
   rpc[1] = address;
   rpc[2] = quantity;
   ret = VidorMailbox.sendCommand(rpc, 3);
@@ -152,7 +118,7 @@ uint8_t VidorTwoWire::endTransmission(bool stopBit)
   int ret;
   transmissionBegun = false ;
 
-  rpc[0] = MB_CMD(devIdx, idx, 0, 0x08);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 6);
   rpc[1] = txAddress;
   rpc[2] = txBuffer.available();
 
@@ -237,11 +203,11 @@ void VidorTwoWire::onService(void)
 	// I2C slave, not implemented ATM
 }
 
-VidorTwoWire WireFPGA0(1,9,10);
-VidorTwoWire WireFPGA1(2,11,12);
-VidorTwoWire WireFPGA2(3,13,14);
-VidorTwoWire WireFPGA3(4,A0,A1);
+VidorTwoWire WireFPGA0(9,10);
+VidorTwoWire WireFPGA1(11,12);
+VidorTwoWire WireFPGA2(13,14);
+VidorTwoWire WireFPGA3(A0,A1);
 
 // Internal pins to control the camera (P1 and P2 on the FPGA)
 // TODO: fixme with the actual code
-VidorTwoWire WireEx(0, -1, -1);
+VidorTwoWire WireEx(-1, -1);

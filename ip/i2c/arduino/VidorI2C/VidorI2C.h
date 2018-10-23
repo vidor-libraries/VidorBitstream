@@ -20,6 +20,7 @@
 #ifndef VidorTwoWire_h
 #define VidorTwoWire_h
 
+#include "VidorIP.h"
 #include "Stream.h"
 #include "RingBuffer.h"
 #include "defines.h"
@@ -30,10 +31,10 @@
 #define READ_FLAG		1
 #define WRITE_FLAG		0
 
-class VidorTwoWire : public Stream
+class VidorTwoWire : public VidorIP, public Stream
 {
   public:
-    VidorTwoWire(int index,int _scl,int _sda);
+    VidorTwoWire(int _scl,int _sda);
     int begin();
     void begin(uint8_t address);
     void end();
@@ -66,7 +67,6 @@ class VidorTwoWire : public Stream
 
   private:
     bool transmissionBegun;
-    uint8_t idx;
     int scl;
     int sda;
     // RX Buffer
@@ -82,7 +82,6 @@ class VidorTwoWire : public Stream
 
     // TWI clock frequency
     static const uint32_t TWI_CLOCK = 100000;
-    uint8_t devIdx;
 };
 
 extern VidorTwoWire WireFPGA0;
