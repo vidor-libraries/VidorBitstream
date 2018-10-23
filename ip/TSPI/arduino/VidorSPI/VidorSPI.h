@@ -97,15 +97,15 @@ class VidorSPISettings {
 };
 
 
-class VidorSPIClass {
+class VidorSPIClass : public VidorIP {
   public:
-  VidorSPIClass(int index,int _mosi,int _miso,int _sck,int _cs);
+  VidorSPIClass(int _mosi,int _miso,int _sck,int _cs);
 
   byte transfer(uint8_t data);
   uint16_t transfer16(uint16_t data);
   void transfer(void *buf, size_t count);
 
-  void setSPIMode(int index, int baud, int mode, int bitOrder);
+  void setSPIMode(int baud, int mode, int bitOrder);
 
   // Transaction Functions
   void usingInterrupt(int interruptNumber);
@@ -117,7 +117,7 @@ class VidorSPIClass {
   void attachInterrupt();
   void detachInterrupt();
 
-  void begin();
+  int begin();
   void end();
 
   void setBitOrder(BitOrder order);
@@ -125,7 +125,6 @@ class VidorSPIClass {
   void setClockDivider(uint8_t uc_div);
 
   private:
-  void init();
   void config(SPISettings settings);
 
   VidorSPISettings settings;
@@ -133,12 +132,10 @@ class VidorSPIClass {
   int miso;
   int sck;
   int cs;
-  int index;
   bool initialized;
   uint8_t interruptMode;
   char interruptSave;
   uint32_t interruptMask;
-  uint8_t devIdx;
 };
 
 extern VidorSPIClass SPIFPGA0;

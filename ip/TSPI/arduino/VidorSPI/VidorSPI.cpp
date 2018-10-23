@@ -30,87 +30,38 @@
 
 #define MAX_CLOCK_FREQUENCY   50000000  //50MHz
 
-VidorSPIClass::VidorSPIClass(int index,int _mosi,int _miso,int _sck,int _cs) : settings(SPISettings(0, MSBFIRST, SPI_MODE0))
+VidorSPIClass::VidorSPIClass(int _mosi, int _miso, int _sck, int _cs) : settings(SPISettings(0, MSBFIRST, SPI_MODE0))
 {
   initialized = false;
-  this->index = index;
   mosi = _mosi;
   miso = _miso;
   sck  = _sck;
   cs   = _cs;
-  // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_SPI_DID);
-  devIdx = MB_DEV_SPI;
 }
 
-void VidorSPIClass::begin()
+int VidorSPIClass::begin()
 {
-  init();
+  int ret = init(TSPI_UID, mosi, miso, sck, cs);
+  if (ret < 0) {
+    return -1;
+  }
+
+  uint32_t rpc[1];
+  rpc[0] = RPC_CMD(info.giid, info.chn, 2);
+  VidorMailbox.sendCommand(rpc, 1);
+
   config(DEFAULT_SPI_SETTINGS);
 }
 
-void VidorSPIClass::init()
+void VidorSPIClass::setSPIMode(int baud, int mode, int bitOrder)
 {
-  if (initialized)
-    return;
-  interruptMode = SPI_IMODE_NONE;
-  interruptSave = 0;
-  interruptMask = 0;
-  initialized = true;
-
-  //VidorIO::enableSPI(index, mosi, miso, sck, cs);
-  if (mosi == -1) {
-    pinModeExtended(FPGA_NINA_MOSI + GPIO_NUM_OFFSET, 4);
-  } else if (mosi <= 14) {
-    mosi = mosi - 0;
-    pinModeExtended(mosi + 140, 5);
-  } else {
-    mosi = mosi - A0;
-    pinModeExtended(mosi + 133, 5);
-  }
-  if (miso == -1) {
-    pinModeExtended(FPGA_NINA_MISO + GPIO_NUM_OFFSET, INPUT);
-  } else if (miso <= 14) {
-    miso = miso - 0 ;
-    pinModeExtended(miso + 140, INPUT);
-  } else {
-    miso = miso - A0;
-    pinModeExtended(miso + 133, INPUT);
-  }
-  if (sck == -1) {
-    pinModeExtended(FPGA_NINA_SCK + GPIO_NUM_OFFSET, 4);
-  } else if (sck <= 14) {
-    sck = sck - 0 ;
-    pinModeExtended(sck + 140, 5);
-  } else {
-    sck = sck - A0;
-    pinModeExtended(sck + 133, 5);
-  }
-
-  if (cs == -1) {
-    goto enable_spi;
-  } else if (cs <= 14) {
-    cs = cs - 0;
-    pinModeExtended(cs + 140, 5);
-  } else {
-    cs = cs - A0;
-    pinModeExtended(cs + 133, 5);
-  }
-
-enable_spi:
-  uint32_t rpc[2];
-  rpc[0] = MB_CMD(devIdx, index, 0, 0x01);
-  rpc[1] = index;
-  VidorMailbox.sendCommand(rpc, 2);
-}
-
-void VidorSPIClass::setSPIMode(int index, int baud, int mode, int bitOrder)
-{
-  uint32_t rpc[4];
-  rpc[0] = MB_CMD(devIdx, index, 0, 0x02);
-  rpc[1] = baud * 2;
-  rpc[2] = 0;
-  rpc[3] = 0;
-  VidorMailbox.sendCommand(rpc, 4);
+  uint32_t rpc[5];
+  rpc[0] = RPC_CMD(info.giid, info.chn, 5);
+  rpc[1] = baud;
+  rpc[2] = mode;
+  rpc[3] = bitOrder;
+  rpc[4] = false; // automatic SS
+  VidorMailbox.sendCommand(rpc, 5);
 }
 
 void VidorSPIClass::config(SPISettings settings)
@@ -119,7 +70,7 @@ void VidorSPIClass::config(SPISettings settings)
     this->settings.clockFreq = settings.getClockFreq();
     this->settings.dataMode = settings.getDataMode();
     this->settings.bitOrder = settings.getBitOrder();
-    setSPIMode(index, this->settings.clockFreq, this->settings.dataMode, this->settings.bitOrder);
+    setSPIMode(this->settings.clockFreq, this->settings.dataMode, this->settings.bitOrder);
   }
 }
 
@@ -127,7 +78,7 @@ void VidorSPIClass::end()
 {
   uint32_t rpc[1];
 
-  rpc[0] = MB_CMD(devIdx, index, 0, 0x03);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 4);
   VidorMailbox.sendCommand(rpc, 1);
   initialized = false;
 }
@@ -216,19 +167,19 @@ void VidorSPIClass::endTransaction(void)
 void VidorSPIClass::setBitOrder(BitOrder order)
 {
   settings.bitOrder = order;
-  setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
+  setSPIMode(settings.clockFreq, settings.dataMode, settings.bitOrder);
 }
 
 void VidorSPIClass::setDataMode(uint8_t mode)
 {
   settings.dataMode = mode;
-  setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
+  setSPIMode(settings.clockFreq, settings.dataMode, settings.bitOrder);
 }
 
 void VidorSPIClass::setClockDivider(uint8_t div)
 {
   settings.clockFreq = MAX_CLOCK_FREQUENCY / div;
-  setSPIMode(index, settings.clockFreq, settings.dataMode, settings.bitOrder);
+  setSPIMode(settings.clockFreq, settings.dataMode, settings.bitOrder);
 }
 
 byte VidorSPIClass::transfer(uint8_t data)
@@ -260,7 +211,7 @@ void VidorSPIClass::transfer(void *buf, size_t count)
   if (count > 128) {
     return;
   }
-  rpc[0] = MB_CMD(devIdx, index, 0, 0x04);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 6);
   rpc[1] = count;
   memcpy(&rpc[2], buf, count);
   int ret = VidorMailbox.sendCommand(rpc, 2+(rpc[1]+3)/4);
@@ -277,10 +228,10 @@ void VidorSPIClass::detachInterrupt() {
   // Should be disableInterrupt()
 }
 
-VidorSPIClass SPIFPGA0 (1, A2, A6, A3, A4);
-VidorSPIClass SPIFPGA1 (2, A5, 0, 1, 2);
-VidorSPIClass SPIFPGA2 (3, 3, 7, 4, 5);
-VidorSPIClass SPIFPGA3 (4, 6, 8, 9, 10);
-VidorSPIClass SPIFPGA4 (5, 11, 12, 13, 14);
+VidorSPIClass SPIFPGA0 (A2, A6, A3, A4);
+VidorSPIClass SPIFPGA1 (A5, 0, 1, 2);
+VidorSPIClass SPIFPGA2 (3, 7, 4, 5);
+VidorSPIClass SPIFPGA3 (6, 8, 9, 10);
+VidorSPIClass SPIFPGA4 (11, 12, 13, 14);
 
-VidorSPIClass SPIEx (0, -1, -1, -1, -1);  // Internally connected to NiNa module
+VidorSPIClass SPIEx (-1, -1, -1, -1);  // Internally connected to NiNa module
