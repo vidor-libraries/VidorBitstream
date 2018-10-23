@@ -189,6 +189,7 @@ GFXgc gfxDefaultGc = {
   0xffffffff,
   GFX_FB_BASE,
   wp16,
+  rd16,
   0,
 #if defined(GFX_FONTS) && (GFX_FONTS == 1)
   (GFXfont*)&GFX_FONT_NAME,
@@ -199,21 +200,9 @@ GFXgc gfxDefaultGc = {
 #endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
 };
 
-/**
- */
-void gfxInit(int devs)
-{
-#if defined(GFX_CLEAR) && (GFX_CLEAR == 1)
-  /* TODO
-  memset(GFX_CAM_BASE, 0, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
-  memset(GFX_FB_BASE, 0xFF, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
-  TODO */
-#endif
+alt_u32 gfxSetup(alt_u32 cmd);
+alt_u32 gfxEnd(alt_u32 cmd);
 
-#if defined(GFX_LOGO) && (GFX_LOGO == 1)
-  drawBmp(&gfxDefaultGc, (GFXbmp*)&arduinoLogo, (640-160)/2, (480-110)/2, 33396);
-#endif
-}
 
 #if defined(GFX_CMDS) && (GFX_CMDS == 1)
 /**
@@ -241,47 +230,50 @@ void gfxRpc(void)
 /* TODO */
   ret = -1;
   switch (RPC_PID(rpc[0])) {
-  case 0:
+  case 2: ret = gfxSetup(rpc[0]); break;
+  case 4: ret = gfxEnd(rpc[0]); break;
+
+  case 5:
     ret = writePixel(pGc, rpc[1], rpc[2], rpc[3]);
     break;
-  case 1:
+  case 6:
     ret = writeLine(pGc, rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
     break;
-  case 2:
+  case 7:
     ret = drawRect(pGc, rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
     break;
-  case 3:
+  case 8:
     ret = fillRect(pGc, rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
     break;
-  case 4:
+  case 9:
     ret = drawCircle(pGc, rpc[1], rpc[2], rpc[3], rpc[4]);
     break;
-  case 5:
+  case 10:
     ret = fillCircle(pGc, rpc[1], rpc[2], rpc[3], rpc[4]);
     break;
 #if defined(GFX_FONTS) && (GFX_FONTS == 1)
-  case 6:
+  case 11:
     ret = drawChar(pGc, rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
     break;
-  case 7:
+  case 12:
     ret = drawTxt(pGc, rpc[1], rpc[2], rpc[3], (alt_u8*)rpc[4]);
     break;
-  case 8:
+  case 13:
     ret = setFont(pGc, rpc[1]);
     break;
-  case 9:
+  case 14:
     ret = setCursor(pGc, rpc[1],rpc[2]);
     break;
-  case 10:
+  case 15:
     ret = setTextSize(pGc, rpc[1]);
     break;
-  case 11:
+  case 16:
     ret = setColor(pGc, rpc[1]);
     break;
-  case 12:
+  case 17:
     ret = setAlpha(pGc, rpc[1]);
     break;
-  case 13:
+  case 18:
     ret = drawCharAtCursor(pGc, rpc[1]);
     break;
 #endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
@@ -289,6 +281,34 @@ void gfxRpc(void)
   rpc[1] = ret;
 }
 #endif /* defined(GFX_CMDS) && (GFX_CMDS == 1) */
+
+/**
+ *
+ */
+alt_u32 gfxSetup(alt_u32 cmd)
+{
+#if defined(GFX_CLEAR) && (GFX_CLEAR == 1)
+  /* TODO
+  memset(GFX_CAM_BASE, 0, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
+  memset(GFX_FB_BASE, 0xFF, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
+  TODO */
+#endif
+
+#if defined(GFX_LOGO) && (GFX_LOGO == 1)
+  drawBmp(&gfxDefaultGc, (GFXbmp*)&arduinoLogo, (640-160)/2, (480-110)/2, 33396);
+#endif
+
+  return 0;
+}
+
+/**
+ *
+ */
+alt_u32 gfxEnd(alt_u32 cmd)
+{
+  return 0;
+}
+
 
 /**
  * convert color
@@ -362,6 +382,18 @@ alt_u32 wp16(void* arg, alt_u16 x, alt_u16 y)
 
 /**
  */
+alt_u32 rd16(void* arg, alt_u16 x, alt_u16 y)
+{
+  GFXgc   *pGc = (GFXgc*)arg;
+  alt_u16 *p;
+
+  //xy_convert(pGc, &x, &y);
+  p = (alt_u16*)pGc->fb + ((x + y*pGc->width) * pGc->stride);
+  return *p;
+}
+
+/**
+ */
 alt_u32 wp32(void* arg, alt_u16 x, alt_u16 y)
 {
   GFXgc   *pGc = (GFXgc*)arg;
@@ -378,6 +410,19 @@ alt_u32 wp32(void* arg, alt_u16 x, alt_u16 y)
   return 0;
 }
 
+/**
+ */
+/**
+ */
+alt_u32 rd32(void* arg, alt_u16 x, alt_u16 y)
+{
+  GFXgc   *pGc = (GFXgc*)arg;
+  alt_u32 *p;
+
+  //xy_convert(pGc, &x, &y);
+  p = (alt_u32*)pGc->fb + ((x + y*pGc->width) * pGc->stride);
+  return *p;
+}
 
 /**
  */

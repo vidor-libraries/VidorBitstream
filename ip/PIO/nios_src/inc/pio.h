@@ -17,15 +17,6 @@
 #define PIO_DRV_VER  0x0004
 #define PIO_VER     (((PIO_IP_VER)<<16)|(PIO_DRV_VER))
 
-#define PIO_0_BASE  PEX_PIO_BASE
-#define PIO_1_BASE  SAM_PIO_BASE
-#define PIO_2_BASE  WM_PIO_BASE
-
-#define PIO_0_CHNS  25
-#define PIO_1_CHNS  18
-#define PIO_2_CHNS  18
-
-
 #define PIO_PIN_FNC_OUT   PIN_FNC(0x01, PIN_DIR_O)
 
 void pioRpc(void);
