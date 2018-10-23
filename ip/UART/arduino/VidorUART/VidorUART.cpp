@@ -75,14 +75,14 @@ void VidorUart::setUART(int baud, int config) {
 
 void VidorUart::disableUART() {
   uint32_t rpc[1];
-  rpc[0] = MB_CMD(devIdx, idx, 0, 0x03);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 4);
   VidorMailbox.sendCommand(rpc, 1);
 }
 
 void VidorUart::flush() {
   uint32_t rpc[1];
   while(txBuffer.available()); // wait until TX buffer is empty
-  rpc[0] = MB_CMD(devIdx, idx, 0, 0x09);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 11);
   VidorMailbox.sendCommand(rpc, 1);
 }
 
@@ -106,10 +106,10 @@ int VidorUart::available()
   }
 
   uint32_t rpc[256];
-  rpc[0] = MB_CMD(devIdx, idx, 0, 0x06);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 8);
   ret = VidorMailbox.sendCommand(rpc, 1);
   if (ret > 0) {
-    rpc[0] = MB_CMD(devIdx, idx, 0, 0x05);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 7);
     rpc[1] = ret;
     ret = VidorMailbox.sendCommand(rpc, 2);
     VidorMailbox.read(2, &rpc[2], 1+(ret+3)/4);
@@ -163,7 +163,7 @@ int VidorUart::read(uint8_t* data, size_t len)
 size_t VidorUart::write(const uint8_t data)
 {
   uint32_t rpc[2];
-  rpc[0] = MB_CMD(devIdx, idx, 0, 0x07);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 9);
   rpc[1] = data;
   VidorMailbox.sendCommand(rpc, 2);
   return 1;
