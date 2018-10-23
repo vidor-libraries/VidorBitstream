@@ -29,38 +29,27 @@
 #define VIDOR_WIDTH  640
 #define VIDOR_HEIGHT 480
 
-#define GFX_PX    0
-#define GFX_LN    1
-#define GFX_DR    2
-#define GFX_FR    3
-#define GFX_DC    4
-#define GFX_FC    5
-//#define GFX_WC    6
-#define GFX_WT    7
-#define GFX_SF    8
-#define GFX_CR    9
-#define GFX_TS   10
-#define GFX_SC   11
-#define GFX_SA   12
-#define GFX_WC   13
+class Vidor_GFX;
 
 class Vidor_GFXtext {
   public:
-    Vidor_GFXtext(int index=0);
+    Vidor_GFXtext(Vidor_GFX* parent) {
+      this->parent = parent;
+    }
     void setColor(uint32_t color);
     void setAlpha(uint8_t alpha=0xff);
     void setSize(uint16_t size);
     void setCursor(uint16_t x,uint16_t y);
+    size_t write(uint8_t c);
   private:
-    int idx;
-    uint8_t devIdx;
-  protected:
-    friend class Vidor_GFX;
+    uint32_t color;
+    uint16_t x, y, size;
+    Vidor_GFX* parent;
 };
 
 class Vidor_GFX : public Print, public VidorIP {
   public:
-    Vidor_GFX(int index=0);
+    Vidor_GFX();
     Vidor_GFX(Vidor_NeoPixel& instance);
     int begin() {
       return init(GFX_UID);
@@ -72,10 +61,7 @@ class Vidor_GFX : public Print, public VidorIP {
     void drawCircle(uint16_t x0, uint16_t y0, uint16_t r, uint32_t color, uint8_t alpha=0xff);
     void fillCircle(uint16_t x0, uint16_t y0, uint16_t r, uint32_t color, uint8_t alpha=0xff);
     void drawChar(uint16_t x, uint16_t y, uint32_t color, uint8_t size,unsigned char c, uint8_t alpha=0xff);
-    void setFont(uint32_t num);
-    int getIndex() {
-      return idx;
-    }
+    //void setFont(uint32_t num);
     virtual size_t write(uint8_t c);
     uint32_t Color(uint8_t r, uint8_t g, uint8_t b);
     uint32_t Red();
@@ -88,11 +74,8 @@ class Vidor_GFX : public Print, public VidorIP {
     uint32_t Brown();
     uint32_t White();
     void Cross(uint16_t x, uint16_t y, uint32_t c, uint8_t alpha=0xff);
-    Vidor_GFXtext text;
-  private:
-    uint8_t devIdx;
-  protected:
-    int idx;
+    Vidor_GFXtext text = Vidor_GFXtext(this);
+    void* framebuffer;
 
   friend class Vidor_CAM;
   friend class Vidor_GFXbuffer;
@@ -118,28 +101,23 @@ typedef enum ScrollDirection {
 
 class Vidor_GFXbuffer {
   public:
-    Vidor_GFXbuffer(Vidor_NeoPixel& np, Vidor_GFX& gfx, int x, int y, bool zigzag) {
-      devIdx = np.devIdx;
-      np.init = true;
-      idx = gfx.idx;
+    Vidor_GFXbuffer(Vidor_GFX& gfx, int x, int y, bool zigzag) {
+      np = (Vidor_NeoPixel*)gfx.framebuffer;
+      np->initialized = true;
       this->x = x;
       this->y = y;
       this->zigzag = zigzag;
-      this->np = &np;
     }
     void scroll(int delay = 100, ScrollDirection direction = LEFT_TO_RIGHT);
     void noScroll();
     void begin(bool rotate90 = false, bool mirrorX = false, bool mirrorY = false);
     void mirror();
   private:
-    int idx;
-    uint8_t devIdx;
     int x;
     int y;
     bool zigzag;
     bool setup = false;
     Vidor_NeoPixel* np;
-    void select();
     void privateScroll(int flags, int delay);
   protected:
     friend class Vidor_GFX;

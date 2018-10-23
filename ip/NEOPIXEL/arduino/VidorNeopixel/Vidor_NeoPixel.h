@@ -92,10 +92,11 @@
 
 #endif
 
-class Vidor_NeoPixel {
+class Vidor_NeoPixel : public VidorIP {
   public:
     Vidor_NeoPixel(uint16_t howMany, uint8_t pin, uint8_t type = NEO_GRB + NEO_KHZ800);
-    uint32_t begin();
+    int begin();
+    int end();
     uint32_t setPin(uint8_t pin);
     uint32_t setPixelColor(uint16_t n, uint32_t red, uint32_t green, uint32_t blue, uint32_t white);
     uint32_t setPixelColor(uint16_t n, uint32_t red, uint32_t green, uint32_t blue) {
@@ -105,16 +106,16 @@ class Vidor_NeoPixel {
     uint32_t show(void);
     uint32_t setTimings(uint32_t freq, uint32_t trst, uint32_t t0h, uint32_t t1h, uint32_t ttot);
     uint32_t setWrap(uint32_t start, uint32_t len, uint32_t restart);
+    uint32_t setZZ(bool enabled, uint32_t len);
   protected:
-    bool init = false;
-    uint32_t index;
+    bool initialized = false;
     uint8_t type;
     uint32_t msk;
     uint16_t howMany;
-    uint8_t devIdx;
     uint8_t pin;
-  private:
-    int initIdx();
+    uint32_t offset;
+    uint32_t zzl = 0;
+    uint32_t zzf = 0;
 
   friend class Vidor_GFX;
   friend class Vidor_GFXbuffer;

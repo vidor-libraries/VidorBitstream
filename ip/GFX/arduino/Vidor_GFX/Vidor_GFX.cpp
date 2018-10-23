@@ -20,24 +20,11 @@
 #include "VidorMailbox.h"
 #include "Vidor_GFX.h"
 
-Vidor_GFX::Vidor_GFX(int index) {
-  text = Vidor_GFXtext(index);
-  idx = index;
-  // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_GFX_DID);
-  devIdx = MB_DEV_GFX;
+Vidor_GFX::Vidor_GFX() {
 }
 
 Vidor_GFX::Vidor_GFX(Vidor_NeoPixel& instance) {
-  idx = instance.index + 1;
-  text = Vidor_GFXtext(idx);
-  // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_GFX_DID);
-  devIdx = MB_DEV_GFX;
-}
-
-Vidor_GFXtext::Vidor_GFXtext(int index) {
-  idx = index;
-  // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_GFX_DID);
-  devIdx = MB_DEV_GFX;
+  framebuffer = &instance;
 }
 
 void Vidor_GFXbuffer::scroll(int delay, ScrollDirection direction) {
@@ -49,14 +36,13 @@ void Vidor_GFXbuffer::noScroll() {
 }
 
 void Vidor_GFXbuffer::privateScroll(int flags, int delay) {
-  if (!init) {
+  if (!np->initialized) {
     begin();
   }
 
-  select();
   uint32_t rpc[4];
 
-  rpc[0] = MB_CMD(devIdx, 0, 0, 10);
+  rpc[0] = RPC_CMD(np->info.giid, np->info.chn, 11);
   rpc[1] = flags;
   rpc[2] = 0;     // unused ???
   rpc[3] = delay;
@@ -64,37 +50,31 @@ void Vidor_GFXbuffer::privateScroll(int flags, int delay) {
   VidorMailbox.sendCommand(rpc, 4);
 }
 
-void Vidor_GFXbuffer::select() {
-  uint32_t rpc[2];
-
-  rpc[0] = MB_CMD(devIdx, 0, 0, 7);
-  rpc[1] = idx;
-
-  VidorMailbox.sendCommand(rpc, 2);
-}
-
 void Vidor_GFXbuffer::begin(bool rotate90, bool flipV, bool flipH) {
   uint32_t rpc[6];
 
-  rpc[0] = MB_CMD(devIdx, 0, 0, 6);
-  rpc[1] = idx;
-  rpc[2] = x*y;
-  rpc[3] = zigzag?1:0;
-  rpc[4] = y;
-  rpc[5] = (rotate90 ? GFX_GC_ROT90 : 0) | (flipV ? GFX_GC_FLIP_V : 0) | (flipH ? GFX_GC_FLIP_H : 0);
+  // TODO: ???? how should I integrate this?
+  rpc[0] = RPC_CMD(np->info.giid, np->info.chn, 2);
+  rpc[1] = x*y;
+  rpc[2] = zigzag?1:0;
+  rpc[3] = y;
+  rpc[4] = (rotate90 ? GFX_GC_ROT90 : 0) | (flipV ? GFX_GC_FLIP_V : 0) | (flipH ? GFX_GC_FLIP_H : 0);
 
   VidorMailbox.sendCommand(rpc, 6);
   setup = true;
 
   // late init of neopixel core
-  np->init = false;
+  np->initialized = false;
   np->begin();
 };
+
+
+/* Vidor_GFX */
 
 void Vidor_GFX::drawPixel(uint16_t x, uint16_t y, uint32_t color, uint8_t alpha) {
   uint32_t rpc[5];
   if(x<=VIDOR_WIDTH && y<=VIDOR_HEIGHT) {
-    rpc[0] = MB_CMD(devIdx, idx, 0, GFX_PX);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 1);
     rpc[1] = x;
     rpc[2] = y;
     rpc[3] = (color & 0xFFFFFF) | ((uint32_t)alpha << 24);
@@ -105,7 +85,7 @@ void Vidor_GFX::drawPixel(uint16_t x, uint16_t y, uint32_t color, uint8_t alpha)
 void Vidor_GFX::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint32_t color, uint8_t alpha) {
   uint32_t rpc[7];
   if(x0<=VIDOR_WIDTH && y0<=VIDOR_HEIGHT && x1<=VIDOR_WIDTH && y1<=VIDOR_HEIGHT ) {
-    rpc[0] = MB_CMD(devIdx, idx, 0, GFX_LN);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 2);
     rpc[1] = x0;
     rpc[2] = y0;
     rpc[3] = x1;
@@ -117,7 +97,7 @@ void Vidor_GFX::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uin
 void Vidor_GFX::drawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color, uint8_t alpha) {
   uint32_t rpc[7];
   if(x<=VIDOR_WIDTH && y<=VIDOR_HEIGHT && x+w<=VIDOR_WIDTH && y+h<=VIDOR_HEIGHT) {
-    rpc[0] = MB_CMD(devIdx, idx, 0, GFX_DR);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 3);
     rpc[1] = x;
     rpc[2] = y;
     rpc[3] = w;
@@ -130,7 +110,7 @@ void Vidor_GFX::drawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_
 void Vidor_GFX::fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color, uint8_t alpha) {
   uint32_t rpc[7];
   if(x<=VIDOR_WIDTH && y<=VIDOR_HEIGHT && x+w<=VIDOR_WIDTH && y+h<=VIDOR_HEIGHT) {
-    rpc[0] = MB_CMD(devIdx, idx, 0, GFX_FR);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 4);
     rpc[1] = x;
     rpc[2] = y;
     rpc[3] = w;
@@ -144,7 +124,7 @@ void Vidor_GFX::drawCircle(uint16_t x0, uint16_t y0, uint16_t r, uint32_t color,
   uint32_t rpc[6];
   if(x0<=VIDOR_WIDTH && y0<=VIDOR_HEIGHT && x0+r<=VIDOR_WIDTH
                                         && x0-r>0 && y0-r>0) {
-    rpc[0] = MB_CMD(devIdx, idx, 0, GFX_DC);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 5);
     rpc[1] = x0;
     rpc[2] = y0;
     rpc[3] = r;
@@ -157,7 +137,7 @@ void Vidor_GFX::fillCircle(uint16_t x0, uint16_t y0, uint16_t r, uint32_t color,
   uint32_t rpc[6];
   if(x0<=VIDOR_WIDTH && y0<=VIDOR_HEIGHT && x0+r<=VIDOR_WIDTH
     && x0-r>0 && y0-r>0) {
-    rpc[0] = MB_CMD(devIdx, idx, 0, GFX_FC);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 6);
     rpc[1] = x0;
     rpc[2] = y0;
     rpc[3] = r;
@@ -166,48 +146,42 @@ void Vidor_GFX::fillCircle(uint16_t x0, uint16_t y0, uint16_t r, uint32_t color,
   }
 }
 
+/*
 void Vidor_GFX::setFont(uint32_t num) {
   uint32_t rpc[2];
-  rpc[0] = MB_CMD(devIdx, idx, 0, GFX_SF);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 9);
   rpc[1] = num;
   VidorMailbox.sendCommand(rpc, 2);
 }
+*/
 
 void Vidor_GFXtext::setColor(uint32_t color) {
-  uint32_t rpc[2];
-  rpc[0] = MB_CMD(devIdx, idx, 0, GFX_SC);
-  rpc[1] = color;
-  VidorMailbox.sendCommand(rpc, 2);
-}
-
-void Vidor_GFXtext::setAlpha(uint8_t alpha) {
-  uint32_t rpc[2];
-  rpc[0] = MB_CMD(devIdx, idx, 0, GFX_SA);
-  rpc[1] = alpha;
-  VidorMailbox.sendCommand(rpc, 2);
+  this->color = color;
 }
 
 void Vidor_GFXtext::setCursor(uint16_t x,uint16_t y) {
-  uint32_t rpc[3];
-  rpc[0] = MB_CMD(devIdx, idx, 0, GFX_CR);
-  rpc[1] = x;
-  rpc[2] = y;
-  VidorMailbox.sendCommand(rpc, 3);
+  this->x = x;
+  this->y = y;
 }
 
 void Vidor_GFXtext::setSize(uint16_t size) {
-  uint32_t rpc[2];
-  rpc[0] = MB_CMD(devIdx, idx, 0, GFX_TS);
-  rpc[1] = size;
-  VidorMailbox.sendCommand(rpc, 2);
+  this->size = size;
+}
+
+size_t Vidor_GFXtext::write(uint8_t c) {
+  uint32_t rpc[6];
+  rpc[0] = RPC_CMD(parent->info.giid, parent->info.chn, 7);
+  rpc[1] = x;
+  rpc[2] = y;
+  rpc[3] = color;
+  rpc[4] = size;
+  rpc[5] = c;
+  VidorMailbox.sendCommand(rpc, 6);
+  return 1;
 }
 
 size_t Vidor_GFX::write(uint8_t c) {
-  uint32_t rpc[2];
-  rpc[0] = MB_CMD(devIdx, idx, 0, GFX_WC);
-  rpc[1] = c;
-  VidorMailbox.sendCommand(rpc, 2);
-  return 1;
+  return text.write(c);
 }
 
 uint32_t Vidor_GFX::Color(uint8_t r, uint8_t g, uint8_t b) {
