@@ -29,7 +29,7 @@
 #include "enc.h"
 #include "uart.h"
 #include "tspi.h"
-#include "gfx.h"
+// TODO #include "gfx.h"
 
 /**
  * FPGA pins assignment
@@ -205,27 +205,29 @@ sFpgaIpChn I2C_1_CHN[] = {
 /**
  * NeoPixel pins definition
  */
-sFpgaIpPin NEOPIXEL_0_PIN[] = {
-  {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 7)},
-};
-sFpgaIpPin NEOPIXEL_1_PIN[] = {
-  {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 8)},
-};
-sFpgaIpPin NEOPIXEL_2_PIN[] = {
-  {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 15)},
-};
-sFpgaIpPin NEOPIXEL_3_PIN[] = {
-  {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 16)},
-};
-sFpgaIpPin NEOPIXEL_4_PIN[] = {
-  {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 20)},
-};
+sFpgaIpPin NEOPIXEL_0_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  1)} };
+sFpgaIpPin NEOPIXEL_1_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  2)} };
+sFpgaIpPin NEOPIXEL_2_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  3)} };
+sFpgaIpPin NEOPIXEL_3_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  4)} };
+sFpgaIpPin NEOPIXEL_4_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  5)} };
+sFpgaIpPin NEOPIXEL_5_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  6)} };
+sFpgaIpPin NEOPIXEL_6_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  7)} };
+sFpgaIpPin NEOPIXEL_7_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  8)} };
+sFpgaIpPin NEOPIXEL_8_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  9)} };
+sFpgaIpPin NEOPIXEL_9_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 10)} };
+sFpgaIpPin NEOPIXEL_10_PIN[] = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 11)} };
 sFpgaIpChn NEOPIXEL_CHN[] = {
   {NPIN(NEOPIXEL_0_PIN), NEOPIXEL_0_PIN},
   {NPIN(NEOPIXEL_1_PIN), NEOPIXEL_1_PIN},
   {NPIN(NEOPIXEL_2_PIN), NEOPIXEL_2_PIN},
   {NPIN(NEOPIXEL_3_PIN), NEOPIXEL_3_PIN},
   {NPIN(NEOPIXEL_4_PIN), NEOPIXEL_4_PIN},
+  {NPIN(NEOPIXEL_5_PIN), NEOPIXEL_5_PIN},
+  {NPIN(NEOPIXEL_6_PIN), NEOPIXEL_6_PIN},
+  {NPIN(NEOPIXEL_7_PIN), NEOPIXEL_7_PIN},
+  {NPIN(NEOPIXEL_8_PIN), NEOPIXEL_8_PIN},
+  {NPIN(NEOPIXEL_9_PIN), NEOPIXEL_9_PIN},
+  {NPIN(NEOPIXEL_10_PIN), NEOPIXEL_10_PIN},
 };
 
 /**
@@ -316,7 +318,7 @@ sFpgaIpRpc fpgaIpRpc[] = {
   {encRpc , ENC_VER     },
   {uartRpc, UART_VER    },
   {tspiRpc, TSPI_VER    },
-  {gfxRpc , GFX_VER     },
+// TODO   {gfxRpc , GFX_VER     },
 #endif
 };
 
@@ -380,6 +382,6 @@ sFpgaIp fpgaIp[] = {
   /**
    * GFX
    */
-  {8, IP_DISC(0, GFX_UID), 0, NULL, NULL},
+// TODO   {8, IP_DISC(0, GFX_UID), 0, NULL, NULL},
 };
 int fpgaIpGiidNum = (sizeof(fpgaIp)/sizeof(sFpgaIp));
