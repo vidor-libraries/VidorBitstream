@@ -33,6 +33,7 @@
 #define ENC_UID         0x0D645
 #define TSPI_UID        0xEBCE5
 #define GFX_UID         0xE9422
+#define QR_UID  		0xA2C68
 
 class VidorIP {
 public:

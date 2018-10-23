@@ -147,13 +147,19 @@ static struct regval_list cam_640x480[] = {
   {0x0100, 0x01},
 };
 
-class VidorQR {
+class VidorQR : public VidorIP {
 
   public:
     sQrDet qr;
     VidorQR(void);
-    void begin() {enable(true);}
-    void end() {enable(false);}
+    int begin() {
+      enable(true);
+      return 0;
+    }
+    int end() {
+      enable(false);
+      return 0;
+    }
     void setMode(uint8_t mode);
     void setThr(uint8_t thr);
     int readQRCode(void);
