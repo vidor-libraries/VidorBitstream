@@ -23,15 +23,17 @@
 #include "Arduino.h"
 #include "defines.h"
 
-class VidorEncoder {
+class VidorEncoder : public VidorIP {
   public:
-    VidorEncoder(int index);
+    VidorEncoder(int pinA, int pinB);
     void write(int32_t p);
     int32_t read();
+    int begin();
   protected:
     int32_t offset = 0;
-    int idx;
-    uint8_t devIdx;
+    int pinA;
+    int pinB;
+    bool initialized = false;
 };
 
 

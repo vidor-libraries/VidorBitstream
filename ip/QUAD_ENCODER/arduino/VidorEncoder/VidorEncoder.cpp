@@ -21,10 +21,9 @@
 #include "VidorFPGA.h"
 #include "VidorEncoder.h"
 
-VidorEncoder::VidorEncoder(int index){
-  idx = index;
-  // TODO nuova implementazione FPGA devIdx = FPGA.devIdxGet(FPGA_ENCODERS_DID);
-  devIdx = MB_DEV_ENC;
+VidorEncoder::VidorEncoder(int pinA, int pinB){
+  this->pinA = pinA;
+  this->pinB = pinB;
 }
 
 void VidorEncoder::write(int32_t p){
@@ -32,7 +31,16 @@ void VidorEncoder::write(int32_t p){
 }
 
 int32_t VidorEncoder::read(){
+
+  if (!initialized) {
+    int ret = init(ENC_UID, pinA, pinB);
+    if (ret < 0) {
+      return 0;
+    }
+    initialized = true;
+  }
+
 	uint32_t rpc[1];
-	rpc[0] = MB_CMD(devIdx, idx, 0, 0x01); // TODO move index from sub to chn
+	rpc[0] = RPC_CMD(info.giid, info.chn, 5);
 	return (VidorMailbox.sendCommand(rpc, 1) - offset);
 }
