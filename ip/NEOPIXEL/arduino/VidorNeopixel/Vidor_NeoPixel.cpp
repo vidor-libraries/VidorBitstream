@@ -32,7 +32,7 @@ Vidor_NeoPixel::Vidor_NeoPixel(uint16_t howMany, uint8_t pin, uint8_t type)
 
 int Vidor_NeoPixel::begin()
 {
-  uint32_t rpc[4];
+  uint32_t rpc[6];
 
   if (initialized == true) {
     return 0;
