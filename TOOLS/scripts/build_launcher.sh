@@ -52,7 +52,6 @@ BSP_FLAGS=" \
 --cmd enable_sw_package SIGN \
 --cmd enable_sw_package MAILBOX \
 --cmd enable_sw_package RPC \
---cmd enable_sw_package UART \
 --set hal.make.bsp_cflags_defined_symbols -DNO_RPC=1 \
 --set hal.enable_c_plus_plus 0 \
 --set hal.enable_clean_exit 0 \
