@@ -19,6 +19,11 @@
 #
 # *********************************************************************
 
+if [ `quartus_sh --version | grep Lite | wc -l` -eq "1" ]; then
+# compile for lite version
+LITE="_lite"
+fi
+
 PROJECT_BSP_NAME=${PWD##*/}
 PROJECT_NAME=launcher
 # Location where BSP is built
@@ -52,7 +57,6 @@ BSP_FLAGS=" \
 --cmd enable_sw_package SIGN \
 --cmd enable_sw_package MAILBOX \
 --cmd enable_sw_package RPC \
---cmd enable_sw_package UART \
 --set hal.make.bsp_cflags_defined_symbols -DNO_RPC=1 \
 --set hal.enable_c_plus_plus 0 \
 --set hal.enable_clean_exit 0 \
@@ -93,7 +97,6 @@ BSP_FLAGS=" \
 --set hal.stdin none \
 --set hal.stdout none \
 --set hal.sys_clk_timer none \
---set altera_vic_driver.linker_section .rwdata \
 --script set_regions.tcl \
 --cmd set_driver none remote_update_0 \
 --cmd set_driver arduino_generic_quad_spi_controller2 qspi \
@@ -109,13 +112,20 @@ BSP_FLAGS=" \
 --cmd add_section_mapping .stack onchip_memory2_0 \
 "
 
+if [ x$LITE -eq x ]; then
+NON_FREE_FLAGS=" \
+--set altera_vic_driver.linker_section .rwdata \
+--cmd enable_sw_package UART \
+"
+fi
+
 mkdir -p $APP_DIR
 
 # copy common files
 cp -f launcher.c $APP_DIR
 
 # generate the BSP in the $BSP_DIR
-cmd="nios2-bsp $BSP_TYPE $BSP_DIR $SOPC_INFO $BSP_FLAGS"
+cmd="nios2-bsp $BSP_TYPE $BSP_DIR $SOPC_INFO $BSP_FLAGS $NON_FREE_FLAGS"
 $cmd || {
   echo "nios2-bsp failed"
 }

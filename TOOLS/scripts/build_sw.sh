@@ -19,6 +19,11 @@
 #
 # *********************************************************************
 
+if [ `quartus_sh --version | grep Lite | wc -l` -eq "1" ]; then
+# compile for lite version
+LITE="_lite"
+fi
+
 PROJECT_NAME=${PWD##*/}
 # Location where BSP is built
 BSP_DIR="./software/"$PROJECT_NAME"_bsp"
@@ -57,7 +62,6 @@ BSP_FLAGS=" \
 --cmd enable_sw_package MAILBOX \
 --cmd enable_sw_package RPC  \
 --cmd enable_sw_package GFX  \
---cmd enable_sw_package UART  \
 --set hal.enable_c_plus_plus 0 \
 --set hal.enable_clean_exit 0 \
 --set hal.enable_exit 0 \
@@ -97,7 +101,6 @@ BSP_FLAGS=" \
 --set hal.stdin none \
 --set hal.stdout none \
 --set hal.sys_clk_timer none \
---set altera_vic_driver.linker_section .rwdata \
 --script set_app_regions.tcl \
 --cmd set_driver none remote_update_0 \
 --cmd set_driver none qspi \
@@ -111,6 +114,14 @@ BSP_FLAGS=" \
 --cmd add_section_mapping .data qspi_avl_mem \
 --cmd add_section_mapping .stack onchip_memory2_0  \
 "
+
+if [ x$LITE -eq x ]; then
+NON_FREE_FLAGS=" \
+--set altera_vic_driver.linker_section .rwdata \
+--cmd enable_sw_package UART \
+"
+fi
+
 fi
 
 mkdir -p $APP_DIR
@@ -120,7 +131,7 @@ cp -f main.c $APP_DIR
 
 
 # generate the BSP in the $BSP_DIR
-cmd="nios2-bsp $BSP_TYPE $BSP_DIR $SOPC_INFO $BSP_FLAGS"
+cmd="nios2-bsp $BSP_TYPE $BSP_DIR $SOPC_INFO $BSP_FLAGS $NON_FREE_FLAGS"
 $cmd || {
   echo "nios2-bsp failed"
 }
