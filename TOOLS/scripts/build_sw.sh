@@ -57,6 +57,7 @@ BSP_FLAGS=" \
 --cmd enable_sw_package MAILBOX \
 --cmd enable_sw_package RPC  \
 --cmd enable_sw_package GFX  \
+--cmd enable_sw_package UART  \
 --set hal.enable_c_plus_plus 0 \
 --set hal.enable_clean_exit 0 \
 --set hal.enable_exit 0 \
