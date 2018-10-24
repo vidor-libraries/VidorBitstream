@@ -19,9 +19,11 @@
 #
 # *********************************************************************
 
-if [ `quartus_sh --version | grep Lite | wc -l` -eq "1" ]; then
+if [ `quartus_sh --version | grep Lite | wc -l` == "1" ]; then
 # compile for lite version
+if [ -z $FORCE_FULL ]; then
 LITE="_lite"
+fi
 fi
 
 PROJECT_NAME=${PWD##*/}
@@ -36,7 +38,7 @@ APP_SRC_DIR=../../../NIOS/$PROJECT_NAME
 COMMON_SRC_DIR=../../../NIOS/common
 
 # SOPC file definitions
-SOPC_INFO="./"$PROJECT_NAME"_sys.sopcinfo"
+SOPC_INFO="./"$PROJECT_BSP_NAME$LITE"_sys.sopcinfo"
 SOPC_CPU_NAME="nios2_gen2_0"
 SOPC_CODE_MEMORY_NAME="flashapp"
 SOPC_DATA_MEMORY_NAME="onchip_memory2_0"
@@ -115,10 +117,15 @@ BSP_FLAGS=" \
 --cmd add_section_mapping .stack onchip_memory2_0  \
 "
 
-if [ x$LITE -eq x ]; then
-NON_FREE_FLAGS=" \
+if [ "x"$LITE == "x" ]; then
+EXTRA_FLAGS=" \
 --set altera_vic_driver.linker_section .rwdata \
 --cmd enable_sw_package UART \
+"
+else
+EXTRA_FLAGS="\
+--set hal.make.bsp_cflags_user_flags \
+-DFREE_VERSION=1 \
 "
 fi
 
@@ -131,7 +138,7 @@ cp -f main.c $APP_DIR
 
 
 # generate the BSP in the $BSP_DIR
-cmd="nios2-bsp $BSP_TYPE $BSP_DIR $SOPC_INFO $BSP_FLAGS $NON_FREE_FLAGS"
+cmd="nios2-bsp $BSP_TYPE $BSP_DIR $SOPC_INFO $BSP_FLAGS $EXTRA_FLAGS"
 $cmd || {
   echo "nios2-bsp failed"
 }

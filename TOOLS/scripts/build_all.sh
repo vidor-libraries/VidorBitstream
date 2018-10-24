@@ -1,6 +1,10 @@
-if [ `quartus_sh --version | grep Lite | wc -l` -eq "1" ]; then
+set -e
+
+if [ `quartus_sh --version | grep Lite | wc -l` == "1" ]; then
 # compile for lite version
+if [ -z $FORCE_FULL ]; then
 LITE="_lite"
+fi
 fi
 
 PROJECT_NAME=${PWD##*/}$LITE

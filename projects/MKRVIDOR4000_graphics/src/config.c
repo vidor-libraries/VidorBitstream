@@ -27,7 +27,9 @@
 #include "i2c.h"
 #include "np.h"
 #include "enc.h"
+#ifndef FREE_VERSION 
 #include "uart.h"
+#endif
 #include "tspi.h"
 // TODO #include "gfx.h"
 
@@ -277,6 +279,7 @@ sFpgaIpChn ENC_CHN[] = {
   {NPIN(ENC_9_PIN), ENC_9_PIN},
 };
 
+#ifndef FREE_VERSION
 /**
  * Uart pins definition
  */
@@ -287,6 +290,7 @@ sFpgaIpChn UART_0_CHN[] = {
   {NPIN(UART_0_PIN), UART_0_PIN},
 };
 UART_DEV(NINA_UART);
+#endif
 
 /**
  * TSPI pins definition
@@ -316,7 +320,9 @@ sFpgaIpRpc fpgaIpRpc[] = {
   {i2cRpc , I2C_VER     },
   {npRpc  , NEOPIXEL_VER},
   {encRpc , ENC_VER     },
+#ifndef FREE_VERSION 
   {uartRpc, UART_VER    },
+#endif
   {tspiRpc, TSPI_VER    },
 // TODO   {gfxRpc , GFX_VER     },
 #endif
@@ -366,18 +372,18 @@ sFpgaIp fpgaIp[] = {
    * Quad Encoder
    */
   {5, IP_DISC(ENC_CHNS, ENC_UID), ENC_BASE, ENC_CHN},
-
+#ifndef FREE_VERSION 
   /**
    * UART
    */
   {6, IP_DISC(UART_0_CHNS, UART_UID), NINA_UART_BASE, UART_0_CHN, &NINA_UART_DEV},
-
+#endif
   /**
    * TSPI
    */
   {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), NINA_SPI_BASE, TSPI_0_CHN, &TSPI_0_DEV},
 //  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), FLASH_SPI_BASE, NULL, NULL},
-  {7, IP_DISC(0, 0), FLASH_SPI_BASE, NULL, NULL},
+  {7, IP_DISC(0, 0), FLASH_SPI_BASE, 0, 0},
 
   /**
    * GFX
