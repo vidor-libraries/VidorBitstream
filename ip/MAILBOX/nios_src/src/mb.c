@@ -19,48 +19,60 @@
  * @brief Mailbox
  */
 
-#include "irq.h"
-//#include "rpc.h"
+#include <io.h>
+#include "system.h"
 #include "mb.h"
-
-#define MB_BASE (0x80000000 | DPRAM_BASE)
 
 #define SEC_RAM  __attribute__((__section__(".rwdata")))
 
+#define MB_DPRAM_BITS   9
+#define MB_FIFO_BITS    4
+
+#define MB_LAST_ADDRESS (1 << MB_DPRAM_BITS)
+#define MB_FIFO_SIZE    (1 << MB_FIFO_BITS)
+
+#define MB_DP_BASE    (MB_BASE + 0)
+#define MB_FIFO_BASE  (MB_LAST_ADDRESS - MB_FIFO_SIZE)
+#define MB_STATUS     MB_FIFO_BASE
+#define MB_STS_REQ_PEND   (1 << MB_FIFO_BITS)
+#define MB_STS_FIFO_FREE  ((1 << MB_FIFO_BITS)-1)
+
 /**
  */
-alt_u32* mbPtrGet(void)
+alt_u32* SEC_RAM mbPtrGet(void)
 {
   return (alt_u32*)MB_BASE;
 }
 
 /**
  */
-int mbInit(void)
-{
-  irqPinSet(0, rpcCmd);
-  intPinInit(1, 0);
-
-  return 0;
-}
-
-/**
- *//*
-void SEC_RAM mbLoop(void)
-{
-  if (irqPinDet(0)) {
-    irqPinClr(0);
-    rpcCmd();
-  }
-}*/
-
-/**
- */
 alt_u32* SEC_RAM mbMsgRx(void)
 {
-  if (irqPinDet(0)) {
-    irqPinClr(0);
+  alt_u32 reg;
+
+  reg = IORD(MB_BASE, MB_STATUS);
+  if (reg & MB_STS_REQ_PEND) {
+    //reg &= ~MB_STS_REQ_PEND;
+    //IOWR(MB_BASE, MB_STATUS, reg);
     return (alt_u32*)MB_BASE;
   }
   return (alt_u32*)0;
+}
+
+/**
+ */
+alt_u32 SEC_RAM mbEveTx(alt_u32* eve, alt_u32 len)
+{
+  alt_u32 reg;
+  int     i;
+
+  reg = IORD(MB_BASE, MB_STATUS);
+  reg &= MB_STS_FIFO_FREE;
+  if (len > reg) {
+    len = reg;
+  }
+  for (i=0; i<len; i++) {
+    IOWR(MB_BASE, MB_FIFO_BASE + i, eve[i]);
+  }
+  return len;
 }

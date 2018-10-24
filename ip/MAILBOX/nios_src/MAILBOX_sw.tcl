@@ -40,10 +40,8 @@ set_sw_property bsp_subdirectory drivers
 
 # C/C++ source files
 add_sw_property c_source src/mb.c
-add_sw_property c_source src/irq.c
 
 # Include files
 add_sw_property include_source inc/mb.h
-add_sw_property include_source inc/irq.h
 
 add_sw_property supported_bsp_type HAL

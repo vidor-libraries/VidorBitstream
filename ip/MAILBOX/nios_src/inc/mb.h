@@ -23,15 +23,8 @@
 
 #include "config.h"
 
-/**
- *
- */
-
-
 alt_u32* mbPtrGet(void);
-int mbInit(void);
-
-//void mbLoop(void);
 alt_u32* mbMsgRx(void);
+alt_u32 mbEveTx(alt_u32* eve, alt_u32 len);
 
 #endif /* __MB_H */

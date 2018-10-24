@@ -11,7 +11,7 @@
  */
 int SEC_RAM main(void)
 {
-  mbInit();
+//  mbInit();
 
   while (1) {
     if (mbMsgRx()) {

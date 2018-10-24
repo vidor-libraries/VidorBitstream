@@ -3,6 +3,7 @@ module MKRVIDOR4000_graphics_top
   // system signals
   input         iCLK,
   input         iRESETn,
+
   input         iSAM_INT,
   output        oSAM_INT,
 
@@ -322,15 +323,18 @@ MKRVIDOR4000_graphics_sys u0(
 		.pex_pio_out            (wPEX_PIO_OUT),      //          .out
 		.pex_pio_dir            (wPEX_PIO_DIR),      //          .dir
 		.pex_pio_msel           (wPEX_PIO_MSEL),     //          .msel
+/*
 		.irq_in_port            (iSAM_INT),      //        irq.in_port
 		.irq_out_port           (wIRQ_OUT),     //           .out_port
+*/
+		.mb_rq                  (iSAM_INT),      //        iMST_RQ
+		.mb_ak                  (wIRQ_OUT),      //        oMST_AK
 
 		.sam_pwm_pwm            (wSAM_OUT1),
 		.neopixel_data				  (wSAM_OUT2[11:1]),
 		.neopixel_clock				  (wSAM_OUT2[0]),
 		.encoder_encoder_a      ({bMKR_D[13],bMKR_D[11],bMKR_D[9],bMKR_D[7],bMKR_D[5],bMKR_D[3],bMKR_D[1],bMKR_A[6],bMKR_A[4],bMKR_A[2],bMKR_A[0]}), //    encoder.encoder_a
 		.encoder_encoder_b      ({bMKR_D[14],bMKR_D[12],bMKR_D[10],bMKR_D[8],bMKR_D[6],bMKR_D[4],bMKR_D[2],bMKR_D[0],bMKR_A[5],bMKR_A[3],bMKR_A[1]})  //           .encoder_b
-
 	);
 assign wSAM_OUT2[22:12] = wSAM_OUT2[11:1];
 assign oSAM_INT         = wIRQ_OUT[1];
@@ -338,7 +342,7 @@ assign wWM_OUT2[11]     = wNINA_SS;
 assign wWM_OUT2[18]     = wNINA_SCLK;
 assign wWM_OUT2[19]     = wNINA_MOSI;
 `ifndef FREE_VERSION
-assign wWM_OUT2[16]     = wNINA_RX;
+assign wWM_OUT2[15]     = wNINA_RX;
 `endif
 
 assign wWM_OUT1[15]     = wSAM_PIO_IN[22]; // D14 for NINA_RX in bypass
