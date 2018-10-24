@@ -95,7 +95,7 @@ BSP_FLAGS=" \
 --script set_regions.tcl \
 --cmd set_driver none remote_update_0 \
 --cmd set_driver arduino_generic_quad_spi_controller2 qspi \
---cmd set_driver none arduino_16500_uart\
+--cmd set_driver none arduino_16500_uart \
 --cmd set_driver none nina_uart \
 --cmd add_section_mapping .rwdata onchip_memory2_0 \
 --cmd add_section_mapping .bss onchip_memory2_0 \
