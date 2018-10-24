@@ -205,17 +205,17 @@ sFpgaIpChn I2C_1_CHN[] = {
 /**
  * NeoPixel pins definition
  */
-sFpgaIpPin NEOPIXEL_0_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  1)} };
-sFpgaIpPin NEOPIXEL_1_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  2)} };
-sFpgaIpPin NEOPIXEL_2_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  3)} };
-sFpgaIpPin NEOPIXEL_3_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  4)} };
-sFpgaIpPin NEOPIXEL_4_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  5)} };
-sFpgaIpPin NEOPIXEL_5_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  6)} };
-sFpgaIpPin NEOPIXEL_6_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  7)} };
-sFpgaIpPin NEOPIXEL_7_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  8)} };
-sFpgaIpPin NEOPIXEL_8_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1,  9)} };
-sFpgaIpPin NEOPIXEL_9_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 10)} };
-sFpgaIpPin NEOPIXEL_10_PIN[] = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 11)} };
+sFpgaIpPin NEOPIXEL_0_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  1)} };
+sFpgaIpPin NEOPIXEL_1_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  2)} };
+sFpgaIpPin NEOPIXEL_2_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  3)} };
+sFpgaIpPin NEOPIXEL_3_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  4)} };
+sFpgaIpPin NEOPIXEL_4_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  5)} };
+sFpgaIpPin NEOPIXEL_5_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  6)} };
+sFpgaIpPin NEOPIXEL_6_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  7)} };
+sFpgaIpPin NEOPIXEL_7_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  8)} };
+sFpgaIpPin NEOPIXEL_8_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  9)} };
+sFpgaIpPin NEOPIXEL_9_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1, 10)} };
+sFpgaIpPin NEOPIXEL_10_PIN[] = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1, 11)} };
 sFpgaIpChn NEOPIXEL_CHN[] = {
   {NPIN(NEOPIXEL_0_PIN), NEOPIXEL_0_PIN},
   {NPIN(NEOPIXEL_1_PIN), NEOPIXEL_1_PIN},
