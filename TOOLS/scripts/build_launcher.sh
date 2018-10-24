@@ -93,6 +93,7 @@ BSP_FLAGS=" \
 --set hal.stdin none \
 --set hal.stdout none \
 --set hal.sys_clk_timer none \
+--set altera_vic_driver.linker_section .rwdata \
 --script set_regions.tcl \
 --cmd set_driver none remote_update_0 \
 --cmd set_driver arduino_generic_quad_spi_controller2 qspi \
