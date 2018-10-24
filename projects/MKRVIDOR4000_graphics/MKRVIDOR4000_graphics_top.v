@@ -303,8 +303,10 @@ MKRVIDOR4000_graphics_sys u0(
 		.nina_spi_SCLK          (wNINA_SCLK),    //          .SCLK
 		.nina_spi_CS            (wNINA_SS),     //          .SS_n
 
+`ifndef FREE_VERSION
 		.nina_uart_sin          (wWM_PIO_IN[16]),     //  nina_uart.sin
 		.nina_uart_sout         (wNINA_RX),    //           .sout
+`endif
 
 		.sam_pio_in             (wSAM_PIO_IN),       //   sam_pio.in
 		.sam_pio_out            (wSAM_PIO_OUT),      //          .out
@@ -335,7 +337,9 @@ assign oSAM_INT         = wIRQ_OUT[1];
 assign wWM_OUT2[11]     = wNINA_SS;
 assign wWM_OUT2[18]     = wNINA_SCLK;
 assign wWM_OUT2[19]     = wNINA_MOSI;
+`ifndef FREE_VERSION
 assign wWM_OUT2[16]     = wNINA_RX;
+`endif
 
 assign wWM_OUT1[15]     = wSAM_PIO_IN[22]; // D14 for NINA_RX in bypass
 assign wWM_OUT1[0]      = wSAM_PIO_IN[15]; // D7 for NINA_RESET in bypass
