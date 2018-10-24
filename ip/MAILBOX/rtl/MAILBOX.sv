@@ -5,7 +5,7 @@
 * Authors: Dario Pennisi
 *
 * This software is released under:
-* The GNU General Public License, which covers the main part of 
+* The GNU General Public License, which covers the main part of
 * Vidor IP
 * The terms of this license can be found at:
 * https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -105,7 +105,7 @@ always @(posedge iCLOCK) begin
   end
   else begin
     rRESYNC_MST_RQ <= {rRESYNC_MST_RQ[1:0],iMST_RQ};
-    
+
     if (rRESYNC_MST_RQ[2])
       rPERSIST_MST_RQ <= rPERSIST_MST_RQ|rRESYNC_MST_RQ[2];
 
@@ -115,7 +115,7 @@ always @(posedge iCLOCK) begin
         if (iMST_ADDRESS==0) begin
           rRET_AVAIL<=0;
         end
-      end  
+      end
     end else begin
       if (iMST_READ) begin
         if (iMST_ADDRESS==cLAST_ADDRESS) begin
@@ -124,9 +124,9 @@ always @(posedge iCLOCK) begin
         end
         else if (wRD_USED>0) begin
           rRD_PTR <= rRD_PTR+1;
-			    rMST_FIFO <= 1;
+          rMST_FIFO <= 1;
         end else begin
-			    rMST_FIFO <= 1;
+          rMST_FIFO <= 1;
           rMST_FIFO_DATA <= 32'hDEADBEEF;
         end
       end
@@ -145,7 +145,7 @@ always @(posedge iCLOCK) begin
     end else begin
       if (iSLV_READ) begin
         if (iSLV_ADDRESS==cFIFO_START_ADDR) begin
-          rSLV_FIFO_DATA <= wWR_FREE;
+          rSLV_FIFO_DATA <= {rPERSIST_MST_RQ,wWR_FREE};
           rSLV_FIFO<= 1;
         end
       end
