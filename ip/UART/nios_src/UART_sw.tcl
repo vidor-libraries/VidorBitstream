@@ -18,6 +18,9 @@
 # Create a new software package
 create_sw_package UART
 
+# Associate it with some hardware known as "UART"
+set_sw_property hw_class_name arduino_16550_uart
+
 # The version of this driver
 set_sw_property version 1.0
 

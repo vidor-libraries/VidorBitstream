@@ -30,9 +30,15 @@
 #include <io.h>
 
 #include "mb.h"
+
 #ifdef NP_USE_TMR
 #include "tmr.h"
 #endif
+
+#ifdef NP_GFX
+#include "gfx.h"
+#endif
+
 #include "np.h"
 
 /**

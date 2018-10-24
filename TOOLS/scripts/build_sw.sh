@@ -123,6 +123,11 @@ $cmd || {
   echo "nios2-bsp failed"
 }
 
+# copy config files
+# cp -f config.c $BSP_DIR
+# cp -f config.h $BSP_DIR
+
+
 # generate the application make file in the $APP_DIR
 cmd="nios2-app-generate-makefile --app-dir $APP_DIR --bsp-dir $BSP_DIR --elf-name $ELF_NAME --src-rdir $APP_DIR \
 $APP_FLAGS "

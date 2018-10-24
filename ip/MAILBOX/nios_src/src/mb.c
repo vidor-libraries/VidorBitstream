@@ -64,4 +64,3 @@ alt_u32* SEC_RAM mbMsgRx(void)
   }
   return (alt_u32*)0;
 }
-
