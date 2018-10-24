@@ -19,10 +19,10 @@
 */
 
 module QRCODE_FINDER (
-input             iCLK,
+input             iCLOCK,
 input             iRESET,
 
-input             iVID_CLK,
+input             iVID_CLOCK,
 input             iVID_RESET,
 input [23:0]      iVID_DATA,
 input             iVID_START,
@@ -41,8 +41,6 @@ output            oVID_DATA_VALID
 
 parameter pHRES=640;
 parameter pVRES=480;
-parameter pTHRESH_MIN=4;
-parameter pFIXED=5;
 parameter pTHRESHOLD=60;
 localparam cPIPE_DEPTH=4;
 
@@ -139,7 +137,7 @@ altsyncram #(
 ) line_buffer (
   .address_a                          ( rHCNT ), //write
   .address_b                          ( rHCNT ), //read
-  .clock0                             ( iVID_CLK ),
+  .clock0                             ( iVID_CLOCK ),
   .data_a                             ( {wLB_RAM_DATA,rLUM_DIFF[10:1]} ),
   .wren_a                             ( rVALID_PIPE[1] ),
   .q_b                                ( wLB_RAM_DATA ),
@@ -190,8 +188,8 @@ altsyncram #(
   .wrcontrol_wraddress_reg_b          ( "CLOCK1" )
 ) results ( .address_a                          ( rDETECT_ADDR ), //write
   .address_b                          ( iADDRESS ), //read
-  .clock0                             ( iVID_CLK ),
-  .clock1                             ( iCLK ),
+  .clock0                             ( iVID_CLOCK ),
+  .clock1                             ( iCLOCK ),
   .data_a                             ( rUPDATE? {32{1'b1}} : {rVCNT,rPREV_CENT_HSTART,rPREV_CENT_HEND} ),
   .wren_a                             ( rDETECT_WRITE ),
   .q_b                                ( wDETECT_DATA ),
@@ -203,8 +201,13 @@ altsyncram #(
   .wren_b                             ( 1'b0 )
 );
 
-always @(posedge iCLK)
+always @(posedge iCLOCK)
 begin
+  if (iRESET) begin
+    rTHRESHOLD<= pTHRESHOLD;
+    rOUTMODE <= 0;
+    rREFRESH <= 0;
+  end
   if (iWRITE) begin
     case (iADDRESS)
       0: {rOUTMODE,rREFRESH}<= iWRITE_DATA;
@@ -224,7 +227,7 @@ end
 
 assign oREAD_DATA = rAVL_ADDRESS[10] ? wDETECT_DATA : rREAD_DATA;
 assign wLUM_DIFF = { {2{rLUM_DIFF[10]}},rLUM_DIFF[10:1]} + { {1{wLB_RAM_DATA[9]}},wLB_RAM_DATA[9:0],1'b0} + {{2{wLB_RAM_DATA[19]}},wLB_RAM_DATA[19:10]};
-always @(posedge iVID_CLK)
+always @(posedge iVID_CLOCK)
 begin
   rDETECT_WRITE<=0;
   if (rDETECT_WRITE)

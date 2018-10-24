@@ -34,6 +34,7 @@ set_module_property EDITABLE true
 set_module_property REPORT_TO_TALKBACK false
 set_module_property ALLOW_GREYBOX_GENERATION false
 set_module_property REPORT_HIERARCHY false
+set_module_property ELABORATION_CALLBACK            elaboration_callback
 
 
 # 
@@ -49,6 +50,20 @@ add_fileset_file PIO.sv SYSTEM_VERILOG PATH PIO.sv TOP_LEVEL_FILE
 # 
 # parameters
 # 
+add_parameter pBITS INTEGER 32
+set_parameter_property pBITS DEFAULT_VALUE 32
+set_parameter_property pBITS DISPLAY_NAME Bits
+set_parameter_property pBITS TYPE INTEGER
+set_parameter_property pBITS UNITS None
+set_parameter_property pBITS HDL_PARAMETER true
+set_parameter_property pBITS ALLOWED_RANGES {1:32}
+add_parameter pMUX_BITS INTEGER 2
+set_parameter_property pMUX_BITS DEFAULT_VALUE 2
+set_parameter_property pMUX_BITS DISPLAY_NAME "Mux Bits"
+set_parameter_property pMUX_BITS TYPE INTEGER
+set_parameter_property pMUX_BITS UNITS None
+set_parameter_property pMUX_BITS HDL_PARAMETER true
+set_parameter_property pMUX_BITS ALLOWED_RANGES {1:4}
 
 
 # 
@@ -83,7 +98,6 @@ set_interface_property s1 PORT_NAME_MAP ""
 set_interface_property s1 CMSIS_SVD_VARIABLES ""
 set_interface_property s1 SVD_ADDRESS_GROUP ""
 
-add_interface_port s1 iADDRESS address Input 3
 add_interface_port s1 iWRITE write Input 1
 add_interface_port s1 iREAD read Input 1
 add_interface_port s1 iWRITE_DATA writedata Input 32
@@ -105,7 +119,7 @@ set_interface_property clk PORT_NAME_MAP ""
 set_interface_property clk CMSIS_SVD_VARIABLES ""
 set_interface_property clk SVD_ADDRESS_GROUP ""
 
-add_interface_port clk iCLK clk Input 1
+add_interface_port clk iCLOCK clk Input 1
 
 
 # 
@@ -138,5 +152,22 @@ set_interface_property pio SVD_ADDRESS_GROUP ""
 add_interface_port pio iPIO in Input 32
 add_interface_port pio oDIR dir Output 32
 add_interface_port pio oPIO out Output 32
-add_interface_port pio oMUXSEL msel Output 64
 
+# -----------------------------------------------------------------------------
+proc log2 {value} {
+  set value [expr $value-1]
+  for {set log2 0} {$value>0} {incr log2} {
+     set value  [expr $value>>1]
+  }
+  return $log2;
+}
+
+# -----------------------------------------------------------------------------
+# callbacks
+# -----------------------------------------------------------------------------
+proc elaboration_callback {} {
+  set bits [get_parameter_value pBITS] 
+  set mux_bits [get_parameter_value pMUX_BITS] 
+  add_interface_port s1 iADDRESS address Input [log2 [expr 4+ ( 31 + $bits * $mux_bits )/32 ]]
+  add_interface_port pio oMUXSEL msel Output [expr  $bits * $mux_bits ]
+}

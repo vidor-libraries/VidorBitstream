@@ -1,4 +1,4 @@
-=  IP core
+=NEOPIXEL IP core
 
 == Ports
 
@@ -12,12 +12,12 @@
 .6+^.^|Avalon Slave        .^|iCSR_ADDRESS          ^|Input     ^|  32   |Address                       
                            .^|iCSR_WRITE            ^|Input     ^|   1   |Write request                 
                            .^|iCSR_READ             ^|Input     ^|   1   |Read request                  
-                           .^|iCSR_WRITE_DATA       ^|Input     ^|  32   |Fata to be written            
-                           .^|oCSR_READ_DATA        ^|Output    ^|  32   |Fata being read               
+                           .^|iCSR_WRITE_DATA       ^|Input     ^|  32   |Data to be written            
+                           .^|oCSR_READ_DATA        ^|Output    ^|  32   |Data being read               
                            .^|oCSR_READ_DATA_VALID  ^|Output    ^|   1   |data valid flag from slave    
 .6+^.^|Avalon Master       .^|oDATA_ADDRESS         ^|Output    ^|  32   |Address                       
                            .^|oDATA_READ            ^|Output    ^|   1   |Read request                  
-                           .^|iDATA_READ_DATA       ^|Input     ^|  32   |Fata being read               
+                           .^|iDATA_READ_DATA       ^|Input     ^|  32   |Data being read               
                            .^|oDATA_BURST_COUNT     ^|Output    ^|   5   |Number of words to read/write 
                            .^|iDATA_WAIT_REQUEST    ^|Input     ^|   1   |Wait request from slave       
                            .^|iDATA_READ_DATA_VALID ^|Input     ^|   1   |data valid flag from slave    

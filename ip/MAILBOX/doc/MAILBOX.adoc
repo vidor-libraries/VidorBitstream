@@ -1,0 +1,76 @@
+= MAILBOX IP core
+:stem:
+
+
+== Ports
+
+.Ports
+[%autowidth]
+|=====================================================================================================
+     ^|Signal Group            ^|Signal Name           ^|Direction ^|Width ^|Descrip     tion
+
+.2+^.^|Clock/Reset            .^|iCLOCK                ^|Input     ^|   1   |Clock input
+                              .^|iRESET                ^|Input     ^|   1   |Reset input
+.5+^.^|MB Master Avalon Slave .^|iMST_ADDRESS          ^|Input     ^|   *   |Address                       
+                              .^|iMST_WRITE            ^|Input     ^|   1   |Write request                 
+                              .^|iMST_READ             ^|Input     ^|   1   |Read request                  
+                              .^|iMST_WRITE_DATA       ^|Input     ^|  32   |Data to be written            
+                              .^|oMST_READ_DATA        ^|Output    ^|  32   |Data being read               
+.5+^.^|MB Slave Avalon Slave  .^|iSLV_ADDRESS          ^|Input     ^|   *   |Address                       
+                              .^|iSLV_WRITE            ^|Input     ^|   1   |Write request                 
+                              .^|iSLV_READ             ^|Input     ^|   1   |Read request                  
+                              .^|iSLV_WRITE_DATA       ^|Input     ^|  32   |Data to be written            
+                              .^|oSLV_READ_DATA        ^|Output    ^|  32   |Data being read               
+.2+^.^|exports                .^|oMST_AK               ^|Output    ^|   1   |Attention flag to master
+                              .^|iMST_RQ               ^|Input     ^|   1   |Attention flag from master
+|=====================================================================================================
+
+
+[NOTE] Address bits depend on the parameters set for the IP. 
+
+== Parameters
+
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Allowed range ^|Description          
+
+|pDPRAM_BITS     ^| 1-12          |Number of bits for the dual port RAM                      
+|pFIFO_BITS      ^| 2-7           |number of bits reserved for the event FIFO    
+|=====================================================================================================
+
+.MB Master Registers
+[%autowidth]
+|=====================================================================================================
+    ^|Address                        ^|    Bits           ^|Description
+       
+   .^|0..(FIFO_START-1)            ^.^| 31:0              .^|Mailbox dual port memory
+   .^|FIFO_START..(LAST_ADDRESS-1) ^.^| 31:0              .^|FIFO Read
+.2+.^|LAST_ADDRESS                 ^.^| pFIFO_BITS-1:0    .^|Number of elements in FIFO
+                                   ^.^| pFIFO_BITS        .^|Response Available
+|=====================================================================================================
+
+.MB Slave Registers
+[%autowidth]
+|=====================================================================================================
+    ^|Address                        ^|    Bits           ^|Description
+       
+   .^|0..FIFO_START-1              ^.^| 31:0             .^|Mailbox dual port memory
+   .^|FIFO_START..(LAST_ADDRESS-1) ^.^| 31:0             .^|FIFO Write register
+.2+.^|LAST_ADDRESS                 ^.^| pFIFO_BITS-1:0   .^|Number of free elements in FIFO
+                                   ^.^| pFIFO_BITS       .^|Request pending
+|=====================================================================================================
+
+[NOTE] 
+stem:[FIFO__START=(2^(pDPRAM__BITS-1)-2^(pFIFO__BITS-1))] +
+stem:[LAST__ADDRES=(2^(pDPRAM__BITS-1)-1)]
+
+== IP CORE Description
+
+*MAILBOX* core provides an interface between two processors where one is a master and the other is a slave and provides two different interfaces, a dual port RAM for command/response exchange from Master to Slave and a FIFO for events from Slave to Master
+Only Master processor can initiate a message exchange and does so by writing its message in the dual port memory and then pulsing the iMST_RQ signal. Slave processor can check this by reading the LAST_ADDRESS register which is mapped at the end of the address space and which contains the the request pending bit, which remains set even if master removes the request, until the slave writes to address 0 of the dual port RAM, which will contain the response code to the master request.
+oMST_AK pin is raised high at availability of a response from slave (after writing at address 0) or at availability of events in the FIFO.
+When oMST_AK is asserted master should first check LAST_ADDRESS to determine the nature of the event and then, if Response Available bit is set should read the response from Dual Port RAM and if Number of elements in FIFO is not 0 it can read back the FIFO by reading any address in the range FIFO_START..(LAST_ADDRESS-1).
+In a similar manner Slave can write events by writing any address in the range FIFO_START..(LAST_ADDRESS-1).
+
+

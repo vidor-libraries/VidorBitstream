@@ -1,0 +1,12 @@
+= QRCODE_FINDER IP core
+
+Looks for QRCODE markers in a video stream
+
+== Description
+
+*QRCODE_FINDER* analyzes an input video stream with Sobel edge detection algorithm and finds QRCode markers in it.
+
+== Available Documents
+* link:QRCODE_FINDER.adoc[IP Documentation]
+* link:QRCODE_FINDER_sw.adoc[Soft Core Software Documentation]
+* link:QRCODE_FINDER_ino.adoc[Arduino Class Documentation]
