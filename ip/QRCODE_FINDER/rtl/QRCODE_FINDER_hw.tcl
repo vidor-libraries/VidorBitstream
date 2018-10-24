@@ -66,20 +66,6 @@ set_parameter_property pVRES TYPE INTEGER
 set_parameter_property pVRES UNITS None
 set_parameter_property pVRES ALLOWED_RANGES -2147483648:2147483647
 set_parameter_property pVRES HDL_PARAMETER true
-add_parameter pTHRESH_MIN INTEGER 4
-set_parameter_property pTHRESH_MIN DEFAULT_VALUE 4
-set_parameter_property pTHRESH_MIN DISPLAY_NAME pTHRESH_MIN
-set_parameter_property pTHRESH_MIN TYPE INTEGER
-set_parameter_property pTHRESH_MIN UNITS None
-set_parameter_property pTHRESH_MIN ALLOWED_RANGES -2147483648:2147483647
-set_parameter_property pTHRESH_MIN HDL_PARAMETER true
-add_parameter pFIXED INTEGER 5
-set_parameter_property pFIXED DEFAULT_VALUE 5
-set_parameter_property pFIXED DISPLAY_NAME pFIXED
-set_parameter_property pFIXED TYPE INTEGER
-set_parameter_property pFIXED UNITS None
-set_parameter_property pFIXED ALLOWED_RANGES -2147483648:2147483647
-set_parameter_property pFIXED HDL_PARAMETER true
 add_parameter pTHRESHOLD INTEGER 60
 set_parameter_property pTHRESHOLD DEFAULT_VALUE 60
 set_parameter_property pTHRESHOLD DISPLAY_NAME pTHRESHOLD
@@ -158,7 +144,7 @@ set_interface_property clock PORT_NAME_MAP ""
 set_interface_property clock CMSIS_SVD_VARIABLES ""
 set_interface_property clock SVD_ADDRESS_GROUP ""
 
-add_interface_port clock iCLK clk Input 1
+add_interface_port clock iCLOCK clk Input 1
 
 
 # 
@@ -177,7 +163,7 @@ add_interface_port vid_in iVID_DATA data Input 24
 add_interface_port vid_in iVID_DATA_VALID dv Input 1
 add_interface_port vid_in iVID_START start Input 1
 add_interface_port vid_in iVID_RESET reset Input 1
-add_interface_port vid_in iVID_CLK clk Input 1
+add_interface_port vid_in iVID_CLOCK clk Input 1
 
 
 # 

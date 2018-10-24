@@ -1,0 +1,54 @@
+= PIO IP core
+
+== Ports
+
+.Ports
+[%autowidth]
+|=====================================================================================================
+    ^|Signal Group          ^|Signal Name           ^|Direction ^|Width           ^|Description
+          
+.2+^.^|Clock/Reset         .^|iCLOCK                ^|Input     ^|   1             |Clock input
+                           .^|iRESET                ^|Input     ^|   1             |Reset input
+.5+^.^|Avalon Slave        .^|iADDRESS              ^|Input     ^|   *             |Address                       
+                           .^|iWRITE                ^|Input     ^|   1             |Write request                 
+                           .^|iREAD                 ^|Input     ^|   1             |Read request                  
+                           .^|iWRITE_DATA           ^|Input     ^|  32             |Data to be written            
+                           .^|oREAD_DATA            ^|Output    ^|  32             |Data being read               
+.4+^.^|exports             .^|iPIO                  ^|Input     ^| pBITS           |input signals                       
+                           .^|oPIO                  ^|Output    ^| pBITS           |output signals                  
+                           .^|oDIR                  ^|Output    ^| pBITS           |signal directions (1 means output)
+                           .^|oMUXSEL               ^|Output    ^| pBITS*pMUX_BITS |mux selection export 
+|=====================================================================================================
+
+[NOTE]
+Address bits depend on the parameters set for the IP. there are 4 fixed registers plus a number of registers For the mux selection which depend on pBITS and pMUX_BITS. For example if pBITS is 32 and pMUX_BITS is 3 there will be additional 3 words for the mux setting and bits will be allocated continuously so first word will contain settings for the first 10 ports and 2 mux setting bits for the 11th port, second word will start with the msb of the 11th port mux setting.
+
+== Parameters
+
+
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Allowed range ^|Description          
+
+|pBITS           ^| 1-32          |Number of bits for this port                      
+|pMUX_BITS       ^| 1-4           |number of bits for mux select register    
+|=====================================================================================================
+
+.Registers
+[%autowidth]
+|=====================================================================================================
+^|Address   ^|    Bits  ^|Description
+
+^|0        .^| pBITS-1:0 |Output Register (when Read returns pin data)
+^|1        .^| pBITS-1:0 |Direction Register
+^|2        .^| pBITS-1:0 |Bit Clear Register (any bit set during write will clear the correspo   nding bit)
+^|3        .^| pBITS-1:0 |Bit Set Register (any bit set during write will set the correspo   nding bit)
+^|4 - ..   .^| N/A       |Port Mux register(s). this consist in a series of registers that hold mux status for each port. 
+|=====================================================================================================
+
+== IP CORE Description
+
+*PIO* core provides interface to FPGA pins. It consists in a parallel I/O port with per bit programmable direction.
+In addition to providing GPIOs it also provides a mux setting that allows multiplexing signals with other peripherals at the pin.
+
