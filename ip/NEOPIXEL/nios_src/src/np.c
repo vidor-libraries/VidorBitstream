@@ -246,6 +246,7 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt
     return 0;
   }
 
+  buf_len = (buf_len < led_num)? led_num: buf_len;
   if ((chns * buf_len * sizeof(alt_u32)) > NP_MEM_SIZE) {
     return -1;
   }
@@ -258,7 +259,7 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt
   }
 
   npNumLed = led_num;
-  npBufLen = (buf_len < led_num)? led_num: buf_len;
+  npBufLen = buf_len;
   npZigZag = zzf;
   npZzlLen = zzl;
 

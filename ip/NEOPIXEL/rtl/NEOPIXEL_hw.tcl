@@ -213,5 +213,6 @@ proc log2 {value} {
 proc elaboration_callback {} {
   set channels [expr { 1+ [get_parameter_value pCHANNELS] } ]
   add_interface_port pixel oDATA data Output $channels
+  add_interface_port pixel oCLK clock Output 1
   set_module_assignment embeddedsw.CMacro.CHANNELS [get_parameter_value pCHANNELS]u
 }

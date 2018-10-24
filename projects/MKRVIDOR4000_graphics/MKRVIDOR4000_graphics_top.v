@@ -324,10 +324,10 @@ MKRVIDOR4000_graphics_sys u0(
 		.irq_out_port           (wIRQ_OUT),     //           .out_port
 
 		.sam_pwm_pwm            (wSAM_OUT1),
-		.neopixel_data          (wSAM_OUT2[11:1]),
+		.neopixel_data				  (wSAM_OUT2[11:1]),
+		.neopixel_clock				  (wSAM_OUT2[0]),
 		.encoder_encoder_a      ({bMKR_D[13],bMKR_D[11],bMKR_D[9],bMKR_D[7],bMKR_D[5],bMKR_D[3],bMKR_D[1],bMKR_A[6],bMKR_A[4],bMKR_A[2],bMKR_A[0]}), //    encoder.encoder_a
 		.encoder_encoder_b      ({bMKR_D[14],bMKR_D[12],bMKR_D[10],bMKR_D[8],bMKR_D[6],bMKR_D[4],bMKR_D[2],bMKR_D[0],bMKR_A[5],bMKR_A[3],bMKR_A[1]})  //           .encoder_b
-
 
 	);
 assign wSAM_OUT2[22:12] = wSAM_OUT2[11:1];
@@ -335,18 +335,17 @@ assign oSAM_INT         = wIRQ_OUT[1];
 assign wWM_OUT2[11]     = wNINA_SS;
 assign wWM_OUT2[18]     = wNINA_SCLK;
 assign wWM_OUT2[19]     = wNINA_MOSI;
-assign wWM_OUT2[16]     = wNINA_RX;
+assign wWM_OUT2[15]     = wNINA_RX;
 
-assign wWM_OUT1[16]     = wSAM_PIO_IN[22]; // D14 for NINA_RX in bypass
+assign wWM_OUT1[15]     = wSAM_PIO_IN[22]; // D14 for NINA_RX in bypass
 assign wWM_OUT1[0]      = wSAM_PIO_IN[15]; // D7 for NINA_RESET in bypass
 assign wWM_OUT1[10]     = wSAM_PIO_IN[14]; // D6 for NINA_GPIO0 in bypass
 
 assign wNINA_MISO       = wWM_PIO_IN[20]; // route NINA_MISO to internal SPI
 
-
 // MIPI input
 assign bMIPI_GP[0]=1'b1;
-assign bMIPI_GP[1]=1'b1;
+assign bMIPI_GP[1]=1'bz;
 
 wire        wDUMMY1,wDUMMY0;
 wire [31:0] wSAM_PIN_OUT,wSAM_OUT1,wSAM_OUT2,wSAM_OUT3;
