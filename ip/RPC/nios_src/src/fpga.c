@@ -23,9 +23,19 @@
 #include "fpga.h"
 #include "pio.h"
 
+#define FPGA_DBG 1
+
 alt_u32 IPDiscover(alt_u32 *ipd);
 alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins);
+
+#if defined(FPGA_DBG) && (FPGA_DBG == 1)
+#include <io.h>
+
 alt_u32 Assignment(alt_u32* pins);
+alt_u32 regWr(alt_u32 adr, alt_u32 val);
+alt_u32 regRd(alt_u32 adr);
+#endif /* defined(FPGA_DBG) && (FPGA_DBG == 1) */
+
 
 /**
  * FPGA Subsystem APIs
@@ -44,7 +54,12 @@ void fpgaRpc(void)
   case 1: ret = FPGA_VER; break;
   case 2: ret = IPDiscover((alt_u32*)&rpc[2]); break;
   case 3: ret = Begin(rpc[1], rpc[2], (alt_u16*)&rpc[3]); break;
+#if defined(FPGA_DBG) && (FPGA_DBG == 1)
   case 4: ret = Assignment((alt_u32*)&rpc[2]); break;
+  case 5: ret = regWr(rpc[1], rpc[2]);
+  case 6: ret = regRd(rpc[1]);
+#endif /* defined(FPGA_DBG) && (FPGA_DBG == 1) */
+
   }
   rpc[1] = ret;
 }
@@ -130,9 +145,11 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
 
             // Set pin, direction value mux
             p = fpgaIp[i].chn[chn].pin[pin_idx[n]].pin;
-            pioMode(PIN_PORT(p), PIN_PIN(p), PIN_MUX(p),
-                    fpgaIp[i].chn[chn].pin[pin_idx[n]].fid & PIN_DIR_MSK,
-                    0);
+            if (p != NOPIN) {
+              pioMode(PIN_PORT(p), PIN_PIN(p), PIN_MUX(p),
+                      fpgaIp[i].chn[chn].pin[pin_idx[n]].fid & PIN_DIR_MSK,
+                      0);
+            }
           }
           return (i<<24) | (c<<12);
         }
@@ -142,6 +159,8 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
 
   return -1;
 }
+
+#if defined(FPGA_DBG) && (FPGA_DBG == 1)
 
 /**
  */
@@ -156,6 +175,23 @@ alt_u32 Assignment(alt_u32* pins)
   }
   return FPGA_PINS_NUM;
 }
+
+/**
+ */
+alt_u32 regWr(alt_u32 adr, alt_u32 val)
+{
+  IOWR(adr, 0, val);
+  return 0;
+}
+
+/**
+ */
+alt_u32 regRd(alt_u32 adr)
+{
+  return IORD(adr, 0);
+}
+
+#endif /* defined(FPGA_DBG) && (FPGA_DBG == 1) */
 
 /**
  */

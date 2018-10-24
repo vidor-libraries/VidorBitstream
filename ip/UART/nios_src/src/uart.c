@@ -74,14 +74,14 @@ void uartRpc(void)
     return ;
   }
   switch (RPC_PID(rpc[0])) {
-  case 2: ret = uartSetup(rpc[0]); break;
-  case 4: ret = uartEnd(rpc[0]); break;
+  case  2: ret = uartSetup(rpc[0]); break;
+  case  4: ret = uartEnd(rpc[0]); break;
 
-  case 5: ret = uartSet(rpc[0], rpc[1], rpc[2]); break;
-  case 6: ret = uartGet(rpc[0]); break;
-  case 7: ret = uartRead(rpc[0], (alt_u8*)&rpc[2], rpc[1]); break;
-  case 8: ret = uartAvail(rpc[0]); break;
-  case 9: ret = uartPut(rpc[0], rpc[1]); break;
+  case  5: ret = uartSet(rpc[0], rpc[1], rpc[2]); break;
+  case  6: ret = uartGet(rpc[0]); break;
+  case  7: ret = uartRead(rpc[0], (alt_u8*)&rpc[2], rpc[1]); break;
+  case  8: ret = uartAvail(rpc[0]); break;
+  case  9: ret = uartPut(rpc[0], rpc[1]); break;
   case 10: ret = uartWrite(rpc[0], (alt_u8*)&rpc[2], rpc[1]); break;
   case 11: ret = uartFlush(rpc[0]); break;
   }

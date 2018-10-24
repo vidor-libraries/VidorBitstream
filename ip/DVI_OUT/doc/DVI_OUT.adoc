@@ -16,8 +16,10 @@ Produces DVI (TMDS) output using generic pins (set up as LVDS outputs).
                      .^|iHS        ^|Input    ^|  1  |Horizontal Sync input         
                      .^|iVS        ^|Input    ^|  1  |Vertical Sync input           
                      .^|iDE        ^|Input    ^|  1  |Data Enable input             
-.2+^.^|TMDS Output   .^|oDVI_DATA  ^|Output   ^|  3  |TMDS Output Data              
+.3+^.^|TMDS Output   .^|oDVI_DATA  ^|Output   ^|  3  |TMDS Output Data              
                      .^|oDVI_CLK   ^|Output   ^|  1  |TMDS Output Clock             
+                     .^|iDVI_HPD   ^|Input    ^|  1  |Hot Plug Detect input
+
 |=====================================================================================================================
 
 == Parameters

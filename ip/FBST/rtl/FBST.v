@@ -101,7 +101,7 @@ begin
 end
 
 
-assign {oBLU[7:3],oGRN[7:3],oRED[7:3]} = iFB_DATA[30] ? iFB_DATA[29:15] : iFB_DATA[14:0];
+assign {oRED[7:3],oGRN[7:3],oBLU[7:3]} = iFB_DATA[30] ? iFB_DATA[29:15] : iFB_DATA[14:0];
 
 
 endmodule

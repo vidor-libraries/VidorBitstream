@@ -53,6 +53,7 @@ else
 SIMULATION_OPTIMIZED_SUPPORT="false"
 BSP_TYPE=hal
 BSP_FLAGS=" \
+--cmd enable_sw_package CFG \
 --cmd enable_sw_package MAILBOX \
 --cmd enable_sw_package RPC  \
 --cmd enable_sw_package GFX  \

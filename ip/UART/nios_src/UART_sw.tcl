@@ -31,7 +31,7 @@ set_sw_property version 1.0
 #
 # Multiple-Version compatibility was introduced in version 13.1;
 # prior versions are therefore excluded.
-set_sw_property min_compatible_hw_version 1.0
+# set_sw_property min_compatible_hw_version 1.0
 
 # Initialize the driver in alt_sys_init()
 set_sw_property auto_initialize false

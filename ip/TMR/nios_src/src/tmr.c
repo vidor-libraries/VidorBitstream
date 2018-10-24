@@ -17,7 +17,7 @@
 
 
 /**
-*/
+ */
 #define TMR_REG_STS 0   // status  RW  ...                     RUN     TO
 #define TMR_REG_CTR 1   // control RW  ... STOP     START     CONT    ITO
 #define TMR_REG_TPL 2   // periodl RW  Timeout Period     bits [15: 0]

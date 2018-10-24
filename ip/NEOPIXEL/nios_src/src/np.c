@@ -21,24 +21,25 @@
  */
 
 //#define NP_USE_TMR
+//#define NP_GFX
+#define NP_MEM_BASE SDRAM_ARBITER_BASE
+#define NP_MEM_SIZE SDRAM_ARBITER_SPAN
 
 #include <string.h>
 #include <stdlib.h>
 #include <io.h>
 
-#include "config.h"
 #include "mb.h"
+
 #ifdef NP_USE_TMR
 #include "tmr.h"
 #endif
-#include "np.h"
 
 #ifdef NP_GFX
 #include "gfx.h"
 #endif
 
-#define NP_MEM_BASE SDRAM_ARBITER_BASE
-#define NP_MEM_SIZE SDRAM_ARBITER_SPAN
+#include "np.h"
 
 /**
  * NEOPIXEL CSR registers
@@ -72,8 +73,9 @@
 #define NP_REG_CH_MSK       0
 #define NP_CH_MSK                 0x007FFFFF
 #define NP_REG_CTRL         1
-#define NP_CTRL_START             0x00008000
-#define NP_CTRL_LEN_MSK           0x00007FE0
+#define NP_CTRL_APA               0x00200000
+#define NP_CTRL_START             0x00100000
+#define NP_CTRL_LEN_MSK           0x000FFFE0
 #define NP_CTRL_LEN_OFS           5
 #define NP_CTRL_CNT_MSK           0x0000001F
 #define NP_CTRL_CNT_OFS           0
@@ -82,13 +84,13 @@
 #define NP_REG_T1H          4
 #define NP_REG_TTOT         5
 #define NP_REG_WCNT         6
-#define NP_WCNT_ZZM_MSK           0x00200000
-#define NP_WCNT_ZZM_OFS           21
-#define NP_WCNT_ZZS_MSK           0x00100000
-#define NP_WCNT_ZZS_OFS           20
-#define NP_WCNT_LL_MSK            0x000FFC00
-#define NP_WCNT_LL_OFS            10
-#define NP_WCNT_WC_MSK            0x000003FF
+#define NP_WCNT_ZZM_MSK           0x80000000
+#define NP_WCNT_ZZM_OFS           31
+#define NP_WCNT_ZZS_MSK           0x40000000
+#define NP_WCNT_ZZS_OFS           30
+#define NP_WCNT_LL_MSK            0x3FFF8000
+#define NP_WCNT_LL_OFS            15
+#define NP_WCNT_WC_MSK            0x00007FFF
 #define NP_WCNT_WC_OFS            0
 #define NP_REG_STATUS       7
 #define NP_STATUS_IDLE            0
@@ -103,7 +105,8 @@
 
 
 #ifdef NP_GFX
-GFXgc gfxNpGc[NEOPIXEL_CHANNELS];
+  #include "gfx.h"
+  GFXgc gfxNpGc[NEOPIXEL_0_CHANNELS];
 #endif
 
 typedef struct {
@@ -136,6 +139,7 @@ alt_u32   npBufAdr;               // start address
 alt_u32   npWrpAdr;               // wrap address
 alt_u32   npWrpCnt;               // counter to jump at wrap address
 alt_u32   npNumLed;               // number of led per string
+alt_u32   npBpp;                  // number of bit per pixel
 alt_u32   npCtrlReg;              // control register
 alt_u32   npWCntReg;              // wrap count and zz control register
 alt_u32   npChMsk;                // channel mask bitfield
@@ -148,9 +152,8 @@ alt_u32   npZzlLen;
 sNpSeq    npSeq;
 alt_u32   npSeqNum;               // sequence number
 
-//alt_u8    brightness[NEOPIXEL_CHANNELS];
-alt_u8    brightness[11];  // TODO
 
+alt_u8    brightness[NEOPIXEL_0_CHANNELS];
 alt_u8    rOffset;       // Index of red byte within each 3- or 4-byte pixel
 alt_u8    gOffset;       // Index of green byte
 alt_u8    bOffset;       // Index of blue byte
@@ -240,7 +243,6 @@ void npRpc(void)
 alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt_u32 zzf, alt_u32 zzl)
 {
   alt_u8    giid = RPC_GIID(cmd);
-  alt_u32   bpp;                    // bit per pixel
   psNpTmg   tmg;                    // timeing structure pointer
   int       i;
   alt_u32   base = fpgaIp[giid].base;
@@ -250,6 +252,7 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt
     return 0;
   }
 
+  buf_len = (buf_len < led_num)? led_num: buf_len;
   if ((chns * buf_len * sizeof(alt_u32)) > NP_MEM_SIZE) {
     return -1;
   }
@@ -262,7 +265,7 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt
   }
 
   npNumLed = led_num;
-  npBufLen = (buf_len < led_num)? led_num: buf_len;
+  npBufLen = buf_len;
   npZigZag = zzf;
   npZzlLen = zzl;
 
@@ -281,9 +284,9 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt
   bOffset = ( type       & 0b11) << 3;
 
   if (wOffset == rOffset) {
-    bpp = 24-1;
+    npBpp = 24;
   }else{
-    bpp = 32-1;
+    npBpp = 32;
   }
 
   if (type & 0x0100) {
@@ -295,32 +298,42 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt
   memset((void*)NP_MEM_BASE, 0, npBufSize);
 
 #ifdef NP_GFX
-  GFXgc    *gc;
   for (i=0; i<chns; i++) {
-    gc = &gfxNpGc[i];
-    gc->width    = npZzlLen;
-    gc->height   = npNumLed / npZzlLen;
-    gc->stride   = chns;
-    gc->bpp      = 32;
-    gc->fmt      = GFX_GC_FMT_XGRB32;   // TODO
-    gc->color    = 0;
-    gc->fb       = (void*)(NP_MEM_BASE + (i*4));
-    gc->pix      = wp32;
-    gc->flg      = GFX_GC_ROT90;        // TODO
-    gc->pFnt     = NULL;
-    gc->txtColor = 0;
-    gc->cursor_x = 0;
-    gc->cursor_y = 0;
-    gc->size     = 0;
+    gfxNpGc[i].width    = npZzlLen;
+    gfxNpGc[i].height   = npNumLed / npZzlLen;
+    gfxNpGc[i].stride   = chns;
+    gfxNpGc[i].bpp      = 32;
+    gfxNpGc[i].fmt      = GFX_GC_FMT_XGRB32;   // TODO
+    gfxNpGc[i].color    = 0;
+    gfxNpGc[i].fb       = (void*)(NP_MEM_BASE + (i*4));
+    gfxNpGc[i].pix      = wp32;
+    gfxNpGc[i].rdp      = rd32;
+    gfxNpGc[i].flg      = GFX_GC_ROT90;        // TODO
+    gfxNpGc[i].pFnt     = NULL;
+    gfxNpGc[i].txtColor = 0;
+    gfxNpGc[i].cursor_x = 0;
+    gfxNpGc[i].cursor_y = 0;
+    gfxNpGc[i].size     = 0;
   }
 #endif
   npCtrlReg = NP_CTRL_START |
               (( npNumLed    << NP_CTRL_LEN_OFS) & NP_CTRL_LEN_MSK)|
-              (( bpp         << NP_CTRL_CNT_OFS) & NP_CTRL_CNT_MSK);
+              (((npBpp - 1)  << NP_CTRL_CNT_OFS) & NP_CTRL_CNT_MSK);
   npWCntReg = (( npZigZag    << NP_WCNT_ZZM_OFS) & NP_WCNT_ZZM_MSK)|
               (( npZzSts     << NP_WCNT_ZZS_OFS) & NP_WCNT_ZZS_MSK)|
               (((npZzlLen-1) << NP_WCNT_LL_OFS ) & NP_WCNT_LL_MSK )|
               (( npWrpCnt    << NP_WCNT_WC_OFS ) & NP_WCNT_WC_MSK );
+
+  if (type & 0xFFFF0000) {
+    // configuring AREF pin MUX on CLOK
+    // TODO serve pin_mux gpioPinMode(32+0, NP_PIN_MUX);
+
+    // configuring IP for APA mode
+    npCtrlReg |= NP_CTRL_APA;
+
+    // configuring IP for 32 bit
+    npCtrlReg = (npCtrlReg & ~NP_CTRL_CNT_MSK) | ((32-1) << NP_CTRL_CNT_OFS);
+  }
 
   while (IORD(base, NP_REG_STATUS) != NP_STATUS_IDLE);
   IOWR(base, NP_REG_CH_MSK  , npChMsk  );
@@ -398,10 +411,16 @@ alt_u32 npLedSet(alt_u32 cmd, alt_u16 LED, alt_u8 r, alt_u8 g, alt_u8 b, alt_u8 
 
   pLed = (alt_u32*)NP_MEM_BASE;
   pLed += ((chns * LED) + chn);
-  *pLed = ((alt_u32)r << rOffset) |
-          ((alt_u32)g << gOffset) |
-          ((alt_u32)b << bOffset) |
-          ((alt_u32)w << wOffset) ;
+  if (npBpp == 32) {
+    *pLed = ((alt_u32)r << rOffset) |
+            ((alt_u32)g << gOffset) |
+            ((alt_u32)b << bOffset) |
+            ((alt_u32)w << wOffset) ;
+  } else {
+    *pLed = ((alt_u32)r << rOffset) |
+            ((alt_u32)g << gOffset) |
+            ((alt_u32)b << bOffset) ;
+  }
   return 0;
 }
 
@@ -526,7 +545,12 @@ alt_u32 npBufScroll(alt_u32 flg, alt_u32 buf, alt_u32 ms)
 static void npTmrCb(void* arg)
 {
   if (npSeq.flg & NP_SEQ_FLG_BUF_LOOP) {
-    npWrapSet(npSeqNum, (npBufLen / npZzlLen) - npSeqNum, 0);
+//    npWrapSet(npSeqNum, (npBufLen / npZzlLen) - npSeqNum, 0);
+    if ((npSeqNum + npNumLed / npZzlLen) > (npBufLen / npZzlLen)) {
+      npWrapSet(npSeqNum, (npBufLen / npZzlLen) - npSeqNum, 0);
+    } else {
+      npWrapSet(npSeqNum, npNumLed / npZzlLen, 0);
+    }
     npLedShow(0);
     if (npSeq.flg & NP_SEQ_FLG_INV_LOOP) {
       if (npSeqNum == 0) {

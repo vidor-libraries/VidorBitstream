@@ -22,8 +22,6 @@
 #ifndef FPGA_H_
 #define FPGA_H_
 
-#include "config.h" // TODO remove
-
 #define FPGA_UID 0x000000
 #define FPGA_VER 0x01020304
 

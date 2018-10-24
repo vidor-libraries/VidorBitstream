@@ -46,6 +46,14 @@ APP_FLAGS="--set APP_CFLAGS_OPTIMIZATION $OPTIMIZATION_LEVEL --set APP_LDFLAGS_U
 SIMULATION_OPTIMIZED_SUPPORT="false"
 BSP_TYPE=hal
 BSP_FLAGS=" \
+--cmd enable_sw_package CFG \
+--cmd enable_sw_package SF \
+--cmd enable_sw_package AES \
+--cmd enable_sw_package SIGN \
+--cmd enable_sw_package MAILBOX \
+--cmd enable_sw_package RPC \
+--cmd enable_sw_package UART \
+--set hal.make.bsp_cflags_defined_symbols -DNO_RPC=1 \
 --set hal.enable_c_plus_plus 0 \
 --set hal.enable_clean_exit 0 \
 --set hal.enable_exit 0 \
@@ -88,6 +96,9 @@ BSP_FLAGS=" \
 --set altera_vic_driver.linker_section .rwdata \
 --script set_regions.tcl \
 --cmd set_driver none remote_update_0 \
+--cmd set_driver arduino_generic_quad_spi_controller2 qspi \
+--cmd set_driver none arduino_16500_uart\
+--cmd set_driver none nina_uart \
 --cmd add_section_mapping .rwdata onchip_memory2_0 \
 --cmd add_section_mapping .bss onchip_memory2_0 \
 --cmd add_section_mapping .heap onchip_memory2_0 \
@@ -99,13 +110,11 @@ BSP_FLAGS=" \
 "
 
 mkdir -p $APP_DIR
+
 # copy common files
-cp -f $COMMON_SRC_DIR/* $APP_DIR
+cp -f launcher.c $APP_DIR
 
-# make a copy of standard project sources
-cp -r $APP_SRC_DIR/* $APP_DIR
-
-generate the BSP in the $BSP_DIR
+# generate the BSP in the $BSP_DIR
 cmd="nios2-bsp $BSP_TYPE $BSP_DIR $SOPC_INFO $BSP_FLAGS"
 $cmd || {
   echo "nios2-bsp failed"

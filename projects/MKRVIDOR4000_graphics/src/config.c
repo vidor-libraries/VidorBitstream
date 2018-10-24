@@ -29,6 +29,7 @@
 #include "enc.h"
 #include "uart.h"
 #include "tspi.h"
+// TODO #include "gfx.h"
 
 /**
  * FPGA pins assignment
@@ -204,27 +205,29 @@ sFpgaIpChn I2C_1_CHN[] = {
 /**
  * NeoPixel pins definition
  */
-sFpgaIpPin NEOPIXEL_0_PIN[] = {
-  {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 7)},
-};
-sFpgaIpPin NEOPIXEL_1_PIN[] = {
-  {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 8)},
-};
-sFpgaIpPin NEOPIXEL_2_PIN[] = {
-  {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 15)},
-};
-sFpgaIpPin NEOPIXEL_3_PIN[] = {
-  {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 16)},
-};
-sFpgaIpPin NEOPIXEL_4_PIN[] = {
-  {0, NEOPIXEL_PIN_FNC_OUT, PIN(3, 1, 20)},
-};
+sFpgaIpPin NEOPIXEL_0_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  1)} };
+sFpgaIpPin NEOPIXEL_1_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  2)} };
+sFpgaIpPin NEOPIXEL_2_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  3)} };
+sFpgaIpPin NEOPIXEL_3_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  4)} };
+sFpgaIpPin NEOPIXEL_4_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  5)} };
+sFpgaIpPin NEOPIXEL_5_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  6)} };
+sFpgaIpPin NEOPIXEL_6_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  7)} };
+sFpgaIpPin NEOPIXEL_7_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  8)} };
+sFpgaIpPin NEOPIXEL_8_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1,  9)} };
+sFpgaIpPin NEOPIXEL_9_PIN[]  = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1, 10)} };
+sFpgaIpPin NEOPIXEL_10_PIN[] = { {0, NEOPIXEL_PIN_FNC_OUT, PIN(2, 1, 11)} };
 sFpgaIpChn NEOPIXEL_CHN[] = {
   {NPIN(NEOPIXEL_0_PIN), NEOPIXEL_0_PIN},
   {NPIN(NEOPIXEL_1_PIN), NEOPIXEL_1_PIN},
   {NPIN(NEOPIXEL_2_PIN), NEOPIXEL_2_PIN},
   {NPIN(NEOPIXEL_3_PIN), NEOPIXEL_3_PIN},
   {NPIN(NEOPIXEL_4_PIN), NEOPIXEL_4_PIN},
+  {NPIN(NEOPIXEL_5_PIN), NEOPIXEL_5_PIN},
+  {NPIN(NEOPIXEL_6_PIN), NEOPIXEL_6_PIN},
+  {NPIN(NEOPIXEL_7_PIN), NEOPIXEL_7_PIN},
+  {NPIN(NEOPIXEL_8_PIN), NEOPIXEL_8_PIN},
+  {NPIN(NEOPIXEL_9_PIN), NEOPIXEL_9_PIN},
+  {NPIN(NEOPIXEL_10_PIN), NEOPIXEL_10_PIN},
 };
 
 /**
@@ -283,70 +286,7 @@ sFpgaIpPin UART_0_PIN[] = {
 sFpgaIpChn UART_0_CHN[] = {
   {NPIN(UART_0_PIN), UART_0_PIN},
 };
-UART_DEV(UART_0);
-sFpgaIpPin UART_1_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 3)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 4)},
-  {1, UART_PIN_FNC_TX , PIN(2, 1, 3)}, {1, UART_PIN_FNC_RX , PIN(0, 1, 4)},
-  {1, UART_PIN_FNC_RTS, PIN(2, 1, 2)}, {1, UART_PIN_FNC_CTS, PIN(0, 1, 1)},
-};
-sFpgaIpChn UART_1_CHN[] = {
-  {NPIN(UART_1_PIN), UART_1_PIN},
-};
-UART_DEV(UART_1);
-sFpgaIpPin UART_2_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 5)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 6)},
-};
-sFpgaIpChn UART_2_CHN[] = {
-  {NPIN(UART_2_PIN), UART_2_PIN},
-};
-UART_DEV(UART_2);
-sFpgaIpPin UART_3_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 7)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 8)},
-  {1, UART_PIN_FNC_TX , PIN(2, 1, 7)}, {1, UART_PIN_FNC_RX , PIN(0, 1, 8)},
-  {1, UART_PIN_FNC_RTS, PIN(2, 1, 6)}, {1, UART_PIN_FNC_CTS, PIN(0, 1, 5)},
-  {2, UART_PIN_FNC_TX , PIN(2, 1, 7)}, {2, UART_PIN_FNC_RX , PIN(0, 1, 8)},
-  {2, UART_PIN_FNC_RTS, PIN(2, 1, 6)}, {2, UART_PIN_FNC_CTS, PIN(0, 1, 5)},
-  {2, UART_PIN_FNC_DTR, PIN(2, 1, 4)}, {2, UART_PIN_FNC_DSR, PIN(0, 1, 3)},
-};
-sFpgaIpChn UART_3_CHN[] = {
-  {NPIN(UART_3_PIN), UART_3_PIN},
-};
-UART_DEV(UART_3);
-sFpgaIpPin UART_4_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 9)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 10)},
-};
-sFpgaIpChn UART_4_CHN[] = {
-  {NPIN(UART_4_PIN), UART_4_PIN},
-};
-UART_DEV(UART_4);
-sFpgaIpPin UART_5_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 11)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 12)},
-  {1, UART_PIN_FNC_TX , PIN(2, 1, 11)}, {1, UART_PIN_FNC_RX , PIN(0, 1, 12)},
-  {1, UART_PIN_FNC_RTS, PIN(2, 1, 10)}, {1, UART_PIN_FNC_CTS, PIN(0, 1,  9)},
-};
-sFpgaIpChn UART_5_CHN[] = {
-  {NPIN(UART_5_PIN), UART_5_PIN},
-};
-UART_DEV(UART_5);
-sFpgaIpPin UART_6_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 13)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 14)},
-};
-sFpgaIpChn UART_6_CHN[] = {
-  {NPIN(UART_6_PIN), UART_6_PIN},
-};
-UART_DEV(UART_6);
-sFpgaIpPin UART_7_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 15)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 16)},
-  {1, UART_PIN_FNC_TX , PIN(2, 1, 15)}, {1, UART_PIN_FNC_RX , PIN(0, 1, 16)},
-  {1, UART_PIN_FNC_RTS, PIN(2, 1, 14)}, {1, UART_PIN_FNC_CTS, PIN(0, 1, 13)},
-  {2, UART_PIN_FNC_TX , PIN(2, 1, 15)}, {2, UART_PIN_FNC_RX , PIN(0, 1, 16)},
-  {2, UART_PIN_FNC_RTS, PIN(2, 1, 14)}, {2, UART_PIN_FNC_CTS, PIN(0, 1, 13)},
-  {2, UART_PIN_FNC_DTR, PIN(2, 1, 12)}, {2, UART_PIN_FNC_DSR, PIN(0, 1, 11)},
-};
-sFpgaIpChn UART_7_CHN[] = {
-  {NPIN(UART_7_PIN), UART_7_PIN},
-};
-UART_DEV(UART_7);
+UART_DEV(NINA_UART);
 
 /**
  * TSPI pins definition
@@ -364,62 +304,12 @@ sFpgaIpChn TSPI_0_CHN[] = {
   {NPIN(TSPI_0_PIN), TSPI_0_PIN},
 };
 TSPI_DEV(TSPI_0);
-sFpgaIpPin TSPI_1_PIN[] = {
-  {0, TSPI_PIN_FNC_MOSI, PIN(3, 1,  6)},
-  {0, TSPI_PIN_FNC_MISO, PIN(0, 1,  8)},
-  {0, TSPI_PIN_FNC_CLK , PIN(3, 1,  9)},
-  {1, TSPI_PIN_FNC_MOSI, PIN(3, 1,  6)},
-  {1, TSPI_PIN_FNC_MISO, PIN(0, 1,  8)},
-  {1, TSPI_PIN_FNC_CLK , PIN(3, 1,  9)},
-  {1, TSPI_PIN_FNC_SS  , PIN(3, 1, 10)},
-};
-sFpgaIpChn TSPI_1_CHN[] = {
-  {NPIN(TSPI_1_PIN), TSPI_1_PIN},
-};
-TSPI_DEV(TSPI_1);
-sFpgaIpPin TSPI_2_PIN[] = {
-  {0, TSPI_PIN_FNC_MOSI, PIN(3, 1, 11)},
-  {0, TSPI_PIN_FNC_MISO, PIN(0, 1, 15)},
-  {0, TSPI_PIN_FNC_CLK , PIN(3, 1, 12)},
-  {1, TSPI_PIN_FNC_MOSI, PIN(3, 1, 11)},
-  {1, TSPI_PIN_FNC_MISO, PIN(0, 1, 15)},
-  {1, TSPI_PIN_FNC_CLK , PIN(3, 1, 12)},
-  {1, TSPI_PIN_FNC_SS  , PIN(3, 1, 13)},
-};
-sFpgaIpChn TSPI_2_CHN[] = {
-  {NPIN(TSPI_2_PIN), TSPI_2_PIN},
-};
-TSPI_DEV(TSPI_2);
-sFpgaIpPin TSPI_3_PIN[] = {
-  {0, TSPI_PIN_FNC_MOSI, PIN(3, 1, 14)},
-  {0, TSPI_PIN_FNC_MISO, PIN(0, 1, 16)},
-  {0, TSPI_PIN_FNC_CLK , PIN(3, 1, 17)},
-  {1, TSPI_PIN_FNC_MOSI, PIN(3, 1, 14)},
-  {1, TSPI_PIN_FNC_MISO, PIN(0, 1, 16)},
-  {1, TSPI_PIN_FNC_CLK , PIN(3, 1, 17)},
-  {1, TSPI_PIN_FNC_SS  , PIN(3, 1, 18)},
-};
-sFpgaIpChn TSPI_3_CHN[] = {
-  {NPIN(TSPI_3_PIN), TSPI_3_PIN},
-};
-TSPI_DEV(TSPI_3);
-sFpgaIpPin TSPI_4_PIN[] = {
-  {0, TSPI_PIN_FNC_MOSI, PIN(3, 1, 19)},
-  {0, TSPI_PIN_FNC_MISO, PIN(0, 1, 20)},
-  {0, TSPI_PIN_FNC_CLK , PIN(3, 1, 21)},
-  {1, TSPI_PIN_FNC_MOSI, PIN(3, 1, 19)},
-  {1, TSPI_PIN_FNC_MISO, PIN(0, 1, 20)},
-  {1, TSPI_PIN_FNC_CLK , PIN(3, 1, 21)},
-  {1, TSPI_PIN_FNC_SS  , PIN(3, 1, 22)},
-};
-sFpgaIpChn TSPI_4_CHN[] = {
-  {NPIN(TSPI_4_PIN), TSPI_4_PIN},
-};
-TSPI_DEV(TSPI_4);
 
 /**
  */
 sFpgaIpRpc fpgaIpRpc[] = {
+#if defined(NO_RPC) && (NO_RPC == 1)
+#else
   {fpgaRpc, FPGA_VER    },
   {pioRpc , PIO_VER     },
   {pwmRpc , PWM_VER     },
@@ -428,11 +318,20 @@ sFpgaIpRpc fpgaIpRpc[] = {
   {encRpc , ENC_VER     },
   {uartRpc, UART_VER    },
   {tspiRpc, TSPI_VER    },
+// TODO   {gfxRpc , GFX_VER     },
+#endif
 };
+
+/* TODO va preso da system.h */
+#define PEX_PIO_CHNS  25
+#define SAM_PIO_CHNS  18
+#define WM_PIO_CHNS   18
+
 
 /**
  */
 sFpgaIp fpgaIp[] = {
+
   /**
    * FPGA subsystem MUST BE first item of array
    */
@@ -441,9 +340,9 @@ sFpgaIp fpgaIp[] = {
   /**
    * PIO
    */
-  {1, IP_DISC(PIO_0_CHNS, PIO_UID), PIO_0_BASE, 0},
-  {1, IP_DISC(PIO_1_CHNS, PIO_UID), PIO_1_BASE, 0},
-  {1, IP_DISC(PIO_2_CHNS, PIO_UID), PIO_2_BASE, 0},
+  {1, IP_DISC(PEX_PIO_CHNS, PIO_UID), PEX_PIO_BASE, 0},
+  {1, IP_DISC(SAM_PIO_CHNS, PIO_UID), SAM_PIO_BASE, 0},
+  {1, IP_DISC(WM_PIO_CHNS , PIO_UID), WM_PIO_BASE, 0},
 
   /**
    * PWM
@@ -471,22 +370,18 @@ sFpgaIp fpgaIp[] = {
   /**
    * UART
    */
-  {6, IP_DISC(UART_0_CHNS, UART_UID), UART_0_BASE, UART_0_CHN, &UART_0_DEV},
-  {6, IP_DISC(UART_1_CHNS, UART_UID), UART_1_BASE, UART_1_CHN, &UART_1_DEV},
-  {6, IP_DISC(UART_2_CHNS, UART_UID), UART_2_BASE, UART_2_CHN, &UART_2_DEV},
-  {6, IP_DISC(UART_3_CHNS, UART_UID), UART_3_BASE, UART_3_CHN, &UART_3_DEV},
-  {6, IP_DISC(UART_4_CHNS, UART_UID), UART_4_BASE, UART_4_CHN, &UART_4_DEV},
-  {6, IP_DISC(UART_5_CHNS, UART_UID), UART_5_BASE, UART_5_CHN, &UART_5_DEV},
-  {6, IP_DISC(UART_6_CHNS, UART_UID), UART_6_BASE, UART_6_CHN, &UART_6_DEV},
-  {6, IP_DISC(UART_7_CHNS, UART_UID), UART_7_BASE, UART_7_CHN, &UART_7_DEV},
+  {6, IP_DISC(UART_0_CHNS, UART_UID), NINA_UART_BASE, UART_0_CHN, &NINA_UART_DEV},
 
   /**
    * TSPI
    */
-  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), TSPI_0_BASE, TSPI_0_CHN, &TSPI_0_DEV},
-  {7, IP_DISC(TSPI_1_CHNS, TSPI_UID), TSPI_1_BASE, TSPI_1_CHN, &TSPI_1_DEV},
-  {7, IP_DISC(TSPI_2_CHNS, TSPI_UID), TSPI_2_BASE, TSPI_2_CHN, &TSPI_2_DEV},
-  {7, IP_DISC(TSPI_3_CHNS, TSPI_UID), TSPI_3_BASE, TSPI_3_CHN, &TSPI_3_DEV},
-  {7, IP_DISC(TSPI_4_CHNS, TSPI_UID), TSPI_4_BASE, TSPI_4_CHN, &TSPI_4_DEV},
+  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), NINA_SPI_BASE, TSPI_0_CHN, &TSPI_0_DEV},
+//  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), FLASH_SPI_BASE, NULL, NULL},
+  {7, IP_DISC(0, 0), FLASH_SPI_BASE, NULL, NULL},
+
+  /**
+   * GFX
+   */
+// TODO   {8, IP_DISC(0, GFX_UID), 0, NULL, NULL},
 };
 int fpgaIpGiidNum = (sizeof(fpgaIp)/sizeof(sFpgaIp));

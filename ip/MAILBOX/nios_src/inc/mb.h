@@ -30,6 +30,8 @@
 
 alt_u32* mbPtrGet(void);
 int mbInit(void);
-void mbLoop(void);
+
+//void mbLoop(void);
+alt_u32* mbMsgRx(void);
 
 #endif /* __MB_H */

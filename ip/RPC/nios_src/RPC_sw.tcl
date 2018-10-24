@@ -21,20 +21,6 @@ create_sw_package RPC
 # The version of this driver
 set_sw_property version 18.0
 
-# This driver may be incompatible with versions of hardware less
-# than specified below. Updates to hardware and device drivers
-# rendering the driver incompatible with older versions of
-# hardware are noted with this property assignment.
-#
-# Multiple-Version compatibility was introduced in version 13.1;
-# prior versions are therefore excluded.
-set_sw_property min_compatible_hw_version 1.0
-
-# Interrupt properties: This driver supports both legacy and enhanced
-# interrupt APIs, as well as ISR preemption.
-set_sw_property isr_preemption_supported true
-set_sw_property supported_interrupt_apis "legacy_interrupt_api enhanced_interrupt_api"
-
 # Initialize the driver in alt_sys_init()
 set_sw_property auto_initialize false
 

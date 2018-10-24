@@ -189,12 +189,12 @@ set_location_assignment PIN_R1  -to oWM_RESET
 # HDMI output
 set_instance_assignment -name IO_STANDARD LVDS -to oHDMI_TX*
 set_instance_assignment -name IO_STANDARD LVDS -to oHDMI_CLK
-set_location_assignment PIN_R16 -to oHDMI_TX[0]
+set_location_assignment PIN_R16 -to oHDMI_TX[2]
 set_location_assignment PIN_K15 -to oHDMI_TX[1]
-set_location_assignment PIN_J15 -to oHDMI_TX[2]
-set_location_assignment PIN_P16 -to oHDMI_TX[0](n)
+set_location_assignment PIN_J15 -to oHDMI_TX[0]
+set_location_assignment PIN_P16 -to oHDMI_TX[2](n)
 set_location_assignment PIN_K16 -to oHDMI_TX[1](n)
-set_location_assignment PIN_J16 -to oHDMI_TX[2](n)
+set_location_assignment PIN_J16 -to oHDMI_TX[0](n)
 set_location_assignment PIN_N15 -to oHDMI_CLK
 set_location_assignment PIN_N16 -to oHDMI_CLK(n)
 set_instance_assignment -name IO_STANDARD "2.5 V" -to bHDMI_SCL
