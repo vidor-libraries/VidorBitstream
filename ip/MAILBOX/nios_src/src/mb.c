@@ -31,7 +31,6 @@
 #define MB_LAST_ADDRESS (1 << MB_DPRAM_BITS)
 #define MB_FIFO_SIZE    (1 << MB_FIFO_BITS)
 
-#define MB_DP_BASE    (MB_BASE + 0)
 #define MB_FIFO_BASE  (MB_LAST_ADDRESS - MB_FIFO_SIZE)
 #define MB_STATUS     MB_FIFO_BASE
 #define MB_STS_REQ_PEND   (1 << MB_FIFO_BITS)
@@ -41,7 +40,7 @@
  */
 alt_u32* SEC_RAM mbPtrGet(void)
 {
-  return (alt_u32*)MB_BASE;
+  return (alt_u32*)(MB_BASE | 0x80000000);
 }
 
 /**
@@ -52,8 +51,6 @@ alt_u32* SEC_RAM mbMsgRx(void)
 
   reg = IORD(MB_BASE, MB_STATUS);
   if (reg & MB_STS_REQ_PEND) {
-    //reg &= ~MB_STS_REQ_PEND;
-    //IOWR(MB_BASE, MB_STATUS, reg);
     return (alt_u32*)MB_BASE;
   }
   return (alt_u32*)0;

@@ -43,7 +43,6 @@ int main(void)
 
   // disable all interrupt
 //  alt_irq_disable_all();
-  irqPinSet(0, NULL);
 
   // jump to application in FLASH
   __asm__ volatile (

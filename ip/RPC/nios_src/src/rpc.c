@@ -80,6 +80,6 @@ void SEC_RAM rpcCmd(void)
         break;
       }
     }
-    rpc[0] = 0;
   }
+  rpc[0] = 0;
 }

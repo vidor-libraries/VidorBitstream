@@ -159,7 +159,7 @@ alt_u8    gOffset;       // Index of green byte
 alt_u8    bOffset;       // Index of blue byte
 alt_u8    wOffset;       // Index of white byte (same as rOffset if no white)
 
-alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt_u32 zzf, alt_u32 zzl);
+alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt_u32 zzf, alt_u32 zzl, alt_u32 flg);
 alt_u32 npEnd(alt_u32 cmd);
 
 alt_u32 npTmgSet(alt_u32 cmd, alt_u32 frq, alt_u32 trst, alt_u32 t0h, alt_u32 t1h, alt_u32 ttot);
@@ -188,7 +188,7 @@ void npRpc(void)
   }
   switch (RPC_PID(rpc[0])) {
   case 2:
-    ret = npSetup(rpc[0], rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
+    ret = npSetup(rpc[0], rpc[1], rpc[2], rpc[3], rpc[4], rpc[5], rpc[6]);
     break;
   case 4:
     ret = npEnd(rpc[0]);
@@ -240,7 +240,8 @@ void npRpc(void)
  *
  * @return
  */
-alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt_u32 zzf, alt_u32 zzl)
+alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len,
+                alt_u32 zzf, alt_u32 zzl, alt_u32 flg)
 {
   alt_u8    giid = RPC_GIID(cmd);
   psNpTmg   tmg;                    // timeing structure pointer
@@ -308,7 +309,7 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len, alt
     gfxNpGc[i].fb       = (void*)(NP_MEM_BASE + (i*4));
     gfxNpGc[i].pix      = wp32;
     gfxNpGc[i].rdp      = rd32;
-    gfxNpGc[i].flg      = GFX_GC_ROT90;        // TODO
+    gfxNpGc[i].flg      = flg;
     gfxNpGc[i].pFnt     = NULL;
     gfxNpGc[i].txtColor = 0;
     gfxNpGc[i].cursor_x = 0;
