@@ -24,12 +24,25 @@
 #ifndef __VIDOR_IO_H__
 #define __VIDOR_IO_H__
 
+#define VIDOR_PWM 	0x55
+
 extern "C" {
 	void pinModeExtended( uint32_t ulPin, uint32_t ulMode );
 	void digitalWriteExtended( uint32_t ulPin, uint32_t ulVal );
 	int digitalReadExtended( uint32_t ulPin );
 	void analogWriteExtended( uint32_t pin, uint32_t value );
 }
+
+static constexpr int convertPinVidor(int x) {
+	return (x < A0 ? x + A6 - A0 + 1 : x - A0 + 1);
+};
+
+#if defined(ARDUINO_SAMD_BETA_MKRVIDOR4000) || defined(ARDUINO_SAMD_MKRVIDOR4000)
+#define convertPinNumber(x) 	convertPinVidor(x)
+#else
+#define convertPinNumber(x)		x
+#endif
+
 
 class VidorIO : public VidorIP {
 
@@ -38,7 +51,7 @@ public:
 	VidorIO(int _base) : base(_base) {}
 
 	void pinMode(uint32_t pin, uint32_t mode) {
-		uint32_t rpc[256];
+		uint32_t rpc[4];
 
 		// get giid and chan for required pin (pin here has the complete numbering scheme)
 		// TODO: should I ask this to UID 0 == FPGA ?
@@ -50,46 +63,78 @@ public:
 			initialized = true;
 		}
 
-		rpc[0] = RPC_CMD(info.giid, info.chn, 5);
-		rpc[1] = pin;
+		rpc[0] = RPC_CMD(info.giid, pin, 5);
 
 		switch (mode) {
 			case OUTPUT:
-				rpc[2] = 2;
+			case INPUT:
+				rpc[1] = 0;
+				break;
+			case VIDOR_PWM:
+				rpc[1] = 1;
+				break;
+			default:
+				rpc[1] = mode;
+				break;
+		}
+
+		switch (mode) {
+			case OUTPUT:
+				rpc[2] = 1;
 				break;
 			case INPUT:
-				rpc[2] = 1;
+				rpc[2] = 0;
 				break;
 			default:
 				rpc[2] = mode;
+				break;
 		}
-		VidorMailbox.sendCommand(rpc, 3);
+		rpc[3] = 0;
+		VidorMailbox.sendCommand(rpc, 4);
 	}
 
 	void digitalWrite(uint32_t pin, uint32_t mode) {
-		uint32_t rpc[256];
-		rpc[0] = RPC_CMD(info.giid, info.chn, 6);
-		rpc[1] = pin;
-		rpc[2] = mode;
-		VidorMailbox.sendCommand(rpc, 3);
+		uint32_t rpc[2];
+		rpc[0] = RPC_CMD(info.giid, pin, 6);
+		rpc[1] = mode;
+		VidorMailbox.sendCommand(rpc, 2);
 	}
 
 	int digitalRead(uint32_t pin) {
-		uint32_t rpc[256];
-		rpc[0] = RPC_CMD(info.giid, info.chn, 7);
-		rpc[1] = pin;
-		return VidorMailbox.sendCommand(rpc, 2);
+		uint32_t rpc[1];
+		rpc[0] = RPC_CMD(info.giid, pin, 7);
+		return VidorMailbox.sendCommand(rpc, 1);
 	}
 
-	int period = -1;
+	int begin() {
+		return 0;
+	};
+
+  private:
+	int base;
+	bool initialized = false;
+};
+
+static VidorIO* io_instance[3] = {NULL, NULL, NULL};
+
+
+class VidorPWM : public VidorIP {
+
+public:
+
+	VidorPWM(int _base) : base(_base) {}
 
 	void analogWriteResolution(int bits, int frequency) {
 
-		uint32_t rpc[256];
+		if (period == -1) {
+			begin();
+		}
+
+		uint32_t rpc[3];
 		period = 2 << bits;
 		int prescaler = (2 * F_CPU / frequency) / period;
 
-		rpc[0] = RPC_CMD(info.giid, info.chn, 8);
+		rpc[0] = RPC_CMD(info.giid, info.chn, 5);
 		rpc[1] = prescaler;
 		rpc[2] = period;
 		VidorMailbox.sendCommand(rpc, 3);
@@ -97,60 +142,68 @@ public:
 
 	void analogWrite(uint32_t pin, uint32_t mode) {
 
-		uint32_t rpc[256];
+		uint32_t rpc[3];
 
 		if (period == -1) {
 			// sane default
 			analogWriteResolution(8, 490);
 		}
-		pinMode(pin, 3);
+		io_instance[base]->pinMode(pin, VIDOR_PWM);
 
-		rpc[0] = RPC_CMD(info.giid, info.chn, 9);
-		rpc[1] = pin;
-		rpc[2] = mode;
-		rpc[3] = period - mode;
-		VidorMailbox.sendCommand(rpc, 4);
+		rpc[0] = RPC_CMD(info.giid, pin, 6);
+		rpc[1] = mode;
+		rpc[2] = period - mode;
+		VidorMailbox.sendCommand(rpc, 3);
 	}
 
 	int begin() {
-		return 0;
+		return init(PWM_UID, base * 32);
 	};
 
-	/* I2C functions moved*/
-	/* UART functions moved */
-	/* SPI functions moved */
   private:
 	int base;
-	bool initialized = false;
+	int period = -1;
 };
 
-static VidorIO* instance[3] = {NULL, NULL, NULL};
+static VidorPWM* pwm_instance[2] = {NULL, NULL};
+
 class VidorIOContainer {
 	public:
 
 		static void pinMode(int pin, int mode) {
-			if (instance[pin/32] == NULL) {
-				instance[pin/32] = new VidorIO(pin/32);
+			pin = convertPinNumber(pin);
+			if (io_instance[pin/32] == NULL) {
+				io_instance[pin/32] = new VidorIO(pin/32);
 			}
-			instance[pin/32]->pinMode(pin % 32, mode);
+			io_instance[pin/32]->pinMode(pin % 32, mode);
 		}
 
 		static void digitalWrite(int pin, int value) {
-			instance[pin/32]->digitalWrite(pin % 32, value);
+			pin = convertPinNumber(pin);
+			io_instance[pin/32]->digitalWrite(pin % 32, value);
 		}
 
 		static int digitalRead(int pin) {
-			return instance[pin/32]->digitalRead(pin);
+			pin = convertPinNumber(pin);
+			return io_instance[pin/32]->digitalRead(pin);
 
 		}
 		static void analogWriteResolution(int bits, int frequency) {
-			instance[0]->analogWriteResolution(bits, frequency);
+			if (pwm_instance[0] == NULL) {
+				pwm_instance[0] = new VidorPWM(0);
+			}
+			pwm_instance[0]->analogWriteResolution(bits, frequency);
 		}
 
 		static void analogWrite(int pin, int mode) {
-			instance[pin/32]->analogWrite(pin % 32, mode);
+			pin = convertPinNumber(pin);
+			if (pwm_instance[pin/32] == NULL) {
+				pwm_instance[pin/32] = new VidorPWM(pin/32);
+			}
+			pwm_instance[pin/32]->analogWrite(pin % 32, mode);
 		}
 };
 
+#undef convertPinNumber
 
 #endif
