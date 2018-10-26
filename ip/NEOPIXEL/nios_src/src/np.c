@@ -22,8 +22,10 @@
 
 //#define NP_USE_TMR
 //#define NP_GFX
-#define NP_MEM_BASE SDRAM_ARBITER_BASE
+#define NP_MEM_BASE (SDRAM_ARBITER_BASE | 0x80000000)
 #define NP_MEM_SIZE SDRAM_ARBITER_SPAN
+
+#define errrr
 
 #include <string.h>
 #include <stdlib.h>
