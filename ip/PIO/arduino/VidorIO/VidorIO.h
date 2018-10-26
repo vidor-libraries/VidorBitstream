@@ -142,7 +142,9 @@ class VidorIOContainer {
 
 		}
 		static void analogWriteResolution(int bits, int frequency) {
-			instance[0]->analogWriteResolution(bits, frequency);
+			if (instance[0] != NULL) {
+				instance[0]->analogWriteResolution(bits, frequency);
+			}
 		}
 
 		static void analogWrite(int pin, int mode) {
