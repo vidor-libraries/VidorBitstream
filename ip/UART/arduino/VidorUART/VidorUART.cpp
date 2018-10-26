@@ -33,7 +33,7 @@ VidorUart::VidorUart(int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _ds
 
 int VidorUart::begin()
 {
-  return init(UART_UID, tx, rx, cts, rts, dtr, dsr);
+  return init(UART_UID, digital_to_fpga(tx), digital_to_fpga(rx), digital_to_fpga(cts), digital_to_fpga(rts), digital_to_fpga(dtr), digital_to_fpga(dsr));
 }
 
 void VidorUart::begin(unsigned long baudrate)

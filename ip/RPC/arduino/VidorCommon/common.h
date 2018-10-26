@@ -25,7 +25,7 @@
 
 #if defined(ARDUINO_SAMD_BETA_MKRVIDOR4000) || defined(ARDUINO_SAMD_MKRVIDOR4000)
 static constexpr int digital_to_fpga(int x) {
-  return (x < A0 ? x + A6 - A0 + 2 : x - A0 + 1);
+  return (x < A0 ? x + A6 - A0 + 2 : (x >= 32) ? x : x - A0 + 1);
 };
 #else
 static constexpr int digital_to_fpga(int x) {

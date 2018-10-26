@@ -41,7 +41,7 @@ VidorSPIClass::VidorSPIClass(int _mosi, int _miso, int _sck, int _cs) : settings
 
 int VidorSPIClass::begin()
 {
-  int ret = init(TSPI_UID, mosi, miso, sck, cs);
+  int ret = init(TSPI_UID, digital_to_fpga(mosi), digital_to_fpga(miso), digital_to_fpga(sck), digital_to_fpga(cs));
   if (ret < 0) {
     return -1;
   }

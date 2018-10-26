@@ -33,7 +33,7 @@ void VidorEncoder::write(int32_t p){
 int32_t VidorEncoder::read(){
 
   if (!initialized) {
-    int ret = init(ENC_UID, pinA, pinB);
+    int ret = init(ENC_UID, digital_to_fpga(pinA), digital_to_fpga(pinB));
     if (ret < 0) {
       return 0;
     }

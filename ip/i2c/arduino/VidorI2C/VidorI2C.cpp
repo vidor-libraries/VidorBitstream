@@ -35,7 +35,7 @@ VidorTwoWire::VidorTwoWire(int _scl, int _sda)
 }
 
 int VidorTwoWire::begin(void) {
-  int ret = init(I2C_UID, sda, scl);
+  int ret = init(I2C_UID, digital_to_fpga(sda), digital_to_fpga(scl));
   if (ret < 0) {
     return ret;
   }
