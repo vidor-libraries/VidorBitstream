@@ -28,24 +28,8 @@
 #define PWM_DRV_VER  0x0004
 #define PWM_VER (((ENC_IP_VER)<<16)|(ENC_DRV_VER))
 
-#define PWM_0_BASE  0x00
-#define PWM_1_BASE  0x00
-#define PWM_2_BASE  0x00
-
-#define PWM_0_CHNS  10
-#define PWM_1_CHNS  10
-#define PWM_2_CHNS  10
-
-
-
-
-
 #define PWM_PIN_FNC_OUT   PIN_FNC(0x01, PIN_DIR_O)
 
-
 void pwmRpc(void);
-
-alt_u32 pwmFrqSet(alt_u32 prescaler, alt_u16 period);
-alt_u32 pwmWrite(alt_u32 cmd, alt_u16 mh, alt_u16 ml);
 
 #endif /* PWM_H_ */

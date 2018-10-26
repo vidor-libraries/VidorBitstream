@@ -37,6 +37,10 @@
 alt_u32 pwmSetup(alt_u32 cmd);
 alt_u32 pwmEnd(alt_u32 cmd);
 
+alt_u32 pwmFrqSet(alt_u32 cmd, alt_u32 prescaler, alt_u16 period);
+alt_u32 pwmWrite(alt_u32 cmd, alt_u16 mh, alt_u16 ml);
+
+
 /**
  *
  */
@@ -58,7 +62,7 @@ void pwmRpc(void)
     ret = pwmEnd(rpc[0]);
     break;
   case 5:
-    ret = pwmFrqSet(rpc[1], rpc[2]);
+    ret = pwmFrqSet(rpc[0], rpc[1], rpc[2]);
     break;
   case 6:
     ret = pwmWrite(rpc[0], rpc[1], rpc[2]);
@@ -84,10 +88,13 @@ alt_u32 pwmEnd(alt_u32 cmd)
 /**
  *
  */
-alt_u32 pwmFrqSet(alt_u32 prescaler, alt_u16 period)
+alt_u32 pwmFrqSet(alt_u32 cmd, alt_u32 prescaler, alt_u16 period)
 {
-  IOWR(SAM_PWM_BASE, PWM_PRESCALER, prescaler-1);
-  IOWR(SAM_PWM_BASE, PWM_PERIOD_MAX, period-1);
+  alt_u8  giid = RPC_GIID(cmd);
+  alt_u32 base = fpgaIp[giid].base;
+
+  IOWR(base, PWM_PRESCALER, prescaler-1);
+  IOWR(base, PWM_PERIOD_MAX, period-1);
   return 0;
 }
 
@@ -98,9 +105,8 @@ alt_u32 pwmWrite(alt_u32 cmd, alt_u16 mh, alt_u16 ml)
 {
   alt_u8  giid = RPC_GIID(cmd);
   alt_u16 chn  = RPC_CHN(cmd);
-  alt_u32 base;
+  alt_u32 base = fpgaIp[giid].base;
 
-  base = fpgaIp[giid-1].base;
   IOWR(base, PWM_MATCH_H(chn), mh);
   IOWR(base, PWM_MATCH_L(chn), ml);
   return 0;

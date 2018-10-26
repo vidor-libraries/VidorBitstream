@@ -57,6 +57,10 @@ sFpgaPin fpgaPin[] = {
   { 0, 16, 0, 0, 0},
   { 0, 17, 0, 0, 0},
   { 0, 18, 0, 0, 0},
+  { 0, 19, 0, 0, 0},
+  { 0, 20, 0, 0, 0},
+  { 0, 21, 0, 0, 0},
+  { 0, 22, 0, 0, 0},
 
   { 1,  0, 0, 0, 0},
   { 1,  1, 0, 0, 0},
@@ -103,6 +107,8 @@ sFpgaPin fpgaPin[] = {
   { 2, 16, 0, 0, 0},
   { 2, 17, 0, 0, 0},
   { 2, 18, 0, 0, 0},
+  { 2, 19, 0, 0, 0},
+  { 2, 20, 0, 0, 0},
 
 };
 
@@ -121,6 +127,19 @@ sFpgaIpPin PWM_0_6_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0,  6)}};
 sFpgaIpPin PWM_0_7_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0,  7)}};
 sFpgaIpPin PWM_0_8_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0,  8)}};
 sFpgaIpPin PWM_0_9_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0,  9)}};
+sFpgaIpPin PWM_0_10_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 10)}};
+sFpgaIpPin PWM_0_11_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 11)}};
+sFpgaIpPin PWM_0_12_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 12)}};
+sFpgaIpPin PWM_0_13_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 13)}};
+sFpgaIpPin PWM_0_14_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 14)}};
+sFpgaIpPin PWM_0_15_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 15)}};
+sFpgaIpPin PWM_0_16_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 16)}};
+sFpgaIpPin PWM_0_17_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 17)}};
+sFpgaIpPin PWM_0_18_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 18)}};
+sFpgaIpPin PWM_0_19_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 19)}};
+sFpgaIpPin PWM_0_20_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 20)}};
+sFpgaIpPin PWM_0_21_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 21)}};
+sFpgaIpPin PWM_0_22_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 0, 22)}};
 
 sFpgaIpChn PWM_0_CHN[] = {
   {NPIN(PWM_0_0_PIN), PWM_0_0_PIN},
@@ -133,54 +152,19 @@ sFpgaIpChn PWM_0_CHN[] = {
   {NPIN(PWM_0_7_PIN), PWM_0_7_PIN},
   {NPIN(PWM_0_8_PIN), PWM_0_8_PIN},
   {NPIN(PWM_0_9_PIN), PWM_0_9_PIN},
-};
-
-sFpgaIpPin PWM_1_0_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 1, 10)}};
-sFpgaIpPin PWM_1_1_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 1, 11)}};
-sFpgaIpPin PWM_1_2_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 1, 12)}};
-sFpgaIpPin PWM_1_3_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 1, 13)}};
-sFpgaIpPin PWM_1_4_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 1, 14)}};
-sFpgaIpPin PWM_1_5_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 1, 15)}};
-sFpgaIpPin PWM_1_6_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 1, 16)}};
-sFpgaIpPin PWM_1_7_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 1, 17)}};
-sFpgaIpPin PWM_1_8_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 1, 18)}};
-sFpgaIpPin PWM_1_9_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 1, 19)}};
-
-sFpgaIpChn PWM_1_CHN[] = {
-  {NPIN(PWM_1_0_PIN), PWM_1_0_PIN},
-  {NPIN(PWM_1_1_PIN), PWM_1_1_PIN},
-  {NPIN(PWM_1_2_PIN), PWM_1_2_PIN},
-  {NPIN(PWM_1_3_PIN), PWM_1_3_PIN},
-  {NPIN(PWM_1_4_PIN), PWM_1_4_PIN},
-  {NPIN(PWM_1_5_PIN), PWM_1_5_PIN},
-  {NPIN(PWM_1_6_PIN), PWM_1_6_PIN},
-  {NPIN(PWM_1_7_PIN), PWM_1_7_PIN},
-  {NPIN(PWM_1_8_PIN), PWM_1_8_PIN},
-  {NPIN(PWM_1_9_PIN), PWM_1_9_PIN},
-};
-
-sFpgaIpPin PWM_2_0_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 2, 20)}};
-sFpgaIpPin PWM_2_1_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 2, 21)}};
-sFpgaIpPin PWM_2_2_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 2, 22)}};
-sFpgaIpPin PWM_2_3_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 2, 23)}};
-sFpgaIpPin PWM_2_4_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 2, 24)}};
-sFpgaIpPin PWM_2_5_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 2, 25)}};
-sFpgaIpPin PWM_2_6_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 2, 26)}};
-sFpgaIpPin PWM_2_7_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 2, 27)}};
-sFpgaIpPin PWM_2_8_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 2, 28)}};
-sFpgaIpPin PWM_2_9_PIN[] = {{0, PWM_PIN_FNC_OUT, PIN(1, 2, 29)}};
-
-sFpgaIpChn PWM_2_CHN[] = {
-  {NPIN(PWM_2_0_PIN), PWM_2_0_PIN},
-  {NPIN(PWM_2_1_PIN), PWM_2_1_PIN},
-  {NPIN(PWM_2_2_PIN), PWM_2_2_PIN},
-  {NPIN(PWM_2_3_PIN), PWM_2_3_PIN},
-  {NPIN(PWM_2_4_PIN), PWM_2_4_PIN},
-  {NPIN(PWM_2_5_PIN), PWM_2_5_PIN},
-  {NPIN(PWM_2_6_PIN), PWM_2_6_PIN},
-  {NPIN(PWM_2_7_PIN), PWM_2_7_PIN},
-  {NPIN(PWM_2_8_PIN), PWM_2_8_PIN},
-  {NPIN(PWM_2_9_PIN), PWM_2_9_PIN},
+  {NPIN(PWM_0_10_PIN), PWM_0_10_PIN},
+  {NPIN(PWM_0_11_PIN), PWM_0_11_PIN},
+  {NPIN(PWM_0_12_PIN), PWM_0_12_PIN},
+  {NPIN(PWM_0_13_PIN), PWM_0_13_PIN},
+  {NPIN(PWM_0_14_PIN), PWM_0_14_PIN},
+  {NPIN(PWM_0_15_PIN), PWM_0_15_PIN},
+  {NPIN(PWM_0_16_PIN), PWM_0_16_PIN},
+  {NPIN(PWM_0_17_PIN), PWM_0_17_PIN},
+  {NPIN(PWM_0_18_PIN), PWM_0_18_PIN},
+  {NPIN(PWM_0_19_PIN), PWM_0_19_PIN},
+  {NPIN(PWM_0_20_PIN), PWM_0_20_PIN},
+  {NPIN(PWM_0_21_PIN), PWM_0_21_PIN},
+  {NPIN(PWM_0_22_PIN), PWM_0_22_PIN},
 };
 
 /**
@@ -329,10 +313,11 @@ sFpgaIpRpc fpgaIpRpc[] = {
 };
 
 /* TODO va preso da system.h */
+#define SAM_PIO_CHNS  23
 #define PEX_PIO_CHNS  25
-#define SAM_PIO_CHNS  18
-#define WM_PIO_CHNS   18
+#define WM_PIO_CHNS   22
 
+#define SAM_PWM_CHNS  23
 
 /**
  */
@@ -353,9 +338,7 @@ sFpgaIp fpgaIp[] = {
   /**
    * PWM
    */
-  {2, IP_DISC(PWM_0_CHNS, PWM_UID), PWM_0_BASE, PWM_0_CHN},
-  {2, IP_DISC(PWM_1_CHNS, PWM_UID), PWM_1_BASE, PWM_1_CHN},
-  {2, IP_DISC(PWM_2_CHNS, PWM_UID), PWM_2_BASE, PWM_2_CHN},
+  {2, IP_DISC(SAM_PWM_CHNS, PWM_UID), SAM_PWM_BASE, PWM_0_CHN},
 
   /**
    * I2C
