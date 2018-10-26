@@ -40,7 +40,7 @@ int VidorUtils::begin(bool jumpToApp)
 		ret = VidorMailbox.begin();
 	}
 
-	attachInterrupt(IRQ_PIN, VidorUtils::onInterrupt, FALLING);
+	attachInterrupt(IRQ_PIN, VidorUtils::onInterrupt, RISING);
 
 	return ret;
 }
