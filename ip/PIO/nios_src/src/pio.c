@@ -119,15 +119,13 @@ alt_u32 pioWrite(alt_u32 cmd, alt_u32 val)
 {
   alt_u8  giid = RPC_GIID(cmd);
   alt_u16 chn  = RPC_CHN(cmd);
-  alt_u32 base;
+  alt_u32 base = fpgaIp[giid].base;
 
-  base = fpgaIp[giid-1].base;
   if(val){
     IOWR(base, PIO_SET, 1 << chn);
   }else{
     IOWR(base, PIO_CLR, 1 << chn);
   }
-
   return 0;
 }
 
@@ -138,11 +136,9 @@ alt_u32 pioRead(alt_u32 cmd)
 {
   alt_u8  giid = RPC_GIID(cmd);
   alt_u16 chn  = RPC_CHN(cmd);
-  alt_u32 base;
+  alt_u32 base = fpgaIp[giid].base;
   alt_u32 val;
 
-  base = fpgaIp[giid-1].base;
   val = IORD(base, PIO_VAL) & (1 << chn);
-
   return val? 1: 0;
 }

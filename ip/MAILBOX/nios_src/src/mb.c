@@ -58,18 +58,15 @@ alt_u32* SEC_RAM mbMsgRx(void)
 
 /**
  */
-alt_u32 SEC_RAM mbEveTx(alt_u32* eve, alt_u32 len)
+alt_u32 SEC_RAM mbEveTx(alt_u32 eve)
 {
   alt_u32 reg;
-  int     i;
 
   reg = IORD(MB_BASE, MB_STATUS);
   reg &= MB_STS_FIFO_FREE;
-  if (len > reg) {
-    len = reg;
+  if (reg) {
+    IOWR(MB_BASE, MB_FIFO_BASE, eve);
+    return 0;
   }
-  for (i=0; i<len; i++) {
-    IOWR(MB_BASE, MB_FIFO_BASE + i, eve[i]);
-  }
-  return len;
+  return -1;
 }
