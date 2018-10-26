@@ -33,17 +33,6 @@ extern "C" {
 	void analogWriteExtended( uint32_t pin, uint32_t value );
 }
 
-static constexpr int convertPinVidor(int x) {
-	return (x < A0 ? x + A6 - A0 + 2 : x - A0 + 1);
-};
-
-#if defined(ARDUINO_SAMD_BETA_MKRVIDOR4000) || defined(ARDUINO_SAMD_MKRVIDOR4000)
-#define convertPinNumber(x) 	convertPinVidor(x)
-#else
-#define convertPinNumber(x)		x
-#endif
-
-
 class VidorIO : public VidorIP {
 
 public:
@@ -171,7 +160,7 @@ class VidorIOContainer {
 	public:
 
 		static void pinMode(int pin, int mode) {
-			pin = convertPinNumber(pin);
+			pin = digital_to_fpga(pin);
 			if (io_instance[pin/32] == NULL) {
 				io_instance[pin/32] = new VidorIO(pin/32);
 			}
@@ -179,12 +168,12 @@ class VidorIOContainer {
 		}
 
 		static void digitalWrite(int pin, int value) {
-			pin = convertPinNumber(pin);
+			pin = digital_to_fpga(pin);
 			io_instance[pin/32]->digitalWrite(pin % 32, value);
 		}
 
 		static int digitalRead(int pin) {
-			pin = convertPinNumber(pin);
+			pin = digital_to_fpga(pin);
 			return io_instance[pin/32]->digitalRead(pin);
 
 		}
@@ -196,14 +185,12 @@ class VidorIOContainer {
 		}
 
 		static void analogWrite(int pin, int mode) {
-			pin = convertPinNumber(pin);
+			pin = digital_to_fpga(pin);
 			if (pwm_instance[pin/32] == NULL) {
 				pwm_instance[pin/32] = new VidorPWM(pin/32);
 			}
 			pwm_instance[pin/32]->analogWrite(pin % 32, mode);
 		}
 };
-
-#undef convertPinNumber
 
 #endif
