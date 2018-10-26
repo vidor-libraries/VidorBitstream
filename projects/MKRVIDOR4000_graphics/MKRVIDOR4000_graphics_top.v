@@ -193,8 +193,6 @@ wire wMIPI_SDA_O, wMIPI_SDA_EN;
 wire wHDMI_SCL_O, wHDMI_SCL_EN;
 wire wHDMI_SDA_O, wHDMI_SDA_EN;
 
-wire [1:0] wIRQ_OUT;
-
 reg [5:0] rRESETCNT;
 
 always @(posedge wMEM_CLK)
@@ -328,7 +326,7 @@ MKRVIDOR4000_graphics_sys u0(
 		.irq_out_port           (wIRQ_OUT),     //           .out_port
 */
 		.mb_rq                  (iSAM_INT),      //        iMST_RQ
-		.mb_ak                  (wIRQ_OUT),      //        oMST_AK
+		.mb_ak                  (oSAM_INT),      //        oMST_AK
 
 		.sam_pwm_pwm            (wSAM_OUT1),
 		.neopixel_data				  (wSAM_OUT2[11:1]),
@@ -337,7 +335,6 @@ MKRVIDOR4000_graphics_sys u0(
 		.encoder_encoder_b      ({bMKR_D[14],bMKR_D[12],bMKR_D[10],bMKR_D[8],bMKR_D[6],bMKR_D[4],bMKR_D[2],bMKR_D[0],bMKR_A[5],bMKR_A[3],bMKR_A[1]})  //           .encoder_b
 	);
 assign wSAM_OUT2[22:12] = wSAM_OUT2[11:1];
-assign oSAM_INT         = wIRQ_OUT[1];
 assign wWM_OUT2[11]     = wNINA_SS;
 assign wWM_OUT2[18]     = wNINA_SCLK;
 assign wWM_OUT2[19]     = wNINA_MOSI;

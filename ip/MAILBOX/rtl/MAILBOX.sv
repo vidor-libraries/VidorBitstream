@@ -124,7 +124,6 @@ always @(posedge iCLOCK) begin
         end
         else if (wRD_USED>0) begin
           rRD_PTR <= rRD_PTR+1;
-          rMST_FIFO <= 1;
         end else begin
           rMST_FIFO <= 1;
           rMST_FIFO_DATA <= 32'hDEADBEEF;
