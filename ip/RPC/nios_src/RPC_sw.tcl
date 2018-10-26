@@ -29,12 +29,10 @@ set_sw_property bsp_subdirectory drivers
 
 # C/C++ source files
 add_sw_property c_source src/rpc.c
-add_sw_property c_source src/eve.c
 add_sw_property c_source src/fpga.c
 
 # Include files
 add_sw_property include_source inc/rpc.h
-add_sw_property include_source inc/eve.h
 add_sw_property include_source inc/fpga.h
 
 add_sw_property supported_bsp_type HAL
