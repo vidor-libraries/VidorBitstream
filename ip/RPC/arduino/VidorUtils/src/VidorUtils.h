@@ -61,7 +61,7 @@ public:
     rpc[0] = RPC_CMD(0, 0, 3);
     rpc[1] = info->uid;
 
-    uint32_t dummy[] = {pins...};
+    int16_t dummy[] = {pins...};
     rpc[2] = sizeof(dummy) / sizeof(dummy[0]);
     memcpy(&rpc[3], dummy, sizeof(dummy));
     int ret = VidorMailbox.sendCommand(rpc, 3+(rpc[2]+3)/4);

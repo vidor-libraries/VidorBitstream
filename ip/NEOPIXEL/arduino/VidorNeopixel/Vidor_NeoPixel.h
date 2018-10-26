@@ -94,7 +94,7 @@
 
 class Vidor_NeoPixel : public VidorIP {
   public:
-    Vidor_NeoPixel(uint16_t howMany, uint8_t pin, uint8_t type = NEO_GRB + NEO_KHZ800);
+    Vidor_NeoPixel(uint16_t howMany, uint16_t pin, uint8_t type = NEO_GRB + NEO_KHZ800);
     int begin();
     int end();
     uint32_t setPin(uint8_t pin);
@@ -112,7 +112,7 @@ class Vidor_NeoPixel : public VidorIP {
     uint8_t type;
     uint32_t msk;
     uint16_t howMany;
-    uint8_t pin;
+    uint16_t pin;
     uint32_t offset;
     uint32_t zzl = 0;
     uint32_t zzf = 0;

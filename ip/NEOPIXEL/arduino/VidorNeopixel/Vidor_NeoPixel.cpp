@@ -22,7 +22,7 @@
 
 #include "Vidor_NeoPixel.h"
 
-Vidor_NeoPixel::Vidor_NeoPixel(uint16_t howMany, uint8_t pin, uint8_t type)
+Vidor_NeoPixel::Vidor_NeoPixel(uint16_t howMany, uint16_t pin, uint8_t type)
 {
 
   this->howMany = howMany;
