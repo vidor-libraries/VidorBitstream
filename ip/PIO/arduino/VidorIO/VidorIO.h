@@ -34,7 +34,7 @@ extern "C" {
 }
 
 static constexpr int convertPinVidor(int x) {
-	return (x < A0 ? x + A6 - A0 + 1 : x - A0 + 1);
+	return (x < A0 ? x + A6 - A0 + 2 : x - A0 + 1);
 };
 
 #if defined(ARDUINO_SAMD_BETA_MKRVIDOR4000) || defined(ARDUINO_SAMD_MKRVIDOR4000)
