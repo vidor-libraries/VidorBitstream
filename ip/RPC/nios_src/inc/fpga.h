@@ -23,7 +23,7 @@
 #define FPGA_H_
 
 #define FPGA_UID 0x000000
-#define FPGA_VER 0x01020304
+#define FPGA_VER 0x01020305
 
 void fpgaRpc(void);
 

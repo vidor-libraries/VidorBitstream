@@ -34,6 +34,7 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins);
 alt_u32 Assignment(alt_u32* pins);
 alt_u32 regWr(alt_u32 adr, alt_u32 val);
 alt_u32 regRd(alt_u32 adr);
+alt_u32 eveSend(alt_u32 eve);
 #endif /* defined(FPGA_DBG) && (FPGA_DBG == 1) */
 
 
@@ -56,10 +57,10 @@ void fpgaRpc(void)
   case 3: ret = Begin(rpc[1], rpc[2], (alt_u16*)&rpc[3]); break;
 #if defined(FPGA_DBG) && (FPGA_DBG == 1)
   case 4: ret = Assignment((alt_u32*)&rpc[2]); break;
-  case 5: ret = regWr(rpc[1], rpc[2]);
-  case 6: ret = regRd(rpc[1]);
+  case 5: ret = regWr(rpc[1], rpc[2]); break;
+  case 6: ret = regRd(rpc[1]); break;
+  case 7: ret = eveSend(rpc[1]); break;
 #endif /* defined(FPGA_DBG) && (FPGA_DBG == 1) */
-
   }
   rpc[1] = ret;
 }
@@ -91,7 +92,7 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
   for (i=0; i<GIID_MAX; i++) {
     if (RPC_UID_GET(fpgaIp[i].disc) == UID) {
       for (c=0; c<RPC_CHN_GET(fpgaIp[i].disc); c++) {
-        // verifica che i pin passati siano compatibili con quelli assegnati all'IP
+        // check if requested pins are compatible with IP
         int g;
         int p;
         int n;
@@ -105,7 +106,7 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
             g = fpgaIp[i].chn[c].pin[p].grp;
             n = 0;
           }
-          if (fpgaIp[i].chn[c].pin[p].pin != pins[n]) {
+          if ((fpgaIp[i].chn[c].pin[p].pin & 0x7FF) != (pins[n] & 0x7FF)) {
             f = 0;
             break;
           }
@@ -118,7 +119,7 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
         }
 
         if (f) {
-          // verifica che i pin non siano assegnati
+          // check if pins are free
           for (n=0; n<num; n++){
             for (p=0; p<FPGA_PINS_NUM; p++){
               if ((fpgaPin[p].port == PIN_PORT(pins[n])) &&
@@ -189,6 +190,13 @@ alt_u32 regWr(alt_u32 adr, alt_u32 val)
 alt_u32 regRd(alt_u32 adr)
 {
   return IORD(adr, 0);
+}
+
+/**
+ */
+alt_u32 eveSend(alt_u32 eve)
+{
+  return mbEveTx(eve);
 }
 
 #endif /* defined(FPGA_DBG) && (FPGA_DBG == 1) */

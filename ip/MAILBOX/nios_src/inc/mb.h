@@ -25,6 +25,6 @@
 
 alt_u32* mbPtrGet(void);
 alt_u32* mbMsgRx(void);
-alt_u32 mbEveTx(alt_u32* eve, alt_u32 len);
+alt_u32 mbEveTx(alt_u32 eve);
 
 #endif /* __MB_H */
