@@ -38,7 +38,7 @@ int Vidor_NeoPixel::begin()
     return 0;
   }
 
-  int ret = init(NEOPIXEL_UID, pin);
+  int ret = init(NEOPIXEL_UID, digital_to_fpga(pin));
   if (ret < 0) {
     return -1;
   }
