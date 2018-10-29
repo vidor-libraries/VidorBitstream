@@ -1,0 +1,151 @@
+=NEOPIXEL IP RPC
+
+== NEOPIXEL RPC
+.Module Definition
+UID 0xa0894
+
+.Module configuration
+Dependencies
+GFX
+TMR needed from npSeqSet and npBufScroll
+
+.Commands
+[%autowidth]
+|=====================================================================================================
+^|Cmd ^|Description ^|Parameters ^|Return
+
+^|2  ^|Setup       ^|leds, type, len, zzf, zzl, flg |RetCod
+^|4  ^|End         ^|none                           |RetCod
+^|5  ^|npTmgSet    ^|frq, trst, t0h, t1h, ttot      |RetCod
+^|6  ^|npLedSet    ^|led, r, g, b, w                |RetCod
+^|7  ^|npBrgSet    ^|brightness                     |RetCod
+^|8  ^|npLedShow   ^|offset                         |RetCod
+^|9  ^|npWrapSet   ^|sAdr, wCnt, wAdr               |RetCod
+^|10 ^|npSeqSet    ^|pSeq                           |RetCod
+^|11 ^|npBufScroll ^|flg, buf, time                 |RetCod
+|=====================================================================================================
+
+== Setup
+
+.Setup parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Description
+
+^|leds |Number of Leds
+^|type |Type of Led
+^|len  |Buffer total length, must be greater than or equal of leds number
+^|zzf  |ZigZag flag (1: enable, 0: disable)
+^|zzl  |ZigZag Len, number of leds after which revert addressing
+^|flg  |Flag to pass to gfx for framebuffer
+|=====================================================================================================
+
+=== Type
+32bit integer the LSB byte is color format that carry color component offset in a 32bit word color definition as follow
+bit
+0-1 blue offet in byte
+2-3 green offet in byte
+4-5 red offet in byte
+6-7 white offet in byte
+if the red offset and the white offest is the same the led strip accept 24bit commands if these offset are different, the strip have white led, accept the 32bit commands.
+
+bit 9 is frequency
+bit 16-31 is for APA mode
+
+
+== NpTmgSet
+
+.NpTmgSet Parameters
+[%autowidth]
+|======================================================================================================
+^|Parameter      ^|Description
+
+^|frq  |Frequecy for which apply followings parameters
+^|trst |Rest time
+^|t0h  |Zero high time
+^|t1h  |One High time
+^|ttot |Total time
+|======================================================================================================
+
+[NOTE]
+all time are in ns.
+
+== NpLedSet
+
+.NpLedSet Parametrs
+[%autowidth]
+|======================================================================================================
+^|Parameter      ^|Description
+
+^|led |Number of led to set
+^|r   |Red component
+^|g   |Green component
+^|b   |Blu component
+^|w   |White component for Neopixel, Gain for APA
+|======================================================================================================
+
+
+== NpBrgSet
+.NpBrgSet Parameters
+[%autowidth]
+|======================================================================================================
+^|Parameter      ^|Description
+
+^|brightness |Brightness, apply to all subsequent Led Set
+|======================================================================================================
+
+== NpLedShow
+Refresh Leds
+
+.NpLedShow Parameters
+[%autowidth]
+|======================================================================================================
+^|Parameter      ^|Description
+
+^| offset |Address from which to start rendering
+|======================================================================================================
+
+== NpWrapSet
+.NpWrapSet Parameters
+[%autowidth]
+|======================================================================================================
+^|Parameter      ^|Description
+
+^|sAdr |Start address
+^|wCnt |Wrap address
+^|wAdr |Address where jump after wCnt
+|======================================================================================================
+
+== NpSeqSet
+.NpSeqSet Parameters
+[%autowidth]
+|======================================================================================================
+^|Parameter      ^|Description
+
+^|pSeq            |Pointer to sequence struct
+|======================================================================================================
+
+sequence struct
+typedef struct {
+  alt_u32   flg;
+  alt_u32   num;
+  struct {
+    alt_u32   ms;
+    alt_u16   ofs;
+    alt_u16   sAdr;
+    alt_u16   wCnt;
+    alt_u16   wAdr;
+  }         seq[64];
+}sNpSeq, *psNpSeq;
+
+== NpBufScroll
+.NpBufScroll Parameters
+[%autowidth]
+|======================================================================================================
+^|Parameter      ^|Description
+
+^|flg  |
+^|buf  |
+^|time |
+|======================================================================================================
+

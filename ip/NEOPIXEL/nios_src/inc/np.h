@@ -7,8 +7,16 @@
 #ifndef NP_H_
 #define NP_H_
 
-#define NEOPIXEL_UID  0xa0894
+/**
+ * configuration options
+ */
+#define NP_USE_TMR    1
+#define NP_GFX        1
 
+/**
+ * IP configuration
+ */
+#define NEOPIXEL_UID  0xa0894
 #define NEOPIXEL_IP_VER   0x0302
 #define NEOPIXEL_DRV_VER  0x0406
 #define NEOPIXEL_VER      (((NEOPIXEL_IP_VER)<<16)|(NEOPIXEL_DRV_VER))
@@ -34,8 +42,12 @@ typedef struct {
 #define NP_SEQ_FLG_BUF_LOOP   0x00000010
 #define NP_SEQ_FLG_INV_LOOP   0x00000020
 
-
 void npRpc(void);
+
+#if defined(NP_GFX) && (NP_GFX == 1)
+  #include "gfx.h"
+  extern GFXgc gfxNpGc[NEOPIXEL_0_CHANNELS];
+#endif
 
 #endif /* NP_H_ */
 

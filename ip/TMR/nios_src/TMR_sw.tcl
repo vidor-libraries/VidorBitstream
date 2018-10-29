@@ -16,7 +16,7 @@
 # a commercial license, send an email to license@arduino.cc.
 
 # Create a new driver
-create_driver TMR
+create_sw_package TMR
 
 # Associate it with some hardware known as "TMR"
 set_sw_property hw_class_name altera_avalon_timer
