@@ -31,7 +31,7 @@
 #include "uart.h"
 #endif
 #include "tspi.h"
-// TODO #include "gfx.h"
+#include "gfx.h"
 
 /**
  * FPGA pins assignment
@@ -306,9 +306,11 @@ sFpgaIpRpc fpgaIpRpc[] = {
   {encRpc , ENC_VER     },
 #ifndef FREE_VERSION
   {uartRpc, UART_VER    },
+#else
+  {NULL, 0},
 #endif
   {tspiRpc, TSPI_VER    },
-// TODO   {gfxRpc , GFX_VER     },
+  {gfxRpc , GFX_VER     },
 #endif
 };
 
@@ -371,6 +373,6 @@ sFpgaIp fpgaIp[] = {
   /**
    * GFX
    */
-// TODO   {8, IP_DISC(0, GFX_UID), 0, NULL, NULL},
+  {8, IP_DISC(0, GFX_UID), 0, NULL, NULL},
 };
 int fpgaIpGiidNum = (sizeof(fpgaIp)/sizeof(sFpgaIp));
