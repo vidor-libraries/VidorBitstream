@@ -29,6 +29,7 @@ add_sw_property c_source src/gfx.c
 
 # Include files
 add_sw_property include_source inc/gfx.h
+add_sw_property include_source inc/logo.h
 add_sw_property include_source inc/Org_01.h
 
 add_sw_property supported_bsp_type HAL

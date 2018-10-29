@@ -12,18 +12,29 @@
 
 #include <alt_types.h>
 
-#define GFX_UID 0x84B11
-#define GFX_IP_VER   0x0000
-#define GFX_DRV_VER  0x0004
-#define GFX_VER (((GFX_IP_VER)<<16)|(GFX_DRV_VER))
-
-#define GFX_FB_WIDTH   640
-#define GFX_FB_HEIGHT  480
-#define GFX_FB_BASE    0x00000000
+/**
+ * configuration options
+ */
+#define GFX_FB_WIDTH    640
+#define GFX_FB_HEIGHT   480
+#define GFX_CAM_BASE    (void*)(SDRAM_ARBITER_BASE + SDRAM_ARBITER_CAM_OFFSET_A * sizeof(short))
+#define GFX_FB_BASE     (void*)(SDRAM_ARBITER_BASE + SDRAM_ARBITER_FB_OFFSET * sizeof(short))
 
 #define GFX_FONTS 1
 #define GFX_FONT_FILE   "Org_01.h"
 #define GFX_FONT_NAME   Org_01
+
+#define GFX_LOGO       1
+#define GFX_LOGO_FILE  "logo.h"
+#define GFX_LOGO_NAME   arduinoLogo
+
+/**
+ * IP configuration
+ */
+#define GFX_UID 0x84B11
+#define GFX_IP_VER   0x0000
+#define GFX_DRV_VER  0x0004
+#define GFX_VER (((GFX_IP_VER)<<16)|(GFX_DRV_VER))
 
 #define GFX_GC_FMT_ARGB16 1
 #define GFX_GC_FMT_XGRB32 2
@@ -76,7 +87,7 @@ typedef struct {
 typedef struct {
   alt_u32  type;
   alt_u16  width;
-  alt_u16  height;    // Bitmap dimensions in pixels
+  alt_u16  height;
   alt_u32  size;
   alt_u16 *bmp;       // pointer to bitmap
 } GFXbmp;
@@ -88,8 +99,6 @@ alt_u32 wp16(void* pGc, alt_u16 x, alt_u16 y);
 alt_u32 rd16(void* arg, alt_u16 x, alt_u16 y);
 alt_u32 wp32(void* pGc, alt_u16 x, alt_u16 y);
 alt_u32 rd32(void* arg, alt_u16 x, alt_u16 y);
-
-// TODO togliere alt_u32 gcSet(GFXgc* pGc);
 
 alt_u32 writePixel       (GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color);
 alt_u32 writeLine        (GFXgc* pGc, alt_u16 x0, alt_u16 y0, alt_u16 x1, alt_u16 y1, alt_u32 color);
