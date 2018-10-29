@@ -1,0 +1,17 @@
+=TSPI IP RPC
+
+== TSPI RPC
+
+.Commands
+[%autowidth]
+|=====================================================================================================
+^|Cmd ^|Description ^|Parameters ^|Return
+
+^|2 ^|Setup ^|none               |RetCod
+^|4 ^|End   ^|none               |RetCod
+^|5 ^|Tspi mode set        ^|Baud, mode, bit_order, ss_auto |RetCod
+^|6 ^|Tspi buffer transfer ^|Len, Buffer                    |RetCod, len, data read
+^|7 ^|Tspi byte transfer   ^|byte                           |Byte read
+
+|=====================================================================================================
+

@@ -1,0 +1,15 @@
+=I2C IP RPC
+
+== I2C RPC
+
+.Commands
+[%autowidth]
+|=====================================================================================================
+^|Cmd ^|Description ^|Parameters ^|Return
+
+^|2 ^|i2cSetup ^|baud               |RetCod
+^|4 ^|i2cEnd   ^|none               |RetCod
+^|5 ^|i2cRead  ^|address, len, data |RetCod, len data read
+^|6 ^|i2cWrite ^|address, len, data |RetCod
+|=====================================================================================================
+

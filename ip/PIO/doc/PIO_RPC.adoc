@@ -1,0 +1,31 @@
+=PIO IP RPC
+
+== PIO RPC
+
+.Commands
+[%autowidth]
+|=====================================================================================================
+^|Cmd ^|Description ^|Parameters ^|Return
+
+^|2 ^|Setup   ^|none          |RetCod
+^|4 ^|End     ^|none          |RetCod
+^|5 ^|PinMode ^|Mux, Dir, Val |RetCod
+^|6 ^|Write   ^|Value         |RetCod
+^|7 ^|Read    ^|none          |Value of pin
+|=====================================================================================================
+
+== Gpio Mode
+
+.Gpio mux mode
+[%autowidth]
+|=====================================================================================================
+^|Value     ^|Description
+
+^|0 ^|GPIO
+^|1 ^|PWM
+^|2 ^|AUX1
+^|3 ^|AUX2
+|=====================================================================================================
+
+[NOTE]
+AUX1 and AUX2 are specific for FPGA release.

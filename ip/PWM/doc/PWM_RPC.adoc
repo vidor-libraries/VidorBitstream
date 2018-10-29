@@ -1,0 +1,15 @@
+=PWM IP RPC
+
+== PWM RPC
+
+.Commands
+[%autowidth]
+|=====================================================================================================
+^|Cmd ^|Description ^|Parameters ^|Return
+
+^|2 ^|Setup     ^|none              |RetCod
+^|4 ^|End       ^|none              |RetCod
+^|5 ^|PwmFrqSet ^|Prescaler, Period |RetCod
+^|6 ^|PwmWrite  ^|MatchH, MatchL    |RetCod
+|=====================================================================================================
+

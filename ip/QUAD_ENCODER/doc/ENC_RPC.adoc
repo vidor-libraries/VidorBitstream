@@ -1,0 +1,13 @@
+=QUAD ENCODER IP RPC
+
+== QUAD ENCODER
+
+.Commands
+[%autowidth]
+|=====================================================================================================
+^|Cmd ^|Description ^|Parameters ^|Return
+
+^|2 ^|Setup    ^|none |RetCod
+^|4 ^|End      ^|none |RetCod
+^|5 ^|encGet   ^|none |Value read from encoder
+|=====================================================================================================

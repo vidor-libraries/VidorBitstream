@@ -1,0 +1,36 @@
+=UART IP RPC
+
+== UART RPC
+
+.Commands
+[%autowidth]
+|=====================================================================================================
+^|Cmd ^|Description ^|Parameters ^|Return
+
+^| 2 ^|Setup     ^|none         |RetCod
+^| 4 ^|End       ^|none         |RetCod
+^| 5 ^|uartSet   ^|Baud, config |RetCod
+^| 6 ^|uartGet   ^|none         |Byte read
+^| 7 ^|uartRead  ^|Len, buffer  |RetCod, Len, data read
+^| 8 ^|uartAvail ^|none         |Data available
+^| 9 ^|uartPut   ^|byte         |RetCod
+^|10 ^|uartWrite ^|Len, buffer  |RetCod
+^|11 ^|uartFlush ^|none         |RetCod
+|=====================================================================================================
+
+.config
+|=====================================================================================================
+|Parameters   |Value
+
+|PARITY EVEN  |0x001
+|PARITY ODD   |0x002
+|PARITY NONE  |0x003
+|STOP_BIT_1   |0x010
+|STOP_BIT_1_5 |0x020
+|STOP_BIT_2   |0x030
+|DATA_5       |0x100
+|DATA_6       |0x200
+|DATA_7       |0x300
+|DATA_8       |0x400
+|=====================================================================================================
+

@@ -1,0 +1,44 @@
+=QRCODE FINDER IP RPC
+
+== QRCODE FINDER
+
+.Commands
+[%autowidth]
+|=====================================================================================================
+^|Cmd ^|Description ^|Parameters ^|Return
+
+^|2 ^|Setup    ^|none                   |RetCod
+^|4 ^|End      ^|none                   |RetCod
+^|5 ^|qrEnable ^|1 Enable; 0 Disable    |RetCod
+^|6 ^|qrMode   ^|Display mode           |RetCod
+^|7 ^|qrGet    ^|none                   |RetCod, status and coordinates
+^|8 ^|qrThrSet ^|Treshold               |RetCod
+^|9 ^|qrDraw   ^|1 Enable cross drawing |RetCod
+|=====================================================================================================
+
+
+.Display mode
+[%autowidth]
+|=====================================================================================================
+^|Value ^|Description
+^|0     ^|bypass
+^|1     ^|gray scale and enhanced edge
+^|2     ^|test
+^|3     ^|edge
+|=====================================================================================================
+
+
+
+Struct returned by qrGet command
+typedef struct{
+	alt_u32 sts;
+	struct {
+		alt_u32 xs;
+		alt_u32 xe;
+		alt_u32 ys;
+		alt_u32 ye;
+		alt_u32 valid;
+	}pt[12];
+}sQrDet, *psQrDet;
+
+
