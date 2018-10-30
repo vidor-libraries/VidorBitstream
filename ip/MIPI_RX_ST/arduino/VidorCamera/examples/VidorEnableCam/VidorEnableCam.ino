@@ -1,3 +1,18 @@
+/*
+  This sketch shows how to control a camera on a MKRVidor4000.
+  The camera will start streaming to HDMI output as soon as the FPGA bitstream is loaded.
+  Type "STOP" on the serial monitor to pause the streaming and "START" to restart.
+
+  Circuit:
+  - MKR Vidor 4000;
+  - Raspberry Pi Camera V1 (OV5647) connected to strip header
+  - microHDMI to HDMI cable
+  - an HDMI capable display
+
+  created 25 July 2018
+  by Riccardo Rizzo
+*/
+
 #_INCLUDE_PARENT_LIB_
 #include "VidorCamera.h"
 
@@ -31,9 +46,11 @@ void setup() {
 void loop()
 {
   // Wait for the user input to stop the camera
-
   String res = Serial.readStringUntil('\n');
   if (res.indexOf("STOP") > 0) {
     vcam.end();
+  }
+  if (res.indexOf("START") > 0) {
+    vcam.begin();
   }
 }

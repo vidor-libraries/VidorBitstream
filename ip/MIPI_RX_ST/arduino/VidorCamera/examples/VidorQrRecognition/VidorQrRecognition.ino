@@ -1,3 +1,18 @@
+/*
+  This sketch shows how to control QR code markers recognition on a MKRVidor4000.
+  Connect the camera to the strip header and show it a printed qr code.
+  Function vcam.qrrec.readQRCode() will report the coordinates of found markers (if any).
+  
+  Circuit:
+  - MKR Vidor 4000;
+  - Raspberry Pi Camera V1 (OV5647) connected to strip header
+  - microHDMI to HDMI cable
+  - an HDMI capable display
+
+  created 25 July 2018
+  by Riccardo Rizzo
+*/
+
 #_INCLUDE_PARENT_LIB_
 #include "VidorCamera.h"
 
@@ -18,10 +33,6 @@ uint16_t count = 0, last;
 
 void setup() {
   Serial.begin(9600);
-
-  // wait for the serial monitor to open,
-  // if you are powering the board from a USB charger remove the next line
-  while (!Serial);
 
   if (!FPGA.begin()) {
     Serial.println("Initialization failed!");
@@ -52,7 +63,6 @@ void loop()  {
       x[i] = (vcam.qrrec.qr.pt[i].xs + vcam.qrrec.qr.pt[i].xe) / 2;
       y[i] = (vcam.qrrec.qr.pt[i].ys + vcam.qrrec.qr.pt[i].ye) / 2;
       vcam.vgfx.Cross(x[i], y[i], 65535);
-
     }
   }
 

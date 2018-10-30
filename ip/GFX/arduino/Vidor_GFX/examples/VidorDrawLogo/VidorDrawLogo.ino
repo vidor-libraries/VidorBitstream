@@ -6,10 +6,6 @@ Vidor_GFX  vdgfx;
 void setup() {
   Serial.begin(9600);
 
-  // wait for the serial monitor to open,
-  // if you are powering the board from a USB charger remove the next line
-  while (!Serial);
-
   // Initialize the FPGA
   if (!FPGA.begin()) {
     Serial.println("Initialization failed!");

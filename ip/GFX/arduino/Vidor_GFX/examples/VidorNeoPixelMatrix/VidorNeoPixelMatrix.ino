@@ -2,6 +2,7 @@
   This sketch shows how to use the NeoPixel library in MKRVidor 4000
   It draws on a 16x16 neopixel panel using gfx library
   In this example all the commands are sent to pin A6 to the panel.
+  To send the commands open the serial port and wait for instructions.
   Circuit:
   - MKR Vidor 4000;
   - External Power Supply
