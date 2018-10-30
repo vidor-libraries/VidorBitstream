@@ -19,10 +19,6 @@
  * @brief NeoPixel driver
  *
  */
-
-#define NP_MEM_BASE (SDRAM_ARBITER_BASE | 0x80000000)
-#define NP_MEM_SIZE SDRAM_ARBITER_SPAN
-
 #include <string.h>
 #include <stdlib.h>
 #include <io.h>
@@ -32,13 +28,12 @@
 #include "np.h"
 
 #if defined(NP_USE_TMR) && (NP_USE_TMR == 1)
-#include "tmr.h"
+  #include "tmr.h"
 #endif
 
 #if defined(NP_GFX) && (NP_GFX == 1)
-#include "gfx.h"
+  #include "gfx.h"
 #endif
-
 
 /**
  * NEOPIXEL CSR registers
@@ -107,7 +102,7 @@
 
 #if defined(NP_GFX) && (NP_GFX == 1)
   #include "gfx.h"
-  GFXgc gfxNpGc[NEOPIXEL_0_CHANNELS];
+  GFXgc npGfxGc[NEOPIXEL_0_CHANNELS];
 #endif
 
 typedef struct {
@@ -302,21 +297,23 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len,
 
 #if defined(NP_GFX) && (NP_GFX == 1)
   for (i=0; i<chns; i++) {
-    gfxNpGc[i].width    = npZzlLen;
-    gfxNpGc[i].height   = npNumLed / npZzlLen;
-    gfxNpGc[i].stride   = chns;
-    gfxNpGc[i].bpp      = 32;
-    gfxNpGc[i].fmt      = GFX_GC_FMT_XGRB32;   // TODO
-    gfxNpGc[i].color    = 0;
-    gfxNpGc[i].fb       = (void*)(NP_MEM_BASE + (i*4));
-    gfxNpGc[i].pix      = wp32;
-    gfxNpGc[i].rdp      = rd32;
-    gfxNpGc[i].flg      = flg;
-    gfxNpGc[i].pFnt     = NULL;
-    gfxNpGc[i].txtColor = 0;
-    gfxNpGc[i].cursor_x = 0;
-    gfxNpGc[i].cursor_y = 0;
-    gfxNpGc[i].size     = 0;
+    npGfxGc[i].width    = npZzlLen;
+    npGfxGc[i].height   = npNumLed / npZzlLen;
+    npGfxGc[i].stride   = chns;
+    npGfxGc[i].bpp      = 32;
+    npGfxGc[i].fmt      = GFX_GC_FMT_XGRB32;   // TODO
+    npGfxGc[i].color    = 0;
+    npGfxGc[i].fb       = (void*)(NP_MEM_BASE + (i*4));
+    npGfxGc[i].pix      = wp32;
+    npGfxGc[i].rdp      = rd32;
+    npGfxGc[i].flg      = flg;
+#if defined(GFX_FONTS) && (GFX_FONTS == 1)
+    npGfxGc[i].pFnt     = NULL;
+    npGfxGc[i].txtColor = 0;
+    npGfxGc[i].cursor_x = 0;
+    npGfxGc[i].cursor_y = 0;
+    npGfxGc[i].size     = 0;
+#endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
   }
 #endif
   npCtrlReg = NP_CTRL_START |

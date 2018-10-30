@@ -9,6 +9,19 @@ Dependencies
 GFX
 TMR needed from npSeqSet and npBufScroll
 
+== Configuration options
+
+.Options
+[%autowidth]
+|=====================================================================================================
+^|Option ^|Default ^|Description
+
+|NP_MEM_BASE  |SDRAM_ARBITER_BASE                |
+|NP_MEM_SIZE  |SDRAM_ARBITER_SPAN  - NP_MEM_BASE |
+|NP_USE_TMR   |1 |
+|NP_GFX       |1 |
+|=====================================================================================================
+
 .Commands
 [%autowidth]
 |=====================================================================================================

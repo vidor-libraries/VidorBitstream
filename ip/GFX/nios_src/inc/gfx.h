@@ -17,14 +17,15 @@
  */
 #define GFX_FB_WIDTH    640
 #define GFX_FB_HEIGHT   480
-#define GFX_CAM_BASE    (void*)(SDRAM_ARBITER_BASE + SDRAM_ARBITER_CAM_OFFSET_A * sizeof(short))
-#define GFX_FB_BASE     (void*)(SDRAM_ARBITER_BASE + SDRAM_ARBITER_FB_OFFSET * sizeof(short))
+#define GFX_CAM_BASE    (SDRAM_ARBITER_BASE + SDRAM_ARBITER_CAM_OFFSET_A * sizeof(short))
+#define GFX_FB_BASE     (SDRAM_ARBITER_BASE + SDRAM_ARBITER_FB_OFFSET * sizeof(short))
 
 #define GFX_FONTS 1
 #define GFX_FONT_FILE   "Org_01.h"
 #define GFX_FONT_NAME   Org_01
+//#define GFX_NUM_FONTS
 
-#define GFX_LOGO       1
+#define GFX_LOGO       0
 #define GFX_LOGO_FILE  "logo.h"
 #define GFX_LOGO_NAME   arduinoLogo
 

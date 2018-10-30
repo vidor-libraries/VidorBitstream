@@ -36,7 +36,7 @@ GFXgc gfxDefaultGc = {
   16,
   GFX_GC_FMT_ARGB16,
   0xffffffff,
-  GFX_FB_BASE,
+  (void*)(GFX_FB_BASE | 0x80000000),
   wp16,
   rd16,
   0,
@@ -56,7 +56,7 @@ GFXgc gfxCameraGc = {
   16,
   GFX_GC_FMT_ARGB16,
   0xffffffff,
-  GFX_CAM_BASE,
+  (void*)(GFX_CAM_BASE | 0x80000000),
   wp16,
   rd16, //RDP read pixel
   0,
@@ -132,7 +132,7 @@ void gfxRpc(void)
     ret = drawChar(pGc, rpc[1], rpc[2], rpc[3], rpc[4], rpc[5]);
     break;
   case 12:
-    ret = drawTxt(pGc, rpc[1], rpc[2], rpc[3], (alt_u8*)rpc[4]);
+    ret = drawTxt(pGc, rpc[1], rpc[2], rpc[3], (alt_u8*)&rpc[4]);
     break;
   case 13:
     ret = setFont(pGc, rpc[1]);
@@ -166,11 +166,11 @@ alt_u32 gfxSetup(alt_u32 cmd)
 
 #if defined(NP_GFX) && (NP_GFX == 1)
   for (i=0; i<NEOPIXEL_0_CHANNELS; i++) {
-    pGfxGc[2+i] = &gfxNpGc[i];
+    pGfxGc[2+i] = &npGfxGc[i];
   }
 #endif
 
-  memset(GFX_FB_BASE, 0xFF, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
+  memset(gfxDefaultGc.fb, 0xFF, GFX_FB_WIDTH*GFX_FB_HEIGHT*2);
 
 #if defined(GFX_LOGO) && (GFX_LOGO == 1)
   drawBmp(&gfxDefaultGc, (GFXbmp*)&GFX_LOGO_NAME,
@@ -697,7 +697,6 @@ alt_u32 drawTxt(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color, alt_u8* txt)
   for(i=0; txt[i]; i++){
     size += drawChar(pGc, x+size, y, color, 1, txt[i]);
   }
-
   return size;
 }
 
@@ -710,6 +709,9 @@ alt_u32 setFont(GFXgc* pGc, alt_u32 num)
     pGc->pFnt = gfxFontRepo[num];
     return 0;
   }
+#else
+  pGc->pFnt = &GFX_FONT_NAME;
+  return 0;
 #endif
   return -1;
 }

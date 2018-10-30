@@ -10,6 +10,9 @@
 /**
  * configuration options
  */
+#define NP_MEM_BASE (SDRAM_ARBITER_BASE | 0x80000000)
+#define NP_MEM_SIZE (SDRAM_ARBITER_SPAN - NP_MEM_BASE)
+
 #define NP_USE_TMR    1
 #define NP_GFX        1
 
@@ -46,7 +49,7 @@ void npRpc(void);
 
 #if defined(NP_GFX) && (NP_GFX == 1)
   #include "gfx.h"
-  extern GFXgc gfxNpGc[NEOPIXEL_0_CHANNELS];
+  extern GFXgc npGfxGc[NEOPIXEL_0_CHANNELS];
 #endif
 
 #endif /* NP_H_ */
