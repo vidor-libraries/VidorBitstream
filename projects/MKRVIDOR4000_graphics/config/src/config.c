@@ -32,6 +32,7 @@
 #endif
 #include "tspi.h"
 #include "gfx.h"
+#include "qr.h"
 
 /**
  * FPGA pins assignment
@@ -311,8 +312,17 @@ sFpgaIpRpc fpgaIpRpc[] = {
 #endif
   {tspiRpc, TSPI_VER    },
   {gfxRpc , GFX_VER     },
+  {qrRpc  , QR_VER      },
 #endif
 };
+
+sFpgaIpLoop fpgaIpLoop[] = {
+#if defined(NO_RPC) && (NO_RPC == 1)
+#else
+  {qrLoop},
+#endif
+};
+int fpgaIpLoopNum = (sizeof(fpgaIpLoop)/sizeof(sFpgaIpLoop));
 
 /* TODO va preso da system.h */
 #define SAM_PIO_CHNS  23
@@ -374,5 +384,10 @@ sFpgaIp fpgaIp[] = {
    * GFX
    */
   {8, IP_DISC(0, GFX_UID), 0, NULL, NULL},
+
+  /**
+   * QR
+   */
+  {9, IP_DISC(0, QR_UID), 0, NULL, NULL},
 };
 int fpgaIpGiidNum = (sizeof(fpgaIp)/sizeof(sFpgaIp));

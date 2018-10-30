@@ -17,7 +17,6 @@
 *
 */
 
-//#define QR_USE_GFX
 
 
 #include <stdio.h>
@@ -26,28 +25,17 @@
 #include <system.h>
 
 #include "mb.h"
-#ifdef QR_USE_GFX
-#include "gfx.h"
-#endif
 #include "qr.h"
+#if defined(QR_USE_GFX) && (QR_USE_GFX == 1)
+  #include "gfx.h"
+#endif
 
-#define QR_CNT_MAX 1000
 
 #define QR_STS_BUSY  1
 #define QR_STS_READY 2
 #define QR_STS_NOQR  3
 
-#define QR_GET_TIMEOUT 10000
-
-//#define QR_DEBUG
-
-#define QR_PT_NUM 100
-
 #define SEC_RAM  __attribute__((__section__(".rwdata")))
-
-#ifdef QR_DEBUG
-#include "ov5647.h"
-#endif
 
 int     qrEnable;
 int     qrDraw;
@@ -109,26 +97,9 @@ void qrRpc(void)
  */
 alt_u32 qrSetup(void)
 {
-#ifdef QR_DEBUG
-  /*
-  int *ptr;
-  int i;
-
-  ptr = (int*)((SDRAM_ARBITER_BASE + SDRAM_ARBITER_FB_OFFSET*sizeof(short)) |
-               0x80000000);
-
-  for (i=0; i<(640*480/2); i++) {
-    *ptr++ = 0;
-  }
-  */
-  ov5647SensorPower(1);
-  ov5647StreamOn();
-  qrEnable = 1;
-  qrDraw = 1;
-#else
   qrEnable = 0;
   qrDraw = 0;
-#endif
+
   //qrThrSet(120);
   qr.sts = QR_STS_NOQR;
   qrCnt = 0;
@@ -144,7 +115,7 @@ alt_u32 qrEnd(void)
 }
 
 
-#ifdef QR_USE_GFX
+#if defined(QR_USE_GFX) && (QR_USE_GFX == 1)
 /**
  */
 void qrCross(alt_u32 x, alt_u32 y, alt_u32 c)
@@ -218,7 +189,7 @@ void SEC_RAM qrLoop(void)
       }
 
       for (i=0; i<QR_PT_DET_NUM; i++) {
-#ifdef QR_USE_GFX
+#if defined(QR_USE_GFX) && (QR_USE_GFX == 1)
         if (qrDraw) {
           if (qr.pt[i].valid==1) {
             qrCross((qr.pt[i].xe+qr.pt[i].xs)/2, (qr.pt[i].ye+qr.pt[i].ys)/2, 0);
@@ -239,7 +210,7 @@ void SEC_RAM qrLoop(void)
           qr.pt[j].ye = pt[i].ye;
           pt[i].valid = 0;
           qr.pt[j].valid = 1;
-#ifdef QR_USE_GFX
+#if defined(QR_USE_GFX) && (QR_USE_GFX == 1)
           if (qrDraw) {
             qrCross((qr.pt[j].xe+qr.pt[j].xs)/2, (qr.pt[j].ye+qr.pt[j].ys)/2, 0xffff);
           }

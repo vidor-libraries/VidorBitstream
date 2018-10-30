@@ -80,6 +80,13 @@ typedef struct {
 } sFpgaIpRpc, *psFpgaIpRpc;
 
 /**
+ * Loop function pointer structure
+ */
+typedef struct {
+  void (*loop)(void);
+} sFpgaIpLoop, *psFpgaIpLoop;
+
+/**
  * IP's pin definition structure
  */
 typedef struct {

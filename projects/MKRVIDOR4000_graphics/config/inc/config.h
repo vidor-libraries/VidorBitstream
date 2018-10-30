@@ -31,6 +31,9 @@ extern int fpgaPinsNum;
 #define FPGA_PINS_NUM fpgaPinsNum
 
 extern sFpgaIpRpc fpgaIpRpc[];
+extern sFpgaIpLoop fpgaIpLoop[];
+extern int fpgaIpLoopNum;
+#define LOOP_MAX  fpgaIpLoopNum
 
 extern sFpgaIp fpgaIp[];
 //#define GIID_MAX      (sizeof(fpgaIp)/sizeof(sFpgaIp))

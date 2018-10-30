@@ -23,8 +23,21 @@
 
 #include <alt_types.h>
 
-#define QR_UID  0xa2C68
+/**
+ * configuration options
+ */
+#define QR_CNT_MAX      1000
+#define QR_PT_NUM       100
 
+#define QR_USE_GFX      0
+
+/**
+ * IP configuration
+ */
+#define QR_UID  0xa2C68
+#define QR_IP_VER   0x0302
+#define QR_DRV_VER  0x0406
+#define QR_VER      (((QR_IP_VER)<<16)|(QR_DRV_VER))
 
 /**
  *
@@ -47,5 +60,6 @@ typedef struct{
 }sQrDet, *psQrDet;
 
 void qrRpc(void);
+void qrLoop(void);
 
 #endif /* QR_H_ */
