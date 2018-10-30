@@ -86,8 +86,8 @@ end
   altddio_out ddio_inst (
         .dataout ({oDVI_CLK,oDVI_DATA}),
         .outclock (iSCLK),
-        .datain_h (iHPD ? {rSH_CLK[0],rSH_RED[0],rSH_GRN[0],rSH_BLU[0]} : 0),
-        .datain_l (iHPD ? {rSH_CLK[1],rSH_RED[1],rSH_GRN[1],rSH_BLU[1]} : 0),
+        .datain_h (iDVI_HPD ? {rSH_CLK[0],rSH_RED[0],rSH_GRN[0],rSH_BLU[0]} : 0),
+        .datain_l (iDVI_HPD ? {rSH_CLK[1],rSH_RED[1],rSH_GRN[1],rSH_BLU[1]} : 0),
         .aclr (1'b0),
         .aset (1'b0),
         .outclocken (1'b1),

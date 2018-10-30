@@ -162,7 +162,7 @@ DVI_OUT
 
   .oDVI_DATA(oHDMI_TX),
   .oDVI_CLK(oHDMI_CLK),
-  .iDVI_HPD(iDVI_HPD)
+  .iDVI_HPD(iHDMI_HPD)
 );
 
 
