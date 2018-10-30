@@ -55,6 +55,22 @@ public:
   uint32_t version();
   static void onInterrupt();
 
+  template <typename... Args> static int discover(IPInfo* info) {
+    uint32_t  rpc[32];
+
+    rpc[0] = RPC_CMD(0, 0, 3);
+    rpc[1] = info->uid;
+
+    // no pin requested
+    rpc[2] = 0;
+    int ret = VidorMailbox.sendCommand(rpc, 3+(rpc[2]+3)/4);
+
+    info->giid = ((ret >> 24) & 0xFF);
+    info->chn =  ((ret >> 12) & 0xFFF);
+
+    return info->giid;
+  }
+
   template <typename... Args> static int discover(IPInfo* info, Args&&... pins) {
     uint32_t  rpc[32];
 
