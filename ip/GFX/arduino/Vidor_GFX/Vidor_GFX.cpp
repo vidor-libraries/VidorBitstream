@@ -74,7 +74,7 @@ void Vidor_GFXbuffer::begin(bool rotate90, bool flipV, bool flipH) {
 void Vidor_GFX::drawPixel(uint16_t x, uint16_t y, uint32_t color, uint8_t alpha) {
   uint32_t rpc[5];
   if(x<=VIDOR_WIDTH && y<=VIDOR_HEIGHT) {
-    rpc[0] = RPC_CMD(info.giid, info.chn, 1);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 5);
     rpc[1] = x;
     rpc[2] = y;
     rpc[3] = (color & 0xFFFFFF) | ((uint32_t)alpha << 24);
@@ -85,7 +85,7 @@ void Vidor_GFX::drawPixel(uint16_t x, uint16_t y, uint32_t color, uint8_t alpha)
 void Vidor_GFX::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint32_t color, uint8_t alpha) {
   uint32_t rpc[7];
   if(x0<=VIDOR_WIDTH && y0<=VIDOR_HEIGHT && x1<=VIDOR_WIDTH && y1<=VIDOR_HEIGHT ) {
-    rpc[0] = RPC_CMD(info.giid, info.chn, 2);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 6);
     rpc[1] = x0;
     rpc[2] = y0;
     rpc[3] = x1;
@@ -97,7 +97,7 @@ void Vidor_GFX::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uin
 void Vidor_GFX::drawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color, uint8_t alpha) {
   uint32_t rpc[7];
   if(x<=VIDOR_WIDTH && y<=VIDOR_HEIGHT && x+w<=VIDOR_WIDTH && y+h<=VIDOR_HEIGHT) {
-    rpc[0] = RPC_CMD(info.giid, info.chn, 3);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 7);
     rpc[1] = x;
     rpc[2] = y;
     rpc[3] = w;
@@ -110,7 +110,7 @@ void Vidor_GFX::drawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_
 void Vidor_GFX::fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color, uint8_t alpha) {
   uint32_t rpc[7];
   if(x<=VIDOR_WIDTH && y<=VIDOR_HEIGHT && x+w<=VIDOR_WIDTH && y+h<=VIDOR_HEIGHT) {
-    rpc[0] = RPC_CMD(info.giid, info.chn, 4);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 8);
     rpc[1] = x;
     rpc[2] = y;
     rpc[3] = w;
@@ -124,7 +124,7 @@ void Vidor_GFX::drawCircle(uint16_t x0, uint16_t y0, uint16_t r, uint32_t color,
   uint32_t rpc[6];
   if(x0<=VIDOR_WIDTH && y0<=VIDOR_HEIGHT && x0+r<=VIDOR_WIDTH
                                         && x0-r>0 && y0-r>0) {
-    rpc[0] = RPC_CMD(info.giid, info.chn, 5);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 9);
     rpc[1] = x0;
     rpc[2] = y0;
     rpc[3] = r;
@@ -137,7 +137,7 @@ void Vidor_GFX::fillCircle(uint16_t x0, uint16_t y0, uint16_t r, uint32_t color,
   uint32_t rpc[6];
   if(x0<=VIDOR_WIDTH && y0<=VIDOR_HEIGHT && x0+r<=VIDOR_WIDTH
     && x0-r>0 && y0-r>0) {
-    rpc[0] = RPC_CMD(info.giid, info.chn, 6);
+    rpc[0] = RPC_CMD(info.giid, info.chn, 10);
     rpc[1] = x0;
     rpc[2] = y0;
     rpc[3] = r;
@@ -149,7 +149,7 @@ void Vidor_GFX::fillCircle(uint16_t x0, uint16_t y0, uint16_t r, uint32_t color,
 /*
 void Vidor_GFX::setFont(uint32_t num) {
   uint32_t rpc[2];
-  rpc[0] = RPC_CMD(info.giid, info.chn, 9);
+  rpc[0] = RPC_CMD(info.giid, info.chn, 13);
   rpc[1] = num;
   VidorMailbox.sendCommand(rpc, 2);
 }
@@ -170,7 +170,7 @@ void Vidor_GFXtext::setSize(uint16_t size) {
 
 size_t Vidor_GFXtext::write(uint8_t c) {
   uint32_t rpc[6];
-  rpc[0] = RPC_CMD(parent->info.giid, parent->info.chn, 7);
+  rpc[0] = RPC_CMD(parent->info.giid, parent->info.chn, 11);
   rpc[1] = x;
   rpc[2] = y;
   rpc[3] = color;
