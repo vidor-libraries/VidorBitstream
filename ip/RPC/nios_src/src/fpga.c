@@ -91,6 +91,9 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
   num = num / sizeof(alt_u16);
   for (i=0; i<GIID_MAX; i++) {
     if (RPC_UID_GET(fpgaIp[i].disc) == UID) {
+      if (RPC_CHN_GET(fpgaIp[i].disc) == 0) {
+        return (i<<24);
+      }
       for (c=0; c<RPC_CHN_GET(fpgaIp[i].disc); c++) {
         // check if requested pins are compatible with IP
         int g;
