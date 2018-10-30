@@ -32,7 +32,7 @@
 #define NEOPIXEL_UID    0xa0894
 #define ENC_UID         0x0D645
 #define TSPI_UID        0xEBCE5
-#define GFX_UID         0xE9422
+#define GFX_UID         0x84B11
 #define QR_UID  		0xA2C68
 
 class VidorIP {
