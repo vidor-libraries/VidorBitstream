@@ -1,7 +1,10 @@
 /*
    This sketch shows how to use the Encoder IP in MKRVidor 4000
    Quadrature encoders are a very common way to detect position (and speed) of a moving part, like a DC motor.
-   Normally, in the microcontroller world, decoding a quadrature encoder has serious limitations since all egdes must be counted, otherwise the final number will be wrong. This is usually accomplished using interrupts, but over a certain revolution speed the intinsic overhead of servicing an interrupt destroys the count reliability.
+   Normally, in the microcontroller world, decoding a quadrature encoder has serious limitations since all egdes must be counted, 
+   otherwise the final number will be wrong. 
+   This is usually accomplished using interrupts, but over a certain revolution speed 
+   the intinsic overhead of servicing an interrupt destroys the count reliability.
 
    Using the FPGA to perform decoding allows:
     - not to lose any edge until the revolution speed is less than some million RPM :)
