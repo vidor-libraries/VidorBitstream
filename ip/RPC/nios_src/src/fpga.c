@@ -99,10 +99,8 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
         int g;
         int p;
         int n;
-        int f;
 
         g = -1;
-        f = 1;
         n = 0;
         for (p=0; p<fpgaIp[i].chn[c].npin; p++) {
           if (g != fpgaIp[i].chn[c].pin[p].grp) {
@@ -110,8 +108,7 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
             n = 0;
           }
           if ((fpgaIp[i].chn[c].pin[p].pin & 0x7FF) != (pins[n] & 0x7FF)) {
-            f = 0;
-            break;
+            return -2;
           }
           pin_idx[n] = p;
           chn = c;
@@ -121,42 +118,37 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
           }
         }
 
-        if (f) {
-          // check if pins are free
-          for (n=0; n<num; n++){
-            for (p=0; p<FPGA_PINS_NUM; p++){
-              if ((fpgaPin[p].port == PIN_PORT(pins[n])) &&
-                  (fpgaPin[p].pin  == PIN_PIN(pins[n]))) {
-                if (fpgaPin[p].giid || fpgaPin[p].chn || fpgaPin[p].lock) {
-                  return -1;
-                }
-                break;
+        // check if pins are free
+        for (n=0; n<num; n++){
+          for (p=0; p<FPGA_PINS_NUM; p++){
+            if ((fpgaPin[p].port == PIN_PORT(pins[n])) &&
+                (fpgaPin[p].pin  == PIN_PIN(pins[n]))) {
+              if (fpgaPin[p].giid || fpgaPin[p].chn || fpgaPin[p].lock) {
+                return -3;
               }
+              break;
             }
           }
-
-          // assign pins to giid
-          for (n=0; n<num; n++){
-            for (p=0; p<FPGA_PINS_NUM; p++){
-              if ((fpgaPin[p].port == PIN_PORT(pins[n])) &&
-                  (fpgaPin[p].pin  == PIN_PIN(pins[n]))) {
-                fpgaPin[p].giid = i;
-                fpgaPin[p].chn  = chn;
-                fpgaPin[p].lock = 1;
-                break;
-              }
-            }
-
-            // Set pin, direction value mux
-            p = fpgaIp[i].chn[chn].pin[pin_idx[n]].pin;
-            if (p != NOPIN) {
-              pioMode(PIN_PORT(p), PIN_PIN(p), PIN_MUX(p),
-                      fpgaIp[i].chn[chn].pin[pin_idx[n]].fid & PIN_DIR_MSK,
-                      0);
-            }
-          }
-          return (i<<24) | (c<<12);
         }
+
+        for (n=0; n<num; n++){
+          // assign pins to giid
+          for (p=0; p<FPGA_PINS_NUM; p++){
+            if ((fpgaPin[p].port == PIN_PORT(pins[n])) &&
+                (fpgaPin[p].pin  == PIN_PIN(pins[n]))) {
+              fpgaPin[p].giid = i;
+              fpgaPin[p].chn  = chn;
+              fpgaPin[p].lock = 1;
+              break;
+            }
+          }
+          // Set pin, direction, value and mux
+          p = fpgaIp[i].chn[chn].pin[pin_idx[n]].pin;
+          pioMode(PIN_PORT(p), PIN_PIN(p), PIN_MUX(p),
+                  fpgaIp[i].chn[chn].pin[pin_idx[n]].fid & PIN_DIR_MSK,
+                  0);
+        }
+        return (i<<24) | (c<<12);
       }
     }
   }
@@ -211,7 +203,8 @@ alt_u32 fpgaIpQuery(alt_u32 cmd, alt_u32* pins)
   alt_u8 giid = RPC_GIID(cmd);
   alt_u16 chn = RPC_CHN(cmd);
 
-  if (RPC_UID_GET(fpgaIp[giid].disc) == PIO_UID) {
+  if ((RPC_UID_GET(fpgaIp[giid].disc) == PIO_UID) ||
+      (RPC_UID_GET(fpgaIp[giid].disc) == FIO_UID)) {
     pins[0] = (0 << 24) |           // group
               (1 << 16) |           // function
               PIN(0, giid-1, chn);  // pin mux,port,pin

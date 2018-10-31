@@ -41,6 +41,10 @@ void pioRpc(void)
   alt_u32 ret;
 
   ret = -1;
+  if ((fpgaIp[RPC_GIID(rpc[0])].disc & 0xFFFFF) == FIO_UID) {
+    rpc[1] = ret;
+    return ;
+  }
   if ((fpgaIp[RPC_GIID(rpc[0])].disc & 0xFFFFF) != PIO_UID) {
     rpc[1] = ret;
     return ;
@@ -76,6 +80,9 @@ alt_u32 pioEnd(alt_u32 cmd)
  */
 alt_u32 pioMode(alt_u8 port, alt_u8 pin, alt_u8 mux, alt_u8 dir, alt_u8 val)
 {
+  if (RPC_UID_GET(fpgaIp[port+1].disc) == FIO_UID) {
+    return 0;
+  }
   alt_u32 base;
   alt_u32 reg;
 

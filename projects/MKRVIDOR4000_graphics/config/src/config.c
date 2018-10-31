@@ -110,7 +110,29 @@ sFpgaPin fpgaPin[] = {
   { 2, 18, 0, 0, 0},
   { 2, 19, 0, 0, 0},
   { 2, 20, 0, 0, 0},
+  { 2, 21, 0, 0, 0},
 
+  { 3,  0, 0, 0, 0},  // CSI I2C SDA
+  { 3,  1, 0, 0, 0},  // CSI I2C SCL
+  { 3,  2, 0, 0, 0},  // HDMI I2C SDA
+  { 3,  3, 0, 0, 0},  // HDMI I2C SCL
+  { 3,  4, 0, 0, 0},
+  { 3,  5, 0, 0, 0},
+  { 3,  6, 0, 0, 0},
+  { 3,  7, 0, 0, 0},
+  { 3,  8, 0, 0, 0},
+  { 3,  9, 0, 0, 0},
+  { 3, 10, 0, 0, 0},
+  { 3, 11, 0, 0, 0},
+  { 3, 12, 0, 0, 0},
+  { 3, 13, 0, 0, 0},
+  { 3, 14, 0, 0, 0},
+  { 3, 15, 0, 0, 0},
+  { 3, 16, 0, 0, 0},
+  { 3, 17, 0, 0, 0},
+  { 3, 18, 0, 0, 0},
+  { 3, 19, 0, 0, 0},
+  { 3, 20, 0, 0, 0},
 };
 
 int fpgaPinsNum = sizeof(fpgaPin)/sizeof(sFpgaPin);
@@ -172,16 +194,16 @@ sFpgaIpChn PWM_0_CHN[] = {
  * I2C pins definition
  */
 sFpgaIpPin CSI_I2C_PIN[] = {
-  {0, I2C_PIN_FNC_SCL, NOPIN},
-  {0, I2C_PIN_FNC_SDA, NOPIN}
+  {0, I2C_PIN_FNC_SCL, PIN(0, 3, 0)},
+  {0, I2C_PIN_FNC_SDA, PIN(0, 3, 1)}
 };
 sFpgaIpChn CSI_I2C_CHN[] = {
   {NPIN(CSI_I2C_PIN), CSI_I2C_PIN},
 };
 
 sFpgaIpPin HDMI_I2C_PIN[] = {
-  {0, I2C_PIN_FNC_SCL, NOPIN},
-  {0, I2C_PIN_FNC_SDA, NOPIN}
+  {0, I2C_PIN_FNC_SCL, PIN(0, 3, 2)},
+  {0, I2C_PIN_FNC_SDA, PIN(0, 3, 3)}
 };
 sFpgaIpChn HDMI_I2C_CHN[] = {
   {NPIN(HDMI_I2C_PIN), HDMI_I2C_PIN},
@@ -327,6 +349,8 @@ int fpgaIpLoopNum = (sizeof(fpgaIpLoop)/sizeof(sFpgaIpLoop));
 #define PEX_PIO_CHNS  25
 #define WM_PIO_CHNS   22
 
+#define FIX_IO_CHNS    21 // TODO
+
 #define SAM_PWM_CHNS  23
 
 /**
@@ -344,6 +368,7 @@ sFpgaIp fpgaIp[] = {
   {1, IP_DISC(SAM_PIO_CHNS, PIO_UID), SAM_PIO_BASE, 0},
   {1, IP_DISC(PEX_PIO_CHNS, PIO_UID), PEX_PIO_BASE, 0},
   {1, IP_DISC(WM_PIO_CHNS , PIO_UID), WM_PIO_BASE, 0},
+  {1, IP_DISC(FIX_IO_CHNS , FIO_UID), NULL, 0},
 
   /**
    * PWM
