@@ -60,9 +60,6 @@
 #define I2C_SR_TIP   0x02
 #define I2C_SR_RXACK 0x80
 
-#define I2C_FLAG_RD    1
-#define I2C_FLAG_WR    0
-
 void _i2c_wait_tip(alt_u32 base);
 
 alt_u32 i2cSetup(alt_u32 cmd, alt_u32 baud);
@@ -106,7 +103,7 @@ void i2cRpc(void)
 alt_u32 i2cSetup(alt_u32 cmd, alt_u32 baud)
 {
   alt_u32 baseaddr = (alt_u32)fpgaIp[RPC_GIID(cmd)].base;
-// TODO check pins and locks
+
   /* Setup prescaler for baud with sysclk of 154MHz */
   int prescale = 154000000/(5*baud);
 
@@ -125,7 +122,7 @@ alt_u32 i2cSetup(alt_u32 cmd, alt_u32 baud)
 alt_u32 i2cEnd(alt_u32 cmd)
 {
   alt_u32 baseaddr = (alt_u32)fpgaIp[RPC_GIID(cmd)].base;
-// TODO free pins
+
   /* disable core */
   IOWR_I2C_CTR(baseaddr, I2C_CR_STO);
   return 0;

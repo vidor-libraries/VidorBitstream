@@ -171,22 +171,20 @@ sFpgaIpChn PWM_0_CHN[] = {
 /**
  * I2C pins definition
  */
-sFpgaIpPin I2C_0_0_PIN[] = {
-  {0, I2C_PIN_FNC_SCL, PIN(0, 4, 1)},
-  {0, I2C_PIN_FNC_SDA, PIN(0, 4, 2)}
+sFpgaIpPin CSI_I2C_PIN[] = {
+  {0, I2C_PIN_FNC_SCL, NOPIN},
+  {0, I2C_PIN_FNC_SDA, NOPIN}
+};
+sFpgaIpChn CSI_I2C_CHN[] = {
+  {NPIN(CSI_I2C_PIN), CSI_I2C_PIN},
 };
 
-sFpgaIpChn I2C_0_CHN[] = {
-  {NPIN(I2C_0_0_PIN), I2C_0_0_PIN},
+sFpgaIpPin HDMI_I2C_PIN[] = {
+  {0, I2C_PIN_FNC_SCL, NOPIN},
+  {0, I2C_PIN_FNC_SDA, NOPIN}
 };
-
-sFpgaIpPin I2C_1_0_PIN[] = {
-  {0, I2C_PIN_FNC_SCL, PIN(0, 4, 3)},
-  {0, I2C_PIN_FNC_SDA, PIN(0, 4, 4)}
-};
-
-sFpgaIpChn I2C_1_CHN[] = {
-  {NPIN(I2C_1_0_PIN), I2C_1_0_PIN},
+sFpgaIpChn HDMI_I2C_CHN[] = {
+  {NPIN(HDMI_I2C_PIN), HDMI_I2C_PIN},
 };
 
 /**
@@ -355,8 +353,8 @@ sFpgaIp fpgaIp[] = {
   /**
    * I2C
    */
-  {3, IP_DISC(I2C_0_CHNS, I2C_UID), CSI_I2C_BASE, I2C_0_CHN},
-  {3, IP_DISC(I2C_1_CHNS, I2C_UID), HDMI_I2C_BASE, I2C_1_CHN},
+  {3, IP_DISC(1, I2C_UID), CSI_I2C_BASE, CSI_I2C_CHN},
+  {3, IP_DISC(1, I2C_UID), HDMI_I2C_BASE, HDMI_I2C_CHN},
 
   /**
    * NEOPIXEL
