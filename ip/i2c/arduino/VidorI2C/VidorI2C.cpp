@@ -42,7 +42,7 @@ int VidorTwoWire::begin(void) {
 
   uint32_t rpc[2];
   rpc[0] = RPC_CMD(info.giid, info.chn, 2);
-  rpc[0] = 400000;
+  rpc[1] = 400000;
   return VidorMailbox.sendCommand(rpc, 2);
 }
 
@@ -209,5 +209,4 @@ VidorTwoWire WireFPGA2(13,14);
 VidorTwoWire WireFPGA3(A0,A1);
 
 // Internal pins to control the camera (P1 and P2 on the FPGA)
-// TODO: fixme with the actual code
-VidorTwoWire WireEx(-1, -1);
+VidorTwoWire WireEx((32*3)+1, (32*3)+0);
