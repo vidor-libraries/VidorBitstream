@@ -107,11 +107,13 @@ class Vidor_NeoPixel : public VidorIP {
     uint32_t setTimings(uint32_t freq, uint32_t trst, uint32_t t0h, uint32_t t1h, uint32_t ttot);
     uint32_t setWrap(uint32_t start, uint32_t len, uint32_t restart);
     uint32_t setZZ(bool enabled, uint32_t len);
+    uint32_t setFlags(uint32_t flags);
   protected:
     bool initialized = false;
     uint8_t type;
     uint32_t msk;
     uint16_t howMany;
+    uint16_t bufLen;
     uint16_t pin;
     uint32_t offset = 0;
     uint32_t flags = 0;

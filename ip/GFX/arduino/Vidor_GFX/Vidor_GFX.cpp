@@ -53,18 +53,14 @@ void Vidor_GFXbuffer::privateScroll(int flags, int delay) {
 void Vidor_GFXbuffer::begin(bool rotate90, bool flipV, bool flipH) {
   uint32_t rpc[6];
 
-  // TODO: ???? how should I integrate this?
-  rpc[0] = RPC_CMD(np->info.giid, np->info.chn, 2);
-  rpc[1] = x*y;
-  rpc[2] = zigzag?1:0;
-  rpc[3] = y;
-  rpc[4] = (rotate90 ? GFX_GC_ROT90 : 0) | (flipV ? GFX_GC_FLIP_V : 0) | (flipH ? GFX_GC_FLIP_H : 0);
-
-  VidorMailbox.sendCommand(rpc, 6);
-  setup = true;
+  gfx->begin();
+  // force chn to 2. why?
+  gfx->info.chn = 2;
 
   // late init of neopixel core
   np->initialized = false;
+  np->setZZ(zigzag, y);
+  np->setFlags((rotate90 ? GFX_GC_ROT90 : 0) | (flipV ? GFX_GC_FLIP_V : 0) | (flipH ? GFX_GC_FLIP_H : 0));
   np->begin();
 };
 

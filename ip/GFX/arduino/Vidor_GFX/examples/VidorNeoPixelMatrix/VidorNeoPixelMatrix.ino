@@ -22,7 +22,7 @@ Vidor_GFX         vdgfx(np);
 
 // Specify a buffer that will be used by the NeoPixel core
 // To initialize a Neopixel matrix specify x and y dimensions of the virtual canvas (128 and 16 in this case) and the strip arrangement (true if zigzag)
-Vidor_GFXbuffer   matrix(np, vdgfx, 128, 16, true);
+Vidor_GFXbuffer   matrix(vdgfx, 128, 16, true);
 
 void setup() {
 
@@ -33,7 +33,6 @@ void setup() {
     while (1) {}
   }
 
-  np.begin();
   matrix.begin();
 
   for (int i = 0; i < 256; i++) {
@@ -68,7 +67,7 @@ void executeAction(String action)
     //Draw a text
     vdgfx.text.setColor(vdgfx.Red());
     vdgfx.text.setCursor(0, 6);
-    vdgfx.setFont(0);
+    vdgfx.text.setFont(0);
     vdgfx.text.setSize(1);
     vdgfx.print("HELLO WORLD!");
 

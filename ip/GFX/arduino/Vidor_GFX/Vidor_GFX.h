@@ -82,7 +82,6 @@ class Vidor_GFX : public Print, public VidorIP {
   friend class Vidor_GFXbuffer;
 };
 
-
 #define NP_SEQ_FLG_START      0x00000001
 #define NP_SEQ_FLG_STOP       0x00000002
 #define NP_SEQ_FLG_SINGLE     0x00000004
@@ -105,6 +104,8 @@ class Vidor_GFXbuffer {
     Vidor_GFXbuffer(Vidor_GFX& gfx, int x, int y, bool zigzag) {
       np = (Vidor_NeoPixel*)gfx.framebuffer;
       np->initialized = true;
+      np->bufLen = x * y;
+      this->gfx = &gfx;
       this->x = x;
       this->y = y;
       this->zigzag = zigzag;
@@ -117,8 +118,8 @@ class Vidor_GFXbuffer {
     int x;
     int y;
     bool zigzag;
-    bool setup = false;
     Vidor_NeoPixel* np;
+    Vidor_GFX* gfx;
     void privateScroll(int flags, int delay);
   protected:
     friend class Vidor_GFX;
