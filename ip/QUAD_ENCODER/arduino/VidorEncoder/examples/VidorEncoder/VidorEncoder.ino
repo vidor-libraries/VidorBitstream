@@ -27,6 +27,9 @@ void setup() {
   // if you are powering the board from a USB charger remove the next line
   while (!Serial);
 
+  pinMode(A0, INPUT_PULLUP);
+  pinMode(A1, INPUT_PULLUP);
+
   // Let's start the FPGA
   if (!FPGA.begin()) {
     Serial.println("Initialization failed!");
