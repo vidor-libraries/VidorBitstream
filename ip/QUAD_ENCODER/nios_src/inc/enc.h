@@ -28,8 +28,6 @@
 
 #define ENC_CHNS   10
 
-#define ENC_BASE   0x00
-
 #define ENC_PIN_FNC_A     PIN_FNC(0x01, PIN_DIR_I)
 #define ENC_PIN_FNC_B     PIN_FNC(0x02, PIN_DIR_I)
 

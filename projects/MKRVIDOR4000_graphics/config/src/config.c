@@ -389,7 +389,7 @@ sFpgaIp fpgaIp[] = {
   /**
    * Quad Encoder
    */
-  {5, IP_DISC(ENC_CHNS, ENC_UID), ENC_BASE, ENC_CHN},
+  {5, IP_DISC(ENC_CHNS, ENC_UID), QUAD_ENCODER_0_BASE, ENC_CHN},
 #ifndef FREE_VERSION
   /**
    * UART

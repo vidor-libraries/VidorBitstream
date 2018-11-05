@@ -31,7 +31,6 @@ alt_u32 encSetup(alt_u32 cmd);
 alt_u32 encEnd(alt_u32 cmd);
 alt_u32 encGet(alt_u32 cmd);
 
-
 /**
  */
 void encRpc(void)
