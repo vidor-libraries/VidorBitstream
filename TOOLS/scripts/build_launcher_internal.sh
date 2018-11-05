@@ -47,7 +47,7 @@ if [ -f scripts/bsp_settings.sh ]; then
 echo "##########################################"
 echo "#        using local bsp settings        #"
 echo "##########################################"
-source scripts/bsp_settings_launcher.sh
+source scripts/bsp_settings_launcher_internal.sh
 else
 # BSP options
 SIMULATION_OPTIMIZED_SUPPORT="false"
@@ -130,7 +130,7 @@ fi
 mkdir -p $APP_DIR
 
 # copy common files
-cp -f ../../ip/LAUNCHER/softcore/launcher.c $APP_DIR
+cp -f ../../ip/LAUNCHER_INTERNAL/softcore/launcher.c $APP_DIR
 
 # generate the BSP in the $BSP_DIR
 cmd="nios2-bsp $BSP_TYPE $BSP_DIR $SOPC_INFO $BSP_FLAGS $EXTRA_FLAGS"
