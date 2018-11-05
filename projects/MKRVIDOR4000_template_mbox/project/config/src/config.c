@@ -195,14 +195,7 @@ sFpgaIpLoop fpgaIpLoop[] = {
 };
 int fpgaIpLoopNum = (sizeof(fpgaIpLoop)/sizeof(sFpgaIpLoop));
 
-/* TODO va preso da system.h */
-#define SAM_PIO_CHNS  23
-#define PEX_PIO_CHNS  25
-#define WM_PIO_CHNS   22
-
 #define FIX_IO_CHNS    21 // TODO
-
-#define SAM_PWM_CHNS  23
 
 /**
  */
@@ -216,15 +209,15 @@ sFpgaIp fpgaIp[] = {
   /**
    * PIO
    */
-  {1, IP_DISC(SAM_PIO_CHNS, PIO_UID), SAM_PIO_BASE, 0},
-  {1, IP_DISC(PEX_PIO_CHNS, PIO_UID), PEX_PIO_BASE, 0},
-  {1, IP_DISC(WM_PIO_CHNS , PIO_UID), WM_PIO_BASE, 0},
+  {1, IP_DISC(SAM_PIO_CHANNELS, PIO_UID), SAM_PIO_BASE, 0},
+  {1, IP_DISC(PEX_PIO_CHANNELS, PIO_UID), PEX_PIO_BASE, 0},
+  {1, IP_DISC(WM_PIO_CHANNELS , PIO_UID), WM_PIO_BASE, 0},
   {1, IP_DISC(FIX_IO_CHNS , FIO_UID), NULL, 0},
 
   /**
    * PWM
    */
-  {2, IP_DISC(SAM_PWM_CHNS, PWM_UID), SAM_PWM_BASE, PWM_0_CHN},
+  {2, IP_DISC(SAM_PWM_CHANNELS, PWM_UID), SAM_PWM_BASE, PWM_0_CHN},
 
 };
 int fpgaIpGiidNum = (sizeof(fpgaIp)/sizeof(sFpgaIp));

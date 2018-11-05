@@ -172,5 +172,6 @@ proc elaboration_callback {} {
   set channels [expr { 1+ [get_parameter_value pCHANNELS] } ]
   add_interface_port avalon_slave_0 iADDRESS address Input [log2 $channels]
   add_interface_port conduit_end oPWM pwm Output $channels
+  set_module_assignment embeddedsw.CMacro.CHANNELS $channels
 }
 

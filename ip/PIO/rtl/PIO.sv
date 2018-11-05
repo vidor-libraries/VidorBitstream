@@ -50,7 +50,10 @@ begin
       3: oPIO           <= oPIO|iWRITE_DATA;
       default:
         if (iADDRESS<(4+pMUX_BITS))
-          oMUXSEL[(iADDRESS-3)*pBITS-1 -:pBITS] <= iWRITE_DATA;
+		    if (((iADDRESS-3)*32)>(pBITS*pMUX_BITS))
+            oMUXSEL[ pBITS*pMUX_BITS-1 -:pBITS*pMUX_BITS%32] <= iWRITE_DATA;
+			 else 
+            oMUXSEL[ 32*(iADDRESS-3)-1 -:32] <= iWRITE_DATA;
     endcase
   end
   if (iREAD) begin
@@ -61,7 +64,10 @@ begin
       3: oREAD_DATA <= oPIO;
       default:
         if (iADDRESS<(4+pMUX_BITS))
-          oREAD_DATA <= oMUXSEL[(iADDRESS-3)*pBITS-1 -:pBITS];
+		    if (((iADDRESS-3)*32)>(pBITS*pMUX_BITS))
+            oREAD_DATA <= oMUXSEL[ pBITS*pMUX_BITS-1 -:pBITS*pMUX_BITS%32];
+			else 
+            oREAD_DATA <= oMUXSEL[ 32*(iADDRESS-3)-1 -:32];
     endcase
   end
 end

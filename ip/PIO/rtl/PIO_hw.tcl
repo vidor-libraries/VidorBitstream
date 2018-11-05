@@ -149,10 +149,6 @@ set_interface_property pio PORT_NAME_MAP ""
 set_interface_property pio CMSIS_SVD_VARIABLES ""
 set_interface_property pio SVD_ADDRESS_GROUP ""
 
-add_interface_port pio iPIO in Input 32
-add_interface_port pio oDIR dir Output 32
-add_interface_port pio oPIO out Output 32
-
 # -----------------------------------------------------------------------------
 proc log2 {value} {
   set value [expr $value-1]
@@ -168,6 +164,10 @@ proc log2 {value} {
 proc elaboration_callback {} {
   set bits [get_parameter_value pBITS] 
   set mux_bits [get_parameter_value pMUX_BITS] 
+  add_interface_port pio iPIO in Input $bits
+  add_interface_port pio oDIR dir Output $bits
+  add_interface_port pio oPIO out Output $bits
   add_interface_port s1 iADDRESS address Input [log2 [expr 4+ ( 31 + $bits * $mux_bits )/32 ]]
   add_interface_port pio oMUXSEL msel Output [expr  $bits * $mux_bits ]
+  set_module_assignment embeddedsw.CMacro.CHANNELS $bits
 }

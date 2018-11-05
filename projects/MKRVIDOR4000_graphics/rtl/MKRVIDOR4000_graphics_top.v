@@ -223,7 +223,6 @@ MKRVIDOR4000_graphics_sys u0(
 		.reset_reset_n          (rRESETCNT[5]), // reset.reset_n
 		.vid_clk                (wVID_CLK),        //   vid.clk
 		.clk_0_clk              (wFLASH_CLK),
-//		.reset_0_reset_n			(rRESETCNT[5]), // reset.reset_n
 
 		.sdram_addr             (oSDRAM_ADDR), //    sdram.addr
 		.sdram_ba               (oSDRAM_BA),   //         .ba
@@ -321,10 +320,7 @@ MKRVIDOR4000_graphics_sys u0(
 		.pex_pio_out            (wPEX_PIO_OUT),      //          .out
 		.pex_pio_dir            (wPEX_PIO_DIR),      //          .dir
 		.pex_pio_msel           (wPEX_PIO_MSEL),     //          .msel
-/*
-		.irq_in_port            (iSAM_INT),      //        irq.in_port
-		.irq_out_port           (wIRQ_OUT),     //           .out_port
-*/
+		
 		.mb_rq                  (iSAM_INT),      //        iMST_RQ
 		.mb_ak                  (oSAM_INT),      //        oMST_AK
 
