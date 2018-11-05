@@ -14,7 +14,7 @@ cp -r project/* build/
 if [ -f build/$PROJECT_NAME"_sys.qsys" ]; then
 qsys-generate --synthesis=VERILOG build/$PROJECT_NAME"_sys.qsys"
 fi
-if [ -f software/softcore ]; then
+if [ -d software/softcore ]; then
 source build_launcher.sh
 source build_sw.sh
 fi
