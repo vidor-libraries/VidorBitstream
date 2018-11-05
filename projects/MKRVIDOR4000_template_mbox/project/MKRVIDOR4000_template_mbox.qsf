@@ -77,27 +77,25 @@ set_global_assignment -name GENERATE_JBC_FILE ON
 set_global_assignment -name STRATIXIII_UPDATE_MODE STANDARD
 set_global_assignment -name CYCLONEIII_CONFIGURATION_DEVICE EPCS16
 
-source ../../constraints/\MKRVIDOR4000/vidor_s_pins.qsf
+source ../../../constraints/MKRVIDOR4000/vidor_s_pins.qsf
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 
-set_global_assignment -name TOP_LEVEL_ENTITY MKRVIDOR4000_graphics_top
+set_global_assignment -name TOP_LEVEL_ENTITY MKRVIDOR4000_template_mbox_top
 
 set_global_assignment -name OPTIMIZATION_MODE "HIGH PERFORMANCE EFFORT"
 
 
 
 set_global_assignment -name ENABLE_SIGNALTAP OFF
-set_global_assignment -name USE_SIGNALTAP_FILE output_files/stp1.stp
 set_global_assignment -name QIP_FILE software/launcher/mem_init/meminit.qip
-set_global_assignment -name QIP_FILE MKRVIDOR4000_graphics_sys/synthesis/MKRVIDOR4000_graphics_sys.qip
-set_global_assignment -name SDC_FILE ../../sdc/vidor_s.sdc
-set_global_assignment -name QIP_FILE ../../ip/SYSTEM_PLL/rtl/SYSTEM_PLL.qip
-set_global_assignment -name QIP_FILE ../../ip/DVI_OUT/rtl/DVI_OUT.qip
-set_global_assignment -name VERILOG_FILE MKRVIDOR4000_graphics_top.v
+set_global_assignment -name QIP_FILE ../build/MKRVIDOR4000_template_mbox_sys/synthesis/MKRVIDOR4000_template_mbox_sys.qip
+set_global_assignment -name SDC_FILE ../../../constraints/MKRVIDOR4000/vidor_s.sdc
+set_global_assignment -name QIP_FILE ../../../ip/SYSTEM_PLL/rtl/SYSTEM_PLL.qip
+set_global_assignment -name QIP_FILE ../../../ip/DVI_OUT/rtl/DVI_OUT.qip
+set_global_assignment -name VERILOG_FILE ../rtl/MKRVIDOR4000_template_mbox_top.v
 # Obsolete assignment in <Version 18.0> "set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top"
 
 
-set_global_assignment -name SIGNALTAP_FILE output_files/stp1.stp
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

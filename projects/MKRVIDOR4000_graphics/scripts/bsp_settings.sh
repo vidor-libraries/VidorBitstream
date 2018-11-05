@@ -1,7 +1,17 @@
 # BSP options
+SOPC_CPU_NAME="nios2_gen2_0"
+SOPC_CODE_MEMORY_NAME="flashapp"
+SOPC_DATA_MEMORY_NAME="onchip_memory2_0"
+
 SIMULATION_OPTIMIZED_SUPPORT="false"
 BSP_TYPE=hal
 BSP_FLAGS=" \
+--cmd enable_sw_package CFG \
+--cmd enable_sw_package MAILBOX \
+--cmd enable_sw_package RPC \
+--cmd enable_sw_package TMR \
+--cmd enable_sw_package GFX \
+--cmd enable_sw_package QRCODE_FINDER \
 --set hal.enable_c_plus_plus 0 \
 --set hal.enable_clean_exit 0 \
 --set hal.enable_exit 0 \
@@ -41,8 +51,7 @@ BSP_FLAGS=" \
 --set hal.stdin none \
 --set hal.stdout none \
 --set hal.sys_clk_timer none \
---set altera_vic_driver.linker_section .rwdata \
---script set_app_regions.tcl \
+--script scripts/set_app_regions.tcl \
 --cmd set_driver none qspi \
 --cmd set_driver none flash_spi \
 --cmd add_section_mapping .rwdata onchip_memory2_0 \
@@ -54,3 +63,15 @@ BSP_FLAGS=" \
 --cmd add_section_mapping .data qspi_avl_mem \
 --cmd add_section_mapping .stack onchip_memory2_0  \
 "
+
+if [ "x"$LITE == "x" ]; then
+EXTRA_FLAGS=" \
+--set altera_vic_driver.linker_section .rwdata \
+--cmd enable_sw_package UART \
+"
+else
+EXTRA_FLAGS="\
+--set hal.make.bsp_cflags_user_flags \
+-DFREE_VERSION=1 \
+"
+fi

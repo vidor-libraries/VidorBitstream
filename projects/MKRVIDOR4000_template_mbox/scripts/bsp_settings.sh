@@ -1,55 +1,8 @@
-# (C) 2001-2018 Intel Corporation. All rights reserved.
-# Your use of Intel Corporation's design tools, logic functions and other
-# software and tools, and its AMPP partner logic functions, and any output
-# files from any of the foregoing (including device programming or simulation
-# files), and any associated documentation or information are expressly subject
-# to the terms and conditions of the Intel Program License Subscription
-# Agreement, Intel FPGA IP License Agreement, or other applicable
-# license agreement, including, without limitation, that your use is for the
-# sole purpose of programming logic devices manufactured by Intel and sold by
-# Intel or its authorized distributors.  Please refer to the applicable
-# agreement for further details.
-
-
-
-# *********************************************************************
-# Description
-#
-# Script for compiling the DisplayPort Example Design software
-#
-# *********************************************************************
-
-if [ `quartus_sh --version | grep Lite | wc -l` == "1" ]; then
-# compile for lite version
-if [ -z $FORCE_FULL ]; then
-LITE="_lite"
-fi
-fi
-
-PROJECT_NAME=${PWD##*/}
-# Location where BSP is built
-BSP_DIR="./build/software/"$PROJECT_NAME"_bsp"
-
-# Location where the application is built
-APP_DIR=./build/software/$PROJECT_NAME
-
-# SOPC file definitions
-SOPC_INFO="./build/"$PROJECT_NAME$LITE"_sys.sopcinfo"
-
-# Various
-ELF_NAME=$PROJECT_NAME.elf
-OPTIMIZATION_LEVEL="-Os"
-LDFLAGS_USER="-Wl,-gc-sections"
-CFLAGS_USER="-fdata-sections -ffunction-sections"
-APP_FLAGS="--set APP_CFLAGS_OPTIMIZATION $OPTIMIZATION_LEVEL --set APP_CFLAGS_USER_FLAGS $CFLAGS_USER --set APP_LDFLAGS_USER $LDFLAGS_USER"
-
-if [ -f scripts/bsp_settings.sh ]; then
-echo "##########################################"
-echo "#        using local bsp settings        #"
-echo "##########################################"
-source scripts/bsp_settings.sh
-else
 # BSP options
+SOPC_CPU_NAME="nios2_gen2_0"
+SOPC_CODE_MEMORY_NAME="flashapp"
+SOPC_DATA_MEMORY_NAME="onchip_memory2_0"
+
 SIMULATION_OPTIMIZED_SUPPORT="false"
 BSP_TYPE=hal
 BSP_FLAGS=" \
@@ -99,7 +52,6 @@ BSP_FLAGS=" \
 --set hal.stdout none \
 --set hal.sys_clk_timer none \
 --script scripts/set_app_regions.tcl \
---cmd set_driver none remote_update_0 \
 --cmd set_driver none qspi \
 --cmd set_driver none flash_spi \
 --cmd add_section_mapping .rwdata onchip_memory2_0 \
@@ -123,32 +75,3 @@ EXTRA_FLAGS="\
 -DFREE_VERSION=1 \
 "
 fi
-
-fi
-
-mkdir -p $APP_DIR
-
-# copy sources
-cp -f software/softcore/src/* $APP_DIR
-
-
-# generate the BSP in the $BSP_DIR
-cmd="nios2-bsp $BSP_TYPE $BSP_DIR $SOPC_INFO $BSP_FLAGS $EXTRA_FLAGS"
-$cmd || {
-  echo "nios2-bsp failed"
-}
-
-# generate the application make file in the $APP_DIR
-cmd="nios2-app-generate-makefile --app-dir $APP_DIR --bsp-dir $BSP_DIR --elf-name $ELF_NAME --src-rdir $APP_DIR \
-$APP_FLAGS "
-$cmd || {
-  echo "nios2-app-generate-makefile failed"
-#  exit 1
-}
-
-# Running make (for application, memory initialization files and the bsp due to dependencies)
-cmd="make mem_init_generate --directory=$APP_DIR"
-$cmd || {
-    echo "make failed"
-}
-
