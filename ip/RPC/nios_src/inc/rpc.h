@@ -42,12 +42,9 @@
 */
 #define PIN(m,p,n) ((alt_u16)((((m)&0x1F)<<11)|(((p)&0x3F)<<5)|((n)&0x1F)))
 
-#define NOPIN      0xF800
-
 #define PIN_MUX(p)  ((p>>11)&0x1F)
 #define PIN_PORT(p) ((p>>5)&0x3F)
 #define PIN_PIN(p)  ((p>>0)&0x1F)
-
 
 /**
  * Pins number definition

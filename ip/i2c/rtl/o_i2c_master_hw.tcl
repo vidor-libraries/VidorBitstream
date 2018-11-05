@@ -18,18 +18,18 @@
 # 
 # o_i2c_master "I2C Master" v1.0
 #  2018.03.29.11:04:13
-# 
-# 
+#
+#
 
-# 
+#
 # request TCL package from ACDS 16.1
-# 
+#
 package require -exact qsys 16.1
 
 
-# 
+#
 # module o_i2c_master
-# 
+#
 set_module_property DESCRIPTION ""
 set_module_property NAME o_i2c_master
 set_module_property VERSION 1.0
@@ -45,13 +45,14 @@ set_module_property ALLOW_GREYBOX_GENERATION false
 set_module_property REPORT_HIERARCHY false
 
 
-# 
+#
 # file sets
-# 
+#
 add_fileset quartus_synth QUARTUS_SYNTH "" "Quartus Synthesis"
-set_fileset_property quartus_synth TOP_LEVEL i2c_master_top
+set_fileset_property quartus_synth TOP_LEVEL o_i2c_master
 set_fileset_property quartus_synth ENABLE_RELATIVE_INCLUDE_PATHS false
 set_fileset_property quartus_synth ENABLE_FILE_OVERWRITE_MODE false
+add_fileset_file o_i2c_master.v VERILOG PATH o_i2c_master.v
 add_fileset_file i2c_master_bit_ctrl.v VERILOG PATH i2c_master_bit_ctrl.v
 add_fileset_file i2c_master_byte_ctrl.v VERILOG PATH i2c_master_byte_ctrl.v
 add_fileset_file i2c_master_defines.v VERILOG PATH i2c_master_defines.v
@@ -62,6 +63,7 @@ add_fileset sim_verilog SIM_VERILOG "" "Verilog Simulation"
 set_fileset_property sim_verilog TOP_LEVEL o_i2c_master
 set_fileset_property sim_verilog ENABLE_RELATIVE_INCLUDE_PATHS false
 set_fileset_property sim_verilog ENABLE_FILE_OVERWRITE_MODE false
+add_fileset_file o_i2c_master.v VERILOG PATH o_i2c_master.v
 add_fileset_file i2c_master_bit_ctrl.v VERILOG PATH i2c_master_bit_ctrl.v
 add_fileset_file i2c_master_byte_ctrl.v VERILOG PATH i2c_master_byte_ctrl.v
 add_fileset_file i2c_master_defines.v VERILOG PATH i2c_master_defines.v
@@ -69,19 +71,19 @@ add_fileset_file i2c_master_top.v VERILOG PATH i2c_master_top.v
 add_fileset_file timescale.v VERILOG PATH timescale.v
 
 
-# 
+#
 # parameters
-# 
+#
 
 
-# 
+#
 # display items
-# 
+#
 
 
-# 
+#
 # connection point clock_sink
-# 
+#
 add_interface clock_sink clock end
 set_interface_property clock_sink clockRate 0
 set_interface_property clock_sink ENABLED true
@@ -93,9 +95,9 @@ set_interface_property clock_sink SVD_ADDRESS_GROUP ""
 add_interface_port clock_sink wb_clk_i clk Input 1
 
 
-# 
+#
 # connection point clock_sink_reset
-# 
+#
 add_interface clock_sink_reset reset end
 set_interface_property clock_sink_reset associatedClock clock_sink
 set_interface_property clock_sink_reset synchronousEdges DEASSERT
@@ -107,23 +109,10 @@ set_interface_property clock_sink_reset SVD_ADDRESS_GROUP ""
 
 add_interface_port clock_sink_reset wb_rst_i reset Input 1
 
-# 
-# connection point clock_sink_areset
-# 
-add_interface clock_sink_areset reset end
-#set_interface_property clock_sink_areset associatedClock clock_sink
-set_interface_property clock_sink_areset synchronousEdges NONE
-set_interface_property clock_sink_areset ENABLED true
-set_interface_property clock_sink_areset EXPORT_OF ""
-set_interface_property clock_sink_areset PORT_NAME_MAP ""
-set_interface_property clock_sink_areset CMSIS_SVD_VARIABLES ""
-set_interface_property clock_sink_areset SVD_ADDRESS_GROUP ""
-add_interface_port clock_sink_areset arst_i reset_n Input 1
 
-
-# 
+#
 # connection point avalon_slave_0
-# 
+#
 add_interface avalon_slave_0 avalon end
 set_interface_property avalon_slave_0 addressUnits WORDS
 set_interface_property avalon_slave_0 associatedClock clock_sink
@@ -159,9 +148,9 @@ set_interface_assignment avalon_slave_0 embeddedsw.configuration.isNonVolatileSt
 set_interface_assignment avalon_slave_0 embeddedsw.configuration.isPrintableDevice 0
 
 
-# 
+#
 # connection point conduit_start
-# 
+#
 add_interface conduit_start conduit end
 set_interface_property conduit_start associatedClock ""
 set_interface_property conduit_start associatedReset ""
@@ -180,9 +169,9 @@ add_interface_port conduit_start sda_pad_o sda_o Output 1
 add_interface_port conduit_start sda_padoen_o sda_en Output 1
 
 
-# 
+#
 # connection point interrupt_sender
-# 
+#
 add_interface interrupt_sender interrupt end
 set_interface_property interrupt_sender associatedAddressablePoint ""
 set_interface_property interrupt_sender associatedClock clock_sink

@@ -8,10 +8,10 @@
 #ifndef PIO_H_
 #define PIO_H_
 
-//#include <alt_types.h>
-
 
 #define PIO_UID 0xE0C45
+/* Fixed IO */
+#define FIO_UID 0xE0C46
 
 #define PIO_IP_VER   0x0105
 #define PIO_DRV_VER  0x0004
