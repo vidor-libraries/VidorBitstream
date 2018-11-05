@@ -32,7 +32,7 @@ Vidor_NeoPixel::Vidor_NeoPixel(uint16_t howMany, uint16_t pin, uint8_t type)
 
 int Vidor_NeoPixel::begin()
 {
-  uint32_t rpc[6];
+  uint32_t rpc[7];
 
   if (initialized == true) {
     return 0;
@@ -49,10 +49,11 @@ int Vidor_NeoPixel::begin()
   rpc[3] = howMany;
   rpc[4] = zzf;
   rpc[5] = zzl;
+  rpc[6] = flags;
 
   initialized = true;
 
-  return VidorMailbox.sendCommand(rpc, 4);
+  return VidorMailbox.sendCommand(rpc, 7);
 }
 
 int Vidor_NeoPixel::end()

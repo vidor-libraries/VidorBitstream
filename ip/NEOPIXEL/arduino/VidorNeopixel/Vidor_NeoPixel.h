@@ -113,7 +113,8 @@ class Vidor_NeoPixel : public VidorIP {
     uint32_t msk;
     uint16_t howMany;
     uint16_t pin;
-    uint32_t offset;
+    uint32_t offset = 0;
+    uint32_t flags = 0;
     uint32_t zzl = 0;
     uint32_t zzf = 0;
 
