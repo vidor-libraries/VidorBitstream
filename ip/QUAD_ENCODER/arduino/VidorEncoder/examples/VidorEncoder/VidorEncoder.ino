@@ -17,10 +17,8 @@
 #_INCLUDE_PARENT_LIB_
 #include "VidorEncoder.h"
 
-// Initialize Encoder #0 (connected to A0 and A1)
-// Refer to the online documentation to find which pins correspond to a given index
-// This assignment may change between bitstreams
-VidorEncoder encoder(0);
+// Initialize Encoder connected to A0 and A1.
+VidorEncoder encoder(A0, A1);
 
 void setup() {
   Serial.begin(9600);

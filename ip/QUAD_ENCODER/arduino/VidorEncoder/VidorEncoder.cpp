@@ -33,14 +33,19 @@ void VidorEncoder::write(int32_t p){
 int32_t VidorEncoder::read(){
 
   if (!initialized) {
-    int ret = init(ENC_UID, digital_to_fpga(pinA), digital_to_fpga(pinB));
-    if (ret < 0) {
-      return 0;
-    }
-    initialized = true;
+    begin();
   }
 
 	uint32_t rpc[1];
 	rpc[0] = RPC_CMD(info.giid, info.chn, 5);
 	return (VidorMailbox.sendCommand(rpc, 1) - offset);
+}
+
+int VidorEncoder::begin() {
+  int ret = init(ENC_UID, digital_to_fpga(pinA), digital_to_fpga(pinB));
+  if (ret < 0) {
+    return -1;
+  }
+  initialized = true;
+  return 0;
 }
