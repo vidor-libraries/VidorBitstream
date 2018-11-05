@@ -31,16 +31,18 @@
 
 class Vidor_GFX;
 
-class Vidor_GFXtext {
+class Vidor_GFXtext : public Print {
   public:
     Vidor_GFXtext(Vidor_GFX* parent) {
       this->parent = parent;
     }
     void setColor(uint32_t color);
-    void setAlpha(uint8_t alpha=0xff);
+    void setAlpha(uint8_t alpha=0xff) {/*deprecated*/};
+    void setFont(uint32_t idx);
     void setSize(uint16_t size);
     void setCursor(uint16_t x,uint16_t y);
-    size_t write(uint8_t c);
+    virtual size_t write(uint8_t c);
+    virtual size_t write(char* string, int len);
   private:
     uint32_t color;
     uint16_t x, y, size;
@@ -51,9 +53,7 @@ class Vidor_GFX : public Print, public VidorIP {
   public:
     Vidor_GFX();
     Vidor_GFX(Vidor_NeoPixel& instance);
-    int begin() {
-      return init(GFX_UID);
-    }
+    int begin();
     void drawPixel(uint16_t x, uint16_t y, uint32_t color, uint8_t alpha=0xff);
     void drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint32_t    color, uint8_t alpha=0xff);
     void drawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color, uint8_t alpha=0xff);
@@ -63,6 +63,7 @@ class Vidor_GFX : public Print, public VidorIP {
     void drawChar(uint16_t x, uint16_t y, uint32_t color, uint8_t size,unsigned char c, uint8_t alpha=0xff);
     //void setFont(uint32_t num);
     virtual size_t write(uint8_t c);
+    using Print::write;
     uint32_t Color(uint8_t r, uint8_t g, uint8_t b);
     uint32_t Red();
     uint32_t Green();

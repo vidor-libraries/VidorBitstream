@@ -30,8 +30,10 @@ void setup() {
     while (1) {}
   }
 
-  // begin() enables the I2C communication and initializes the camera
+  // initialize the video subsystem
+  vcam.vgfx.begin();
 
+  // begin() enables the I2C communication and initializes the camera
   if (!vcam.begin()) {
     Serial.println("Camera begin failed");
     while (1) {}

@@ -12,7 +12,7 @@ void setup() {
     while (1) {}
   }
 
-  delay(4000);
+  vdgfx.begin();
 }
 
 void loop()
@@ -40,6 +40,7 @@ void loop()
   *  To draw a text we can use the classic functions like write() and print()
   *  Text size, color and position can be changed using the .text subclass
   */
+  vdgfx.text.setFont(0);
   vdgfx.text.setCursor(150,375);
   vdgfx.text.setAlpha(255);
   vdgfx.text.setSize(3);

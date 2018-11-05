@@ -71,6 +71,16 @@ void Vidor_GFXbuffer::begin(bool rotate90, bool flipV, bool flipH) {
 
 /* Vidor_GFX */
 
+int Vidor_GFX::begin() {
+  int ret = init(GFX_UID);
+  if (ret < 0) {
+    return ret;
+  }
+  uint32_t rpc[1];
+  rpc[0] = RPC_CMD(info.giid, info.chn, 2);
+  return VidorMailbox.sendCommand(rpc, 1);
+}
+
 void Vidor_GFX::drawPixel(uint16_t x, uint16_t y, uint32_t color, uint8_t alpha) {
   uint32_t rpc[5];
   if(x<=VIDOR_WIDTH && y<=VIDOR_HEIGHT) {
@@ -146,14 +156,12 @@ void Vidor_GFX::fillCircle(uint16_t x0, uint16_t y0, uint16_t r, uint32_t color,
   }
 }
 
-/*
-void Vidor_GFX::setFont(uint32_t num) {
+void Vidor_GFXtext::setFont(uint32_t num) {
   uint32_t rpc[2];
-  rpc[0] = RPC_CMD(info.giid, info.chn, 13);
+  rpc[0] = RPC_CMD(parent->info.giid, parent->info.chn, 13);
   rpc[1] = num;
   VidorMailbox.sendCommand(rpc, 2);
 }
-*/
 
 void Vidor_GFXtext::setColor(uint32_t color) {
   this->color = color;
@@ -177,7 +185,19 @@ size_t Vidor_GFXtext::write(uint8_t c) {
   rpc[4] = size;
   rpc[5] = c;
   VidorMailbox.sendCommand(rpc, 6);
+  setCursor(x+(size*7), c == '\n' ? y+(size*7) : y);
   return 1;
+}
+
+size_t Vidor_GFXtext::write(char* string, int len) {
+  uint32_t rpc[256];
+  rpc[0] = RPC_CMD(parent->info.giid, parent->info.chn, 12);
+  rpc[1] = x;
+  rpc[2] = y;
+  rpc[3] = color;
+  memcpy((char*)&rpc[4], string, len);
+  VidorMailbox.sendCommand(rpc, 4 + ((len+3)/4));
+  return len;
 }
 
 size_t Vidor_GFX::write(uint8_t c) {
