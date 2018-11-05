@@ -212,11 +212,11 @@ assign iFLASH_MISO = !wQSPI_OE&wQSPI_DATAOE[1]&!wQSPI_NCS ? wQSPI_DATAOUT[1] : 1
 assign oFLASH_MOSI = !wQSPI_OE&wQSPI_DATAOE[0]&!wQSPI_NCS ? wQSPI_DATAOUT[0] : wFLASH_CS ? 1'bz : wFLASH_MOSI;
 assign oFLASH_CS   = wQSPI_NCS & wFLASH_CS;
 
-assign bHDMI_SDA = wHDMI_SDA_EN ? wHDMI_SDA_O : 1'bz;
-assign bHDMI_SCL = wHDMI_SCL_EN ? wHDMI_SCL_O : 1'bz;
+assign bHDMI_SDA = !wHDMI_SDA_EN ? wHDMI_SDA_O : 1'bz;
+assign bHDMI_SCL = !wHDMI_SCL_EN ? wHDMI_SCL_O : 1'bz;
 
-assign bMIPI_SDA = wMIPI_SDA_EN ? wMIPI_SDA_O : 1'bz;
-assign bMIPI_SCL = wMIPI_SCL_EN ? wMIPI_SCL_O : 1'bz;
+assign bMIPI_SDA = !wMIPI_SDA_EN ? wMIPI_SDA_O : 1'bz;
+assign bMIPI_SCL = !wMIPI_SCL_EN ? wMIPI_SCL_O : 1'bz;
 
 MKRVIDOR4000_graphics_sys u0(
 		.clk_clk                (wMEM_CLK),               //      clk.clk
@@ -333,8 +333,10 @@ MKRVIDOR4000_graphics_sys u0(
 		.neopixel_clock				  (wSAM_OUT2[0]),
 		.encoder_encoder_a      ({bMKR_D[13],bMKR_D[11],bMKR_D[9],bMKR_D[7],bMKR_D[5],bMKR_D[3],bMKR_D[1],bMKR_A[6],bMKR_A[4],bMKR_A[2],bMKR_A[0]}), //    encoder.encoder_a
 		.encoder_encoder_b      ({bMKR_D[14],bMKR_D[12],bMKR_D[10],bMKR_D[8],bMKR_D[6],bMKR_D[4],bMKR_D[2],bMKR_D[0],bMKR_A[5],bMKR_A[3],bMKR_A[1]})  //           .encoder_b
+
 	);
 assign wSAM_OUT2[22:12] = wSAM_OUT2[11:1];
+
 assign wWM_OUT2[11]     = wNINA_SS;
 assign wWM_OUT2[18]     = wNINA_SCLK;
 assign wWM_OUT2[19]     = wNINA_MOSI;

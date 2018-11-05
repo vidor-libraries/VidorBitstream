@@ -103,7 +103,7 @@ alt_u32 qrSetup(void)
   //qrThrSet(120);
   qr.sts = QR_STS_NOQR;
   qrCnt = 0;
-// TODO start loop
+
   return 0;
 }
 

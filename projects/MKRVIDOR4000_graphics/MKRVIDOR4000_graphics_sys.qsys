@@ -1643,16 +1643,6 @@
    kind="reset"
    version="18.0"
    start="clk.clk_reset"
-   end="csi_i2c.clock_sink_areset" />
- <connection
-   kind="reset"
-   version="18.0"
-   start="clk.clk_reset"
-   end="hdmi_i2c.clock_sink_areset" />
- <connection
-   kind="reset"
-   version="18.0"
-   start="clk.clk_reset"
    end="csi_i2c.clock_sink_reset" />
  <connection
    kind="reset"

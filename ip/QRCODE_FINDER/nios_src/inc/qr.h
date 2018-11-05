@@ -34,7 +34,7 @@
 /**
  * IP configuration
  */
-#define QR_UID  0xa2C68
+#define QR_UID  0xA2C68
 #define QR_IP_VER   0x0302
 #define QR_DRV_VER  0x0406
 #define QR_VER      (((QR_IP_VER)<<16)|(QR_DRV_VER))
