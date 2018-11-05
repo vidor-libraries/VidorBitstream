@@ -213,18 +213,41 @@ alt_u32 colorFormat(GFXgc* pGc, alt_u32 color)
 }
 
 /**
+ */
+void xy_convert(GFXgc* pGc, alt_u16 *x, alt_u16 *y)
+{
+  if (pGc->flg & GFX_GC_ROT90) {
+    alt_u16 t;
+    t = *x;
+    if (pGc->flg & GFX_GC_FLIP_H) {
+      *x = pGc->width - *y - 1;
+    } else {
+      *x = *y;
+    }
+    if (pGc->flg & GFX_GC_FLIP_V) {
+      *y = pGc->height - t - 1;
+    }else{
+      *y = t;
+    }
+  } else {
+    if (pGc->flg & GFX_GC_FLIP_H) {
+      *x = pGc->width - *x - 1;
+    }
+    if (pGc->flg & GFX_GC_FLIP_V) {
+      *y = pGc->height - *y - 1;
+    }
+  }
+}
+
+/**
  * Draw a Point of color at x, y
  */
 alt_u32 writePixel(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color)
 {
   color = colorFormat(pGc, color);
 
-  if (pGc->flg & GFX_GC_ROT90) {
-    alt_u16 t;
-    t = x;
-    x = y;
-    y = t;
-  }
+  xy_convert(pGc, &x, &y);
+
   if (x>=pGc->width || y>=pGc->height) {
     return -1;
   }
@@ -250,12 +273,7 @@ alt_u32 wp16(void* arg, alt_u16 x, alt_u16 y)
   GFXgc   *pGc = (GFXgc*)arg;
   alt_u16 *p;
 
-  if (pGc->flg & GFX_GC_ROT90) {
-    alt_u16 t;
-    t = x;
-    x = y;
-    y = t;
-  }
+  xy_convert(pGc, &x, &y);
   p = (alt_u16*)pGc->fb + ((x + y*pGc->width) * pGc->stride);
   *p = (alt_u16)pGc->color;
   return 0;
@@ -279,12 +297,7 @@ alt_u32 wp32(void* arg, alt_u16 x, alt_u16 y)
   GFXgc   *pGc = (GFXgc*)arg;
   alt_u32 *p;
 
-  if (pGc->flg & GFX_GC_ROT90) {
-    alt_u16 t;
-    t = x;
-    x = y;
-    y = t;
-  }
+  xy_convert(pGc, &x, &y);
   p = (alt_u32*)pGc->fb + ((x + y*pGc->width) * pGc->stride);
   *p = pGc->color;
   return 0;
