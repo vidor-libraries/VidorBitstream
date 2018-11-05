@@ -39,7 +39,6 @@ void setup() {
     while (1) {}
   }
 
-  delay(4000);
   Serial.println("Power On");
 
   // The camera should be on now, streaming to the HDMI output
@@ -49,10 +48,10 @@ void loop()
 {
   // Wait for the user input to stop the camera
   String res = Serial.readStringUntil('\n');
-  if (res.indexOf("STOP") > 0) {
+  if (res.indexOf("STOP") >= 0) {
     vcam.end();
   }
-  if (res.indexOf("START") > 0) {
+  if (res.indexOf("START") >= 0) {
     vcam.begin();
   }
 }
