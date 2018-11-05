@@ -43,11 +43,11 @@ void loop()
   vdgfx.text.setFont(0);
   vdgfx.text.setCursor(150,375);
   vdgfx.text.setAlpha(255);
-  vdgfx.text.setSize(3);
+  vdgfx.text.setSize(7);
   vdgfx.text.setColor(vdgfx.lightBlue());
   vdgfx.println("ARDUINO");
   vdgfx.text.setCursor(480,145);
-  vdgfx.text.setSize(1);
+  vdgfx.text.setSize(3);
   vdgfx.println("TM");
 
   while (1) {

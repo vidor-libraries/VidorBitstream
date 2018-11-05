@@ -205,9 +205,7 @@ size_t Vidor_GFX::write(uint8_t c) {
 }
 
 uint32_t Vidor_GFX::Color(uint8_t r, uint8_t g, uint8_t b) {
-  return ((((uint32_t)r) << 16) |
-          (((uint32_t)g) <<  8) |
-                     (b));
+  return (0xFF << 24) | ((uint32_t)r << 16) | ((uint32_t)g <<  8) | b;
 }
 
 uint32_t Vidor_GFX::Red() {
