@@ -78,8 +78,10 @@ public:
     rpc[1] = info->uid;
 
     int16_t dummy[] = {pins...};
-    rpc[2] = sizeof(dummy) / sizeof(dummy[0]);
+    rpc[2] = sizeof(dummy);
+
     memcpy(&rpc[3], dummy, sizeof(dummy));
+
     int ret = VidorMailbox.sendCommand(rpc, 3+(rpc[2]+3)/4);
 
     info->giid = ((ret >> 24) & 0xFF);
