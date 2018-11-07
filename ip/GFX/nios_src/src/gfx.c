@@ -26,8 +26,20 @@
   #include GFX_LOGO_FILE
 #endif /* defined(GFX_LOGO) && (GFX_LOGO == 1) */
 
+#if defined(NP_GFX) && (NP_GFX == 1)
+  #define GFX_GC_NUM (2+NEOPIXEL_0_CHANNELS)
+#else
+  #define GFX_GC_NUM 2
+#endif
+
+#define SEC_RAM  __attribute__((__section__(".rwdata")))
+
 /**
  * local variables
+ */
+
+/**
+ * Default graphic context (FrameBuffer)
  */
 GFXgc gfxDefaultGc = {
   GFX_FB_WIDTH,
@@ -49,6 +61,9 @@ GFXgc gfxDefaultGc = {
 #endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
 };
 
+/**
+ * Camera graphic context
+ */
 GFXgc gfxCameraGc = {
   GFX_FB_WIDTH,
   GFX_FB_HEIGHT,
@@ -69,12 +84,9 @@ GFXgc gfxCameraGc = {
 #endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
 };
 
-#if defined(NP_GFX) && (NP_GFX == 1)
-  #define GFX_GC_NUM (2+NEOPIXEL_0_CHANNELS)
-#else
-  #define GFX_GC_NUM 2
-#endif
-
+/**
+ * array of defined graphic contexts
+ */
 GFXgc *pGfxGc[GFX_GC_NUM] = {
   &gfxDefaultGc,
   &gfxCameraGc,
@@ -190,11 +202,10 @@ alt_u32 gfxEnd(alt_u32 cmd)
   return 0;
 }
 
-
 /**
  * convert color
  */
-alt_u32 colorFormat(GFXgc* pGc, alt_u32 color)
+alt_u32 SEC_RAM colorFormat(GFXgc* pGc, alt_u32 color)
 {
   switch (pGc->fmt) {
   case GFX_GC_FMT_ARGB16:
@@ -214,7 +225,7 @@ alt_u32 colorFormat(GFXgc* pGc, alt_u32 color)
 
 /**
  */
-void xy_convert(GFXgc* pGc, alt_u16 *x, alt_u16 *y)
+void SEC_RAM xy_convert(GFXgc* pGc, alt_u16 *x, alt_u16 *y)
 {
   if (pGc->flg & GFX_GC_ROT90) {
     alt_u16 t;
@@ -242,7 +253,7 @@ void xy_convert(GFXgc* pGc, alt_u16 *x, alt_u16 *y)
 /**
  * Draw a Point of color at x, y
  */
-alt_u32 writePixel(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color)
+alt_u32 SEC_RAM writePixel(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color)
 {
   color = colorFormat(pGc, color);
 
@@ -268,7 +279,7 @@ alt_u32 writePixel(GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color)
 
 /**
  */
-alt_u32 wp16(void* arg, alt_u16 x, alt_u16 y)
+alt_u32 SEC_RAM wp16(void* arg, alt_u16 x, alt_u16 y)
 {
   GFXgc   *pGc = (GFXgc*)arg;
   alt_u16 *p;
@@ -281,7 +292,7 @@ alt_u32 wp16(void* arg, alt_u16 x, alt_u16 y)
 
 /**
  */
-alt_u32 rd16(void* arg, alt_u16 x, alt_u16 y)
+alt_u32 SEC_RAM rd16(void* arg, alt_u16 x, alt_u16 y)
 {
   GFXgc   *pGc = (GFXgc*)arg;
   alt_u16 *p;
@@ -292,7 +303,7 @@ alt_u32 rd16(void* arg, alt_u16 x, alt_u16 y)
 
 /**
  */
-alt_u32 wp32(void* arg, alt_u16 x, alt_u16 y)
+alt_u32 SEC_RAM wp32(void* arg, alt_u16 x, alt_u16 y)
 {
   GFXgc   *pGc = (GFXgc*)arg;
   alt_u32 *p;
@@ -305,9 +316,7 @@ alt_u32 wp32(void* arg, alt_u16 x, alt_u16 y)
 
 /**
  */
-/**
- */
-alt_u32 rd32(void* arg, alt_u16 x, alt_u16 y)
+alt_u32 SEC_RAM rd32(void* arg, alt_u16 x, alt_u16 y)
 {
   GFXgc   *pGc = (GFXgc*)arg;
   alt_u32 *p;

@@ -96,9 +96,9 @@ typedef struct {
 void gfxInit(int devs);
 void gfxRpc(void);
 
-alt_u32 wp16(void* pGc, alt_u16 x, alt_u16 y);
+alt_u32 wp16(void* arg, alt_u16 x, alt_u16 y);
 alt_u32 rd16(void* arg, alt_u16 x, alt_u16 y);
-alt_u32 wp32(void* pGc, alt_u16 x, alt_u16 y);
+alt_u32 wp32(void* arg, alt_u16 x, alt_u16 y);
 alt_u32 rd32(void* arg, alt_u16 x, alt_u16 y);
 
 alt_u32 writePixel       (GFXgc* pGc, alt_u16 x, alt_u16 y, alt_u32 color);
@@ -118,5 +118,7 @@ alt_u32 setAlpha         (GFXgc* pGc, alt_u8 alpha);
 alt_u32 drawCharAtCursor (GFXgc* pGc, alt_u8 c);
 #endif /* defined(GFX_FONTS) && (GFX_FONTS == 1) */
 alt_u32 drawBmp          (GFXgc* pGc, GFXbmp* bmp, alt_u16 x, alt_u16 y, alt_u32 color);
+
+extern GFXgc *pGfxGc[];
 
 #endif /* GFX_H_ */
