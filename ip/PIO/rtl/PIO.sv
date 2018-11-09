@@ -38,7 +38,7 @@ module PIO #(
   output reg [pBITS*pMUX_BITS-1:0]      oMUXSEL
 );
 
-localparam cADDRESS_BITS = $clog2(4+(pMUX_BITS*pBITS+31)/32);
+localparam cADDRESS_BITS = $clog2(4+(pMUX_BITS*pBITS)/32);
 
 always @(posedge iCLOCK)
 begin
@@ -49,11 +49,12 @@ begin
       2: oPIO           <= oPIO&~iWRITE_DATA;
       3: oPIO           <= oPIO|iWRITE_DATA;
       default:
-        if (iADDRESS<(4+pMUX_BITS))
-		    if (((iADDRESS-3)*32)>(pBITS*pMUX_BITS))
-            oMUXSEL[ pBITS*pMUX_BITS-1 -:pBITS*pMUX_BITS%32] <= iWRITE_DATA;
-			 else 
-            oMUXSEL[ 32*(iADDRESS-3)-1 -:32] <= iWRITE_DATA;
+        if (iADDRESS<(4+pMUX_BITS)) begin
+		      if (iADDRESS==(4+$clog2(pBITS*pMUX_BITS)))
+            oMUXSEL[ pBITS*pMUX_BITS-1 -: ((pBITS*pMUX_BITS-1)%32)+1] <= iWRITE_DATA;
+			    else 
+            oMUXSEL[ (32*(iADDRESS-3)-1) -:32] <= iWRITE_DATA;
+			end
     endcase
   end
   if (iREAD) begin
@@ -63,11 +64,12 @@ begin
       2: oREAD_DATA <= oPIO;
       3: oREAD_DATA <= oPIO;
       default:
-        if (iADDRESS<(4+pMUX_BITS))
-		    if (((iADDRESS-3)*32)>(pBITS*pMUX_BITS))
-            oREAD_DATA <= oMUXSEL[ pBITS*pMUX_BITS-1 -:pBITS*pMUX_BITS%32];
-			else 
-            oREAD_DATA <= oMUXSEL[ 32*(iADDRESS-3)-1 -:32];
+        if (iADDRESS<(4+pMUX_BITS)) begin
+		      if (iADDRESS==(4+$clog2(pBITS*pMUX_BITS)))
+            oREAD_DATA <= oMUXSEL[ pBITS*pMUX_BITS-1 -: ((pBITS*pMUX_BITS-1)%32)+1] ;
+			    else 
+            oREAD_DATA <= oMUXSEL[ (32*(iADDRESS-3)-1) -:32];
+			  end
     endcase
   end
 end
