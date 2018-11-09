@@ -65,10 +65,12 @@ public:
     rpc[2] = 0;
     int ret = VidorMailbox.sendCommand(rpc, 3+(rpc[2]+3)/4);
 
-    info->giid = ((ret >> 24) & 0xFF);
-    info->chn =  ((ret >> 12) & 0xFFF);
+    if (ret != -1) {
+      info->giid = ((ret >> 24) & 0xFF);
+      info->chn =  ((ret >> 12) & 0xFFF);
+    }
 
-    return info->giid;
+    return (ret >> 24);
   }
 
   template <typename... Args> static int discover(IPInfo* info, Args&&... pins) {
@@ -84,10 +86,12 @@ public:
 
     int ret = VidorMailbox.sendCommand(rpc, 3+(rpc[2]+3)/4);
 
-    info->giid = ((ret >> 24) & 0xFF);
-    info->chn =  ((ret >> 12) & 0xFFF);
+    if (ret != -1) {
+      info->giid = ((ret >> 24) & 0xFF);
+      info->chn =  ((ret >> 12) & 0xFFF);
+    }
 
-    return info->giid;
+    return (ret >> 24);
   }
 };
 
