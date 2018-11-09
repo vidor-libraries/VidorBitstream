@@ -38,6 +38,13 @@ public:
 	int sendEvent(const uint32_t data[], size_t len);
 	int read(uint32_t address, uint32_t data[], size_t len);
 	int write(uint32_t address, const uint32_t data[], size_t len);
+  void setDebug(Stream& stream) {
+    _debugStream = &stream;
+  }
+
+private:
+  Stream* _debugStream = NULL;
+
 };
 
 extern VidorMailboxClass VidorMailbox;

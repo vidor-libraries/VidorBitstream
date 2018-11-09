@@ -62,6 +62,20 @@ int VidorMailboxClass::sendCommand(const uint32_t data[], size_t len)
 	if (data[0] == 0) {
 		return -1;
 	}
+
+	if (_debugStream != NULL) {
+		char strhex[10];
+		_debugStream->print("sendCommand giid:" + String((data[0]>>24)&0xFF) +
+							", chn:" + String((data[0]>>12)&0xFFF) +
+							", rpc:" + String((data[0]    )&0xFFF) +
+									", len:" + String(len));
+		for (int i = 0; i < len - 1; i++) {
+			sprintf(strhex, " %08X", data[i + 1]);
+			_debugStream->print(strhex);
+		}
+		_debugStream->println("");
+	}
+
 	if (write(0x00, data, len) != (int)len) {
 		return -1;
 	}
