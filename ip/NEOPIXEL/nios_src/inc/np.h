@@ -10,11 +10,9 @@
 /**
  * configuration options
  */
-#define NP_MEM_BASE (SDRAM_ARBITER_BASE | 0x80000000)
-#define NP_MEM_SIZE (SDRAM_ARBITER_SPAN - NP_MEM_BASE)
-
 #define NP_USE_TMR    1
 #define NP_GFX        1
+#define NP_CLOCK   (((float)ALT_CPU_FREQ)/1000000000.0)           // clock in GHz
 
 /**
  * IP configuration
@@ -26,24 +24,12 @@
 
 #define NEOPIXEL_PIN_FNC_OUT PIN_FNC(0x01, PIN_DIR_O)
 
+/**
+ */
 typedef struct {
-  alt_u32   flg;
-  alt_u32   num;
-  struct {
-    alt_u32   ms;
-    alt_u16   ofs;
-    alt_u16   sAdr;
-    alt_u16   wCnt;
-    alt_u16   wAdr;
-  }         seq[64];
-}sNpSeq, *psNpSeq;
-
-#define NP_SEQ_FLG_START      0x00000001
-#define NP_SEQ_FLG_STOP       0x00000002
-#define NP_SEQ_FLG_SINGLE     0x00000004
-#define NP_SEQ_FLG_LOOP       0x00000008
-#define NP_SEQ_FLG_BUF_LOOP   0x00000010
-#define NP_SEQ_FLG_INV_LOOP   0x00000020
+  alt_u32   mem_base;
+  alt_u32   mem_size;
+}sNpPriv, *psNpPriv;
 
 void npRpc(void);
 

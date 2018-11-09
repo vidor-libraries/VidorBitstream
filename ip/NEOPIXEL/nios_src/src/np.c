@@ -33,6 +33,7 @@
 
 #if defined(NP_GFX) && (NP_GFX == 1)
   #include "gfx.h"
+  GFXgc npGfxGc[NEOPIXEL_0_CHANNELS];
 #endif
 
 /**
@@ -97,14 +98,8 @@
 #define NP_REG_WRAP_ADR     9
 #define NP_REG_ZZ_OFS      10
 
-#define CLOCK   (((float)ALT_CPU_FREQ)/1000000000.0)           // clock in GHz
-
-
-#if defined(NP_GFX) && (NP_GFX == 1)
-  #include "gfx.h"
-  GFXgc npGfxGc[NEOPIXEL_0_CHANNELS];
-#endif
-
+/**
+ */
 typedef struct {
   alt_u32   trst;     // reset time
   alt_u32   t0h ;     // high time for 0
@@ -112,23 +107,48 @@ typedef struct {
   alt_u32   ttot;     // total time for 1/0
 }sNpTmg, *psNpTmg;
 
+/**
+ */
+typedef struct {
+  alt_u32   flg;
+  alt_u32   num;
+  struct {
+    alt_u32   ms;
+    alt_u16   ofs;
+    alt_u16   sAdr;
+    alt_u16   wCnt;
+    alt_u16   wAdr;
+  }         seq[64];
+}sNpSeq, *psNpSeq;
+
+#define NP_SEQ_FLG_START      0x00000001
+#define NP_SEQ_FLG_STOP       0x00000002
+#define NP_SEQ_FLG_SINGLE     0x00000004
+#define NP_SEQ_FLG_LOOP       0x00000008
+#define NP_SEQ_FLG_BUF_LOOP   0x00000010
+#define NP_SEQ_FLG_INV_LOOP   0x00000020
+
+/**
+ */
 sNpTmg npTmg[] = {
   {
-    (alt_u32)((float)300000.0*CLOCK),
-    (alt_u32)((float)   480.0*CLOCK),
-    (alt_u32)((float)  2000.0*CLOCK),
-    (alt_u32)((float)  2480.0*CLOCK)
+    (alt_u32)((float)300000.0*NP_CLOCK),
+    (alt_u32)((float)   480.0*NP_CLOCK),
+    (alt_u32)((float)  2000.0*NP_CLOCK),
+    (alt_u32)((float)  2480.0*NP_CLOCK)
   },
   {
-    (alt_u32)((float)300000.0*CLOCK),
-    (alt_u32)((float)   350.0*CLOCK),
-    (alt_u32)((float)   750.0*CLOCK),
-    (alt_u32)((float)  1250.0*CLOCK)
+    (alt_u32)((float)300000.0*NP_CLOCK),
+    (alt_u32)((float)   350.0*NP_CLOCK),
+    (alt_u32)((float)   750.0*NP_CLOCK),
+    (alt_u32)((float)  1250.0*NP_CLOCK)
   },
 };
 
 /**
  */
+alt_u32   npMemBase;
+alt_u32   npMemSize;
 alt_u32   npCmd;
 alt_u32   npBufLen;               // len of each buffer must be equal o greater of leds
 alt_u32   npBufSize;              // size of each buffer
@@ -250,8 +270,11 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len,
     return 0;
   }
 
+  npMemBase = (psNpPriv)(fpgaIp[giid].priv)->mem_base;
+  npMemSize = (psNpPriv)(fpgaIp[giid].priv)->mem_size;
+
   buf_len = (buf_len < led_num)? led_num: buf_len;
-  if ((chns * buf_len * sizeof(alt_u32)) > NP_MEM_SIZE) {
+  if ((chns * buf_len * sizeof(alt_u32)) > npMemSize) {
     return -1;
   }
 
@@ -293,7 +316,7 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len,
     tmg = &npTmg[1]; /* SPEED_800K */
   }
 
-  memset((void*)NP_MEM_BASE, 0, npBufSize);
+  memset((void*)npMemBase, 0, npBufSize);
 
 #if defined(NP_GFX) && (NP_GFX == 1)
   for (i=0; i<chns; i++) {
@@ -303,7 +326,7 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len,
     npGfxGc[i].bpp      = 32;
     npGfxGc[i].fmt      = GFX_GC_FMT_XGRB32;   // TODO
     npGfxGc[i].color    = 0;
-    npGfxGc[i].fb       = (void*)(NP_MEM_BASE + (i*4));
+    npGfxGc[i].fb       = (void*)(npMemBase + (i*4));
     npGfxGc[i].pix      = wp32;
     npGfxGc[i].rdp      = rd32;
     npGfxGc[i].flg      = flg;
@@ -367,10 +390,10 @@ alt_u32 npTmgSet(alt_u32 cmd, alt_u32 frq, alt_u32 trst, alt_u32 t0h, alt_u32 t1
   if (frq>1) {
     return -1;
   }
-  npTmg[frq].trst = (alt_u32)((float)trst*CLOCK);
-  npTmg[frq].t0h  = (alt_u32)((float)t0h *CLOCK);
-  npTmg[frq].t1h  = (alt_u32)((float)t1h *CLOCK);
-  npTmg[frq].ttot = (alt_u32)((float)ttot*CLOCK);
+  npTmg[frq].trst = (alt_u32)((float)trst*NP_CLOCK);
+  npTmg[frq].t0h  = (alt_u32)((float)t0h *NP_CLOCK);
+  npTmg[frq].t1h  = (alt_u32)((float)t1h *NP_CLOCK);
+  npTmg[frq].ttot = (alt_u32)((float)ttot*NP_CLOCK);
 
   while (IORD(base, NP_REG_STATUS) != NP_STATUS_IDLE);
   IOWR(base, NP_REG_TRESET  , npTmg[frq].trst);
@@ -409,7 +432,7 @@ alt_u32 npLedSet(alt_u32 cmd, alt_u16 LED, alt_u8 r, alt_u8 g, alt_u8 b, alt_u8 
 
   alt_u32 *pLed;
 
-  pLed = (alt_u32*)NP_MEM_BASE;
+  pLed = (alt_u32*)npMemBase;
   pLed += ((chns * LED) + chn);
   if (npBpp == 32) {
     *pLed = ((alt_u32)r << rOffset) |
@@ -458,7 +481,7 @@ alt_u32 npLedShow(alt_u32 cmd, alt_u32 ofs)
   ofs = ofs * npZzlLen;
 
   /* set base address */
-  IOWR(base, NP_REG_START_ADR, NP_MEM_BASE + npBufAdr + ofs);
+  IOWR(base, NP_REG_START_ADR, npMemBase + npBufAdr + ofs);
 
 /* TODO move in wrap set routine */
   /* set wrap count */
@@ -467,7 +490,7 @@ alt_u32 npLedShow(alt_u32 cmd, alt_u32 ofs)
   IOWR(base, NP_REG_WCNT, npWCntReg);
 
   /* set wrap address */
-  IOWR(base, NP_REG_WRAP_ADR, NP_MEM_BASE + npWrpAdr + ofs);
+  IOWR(base, NP_REG_WRAP_ADR, npMemBase + npWrpAdr + ofs);
 /* TODO move in wrap set routine */
 
   /* start transfer */
