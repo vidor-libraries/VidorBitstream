@@ -44,12 +44,9 @@ public:
 
 		// get giid and chan for required pin (pin here has the complete numbering scheme)
 		// TODO: should I ask this to UID 0 == FPGA ?
-		if (!initialized) {
-			int ret = init(PIO_UID, pin + 32*base);
-			if (ret < 0) {
-				return;
-			}
-			initialized = true;
+		int ret = init(PIO_UID, pin + 32*base);
+		if (ret < 0) {
+			return;
 		}
 
 		rpc[0] = RPC_CMD(info.giid, pin, 5);
@@ -114,11 +111,6 @@ public:
 	VidorPWM(int _base) : base(_base) {}
 
 	void analogWriteResolution(int bits, int frequency) {
-
-		if (period == -1) {
-			begin();
-		}
-
 		uint32_t rpc[3];
 		period = 2 << bits;
 		int prescaler = (2 * F_CPU / frequency) / period;
@@ -137,7 +129,9 @@ public:
 			// sane default
 			analogWriteResolution(8, 490);
 		}
-		io_instance[base]->pinMode(pin, VIDOR_PWM);
+
+		// Always call init() without checking the result
+		init(PWM_UID, base * 32 + pin);
 
 		rpc[0] = RPC_CMD(info.giid, pin, 6);
 		rpc[1] = mode;
@@ -146,7 +140,6 @@ public:
 	}
 
 	int begin() {
-		return init(PWM_UID, base * 32);
 	};
 
   private:
