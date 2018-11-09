@@ -63,3 +63,15 @@ BSP_FLAGS=" \
 --cmd add_section_mapping .data onchip_memory2_0 \
 --cmd add_section_mapping .stack onchip_memory2_0 \
 "
+
+if [ "x"$LITE == "x" ]; then
+EXTRA_FLAGS=" \
+--set altera_vic_driver.linker_section .rwdata \
+--cmd enable_sw_package UART \
+"
+else
+EXTRA_FLAGS="\
+--set hal.make.bsp_cflags_user_flags \
+-DFREE_VERSION=1 \
+"
+fi

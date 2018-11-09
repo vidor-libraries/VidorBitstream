@@ -43,7 +43,7 @@ OPTIMIZATION_LEVEL="-Os"
 LDFLAGS_USER="-Wl,-gc-sections"
 APP_FLAGS="--set APP_CFLAGS_OPTIMIZATION $OPTIMIZATION_LEVEL --set APP_LDFLAGS_USER $LDFLAGS_USER"
 
-if [ -f scripts/bsp_settings.sh ]; then
+if [ -f scripts/bsp_settings_launcher_internal.sh ]; then
 echo "##########################################"
 echo "#        using local bsp settings        #"
 echo "##########################################"
@@ -113,8 +113,6 @@ BSP_FLAGS=" \
 --cmd add_section_mapping .data onchip_memory2_0 \
 --cmd add_section_mapping .stack onchip_memory2_0 \
 "
-fi
-
 if [ "x"$LITE == "x" ]; then
 EXTRA_FLAGS=" \
 --set altera_vic_driver.linker_section .rwdata \
@@ -126,6 +124,10 @@ EXTRA_FLAGS="\
 -DFREE_VERSION=1 \
 "
 fi
+
+
+fi
+
 
 mkdir -p $APP_DIR
 

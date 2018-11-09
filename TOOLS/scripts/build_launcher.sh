@@ -43,7 +43,7 @@ OPTIMIZATION_LEVEL="-Os"
 LDFLAGS_USER="-Wl,-gc-sections"
 APP_FLAGS="--set APP_CFLAGS_OPTIMIZATION $OPTIMIZATION_LEVEL --set APP_LDFLAGS_USER $LDFLAGS_USER"
 
-if [ -f scripts/bsp_settings.sh ]; then
+if [ -f scripts/bsp_settings_launcher.sh ]; then
 echo "##########################################"
 echo "#        using local bsp settings        #"
 echo "##########################################"
@@ -113,8 +113,6 @@ BSP_FLAGS=" \
 --cmd add_section_mapping .data onchip_memory2_0 \
 --cmd add_section_mapping .stack onchip_memory2_0 \
 "
-fi
-
 if [ "x"$LITE == "x" ]; then
 EXTRA_FLAGS=" \
 --set altera_vic_driver.linker_section .rwdata \
@@ -127,11 +125,18 @@ EXTRA_FLAGS="\
 "
 fi
 
+fi
+
+
+
 mkdir -p $APP_DIR
 
 # copy common files
+if [ -d software/softcore_launcher ]; then
+cp -f software/softcore_launcher/* $APP_DIR
+else
 cp -f ../../ip/LAUNCHER/softcore/launcher.c $APP_DIR
-
+fi
 # generate the BSP in the $BSP_DIR
 cmd="nios2-bsp $BSP_TYPE $BSP_DIR $SOPC_INFO $BSP_FLAGS $EXTRA_FLAGS"
 $cmd || {
