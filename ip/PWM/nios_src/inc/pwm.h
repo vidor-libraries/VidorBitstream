@@ -26,7 +26,7 @@
 
 #define PWM_IP_VER   0x0105
 #define PWM_DRV_VER  0x0004
-#define PWM_VER (((ENC_IP_VER)<<16)|(ENC_DRV_VER))
+#define PWM_VER (((PWM_IP_VER)<<16)|(PWM_DRV_VER))
 
 #define PWM_PIN_FNC_OUT   PIN_FNC(0x01, PIN_DIR_O)
 
