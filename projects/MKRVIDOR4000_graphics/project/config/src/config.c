@@ -236,6 +236,10 @@ sFpgaIpChn NEOPIXEL_CHN[] = {
   {NPIN(NEOPIXEL_9_PIN), NEOPIXEL_9_PIN},
   {NPIN(NEOPIXEL_10_PIN), NEOPIXEL_10_PIN},
 };
+sNpPriv np_priv = {
+  ((SDRAM_ARBITER_BASE + 0x1C2000)| 0x80000000),
+  (SDRAM_ARBITER_SPAN - 0x1C2000)
+};
 
 /**
  * Quad Encoder pins definition
@@ -377,7 +381,7 @@ sFpgaIp fpgaIp[] = {
   /**
    * NEOPIXEL
    */
-  {4, IP_DISC(NEOPIXEL_0_CHANNELS, NEOPIXEL_UID), NEOPIXEL_0_BASE, NEOPIXEL_CHN},
+  {4, IP_DISC(NEOPIXEL_0_CHANNELS, NEOPIXEL_UID), NEOPIXEL_0_BASE, NEOPIXEL_CHN, &np_priv},
 
   /**
    * Quad Encoder
