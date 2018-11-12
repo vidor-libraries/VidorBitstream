@@ -41,7 +41,12 @@ VidorSPIClass::VidorSPIClass(int _mosi, int _miso, int _sck, int _cs) : settings
 
 int VidorSPIClass::begin()
 {
-  int ret = init(TSPI_UID, digital_to_fpga(mosi), digital_to_fpga(miso), digital_to_fpga(sck), digital_to_fpga(cs));
+  int ret;
+  if (cs == -1) {
+    ret = init(TSPI_UID, digital_to_fpga(mosi), digital_to_fpga(miso), digital_to_fpga(sck));
+  } else {
+    ret = init(TSPI_UID, digital_to_fpga(mosi), digital_to_fpga(miso), digital_to_fpga(sck), digital_to_fpga(cs));
+  }
   if (ret < 0) {
     return -1;
   }
@@ -234,4 +239,4 @@ VidorSPIClass SPIFPGA2 (3, 7, 4, 5);
 VidorSPIClass SPIFPGA3 (6, 8, 9, 10);
 VidorSPIClass SPIFPGA4 (11, 12, 13, 14);
 
-VidorSPIClass SPIEx (-1, -1, -1, -1);  // Internally connected to NiNa module
+VidorSPIClass SPIEx ((32*2)+19, (32*2)+20, (32*2)+18, -1);   // Internally connected to NiNa module
