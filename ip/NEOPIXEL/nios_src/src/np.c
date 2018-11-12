@@ -270,8 +270,8 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len,
     return 0;
   }
 
-  npMemBase = (psNpPriv)(fpgaIp[giid].priv)->mem_base;
-  npMemSize = (psNpPriv)(fpgaIp[giid].priv)->mem_size;
+  npMemBase = ((psNpPriv)(fpgaIp[giid].priv))->mem_base;
+  npMemSize = ((psNpPriv)(fpgaIp[giid].priv))->mem_size;
 
   buf_len = (buf_len < led_num)? led_num: buf_len;
   if ((chns * buf_len * sizeof(alt_u32)) > npMemSize) {

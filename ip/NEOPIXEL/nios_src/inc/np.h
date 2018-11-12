@@ -12,7 +12,7 @@
  */
 #define NP_USE_TMR    1
 #define NP_GFX        1
-#define NP_CLOCK   (((float)ALT_CPU_FREQ)/1000000000.0)           // clock in GHz
+#define NP_CLOCK   (((float)ALT_CPU_FREQ)/1000000000.0)       // clock in GHz
 
 /**
  * IP configuration

@@ -176,9 +176,8 @@ void gfxRpc(void)
  */
 alt_u32 gfxSetup(alt_u32 cmd)
 {
-  int i;
-
 #if defined(NP_GFX) && (NP_GFX == 1)
+  int i;
   for (i=0; i<NEOPIXEL_0_CHANNELS; i++) {
     pGfxGc[2+i] = &npGfxGc[i];
   }

@@ -89,27 +89,27 @@ sFpgaPin fpgaPin[] = {
   { 1, 23, 0, 0, 0},
   { 1, 24, 0, 0, 0},
 
-  { 2,  0, 0, 0, 0},
-  { 2,  1, 0, 0, 0},
-  { 2,  2, 0, 0, 0},
-  { 2,  3, 0, 0, 0},
-  { 2,  4, 0, 0, 0},
-  { 2,  5, 0, 0, 0},
-  { 2,  6, 0, 0, 0},
-  { 2,  7, 0, 0, 0},
-  { 2,  8, 0, 0, 0},
-  { 2,  9, 0, 0, 0},
-  { 2, 10, 0, 0, 0},
-  { 2, 11, 0, 0, 0},
-  { 2, 12, 0, 0, 0},
-  { 2, 13, 0, 0, 0},
-  { 2, 14, 0, 0, 0},
-  { 2, 15, 0, 0, 0},
-  { 2, 16, 0, 0, 0},
-  { 2, 17, 0, 0, 0},
-  { 2, 18, 0, 0, 0},
-  { 2, 19, 0, 0, 0},
-  { 2, 20, 0, 0, 0},
+  { 2,  0, 0, 0, 0},  // WM_RESET  SPIWIFI_RESET    NiNa RESETN -> FPGA R1
+  { 2,  1, 0, 0, 0},  // WM_PIO2
+  { 2,  2, 0, 0, 0},  // WM_PIO3
+  { 2,  3, 0, 0, 0},  // WM_PIO4
+  { 2,  4, 0, 0, 0},  // WM_PIO5
+  { 2,  5, 0, 0, 0},  // WM_PIO7   SPIWIFI_ACK      NiNa GPIO33 -> FPGA P6
+  { 2,  6, 0, 0, 0},  // WM_PIO8
+  { 2,  7, 0, 0, 0},  // WM_PIO18
+  { 2,  8, 0, 0, 0},  // WM_PIO20  NINA UART RTS    NiNa GPIO20 -> FPGA R5
+  { 2,  9, 0, 0, 0},  // WM_PIO21  NINA UART CTS    NiNa GPIO21 -> FPGA R6
+  { 2, 10, 0, 0, 0},  // WM_PIO27  NINA_GPIO0       NiNa GPIO0  -> FPGA N9
+  { 2, 11, 0, 0, 0},  // WM_PIO28  NINA SPI SS      NiNa GPIO5  -> FPGA N11
+  { 2, 12, 0, 0, 0},  //
+  { 2, 13, 0, 0, 0},  //
+  { 2, 14, 0, 0, 0},  //
+  { 2, 15, 0, 0, 0},  // NINA UART RX         (64 + 15)
+  { 2, 16, 0, 0, 0},  // NINA UART TX         (64 + 16)
+  { 2, 17, 0, 0, 0},  //
+  { 2, 18, 0, 0, 0},  // NINA SPI CLOCK       (64 + 18)
+  { 2, 19, 0, 0, 0},  // NINA SPI MOSI        (64 + 19)
+  { 2, 20, 0, 0, 0},  // NINA SPI MISO        (64 + 20)
   { 2, 21, 0, 0, 0},
 
   { 3,  0, 0, 0, 0},  // CSI I2C SDA
@@ -292,11 +292,26 @@ sFpgaIpChn ENC_CHN[] = {
 /**
  * Uart pins definition
  */
+/*
 sFpgaIpPin UART_0_PIN[] = {
   {0, UART_PIN_FNC_TX , PIN(2, 0, 1)}, {0, UART_PIN_FNC_RX , PIN(0, 0, 2)},
 };
 sFpgaIpChn UART_0_CHN[] = {
   {NPIN(UART_0_PIN), UART_0_PIN},
+};
+UART_DEV(UART_0);
+*/
+#define NINA_UART_CHNS 1
+sFpgaIpPin NINA_UART_PIN[] = {
+  {0, UART_PIN_FNC_TX , PIN(2, 2, 15)},
+  {0, UART_PIN_FNC_RX , PIN(0, 2, 16)},
+  {1, UART_PIN_FNC_TX , PIN(2, 2, 15)},
+  {1, UART_PIN_FNC_RX , PIN(0, 2, 16)},
+  {1, UART_PIN_FNC_RTS, PIN(2, 2,  9)},
+  {1, UART_PIN_FNC_CTS, PIN(0, 2,  8)},
+};
+sFpgaIpChn NINA_UART_CHN[] = {
+  {NPIN(NINA_UART_PIN), NINA_UART_PIN},
 };
 UART_DEV(NINA_UART);
 #endif
@@ -304,6 +319,7 @@ UART_DEV(NINA_UART);
 /**
  * TSPI pins definition
  */
+/*
 sFpgaIpPin TSPI_0_PIN[] = {
   {0, TSPI_PIN_FNC_MOSI, PIN(3, 0,  3)},
   {0, TSPI_PIN_FNC_MISO, PIN(0, 0,  7)},
@@ -317,6 +333,18 @@ sFpgaIpChn TSPI_0_CHN[] = {
   {NPIN(TSPI_0_PIN), TSPI_0_PIN},
 };
 TSPI_DEV(TSPI_0);
+*/
+#define NINA_TSPI_CHNS 1
+sFpgaIpPin NINA_TSPI_PIN[] = {
+  {0, TSPI_PIN_FNC_MOSI, PIN(2, 2, 19)},
+  {0, TSPI_PIN_FNC_MISO, PIN(0, 2, 20)},
+  {0, TSPI_PIN_FNC_CLK , PIN(2, 2, 18)},
+};
+sFpgaIpChn NINA_TSPI_CHN[] = {
+  {NPIN(NINA_TSPI_PIN), NINA_TSPI_PIN},
+};
+TSPI_DEV(NINA_TSPI);
+
 
 /**
  */
@@ -391,12 +419,14 @@ sFpgaIp fpgaIp[] = {
   /**
    * UART
    */
-  {6, IP_DISC(UART_0_CHNS, UART_UID), NINA_UART_BASE, UART_0_CHN, &NINA_UART_DEV},
+    {6, IP_DISC(NINA_UART_CHNS, UART_UID), NINA_UART_BASE, NINA_UART_CHN, &NINA_UART_DEV},
+//  {6, IP_DISC(UART_0_CHNS, UART_UID), UART_0_BASE, UART_0_CHN, &UART_0_DEV},
 #endif
   /**
    * TSPI
    */
-  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), NINA_SPI_BASE, TSPI_0_CHN, &TSPI_0_DEV},
+//  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), NINA_SPI_BASE, TSPI_0_CHN, &TSPI_0_DEV},
+  {7, IP_DISC(NINA_TSPI_CHNS, TSPI_UID), NINA_SPI_BASE, NINA_TSPI_CHN, &NINA_TSPI_DEV},
 //  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), FLASH_SPI_BASE, 0, NULL},
   {7, IP_DISC(0, 0), FLASH_SPI_BASE, 0, 0},
 
