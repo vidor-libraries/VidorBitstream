@@ -218,6 +218,7 @@ void VidorSPIClass::transfer(void *buf, size_t count)
   }
   rpc[0] = RPC_CMD(info.giid, info.chn, 6);
   rpc[1] = count;
+  rpc[2] = 0;
   memcpy(&rpc[2], buf, count);
   int ret = VidorMailbox.sendCommand(rpc, 2+(rpc[1]+3)/4);
 
