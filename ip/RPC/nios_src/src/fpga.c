@@ -91,15 +91,20 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
   num = num / sizeof(alt_u16);
   for (i=0; i<GIID_MAX; i++) {
     if (RPC_UID_GET(fpgaIp[i].disc) == UID) {
+      if ((UID == PIO_UID) && (num == 1)) {
+        i = PIN_PORT(pins[0]) + 1;
+        c = PIN_PIN(pins[0]);
+        return (i<<24) | (c<<12);
+      }
       if (RPC_CHN_GET(fpgaIp[i].disc) == 0) {
         return (i<<24);
       }
       for (c=0; c<RPC_CHN_GET(fpgaIp[i].disc); c++) {
         // check if requested pins are compatible with IP
-        int g;
         int p;
         int n;
         int f;
+        int g;
 
         g = -1;
         n = 0;
@@ -128,7 +133,7 @@ alt_u32 Begin(alt_u32 UID, alt_u32 num, alt_u16* pins)
               if ((fpgaPin[p].port == PIN_PORT(pins[n])) &&
                   (fpgaPin[p].pin  == PIN_PIN(pins[n]))) {
                 if (fpgaPin[p].giid || fpgaPin[p].chn || fpgaPin[p].lock) {
-                  return -3;
+                  return -1;
                 }
                 break;
               }
