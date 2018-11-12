@@ -89,27 +89,27 @@ sFpgaPin fpgaPin[] = {
   { 1, 23, 0, 0, 0},
   { 1, 24, 0, 0, 0},
 
-  { 2,  0, 0, 0, 0},
+  { 2,  0, 0, 0, 0},  // SPIWIFI_RESET   (64 + 0)  WM_RESET -> NiNa RESETN -> FPGA R1
   { 2,  1, 0, 0, 0},
   { 2,  2, 0, 0, 0},
   { 2,  3, 0, 0, 0},
   { 2,  4, 0, 0, 0},
-  { 2,  5, 0, 0, 0},
+  { 2,  5, 0, 0, 0},  // SPIWIFI_ACK     (64 + 5)  WM_PIO7  -> NiNa GPIO33 -> FPGA P6
   { 2,  6, 0, 0, 0},
   { 2,  7, 0, 0, 0},
   { 2,  8, 0, 0, 0},
   { 2,  9, 0, 0, 0},
-  { 2, 10, 0, 0, 0},
-  { 2, 11, 0, 0, 0},
+  { 2, 10, 0, 0, 0},  // NINA_GPIO0      (64 + 10) WM_PIO27 -> NiNa GPIO0 -> FPGA N9
+  { 2, 11, 0, 0, 0},  // NINA SPI SS     (64 + 11) WM_PIO28 -> NiNa GPIO5 -> FPGA N11
   { 2, 12, 0, 0, 0},
   { 2, 13, 0, 0, 0},
   { 2, 14, 0, 0, 0},
-  { 2, 15, 0, 0, 0},
-  { 2, 16, 0, 0, 0},
+  { 2, 15, 0, 0, 0},  // NINA UART RX         (64 + 15)
+  { 2, 16, 0, 0, 0},  // NINA UART TX         (64 + 16)
   { 2, 17, 0, 0, 0},
-  { 2, 18, 0, 0, 0},
-  { 2, 19, 0, 0, 0},
-  { 2, 20, 0, 0, 0},
+  { 2, 18, 0, 0, 0},  // NINA SPI CLOCK       (64 + 18)
+  { 2, 19, 0, 0, 0},  // NINA SPI MOSI        (64 + 19)
+  { 2, 20, 0, 0, 0},  // NINA SPI MISO        (64 + 20)
   { 2, 21, 0, 0, 0},
 
   { 3,  0, 0, 0, 0},  // CSI I2C SDA
@@ -304,6 +304,7 @@ UART_DEV(NINA_UART);
 /**
  * TSPI pins definition
  */
+/*
 sFpgaIpPin TSPI_0_PIN[] = {
   {0, TSPI_PIN_FNC_MOSI, PIN(3, 0,  3)},
   {0, TSPI_PIN_FNC_MISO, PIN(0, 0,  7)},
@@ -317,6 +318,18 @@ sFpgaIpChn TSPI_0_CHN[] = {
   {NPIN(TSPI_0_PIN), TSPI_0_PIN},
 };
 TSPI_DEV(TSPI_0);
+*/
+#define NINA_TSPI_CHNS 1
+sFpgaIpPin NINA_TSPI_PIN[] = {
+  {0, TSPI_PIN_FNC_MOSI, PIN(2, 2, 19)},
+  {0, TSPI_PIN_FNC_MISO, PIN(0, 2, 20)},
+  {0, TSPI_PIN_FNC_CLK , PIN(2, 2, 18)},
+};
+sFpgaIpChn NINA_TSPI_CHN[] = {
+  {NPIN(NINA_TSPI_PIN), NINA_TSPI_PIN},
+};
+TSPI_DEV(NINA_TSPI);
+
 
 /**
  */
@@ -396,7 +409,8 @@ sFpgaIp fpgaIp[] = {
   /**
    * TSPI
    */
-  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), NINA_SPI_BASE, TSPI_0_CHN, &TSPI_0_DEV},
+//  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), NINA_SPI_BASE, TSPI_0_CHN, &TSPI_0_DEV},
+  {7, IP_DISC(NINA_TSPI_CHNS, TSPI_UID), NINA_SPI_BASE, NINA_TSPI_CHN, &NINA_TSPI_DEV},
 //  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), FLASH_SPI_BASE, 0, NULL},
   {7, IP_DISC(0, 0), FLASH_SPI_BASE, 0, 0},
 
