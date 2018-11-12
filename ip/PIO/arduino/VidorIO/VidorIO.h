@@ -26,18 +26,12 @@
 
 #define VIDOR_PWM 	0x55
 
-extern "C" {
-	void pinModeExtended( uint32_t ulPin, uint32_t ulMode );
-	void digitalWriteExtended( uint32_t ulPin, uint32_t ulVal );
-	int digitalReadExtended( uint32_t ulPin );
-	void analogWriteExtended( uint32_t pin, uint32_t value );
-}
-
 class VidorIO : public VidorIP {
 
 public:
 
-	VidorIO(int _base) : base(_base) {}
+	VidorIO(int _base) : base(_base) {
+	}
 
 	void pinMode(uint32_t pin, uint32_t mode) {
 		uint32_t rpc[4];
@@ -101,9 +95,6 @@ public:
 	bool initialized = false;
 };
 
-static VidorIO* io_instance[3] = {NULL, NULL, NULL};
-
-
 class VidorPWM : public VidorIP {
 
 public:
@@ -144,6 +135,7 @@ public:
 
   private:
 	int base;
+	int giid;
 	int period = -1;
 };
 
@@ -152,32 +144,42 @@ static VidorPWM* pwm_instance[2] = {NULL, NULL};
 class VidorIOContainer {
 	public:
 
-		static void pinMode(int pin, int mode) {
+		VidorIO* io_instance[3] = {NULL, NULL, NULL};
+
+		void pinMode(int pin, int mode) {
 			pin = digital_to_fpga(pin);
-			if (io_instance[pin/32] == NULL) {
-				io_instance[pin/32] = new VidorIO(pin/32);
+			if (io_instance[pin >> 5] == NULL) {
+				io_instance[pin >> 5] = new VidorIO(pin >> 5);
 			}
-			io_instance[pin/32]->pinMode(pin % 32, mode);
+			io_instance[pin >> 5]->pinMode(pin % 32, mode);
 		}
 
-		static void digitalWrite(int pin, int value) {
+		void digitalWrite(int pin, int value) {
 			pin = digital_to_fpga(pin);
-			io_instance[pin/32]->digitalWrite(pin % 32, value);
+			int base = pin >> 5;
+			if (io_instance[base] == NULL) {
+				return;
+			}
+			io_instance[base]->digitalWrite(pin % 32, value);
 		}
 
-		static int digitalRead(int pin) {
+		int digitalRead(int pin) {
 			pin = digital_to_fpga(pin);
-			return io_instance[pin/32]->digitalRead(pin);
+			int base = pin >> 5;
+			if (io_instance[base] == NULL) {
+				return -1;
+			}
+			return io_instance[base]->digitalRead(pin % 32);
 
 		}
-		static void analogWriteResolution(int bits, int frequency) {
+		void analogWriteResolution(int bits, int frequency) {
 			if (pwm_instance[0] == NULL) {
 				pwm_instance[0] = new VidorPWM(0);
 			}
 			pwm_instance[0]->analogWriteResolution(bits, frequency);
 		}
 
-		static void analogWrite(int pin, int mode) {
+		void analogWrite(int pin, int mode) {
 			pin = digital_to_fpga(pin);
 			if (pwm_instance[pin/32] == NULL) {
 				pwm_instance[pin/32] = new VidorPWM(pin/32);
