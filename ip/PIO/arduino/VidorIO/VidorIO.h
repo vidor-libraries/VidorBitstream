@@ -40,7 +40,7 @@ public:
 		// TODO: should I ask this to UID 0 == FPGA ?
 		int ret = init(PIO_UID, pin + 32*base);
 		if (ret < 0) {
-			return;
+			// ignore and go ahead
 		}
 
 		rpc[0] = RPC_CMD(info.giid, pin, 5);
