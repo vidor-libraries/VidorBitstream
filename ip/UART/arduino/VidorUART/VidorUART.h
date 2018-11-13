@@ -30,7 +30,7 @@
 class VidorUart : public HardwareSerial, public VidorIP
 {
   public:
-    VidorUart(int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr);
+    VidorUart(int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr);
     int begin();
     void begin(unsigned long baudRate);
     void begin(unsigned long baudrate, uint16_t config);
@@ -57,17 +57,15 @@ class VidorUart : public HardwareSerial, public VidorIP
     }
 
   private:
-    int idx;
     int tx;
     int rx;
     int cts;
     int rts;
     int dtr;
     int dsr;
-    int index;
+    bool initialized = false;
     RingBuffer rxBuffer;
     RingBuffer txBuffer;
-    uint8_t devIdx;
 };
 
 extern VidorUart SerialEx;

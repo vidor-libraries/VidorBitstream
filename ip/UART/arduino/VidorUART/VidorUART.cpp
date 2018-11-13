@@ -20,9 +20,8 @@
 #include "VidorUART.h"
 #include "Arduino.h"
 
-VidorUart::VidorUart(int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr)
+VidorUart::VidorUart(int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr)
 {
-  idx = _idx;
   tx  = _tx;
   rx  = _rx;
   cts = _cts;
@@ -33,7 +32,19 @@ VidorUart::VidorUart(int _idx,int _tx,int _rx,int _cts,int _rts,int _dtr,int _ds
 
 int VidorUart::begin()
 {
-  return init(UART_UID, digital_to_fpga(tx), digital_to_fpga(rx), digital_to_fpga(cts), digital_to_fpga(rts), digital_to_fpga(dtr), digital_to_fpga(dsr));
+  if (initialized) {
+    return -1;
+  }
+  initialized = true;
+  if (cts != -1 && rts != -1) {
+    if (dtr != -1 && dsr != -1) {
+      return init(UART_UID, digital_to_fpga(tx), digital_to_fpga(rx), digital_to_fpga(cts), digital_to_fpga(rts), digital_to_fpga(dtr), digital_to_fpga(dsr));
+    } else {
+      return init(UART_UID, digital_to_fpga(tx), digital_to_fpga(rx), digital_to_fpga(cts), digital_to_fpga(rts));
+    }
+  } else {
+    return init(UART_UID, digital_to_fpga(tx), digital_to_fpga(rx));
+  }
 }
 
 void VidorUart::begin(unsigned long baudrate)
@@ -47,7 +58,7 @@ void VidorUart::begin(unsigned long baudrate, uint16_t config)
   if (ret < 0) {
     return;
   }
-  callback(onInterrupt);
+  //callback(onInterrupt);
   enableUART(tx, rx);
   setUART(baudrate, config);
 }
@@ -119,7 +130,7 @@ int VidorUart::available()
     }
   }
 
-  return ret;
+  return ret < 0 ? 0 : ret;
 }
 
 int VidorUart::availableForWrite()
@@ -191,23 +202,23 @@ int VidorUart::enableFlowControl(void)
 
 
 #if FPGA_UART_INTERFACES_COUNT > 0
-VidorUart SerialEx(   0,  -1, -1, -1, -1, -1, -1);
+VidorUart SerialEx(FPGA_NINA_TX, FPGA_NINA_RX, -1, -1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 1
-VidorUart SerialFPGA0(1,  A0, A1, -1, -1, -1, -1);
+VidorUart SerialFPGA0(A0, A1, -1, -1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 2
-VidorUart SerialFPGA1(2,  A2, A3, A0, A1, -1, -1);
+VidorUart SerialFPGA1(A2, A3, A0, A1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 3
-VidorUart SerialFPGA2(3,  A4, A5, -1, -1, -1, -1);
+VidorUart SerialFPGA2(A4, A5, -1, -1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 4
-VidorUart SerialFPGA3(4,  A6,  0, A4, A5, A3, A2);
+VidorUart SerialFPGA3(A6,  0, A4, A5, A3, A2);
 #if FPGA_UART_INTERFACES_COUNT > 5
-VidorUart SerialFPGA4(5,   1,  2, -1, -1, -1, -1);
+VidorUart SerialFPGA4(1,  2, -1, -1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 6
-VidorUart SerialFPGA5(6,   3,  4,  1,  2,  0, A6);
+VidorUart SerialFPGA5(3,  4,  1,  2,  0, A6);
 #if FPGA_UART_INTERFACES_COUNT > 7
-VidorUart SerialFPGA6(7,   5,  6, -1, -1, -1, -1);
+VidorUart SerialFPGA6(5,  6, -1, -1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 8
-VidorUart SerialFPGA7(8,   7,  8,  5,  6,  4,  3);
+VidorUart SerialFPGA7(7,  8,  5,  6,  4,  3);
 #endif
 #endif
 #endif

@@ -41,6 +41,9 @@ public:
   void setDebug(Stream& stream) {
     _debugStream = &stream;
   }
+  void disableDebug() {
+    _debugStream = NULL;
+  }
 
 private:
   Stream* _debugStream = NULL;
