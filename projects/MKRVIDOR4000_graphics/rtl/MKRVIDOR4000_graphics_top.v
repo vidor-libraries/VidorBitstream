@@ -304,6 +304,8 @@ MKRVIDOR4000_graphics_sys u0(
 `ifndef FREE_VERSION
 		.nina_uart_sin          (wWM_PIO_IN[16]),     //  nina_uart.sin
 		.nina_uart_sout         (wNINA_RX),    //           .sout
+		.nina_uart_ctl_rts_n    (wNINA_RTS),    //           .sout
+		.nina_uart_ctl_cts_n    (bWM_PIO20),    //           .sout
 `endif
 
 		.sam_pio_in             (wSAM_PIO_IN),       //   sam_pio.in
@@ -338,6 +340,7 @@ assign wWM_OUT2[18]     = wNINA_SCLK;
 assign wWM_OUT2[19]     = wNINA_MOSI;
 `ifndef FREE_VERSION
 assign wWM_OUT2[15]     = wNINA_RX;
+assign wWM_OUT2[9]      = wNINA_RTS;
 `endif
 
 assign wWM_OUT1[15]     = wSAM_PIO_IN[22]; // D14 for NINA_RX in bypass
