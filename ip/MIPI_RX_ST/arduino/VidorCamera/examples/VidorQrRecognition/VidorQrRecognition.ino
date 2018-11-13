@@ -38,18 +38,19 @@ void setup() {
     Serial.println("Initialization failed!");
     while (1) {}
   }
-  /**
-    begin() enable the I2C communication and initialize the display for the camera
-  */
+
+  // initialize the video subsystem
+  vcam.vgfx.begin();
+
+  // begin() enables the I2C communication with the camera and starts the stream
   if (!vcam.begin()) {
     Serial.println("Camera begin failed");
     while (1) {}
   }
-  /**
-      qrrec.begin(); enable the QR code recognition
-  */
+
+  // qrrec.begin() enables the QR code recognition
   vcam.qrrec.begin();
-  delay(4000);
+
   Serial.println("Power ON");
 }
 
