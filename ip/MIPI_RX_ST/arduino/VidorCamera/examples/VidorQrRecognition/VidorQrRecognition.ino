@@ -13,7 +13,7 @@
   by Riccardo Rizzo
 */
 
-#_INCLUDE_PARENT_LIB_
+#include "VidorGraphics.h"
 #include "VidorCamera.h"
 
 VidorCamera vcam;
@@ -42,15 +42,19 @@ void setup() {
   // initialize the video subsystem
   vcam.vgfx.begin();
 
-  // begin() enables the I2C communication with the camera and starts the stream
+  /**
+    begin() enable the I2C communication and initialize the display for the camera
+  */
   if (!vcam.begin()) {
     Serial.println("Camera begin failed");
     while (1) {}
   }
 
-  // qrrec.begin() enables the QR code recognition
+  /**
+      qrrec.begin(); enable the QR code recognition
+  */
   vcam.qrrec.begin();
-
+  vcam.qrrec.draw();
   Serial.println("Power ON");
 }
 

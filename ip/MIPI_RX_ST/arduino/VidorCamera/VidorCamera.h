@@ -163,6 +163,7 @@ class VidorQR : public VidorIP {
     void setMode(uint8_t mode);
     void setThr(uint8_t thr);
     int readQRCode(void);
+    void draw(bool enabled = true);
   private:
     void enable(uint8_t on);
 };

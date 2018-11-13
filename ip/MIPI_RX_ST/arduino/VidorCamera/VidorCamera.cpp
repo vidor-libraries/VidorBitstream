@@ -200,6 +200,10 @@ void VidorQR::enable(uint8_t on) {
   }
 
   uint32_t rpc[2];
+
+  rpc[0] = RPC_CMD(info.giid, info.chn, 2);
+  VidorMailbox.sendCommand(rpc, 1);
+
   rpc[0] = RPC_CMD(info.giid, info.chn, 5);
   rpc[1] = on;
   VidorMailbox.sendCommand(rpc, 2);
@@ -211,6 +215,14 @@ void VidorQR::setMode(uint8_t mode) {
   rpc[1] = mode;
   VidorMailbox.sendCommand(rpc, 2);
 }
+
+void VidorQR::draw(bool enabled) {
+  uint32_t rpc[2];
+  rpc[0] = RPC_CMD(info.giid, info.chn, 9);
+  rpc[1] = enabled ? 1 : 0;
+  VidorMailbox.sendCommand(rpc, 2);
+}
+
 
 int VidorQR::readQRCode(void){
   uint32_t rpc[1];
