@@ -43,6 +43,8 @@ int32_t VidorEncoder::read(){
 
 int VidorEncoder::begin() {
   int ret = init(ENC_UID, digital_to_fpga(pinA), digital_to_fpga(pinB));
+  pinMode(pinA, INPUT_PULLUP);
+  pinMode(pinB, INPUT_PULLUP);
   if (ret < 0) {
     return -1;
   }
