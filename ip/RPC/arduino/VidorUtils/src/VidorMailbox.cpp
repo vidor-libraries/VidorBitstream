@@ -89,11 +89,16 @@ int VidorMailboxClass::sendCommand(const uint32_t data[], size_t len)
 
 		if (result == 0) {
 			read(0x01, &result, 1);
-
+			if (_debugStream != NULL) {
+				_debugStream->println("sendCommand return " + String(result, HEX));
+			}
 			return result;
 		}
 	}
 
+	if (_debugStream != NULL) {
+		_debugStream->println("sendCommand Timeout");
+	}
 	return -1;
 }
 
