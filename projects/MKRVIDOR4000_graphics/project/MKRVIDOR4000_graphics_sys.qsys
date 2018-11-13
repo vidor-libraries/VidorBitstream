@@ -823,6 +823,11 @@
    internal="nina_uart.RS_232_Serial"
    type="conduit"
    dir="end" />
+ <interface
+   name="nina_uart_ctl"
+   internal="nina_uart.RS_232_Modem"
+   type="conduit"
+   dir="end" />
  <interface name="pex_pio" internal="pex_pio.pio" type="conduit" dir="end" />
  <interface name="qr_vid" internal="QRCODE_FINDER_0.vid_clk" />
  <interface
