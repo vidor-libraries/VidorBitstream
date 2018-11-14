@@ -733,7 +733,7 @@ alt_u32 setFont(GFXgc* pGc, alt_u32 num)
     return 0;
   }
 #else
-  pGc->pFnt = &GFX_FONT_NAME;
+  pGc->pFnt = (GFXfont*)&GFX_FONT_NAME;
   return 0;
 #endif
   return -1;
