@@ -20,7 +20,7 @@
  */
 
 
-#define SEC_RAM  __attribute__((__section__(".rwdata")))
+#define SEC_RAM __attribute__((__section__(".rwdata")))
 
 #include <io.h>
 #include <sys/alt_irq.h>
@@ -63,7 +63,7 @@ alt_u32 uartFlush(alt_u32 cmd);
 /**
  *
  */
-void uartRpc(void)
+void SEC_RAM uartRpc(void)
 {
   alt_u32 volatile *rpc = mbPtrGet();
   alt_u32 ret;
@@ -207,7 +207,21 @@ alt_u32 SEC_RAM uartRead(alt_u32 cmd, alt_u8* buf, alt_u32 len)
   if (!pDev->sp) {
     return -1;
   }
-  return arduino_16550_uart_read(pDev->sp, buf, len, 0);
+
+  int       ret;
+  alt_u8    b[ALT_16550_UART_BUF_LEN];
+  alt_u32  *ps;
+  alt_u32  *pd;
+  int       i;
+
+  ret = arduino_16550_uart_read(pDev->sp, b, len, 0);
+  ps = (alt_u32*)b;
+  pd = (alt_u32*)buf;
+  for(i=0; i<(len+3)/4; i++){
+    pd[i] = ps[i];
+  }
+  return ret;
+//  return arduino_16550_uart_read(pDev->sp, buf, len, 0);
 }
 
 /**
@@ -252,7 +266,20 @@ alt_u32 SEC_RAM uartWrite(alt_u32 cmd, alt_u8* buf, alt_u32 len)
   if (!pDev->sp) {
     return -1;
   }
-  return arduino_16550_uart_write(pDev->sp, buf, len, 0);
+
+  int       ret;
+  alt_u8    b[ALT_16550_UART_BUF_LEN];
+  alt_u32  *ps;
+  alt_u32  *pd;
+  int       i;
+
+  ps = (alt_u32*)buf;
+  pd = (alt_u32*)b;
+  for(i=0; i<(len+3)/4; i++){
+    pd[i] = ps[i];
+  }
+
+  return arduino_16550_uart_write(pDev->sp, b, len, 0);
 }
 
 /**
