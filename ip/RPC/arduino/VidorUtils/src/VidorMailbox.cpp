@@ -21,7 +21,6 @@
 
 #include "VidorMailbox.h"
 #include "VidorIRQ.h"
-#include "defines.h"
 
 #define MB_BASE     0x00000000
 #define MB_INT_PIN  31
@@ -80,7 +79,10 @@ int VidorMailboxClass::sendCommand(const uint32_t data[], size_t len)
 		_debugStream->println("");
 	}
 
+	VidorIRQ::lock();
+
 	if (write(0x00, data, len) != (int)len) {
+		VidorIRQ::unlock();
 		return -1;
 	}
 
@@ -96,6 +98,7 @@ int VidorMailboxClass::sendCommand(const uint32_t data[], size_t len)
 			if (_debugStream != NULL) {
 				_debugStream->println("sendCommand return " + String(result, HEX));
 			}
+			VidorIRQ::unlock();
 			return result;
 		}
 	}
@@ -103,14 +106,18 @@ int VidorMailboxClass::sendCommand(const uint32_t data[], size_t len)
 	if (_debugStream != NULL) {
 		_debugStream->println("sendCommand Timeout");
 	}
+	VidorIRQ::unlock();
 	return -1;
 }
 
 int VidorMailboxClass::sendEvent(const uint32_t data[], size_t len)
 {
+	VidorIRQ::lock();
 	if (write(0x00, data, len) != (int)len) {
+		VidorIRQ::unlock();
 		return -1;
 	}
+	VidorIRQ::unlock();
 
 	digitalWrite(MB_INT_PIN, HIGH);
 	digitalWrite(MB_INT_PIN, LOW);
@@ -127,7 +134,6 @@ int VidorMailboxClass::read(uint32_t address, uint32_t data[], size_t len)
 
 int VidorMailboxClass::write(uint32_t address, const uint32_t data[], size_t len)
 {
-	VidorIRQ::getInterruptSource();
 	return VidorJTAG.writeBuffer(MB_BASE + address, data, len);
 }
 
