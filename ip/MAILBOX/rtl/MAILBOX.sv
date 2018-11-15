@@ -135,7 +135,9 @@ always @(posedge iCLOCK) begin
       if (iSLV_WRITE) begin
         if (iSLV_ADDRESS==0) begin
           rPERSIST_MST_RQ<=0;
+/*
           rRET_AVAIL<=1;
+*/
         end
       end
       else if (iSLV_READ) begin

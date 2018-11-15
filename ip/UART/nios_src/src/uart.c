@@ -60,6 +60,8 @@ alt_u32 uartPut(alt_u32 cmd, alt_u8 data);
 alt_u32 uartWrite(alt_u32 cmd, alt_u8* buf, alt_u32 len);
 alt_u32 uartFlush(alt_u32 cmd);
 
+void uartIsrRx(void* arg);
+
 /**
  *
  */
@@ -99,6 +101,7 @@ alt_u32 uartSetup(alt_u32 cmd)
   if (!pDev->sp) {
     return -1;
   }
+  arduino_16550_uart_isrrx(uartIsrRx, (void*)(cmd & 0xFFFFF000));
   return 0;
 }
 
@@ -112,6 +115,7 @@ alt_u32 uartEnd(alt_u32 cmd)
   if (!pDev->sp) {
     return -1;
   }
+  arduino_16550_uart_isrrx(NULL, NULL);
   return arduino_16550_uart_close(pDev->sp, 0);
 }
 
@@ -267,7 +271,6 @@ alt_u32 SEC_RAM uartWrite(alt_u32 cmd, alt_u8* buf, alt_u32 len)
     return -1;
   }
 
-  int       ret;
   alt_u8    b[ALT_16550_UART_BUF_LEN];
   alt_u32  *ps;
   alt_u32  *pd;
@@ -295,4 +298,12 @@ alt_u32 uartFlush(alt_u32 cmd)
   }
   arduino_16550_uart_flush(pDev->sp);
   return 0;
+}
+
+/**
+ *
+ */
+void uartIsrRx(void* arg)
+{
+  mbEveTx((alt_u32)arg);
 }
