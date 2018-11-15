@@ -20,6 +20,8 @@
 #include "VidorJTAG.h"
 
 #include "VidorMailbox.h"
+#include "VidorIRQ.h"
+#include "defines.h"
 
 #define MB_BASE     0x00000000
 #define MB_INT_PIN  31
@@ -40,6 +42,8 @@ int VidorMailboxClass::begin()
 
 	pinMode(MB_INT_PIN, OUTPUT);
 	digitalWrite(MB_INT_PIN, LOW);
+
+	attachInterrupt(IRQ_PIN, VidorIRQ::onInterrupt, RISING);
 
 	return 1;
 }
@@ -123,6 +127,7 @@ int VidorMailboxClass::read(uint32_t address, uint32_t data[], size_t len)
 
 int VidorMailboxClass::write(uint32_t address, const uint32_t data[], size_t len)
 {
+	VidorIRQ::getInterruptSource();
 	return VidorJTAG.writeBuffer(MB_BASE + address, data, len);
 }
 

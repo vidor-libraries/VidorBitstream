@@ -39,9 +39,9 @@ __attribute__((weak)) void enableFpgaClock() {}
 __attribute__((weak)) void disableFpgaClock() {}
 
 typedef struct IPInfo {
-  int giid;
-  int uid;
-  int chn;
+  int giid = -1;
+  int uid = -1;
+  int chn = -1;
 };
 
 class VidorUtils {
@@ -53,7 +53,6 @@ public:
   void reload();
   bool ready();
   uint32_t version();
-  static void onInterrupt();
 
   template <typename... Args> static int discover(IPInfo* info) {
     uint32_t  rpc[32];
@@ -93,6 +92,8 @@ public:
 
     return (ret >> 24);
   }
+private:
+  static bool got_irq;
 };
 
 #endif

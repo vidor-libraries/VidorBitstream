@@ -39,35 +39,7 @@ int VidorUtils::begin(bool jumpToApp)
 		delay(100);
 		ret = VidorMailbox.begin();
 	}
-
-	attachInterrupt(IRQ_PIN, VidorUtils::onInterrupt, RISING);
-
 	return ret;
-}
-
-// TEMP: decide the proper RPC number
-#define GET_IRQ_SOURCE 	123
-#define GET_IRQ_DATA	456
-
-void VidorUtils::onInterrupt() {
-
-/*
-	uint32_t data[128];
-	data[0] = GET_IRQ_SOURCE;
-
-	// Call VidorMailbox to retrieve the uid
-	int giid = VidorMailbox.sendCommand(data, 1);
-
-	for (int i = 0; i < IPList.size(); i++) {
-		VidorIP* ip = IPList.get(i);
-		if (ip->info.giid == giid && ip->cb != NULL) {
-			data[0] = GET_IRQ_DATA;
-			int ret = VidorMailbox.sendCommand(data, 128);
-			ip->cb(data, ret, ip);
-			break;
-		}
-	}
-	*/
 }
 
 bool VidorUtils::ready() {
