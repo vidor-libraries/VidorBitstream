@@ -20,7 +20,7 @@
 #include "VidorUART.h"
 #include "Arduino.h"
 
-VidorUart::VidorUart(int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr)
+VidorUart::VidorUart(int _tx, int _rx, int _cts, int _rts, int _dtr, int _dsr)
 {
   tx  = _tx;
   rx  = _rx;
@@ -35,7 +35,6 @@ int VidorUart::begin()
   if (initialized) {
     return -1;
   }
-  initialized = true;
   if (cts != -1 && rts != -1) {
     if (dtr != -1 && dsr != -1) {
       return init(UART_UID, digital_to_fpga(tx), digital_to_fpga(rx), digital_to_fpga(cts), digital_to_fpga(rts), digital_to_fpga(dtr), digital_to_fpga(dsr));
@@ -55,22 +54,29 @@ void VidorUart::begin(unsigned long baudrate)
 void VidorUart::begin(unsigned long baudrate, uint16_t config)
 {
   int ret = begin();
-  if (ret < 0) {
+  if (ret < 0 && info.giid == -1) {
     return;
   }
+
   //callback(onInterrupt);
-  enableUART(tx, rx);
+  if (!initialized) {
+    enableUART();
+    initialized = true;
+  }
   setUART(baudrate, config);
 }
 
 void VidorUart::end()
 {
-  disableUART();
+  if (initialized) {
+    disableUART();
+    initialized = false;
+  }
   rxBuffer.clear();
   txBuffer.clear();
 }
 
-void VidorUart::enableUART(int tx, int rx) {
+void VidorUart::enableUART() {
   uint32_t rpc[1];
   rpc[0] = RPC_CMD(info.giid, info.chn, 2);
   VidorMailbox.sendCommand(rpc, 1);
@@ -129,7 +135,6 @@ int VidorUart::available()
       rxBuffer.store_char(data[i]);
     }
   }
-
   return ret < 0 ? 0 : ret;
 }
 
@@ -190,19 +195,8 @@ size_t VidorUart::write(const uint8_t* data, size_t len)
   return len;
 }
 
-int VidorUart::enableFlowControl(void)
-{
-  if(rts>=0 && cts>=0 && dtr>=0 && dsr>=0 ) {
-    enableUART(rts, cts);
-    enableUART(dtr, dsr);
-    return 1;
-  }
-  return 0;
-}
-
-
 #if FPGA_UART_INTERFACES_COUNT > 0
-VidorUart SerialEx(FPGA_NINA_TX, FPGA_NINA_RX, -1, -1, -1, -1);
+VidorUart SerialEx(FPGA_NINA_RX, FPGA_NINA_TX, -1, -1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 1
 VidorUart SerialFPGA0(A0, A1, -1, -1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 2

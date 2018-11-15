@@ -30,12 +30,12 @@
 class VidorUart : public HardwareSerial, public VidorIP
 {
   public:
-    VidorUart(int _tx,int _rx,int _cts,int _rts,int _dtr,int _dsr);
+    VidorUart(int _tx, int _rx, int _cts, int _rts, int _dtr, int _dsr);
     int begin();
     void begin(unsigned long baudRate);
     void begin(unsigned long baudrate, uint16_t config);
     void end();
-    void enableUART(int tx, int rx);
+    void enableUART();
     void setUART(int baud, int config);
     void disableUART();
 
@@ -46,7 +46,6 @@ class VidorUart : public HardwareSerial, public VidorIP
     int read(uint8_t* data, size_t len);
     void flush();
     size_t write(const uint8_t data);
-    int enableFlowControl(void);
     using Print::write; // pull in write(str) and write(buf, size) from Print
     size_t write(const uint8_t* data, size_t len);
 
