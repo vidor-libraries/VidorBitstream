@@ -26,7 +26,7 @@ void VidorIRQ::lock() {
 
 void VidorIRQ::unlock() {
 	EIC->INTENCLR.reg = EIC_INTENSET_EXTINT(interruptMask);
-	getInterruptSource(true);
+	getInterruptSource(digitalRead(IRQ_PIN));
 }
 
 
