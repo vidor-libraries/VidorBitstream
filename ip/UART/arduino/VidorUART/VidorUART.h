@@ -62,9 +62,9 @@ class VidorUart : public HardwareSerial, public VidorIP
     int rts;
     int dtr;
     int dsr;
+    int getData();
     bool initialized = false;
-    RingBuffer rxBuffer;
-    RingBuffer txBuffer;
+    RingBufferN<256> rxBuffer;
 };
 
 extern VidorUart SerialEx;

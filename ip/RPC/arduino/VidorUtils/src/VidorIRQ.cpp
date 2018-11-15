@@ -1,5 +1,6 @@
 #include "VidorIRQ.h"
 #include "VidorMailbox.h"
+#include "VidorIP.h"
 
 #define MB_DPRAM_BITS   9
 #define MB_FIFO_BITS    4
@@ -12,7 +13,6 @@
 static volatile bool got_irq;
 
 void VidorIRQ::onInterrupt() {
-	SerialUSB.println("got irq");
 	got_irq = true;
 	getInterruptSource();
 	return;
@@ -29,25 +29,41 @@ void VidorIRQ::unlock() {
 	getInterruptSource(digitalRead(IRQ_PIN));
 }
 
+extern LinkedList<VidorIP*> IPList;
 
 bool VidorIRQ::getInterruptSource(bool force) {
 	uint32_t  num;
 	uint32_t  code;
-	int       i;
+	static bool lock = false;
 
 	if (got_irq == false && !force) {
 		return false;
 	}
 
+	if (lock) {
+		return false;
+	}
+	lock = true;
+
 	VidorMailbox.read(MB_LAST_ADDRESS, &num, 1);
-	SerialUSB.println("ISR last " + String(num, HEX));
 	num &= MB_PND_MASK;
 
-	for (i=0; i < num; i++) {
+	for (int i = 0; i < num; i++) {
 		VidorMailbox.read(MB_FIFO_BASE, &code, 1);
-		SerialUSB.println("ISR code " + String(code, HEX));
+		if (code==0xDEADBEEF) return true;
+		VidorIP  *ip;
+		for (int j = 0; j < IPList.size(); j++) {
+			ip = IPList.get(j);
+			if (((ip->info.giid<<24)|(ip->info.chn<<12)) == code) {
+				if (ip->cb) {
+					ip->cb(NULL, 0, ip);
+				}
+				break;
+			}
+		}
 	}
 
+	lock = false;
 	got_irq = false;
 	return true;
 }

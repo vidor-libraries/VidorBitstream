@@ -58,7 +58,7 @@ void VidorUart::begin(unsigned long baudrate, uint16_t config)
     return;
   }
 
-  //callback(onInterrupt);
+  callback(onInterrupt);
   if (!initialized) {
     enableUART();
     initialized = true;
@@ -73,7 +73,6 @@ void VidorUart::end()
     initialized = false;
   }
   rxBuffer.clear();
-  txBuffer.clear();
 }
 
 void VidorUart::enableUART() {
@@ -98,33 +97,19 @@ void VidorUart::disableUART() {
 
 void VidorUart::flush() {
   uint32_t rpc[1];
-  while(txBuffer.available()); // wait until TX buffer is empty
   rpc[0] = RPC_CMD(info.giid, info.chn, 11);
   VidorMailbox.sendCommand(rpc, 1);
 }
 
 int VidorUart::onInterrupt(void* buf, int n, VidorIP* ip) {
-
-  VidorUart* uart = (VidorUart*)ip;
-
-  uint8_t* data = (uint8_t*)buf;
-  for (int i = 0; i < n; i++) {
-    uart->rxBuffer.store_char(data[i]);
-  }
+  VidorUart* uart =  (VidorUart*)ip;
+  uart->getData();
 }
 
-int VidorUart::available()
-{
-  int ret;
-
-  ret = rxBuffer.available();
-  if (ret) {
-    return ret;
-  }
-
+int VidorUart::getData() {
   uint32_t rpc[256];
   rpc[0] = RPC_CMD(info.giid, info.chn, 8);
-  ret = VidorMailbox.sendCommand(rpc, 1);
+  int ret = VidorMailbox.sendCommand(rpc, 1);
   if (ret > 0) {
     rpc[0] = RPC_CMD(info.giid, info.chn, 7);
     rpc[1] = ret;
@@ -135,12 +120,22 @@ int VidorUart::available()
       rxBuffer.store_char(data[i]);
     }
   }
-  return ret < 0 ? 0 : ret;
+  return ret;
+}
+
+int VidorUart::available()
+{
+  int ret;
+
+  ret = rxBuffer.available();
+  if (ret) {
+    return ret;
+  }
 }
 
 int VidorUart::availableForWrite()
 {
-  return txBuffer.availableForStore();
+  return 1;
 }
 
 int VidorUart::peek()
