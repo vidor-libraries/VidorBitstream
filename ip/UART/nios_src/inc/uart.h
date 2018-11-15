@@ -44,10 +44,7 @@
 #define UART_PIN_FNC_DTR PIN_FNC(0x05, PIN_DIR_O)
 #define UART_PIN_FNC_DSR PIN_FNC(0x06, PIN_DIR_I)
 
-
-
 #include <arduino_16550_uart.h>
-
 
 typedef struct uart_dev_s{
   char                     *name;
@@ -56,14 +53,6 @@ typedef struct uart_dev_s{
 
 #define UART_DEV(name) sUartDev name##_DEV = {name##_NAME, 0}
 
-
-
-
-
-
-
-
 void uartRpc(void);
-
 
 #endif /* UART_H_ */

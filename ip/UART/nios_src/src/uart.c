@@ -20,7 +20,7 @@
  */
 
 
-#define SEC_RAM  __attribute__((__section__(".rwdata")))
+#define SEC_RAM __attribute__((__section__(".rwdata")))
 
 #include <io.h>
 #include <sys/alt_irq.h>
@@ -63,7 +63,7 @@ alt_u32 uartFlush(alt_u32 cmd);
 /**
  *
  */
-void uartRpc(void)
+void SEC_RAM uartRpc(void)
 {
   alt_u32 volatile *rpc = mbPtrGet();
   alt_u32 ret;
@@ -108,7 +108,11 @@ alt_u32 uartEnd(alt_u32 cmd)
 {
   alt_u8    giid = RPC_GIID(cmd);
   psUartDev pDev = (psUartDev)fpgaIp[giid].priv;
-  return arduino_16550_uart_close(pDev->sp, 0); // TODO flags;
+
+  if (!pDev->sp) {
+    return -1;
+  }
+  return arduino_16550_uart_close(pDev->sp, 0);
 }
 
 /**
@@ -127,6 +131,10 @@ alt_u32 uartSet(alt_u32 cmd, alt_u32 baud, alt_u32 config)
   ParityBit   pb;
   DataBit     db;
   Baud        br;
+
+  if (!pDev->sp) {
+    return -1;
+  }
 
   switch (baud) {
   case   9600: br =   BR9600; break;
@@ -178,6 +186,9 @@ alt_u32 SEC_RAM uartGet(alt_u32 cmd)
   alt_u8    c;
   int       ret;
 
+  if (!pDev->sp) {
+    return -1;
+  }
   ret = arduino_16550_uart_read(pDev->sp, &c, 1, 0);
   if (ret != 1) {
     return -1;
@@ -193,7 +204,24 @@ alt_u32 SEC_RAM uartRead(alt_u32 cmd, alt_u8* buf, alt_u32 len)
   alt_u8    giid = RPC_GIID(cmd);
   psUartDev pDev = (psUartDev)fpgaIp[giid].priv;
 
-  return arduino_16550_uart_read(pDev->sp, buf, len, 0);
+  if (!pDev->sp) {
+    return -1;
+  }
+
+  int       ret;
+  alt_u8    b[ALT_16550_UART_BUF_LEN];
+  alt_u32  *ps;
+  alt_u32  *pd;
+  int       i;
+
+  ret = arduino_16550_uart_read(pDev->sp, b, len, 0);
+  ps = (alt_u32*)b;
+  pd = (alt_u32*)buf;
+  for(i=0; i<(len+3)/4; i++){
+    pd[i] = ps[i];
+  }
+  return ret;
+//  return arduino_16550_uart_read(pDev->sp, buf, len, 0);
 }
 
 /**
@@ -205,6 +233,9 @@ alt_u32 SEC_RAM uartAvail(alt_u32 cmd)
   psUartDev pDev = (psUartDev)fpgaIp[giid].priv;
   alt_u32   a;
 
+  if (!pDev->sp) {
+    return -1;
+  }
   a = ALT_16550_UART_BUF_LEN + pDev->sp->rx_end - pDev->sp->rx_start;
   a &= ALT_16550_UART_BUF_MSK;
   return a;
@@ -218,6 +249,9 @@ alt_u32 SEC_RAM uartPut(alt_u32 cmd, alt_u8 data)
   alt_u8    giid = RPC_GIID(cmd);
   psUartDev pDev = (psUartDev)fpgaIp[giid].priv;
 
+  if (!pDev->sp) {
+    return -1;
+  }
   return arduino_16550_uart_write(pDev->sp, &data, 1, 0);
 }
 
@@ -229,7 +263,23 @@ alt_u32 SEC_RAM uartWrite(alt_u32 cmd, alt_u8* buf, alt_u32 len)
   alt_u8    giid = RPC_GIID(cmd);
   psUartDev pDev = (psUartDev)fpgaIp[giid].priv;
 
-  return arduino_16550_uart_write(pDev->sp, buf, len, 0);
+  if (!pDev->sp) {
+    return -1;
+  }
+
+  int       ret;
+  alt_u8    b[ALT_16550_UART_BUF_LEN];
+  alt_u32  *ps;
+  alt_u32  *pd;
+  int       i;
+
+  ps = (alt_u32*)buf;
+  pd = (alt_u32*)b;
+  for(i=0; i<(len+3)/4; i++){
+    pd[i] = ps[i];
+  }
+
+  return arduino_16550_uart_write(pDev->sp, b, len, 0);
 }
 
 /**
@@ -240,6 +290,9 @@ alt_u32 uartFlush(alt_u32 cmd)
   alt_u8    giid = RPC_GIID(cmd);
   psUartDev pDev = (psUartDev)fpgaIp[giid].priv;
 
+  if (!pDev->sp) {
+    return -1;
+  }
   arduino_16550_uart_flush(pDev->sp);
   return 0;
 }
