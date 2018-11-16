@@ -20,5 +20,5 @@ fi
 if [ -d software/softcore ]; then
 source build_sw.sh
 fi
-quartus_sh --flow compile build/$PROJECT_NAME
+quartus_sh --flow compile build/$PROJECT_NAME$LITE
 source create_image.sh

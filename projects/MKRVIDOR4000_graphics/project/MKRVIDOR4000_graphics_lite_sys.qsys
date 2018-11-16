@@ -33,7 +33,7 @@
          type = "int";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -41,7 +41,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -49,7 +49,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -57,7 +57,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -65,7 +65,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -73,7 +73,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -81,7 +81,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -89,7 +89,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -97,7 +97,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -105,7 +105,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -113,7 +113,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -121,7 +121,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -129,7 +129,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -137,7 +137,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -145,7 +145,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -153,7 +153,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -161,7 +161,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -169,7 +169,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -177,7 +177,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {
@@ -185,7 +185,7 @@
          type = "String";
       }
    }
-   element MKRVIDOR4000_graphics_sys
+   element MKRVIDOR4000_graphics_lite_sys
    {
       datum _originalDeviceFamily
       {

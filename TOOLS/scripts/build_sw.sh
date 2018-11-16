@@ -28,7 +28,7 @@ fi
 
 PROJECT_NAME=${PWD##*/}
 # Location where BSP is built
-BSP_DIR="./build/software/"$PROJECT_NAME"_bsp"
+BSP_DIR="./build/software/"$PROJECT_NAME$LITE"_bsp"
 
 # Location where the application is built
 APP_DIR=./build/software/$PROJECT_NAME
@@ -37,7 +37,7 @@ APP_DIR=./build/software/$PROJECT_NAME
 SOPC_INFO="./build/"$PROJECT_NAME$LITE"_sys.sopcinfo"
 
 # Various
-ELF_NAME=$PROJECT_NAME.elf
+ELF_NAME=$PROJECT_NAME$LITE.elf
 OPTIMIZATION_LEVEL="-Os"
 LDFLAGS_USER="-Wl,-gc-sections"
 CFLAGS_USER="-fdata-sections -ffunction-sections"

@@ -29,7 +29,7 @@ fi
 PROJECT_BSP_NAME=${PWD##*/}
 PROJECT_NAME=launcher
 # Location where BSP is built
-BSP_DIR="./build/software/"$PROJECT_NAME"_bsp"
+BSP_DIR="./build/software/"$PROJECT_NAME$LITE"_bsp"
 
 # Location where the application is built
 APP_DIR=./build/software/launcher
@@ -38,7 +38,7 @@ APP_DIR=./build/software/launcher
 SOPC_INFO="./build/"$PROJECT_BSP_NAME$LITE"_sys.sopcinfo"
 
 # Various
-ELF_NAME=$PROJECT_NAME.elf
+ELF_NAME=$PROJECT_NAME$LITE.elf
 OPTIMIZATION_LEVEL="-Os"
 LDFLAGS_USER="-Wl,-gc-sections"
 APP_FLAGS="--set APP_CFLAGS_OPTIMIZATION $OPTIMIZATION_LEVEL --set APP_LDFLAGS_USER $LDFLAGS_USER"
