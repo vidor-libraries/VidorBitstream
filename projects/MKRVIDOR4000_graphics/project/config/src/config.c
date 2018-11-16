@@ -19,6 +19,8 @@
  * @brief FPGA configuration
  */
 
+#include <stdio.h>
+
 #include "config.h"
 #include "fpga.h"
 
