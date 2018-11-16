@@ -42,7 +42,7 @@ int VidorMailboxClass::begin()
 	pinMode(MB_INT_PIN, OUTPUT);
 	digitalWrite(MB_INT_PIN, LOW);
 
-	attachInterrupt(IRQ_PIN, VidorIRQ::onInterrupt, RISING);
+	attachInterrupt(IRQ_PIN, VidorIRQ::onInterrupt, HIGH);
 
 	return 1;
 }

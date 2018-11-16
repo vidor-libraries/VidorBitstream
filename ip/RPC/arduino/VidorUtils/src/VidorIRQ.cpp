@@ -13,8 +13,10 @@
 static volatile bool got_irq;
 
 void VidorIRQ::onInterrupt() {
+	lock();
 	got_irq = true;
 	getInterruptSource();
+	unlock();
 	return;
 }
 
@@ -25,7 +27,6 @@ void VidorIRQ::lock() {
 }
 
 void VidorIRQ::unlock() {
-	getInterruptSource(digitalRead(IRQ_PIN));
 	EIC->INTENSET.reg = EIC_INTENSET_EXTINT(interruptMask);
 }
 
@@ -34,24 +35,18 @@ extern LinkedList<VidorIP*> IPList;
 bool VidorIRQ::getInterruptSource(bool force) {
 	uint32_t  num;
 	uint32_t  code;
-	static bool lock = false;
-	int found = 0;
+	static uint8_t lock = false;
 
 	if (got_irq == false && !force) {
 		return false;
 	}
-
-	if (lock) {
-		return false;
-	}
-	lock = true;
 
 	VidorMailbox.read(MB_LAST_ADDRESS, &num, 1);
 	num &= MB_PND_MASK;
 
 	for (int i = 0; i < num; i++) {
 		VidorMailbox.read(MB_FIFO_BASE, &code, 1);
-		if (code != 0xDEADBEEF && !found) {
+		if (code != 0xDEADBEEF) {
 			VidorIP  *ip;
 			for (int j = 0; j < IPList.size(); j++) {
 				ip = IPList.get(j);
@@ -59,14 +54,11 @@ bool VidorIRQ::getInterruptSource(bool force) {
 					if (ip->cb) {
 						ip->cb(NULL, 0, ip);
 					}
-					found = 1;
-					break;
 				}
 			}
 		}
 	}
 
-	lock = false;
 	got_irq = false;
 	return true;
 }
