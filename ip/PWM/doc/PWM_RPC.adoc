@@ -1,6 +1,8 @@
 =PWM IP RPC
 
 == PWM RPC
+.Module Definition
+UID 0x08A55
 
 .Commands
 [%autowidth]
@@ -13,3 +15,13 @@
 ^|6 ^|PwmWrite  ^|MatchH, MatchL    |RetCod
 |=====================================================================================================
 
+== PwmFrqSet
+
+.PwmFrqSet Parameters
+[%autowidth]
+|======================================================================================================
+^|Parameter      ^|Description
+
+^|Prescaler |Prescaler value
+^|Period    |PWM Counter period
+|======================================================================================================

@@ -1,6 +1,12 @@
 =PIO IP RPC
 
 == PIO RPC
+.Module Definition
+IO ports UID 0xE0C45
+Fixed porst UID 0xE0C46
+
+Fixed ports are specific for project.
+
 
 .Commands
 [%autowidth]

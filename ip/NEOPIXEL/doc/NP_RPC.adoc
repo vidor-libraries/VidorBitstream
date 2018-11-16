@@ -16,10 +16,11 @@ TMR needed from npSeqSet and npBufScroll
 |=====================================================================================================
 ^|Option ^|Default ^|Description
 
-|NP_MEM_BASE  |SDRAM_ARBITER_BASE                |
-|NP_MEM_SIZE  |SDRAM_ARBITER_SPAN  - NP_MEM_BASE |
-|NP_USE_TMR   |1 |
-|NP_GFX       |1 |
+|NP_MEM_BASE  |SDRAM_ARBITER_BASE + 0x1C2000 |
+|NP_MEM_SIZE  |SDRAM_ARBITER_SPAN - 0x1C2000 |
+|NP_USE_TMR   |1                             |
+|NP_GFX       |1                             |
+|NP_CLOCK     |ALT_CPU_FREQ / 1G             |
 |=====================================================================================================
 
 .Commands
@@ -60,7 +61,7 @@ bit
 2-3 green offet in byte
 4-5 red offet in byte
 6-7 white offet in byte
-if the red offset and the white offest is the same the led strip accept 24bit commands if these offset are different, the strip have white led, accept the 32bit commands.
+if the red offset and the white offest is the same the led strip accept 24bit commands if these offset are different, the strip has white led and accept the 32bit commands.
 
 bit 9 is frequency
 bit 16-31 is for APA mode
@@ -74,7 +75,7 @@ bit 16-31 is for APA mode
 ^|Parameter      ^|Description
 
 ^|frq  |Frequecy for which apply followings parameters
-^|trst |Rest time
+^|trst |Reset time
 ^|t0h  |Zero high time
 ^|t1h  |One High time
 ^|ttot |Total time

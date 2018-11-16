@@ -1,6 +1,8 @@
 =QUAD ENCODER IP RPC
 
-== QUAD ENCODER
+== QUAD ENCODER RPC
+.Module Definition
+UID 0x0D645
 
 .Commands
 [%autowidth]
