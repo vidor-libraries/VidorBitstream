@@ -119,11 +119,10 @@ always @(posedge iCLOCK) begin
     end else begin
       if (iMST_READ) begin
         if (iMST_ADDRESS==cLAST_ADDRESS) begin
-//          rMST_FIFO_DATA <= {rRET_AVAIL,wRD_USED};
-rMST_FIFO_DATA <= {rRD_PTR,rWR_PTR,3'b000,rRET_AVAIL,wRD_USED};
+          rMST_FIFO_DATA <= {rRET_AVAIL,wRD_USED};
           rMST_FIFO <= 1;
         end
-        else if (wRD_USED>0) begin
+        else if ((iMST_ADDRESS==cFIFO_START_ADDR)&&(wRD_USED>0)) begin
           rRD_PTR <= rRD_PTR+1;
         end else begin
           rMST_FIFO <= 1;
