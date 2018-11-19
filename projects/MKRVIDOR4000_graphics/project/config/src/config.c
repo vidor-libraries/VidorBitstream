@@ -276,6 +276,9 @@ sFpgaIpPin ENC_8_PIN[] = {
 sFpgaIpPin ENC_9_PIN[] = {
   {0, ENC_PIN_FNC_A, PIN(0, 0, 19)}, {0, ENC_PIN_FNC_B, PIN(0, 0, 20)},
 };
+sFpgaIpPin ENC_10_PIN[] = {
+  {0, ENC_PIN_FNC_A, PIN(0, 0, 21)}, {0, ENC_PIN_FNC_B, PIN(0, 0, 22)},
+};
 
 sFpgaIpChn ENC_CHN[] = {
   {NPIN(ENC_0_PIN), ENC_0_PIN},
@@ -288,6 +291,7 @@ sFpgaIpChn ENC_CHN[] = {
   {NPIN(ENC_7_PIN), ENC_7_PIN},
   {NPIN(ENC_8_PIN), ENC_8_PIN},
   {NPIN(ENC_9_PIN), ENC_9_PIN},
+  {NPIN(ENC_10_PIN), ENC_10_PIN},
 };
 
 #ifndef FREE_VERSION
@@ -378,7 +382,9 @@ sFpgaIpLoop fpgaIpLoop[] = {
 };
 int fpgaIpLoopNum = (sizeof(fpgaIpLoop)/sizeof(sFpgaIpLoop));
 
-#define FIX_IO_CHNS    21 // TODO
+#define FIX_IO_CHNS   21 // TODO
+#define ENC_CHNS      10 // TODO
+
 
 /**
  */
