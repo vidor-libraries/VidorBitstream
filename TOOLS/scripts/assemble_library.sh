@@ -1,11 +1,14 @@
 #!/bin/bash
 
+set +e
+
 PROJECT_NAME=${PWD##*/}
 LIB_NAME=$PROJECT_NAME
 
+#go back to root directory
 for (( i=0; ; i++ ));
 do
-    ls | grep ip && ls | grep projects
+    ls | grep projects && ls | grep ip
     res=$?
     if [ $res != 0 ]; then
         cd ..
