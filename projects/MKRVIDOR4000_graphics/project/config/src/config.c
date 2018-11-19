@@ -41,29 +41,29 @@
  */
 sFpgaPin fpgaPin[] = {
   //port pin giid chn lock
-  { 0,  0, 0, 0, 0},
-  { 0,  1, 0, 0, 0},
-  { 0,  2, 0, 0, 0},
-  { 0,  3, 0, 0, 0},
-  { 0,  4, 0, 0, 0},
-  { 0,  5, 0, 0, 0},
-  { 0,  6, 0, 0, 0},
-  { 0,  7, 0, 0, 0},
-  { 0,  8, 0, 0, 0},
-  { 0,  9, 0, 0, 0},
-  { 0, 10, 0, 0, 0},
-  { 0, 11, 0, 0, 0},
-  { 0, 12, 0, 0, 0},
-  { 0, 13, 0, 0, 0},
-  { 0, 14, 0, 0, 0},
-  { 0, 15, 0, 0, 0},
-  { 0, 16, 0, 0, 0},
-  { 0, 17, 0, 0, 0},
-  { 0, 18, 0, 0, 0},
-  { 0, 19, 0, 0, 0},
-  { 0, 20, 0, 0, 0},
-  { 0, 21, 0, 0, 0},
-  { 0, 22, 0, 0, 0},
+  { 0,  0, 0, 0, 0},  // AREF
+  { 0,  1, 0, 0, 0},  // DAC0/A0
+  { 0,  2, 0, 0, 0},  // A1
+  { 0,  3, 0, 0, 0},  // A2
+  { 0,  4, 0, 0, 0},  // A3
+  { 0,  5, 0, 0, 0},  // A4
+  { 0,  6, 0, 0, 0},  // A5
+  { 0,  7, 0, 0, 0},  // A6
+  { 0,  8, 0, 0, 0},  //  0
+  { 0,  9, 0, 0, 0},  //  1
+  { 0, 10, 0, 0, 0},  //  2
+  { 0, 11, 0, 0, 0},  //  3
+  { 0, 12, 0, 0, 0},  //  4
+  { 0, 13, 0, 0, 0},  //  5
+  { 0, 14, 0, 0, 0},  //  6
+  { 0, 15, 0, 0, 0},  //  7
+  { 0, 16, 0, 0, 0},  //  8 MOSI
+  { 0, 17, 0, 0, 0},  //  9 SCK
+  { 0, 18, 0, 0, 0},  // 10 MISO
+  { 0, 19, 0, 0, 0},  // 11 SDA
+  { 0, 20, 0, 0, 0},  // 12 SCL
+  { 0, 21, 0, 0, 0},  // 13 RX
+  { 0, 22, 0, 0, 0},  // 14 TX
 
   { 1,  0, 0, 0, 0},
   { 1,  1, 0, 0, 0},
@@ -298,15 +298,6 @@ sFpgaIpChn ENC_CHN[] = {
 /**
  * Uart pins definition
  */
-/*
-sFpgaIpPin UART_0_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 0, 1)}, {0, UART_PIN_FNC_RX , PIN(0, 0, 2)},
-};
-sFpgaIpChn UART_0_CHN[] = {
-  {NPIN(UART_0_PIN), UART_0_PIN},
-};
-UART_DEV(UART_0);
-*/
 #define NINA_UART_CHNS 1
 sFpgaIpPin NINA_UART_PIN[] = {
   {0, UART_PIN_FNC_TX , PIN(2, 2, 15)},
@@ -325,21 +316,6 @@ UART_DEV(NINA_UART);
 /**
  * TSPI pins definition
  */
-/*
-sFpgaIpPin TSPI_0_PIN[] = {
-  {0, TSPI_PIN_FNC_MOSI, PIN(3, 0,  3)},
-  {0, TSPI_PIN_FNC_MISO, PIN(0, 0,  7)},
-  {0, TSPI_PIN_FNC_CLK , PIN(3, 0,  4)},
-  {1, TSPI_PIN_FNC_MOSI, PIN(3, 0,  3)},
-  {1, TSPI_PIN_FNC_MISO, PIN(0, 0,  7)},
-  {1, TSPI_PIN_FNC_CLK , PIN(3, 0,  4)},
-  {1, TSPI_PIN_FNC_SS  , PIN(3, 0,  5)},
-};
-sFpgaIpChn TSPI_0_CHN[] = {
-  {NPIN(TSPI_0_PIN), TSPI_0_PIN},
-};
-TSPI_DEV(TSPI_0);
-*/
 #define NINA_TSPI_CHNS 1
 sFpgaIpPin NINA_TSPI_PIN[] = {
   {0, TSPI_PIN_FNC_MOSI, PIN(2, 2, 19)},
@@ -383,7 +359,7 @@ sFpgaIpLoop fpgaIpLoop[] = {
 int fpgaIpLoopNum = (sizeof(fpgaIpLoop)/sizeof(sFpgaIpLoop));
 
 #define FIX_IO_CHNS   21 // TODO
-#define ENC_CHNS      10 // TODO
+#define ENC_CHNS      11 // TODO
 
 
 /**
@@ -428,14 +404,11 @@ sFpgaIp fpgaIp[] = {
    * UART
    */
     {6, IP_DISC(NINA_UART_CHNS, UART_UID), NINA_UART_BASE, NINA_UART_CHN, &NINA_UART_DEV},
-//  {6, IP_DISC(UART_0_CHNS, UART_UID), UART_0_BASE, UART_0_CHN, &UART_0_DEV},
 #endif
   /**
    * TSPI
    */
-//  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), NINA_SPI_BASE, TSPI_0_CHN, &TSPI_0_DEV},
   {7, IP_DISC(NINA_TSPI_CHNS, TSPI_UID), NINA_SPI_BASE, NINA_TSPI_CHN, &NINA_TSPI_DEV},
-//  {7, IP_DISC(TSPI_0_CHNS, TSPI_UID), FLASH_SPI_BASE, 0, NULL},
   {7, IP_DISC(0, 0), FLASH_SPI_BASE, 0, 0},
 
   /**
