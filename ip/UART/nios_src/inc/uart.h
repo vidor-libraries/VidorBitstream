@@ -22,20 +22,13 @@
 #ifndef UART_H_
 #define UART_H_
 
-#define UART_UID 0x01345
-
-#define UART_IP_VER   0x0105
-#define UART_DRV_VER  0x0004
-#define UART_VER (((UART_IP_VER)<<16)|(UART_DRV_VER))
-
-#define UART_0_CHNS 1
-#define UART_1_CHNS 1
-#define UART_2_CHNS 1
-#define UART_3_CHNS 1
-#define UART_4_CHNS 1
-#define UART_5_CHNS 1
-#define UART_6_CHNS 1
-#define UART_7_CHNS 1
+/**
+ * IP configuration
+ */
+#define UART_UID      0x01345
+#define UART_IP_VER   0x0000
+#define UART_DRV_VER  0x0000
+#define UART_VER      (((UART_IP_VER)<<16)|(UART_DRV_VER))
 
 #define UART_PIN_FNC_TX  PIN_FNC(0x01, PIN_DIR_O)
 #define UART_PIN_FNC_RX  PIN_FNC(0x02, PIN_DIR_I)
@@ -44,6 +37,9 @@
 #define UART_PIN_FNC_DTR PIN_FNC(0x05, PIN_DIR_O)
 #define UART_PIN_FNC_DSR PIN_FNC(0x06, PIN_DIR_I)
 
+/**
+ * private data structure definition
+ */
 #include <arduino_16550_uart.h>
 
 typedef struct uart_dev_s{

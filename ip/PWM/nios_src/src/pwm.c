@@ -15,8 +15,6 @@
  * software without disclosing the source code of your own applications. To purchase
  * a commercial license, send an email to license@arduino.cc.
  *
- * @file pwm.c
- * @brief Pulse Width Modulation driver
  */
 
 #include "config.h"

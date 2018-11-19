@@ -1,16 +1,34 @@
-/*
- * gfx.h
+/**
+ * Copyright 2018 ARDUINO SA (http://www.arduino.cc/)
+ * This file is part of Vidor IP.
+ * Copyright (c) 2018
+ * Authors: Massimiliano Agneni
  *
- *  Created on: Apr 11, 2018
- *      Author: max
+ * This software is released under:
+ * The GNU General Public License, which covers the main part of Vidor IP
+ * The terms of this license can be found at:
+ * https://www.gnu.org/licenses/gpl-3.0.en.html
+ *
+ * You can be released from the requirements of the above licenses by purchasing
+ * a commercial license. Buying such a license is mandatory if you want to modify or
+ * otherwise use the software for commercial activities involving the Arduino
+ * software without disclosing the source code of your own applications. To purchase
+ * a commercial license, send an email to license@arduino.cc.
+ *
  */
-
-
 
 #ifndef GFX_H_
 #define GFX_H_
 
 #include <alt_types.h>
+
+/**
+ * IP configuration
+ */
+#define GFX_UID       0x84B11
+#define GFX_IP_VER    0x0000
+#define GFX_DRV_VER   0x0000
+#define GFX_VER       (((GFX_IP_VER)<<16)|(GFX_DRV_VER))
 
 /**
  * configuration options
@@ -28,14 +46,6 @@
 #define GFX_LOGO       0
 #define GFX_LOGO_FILE  "logo.h"
 #define GFX_LOGO_NAME   arduinoLogo
-
-/**
- * IP configuration
- */
-#define GFX_UID 0x84B11
-#define GFX_IP_VER   0x0000
-#define GFX_DRV_VER  0x0004
-#define GFX_VER (((GFX_IP_VER)<<16)|(GFX_DRV_VER))
 
 #define GFX_GC_FMT_ARGB16 1
 #define GFX_GC_FMT_XGRB32 2

@@ -20,19 +20,16 @@
 #ifndef I2C_H_
 #define I2C_H_
 
-#define I2C_BASE  0xa0554
-#define I2C_UID   0x15540
-
-#define I2C_IP_VER   0x0101
-#define I2C_DRV_VER  0x0203
-#define I2C_VER      (((I2C_IP_VER)<<16)|(I2C_DRV_VER))
-
-#define I2C_0_CHNS  1
-#define I2C_1_CHNS  1
+/**
+ * IP configuration
+ */
+#define I2C_UID       0x15540
+#define I2C_IP_VER    0x0000
+#define I2C_DRV_VER   0x0000
+#define I2C_VER       (((I2C_IP_VER)<<16)|(I2C_DRV_VER))
 
 #define I2C_PIN_FNC_SCL PIN_FNC(0x01, PIN_DIR_O)
 #define I2C_PIN_FNC_SDA PIN_FNC(0x02, PIN_DIR_I)
-
 
 void i2cRpc(void);
 

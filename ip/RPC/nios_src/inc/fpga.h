@@ -22,8 +22,11 @@
 #ifndef FPGA_H_
 #define FPGA_H_
 
+/**
+ * IP configuration
+ */
 #define FPGA_UID 0x000000
-#define FPGA_VER 0x01020305
+#define FPGA_VER 0x00000000
 
 void fpgaRpc(void);
 
