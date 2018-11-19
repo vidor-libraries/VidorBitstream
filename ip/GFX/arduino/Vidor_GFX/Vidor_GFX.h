@@ -113,7 +113,6 @@ class Vidor_GFXbuffer {
     void scroll(int delay = 100, ScrollDirection direction = LEFT_TO_RIGHT);
     void noScroll();
     void begin(bool rotate90 = false, bool mirrorX = false, bool mirrorY = false);
-    void mirror();
   private:
     int x;
     int y;
