@@ -1,0 +1,14 @@
+= VidorTwoWire Arduino library
+
+== Constructor
+
+ VidorTwoWire(int _scl, int _sda)
+	* creates the object and caches SCL and SDA pins
+
+== Methods
+
+ int begin()
+ 	* required the pins and initializes the IP core with default parameters (400KHz clock); must be called before performing any operation
+	* returns -1 on failure (if IP core is not present or pins can't be assigned)
+
+All other methods replicate Arduino Wire library. However, VidorTwoWire does not support operating as an I2C slave.
