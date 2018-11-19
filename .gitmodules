@@ -1,0 +1,9 @@
+[submodule "ip/LAUNCHER_INTERNAL"]
+	path = ip/LAUNCHER_INTERNAL
+	url = git@github.com:bcmi-labs/VIDOR_LAUNCHER_INTERNAL_IP.git
+[submodule "ip/SIGN"]
+	path = ip/SIGN
+	url = git@github.com:bcmi-labs/VIDOR_SIGN_IP.git
+[submodule "ip/PACMAN"]
+	path = ip/PACMAN
+	url = git@github.com:bcmi-labs/VIDOR_PACMAN_IP.git
