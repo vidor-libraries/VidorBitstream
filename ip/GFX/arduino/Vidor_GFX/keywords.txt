@@ -1,0 +1,56 @@
+########################################
+# Syntax Coloring Map For ArduinoGFX
+########################################
+
+########################################
+# Datatypes (KEYWORD1)
+########################################
+
+Vidor_GFX	KEYWORD1
+Vidor_GFXbuffer	KEYWORD1
+
+########################################
+# Methods and Functions for Vidor_GFXbuffer (KEYWORD2)
+########################################
+
+begin	KEYWORD2
+scroll	KEYWORD2
+noScroll	KEYWORD2
+mirror	KEYWORD2
+
+########################################
+# Methods and Functions for Vidor_GFX (KEYWORD2)
+########################################
+
+drawPixel	KEYWORD2
+drawLine	KEYWORD2
+drawRect	KEYWORD2
+fillRect	KEYWORD2
+drawCircle	KEYWORD2
+fillCircle	KEYWORD2
+drawChar	KEYWORD2
+
+########################################
+# Methods and Functions for Vidor_text (KEYWORD2)
+########################################
+
+setColor	KEYWORD2
+setAlpha	KEYWORD2
+setFont	KEYWORD2
+setSize	KEYWORD2
+setCursor	KEYWORD2
+
+########################################
+# Constants (LITERAL1)
+########################################
+
+Red	LITERAL1
+Green	LITERAL1
+Blue LITERAL1
+Yellow	LITERAL1
+lightBlue	LITERAL1
+Purple	LITERAL1
+Black	LITERAL1
+Brown	LITERAL1
+White	LITERAL1
+Cross	LITERAL1

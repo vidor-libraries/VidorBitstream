@@ -1,0 +1,56 @@
+= Vidor_GFX Arduino library
+
+== Constructors
+
+ Vidor_GFX()
+	* initialized the IP with default HDMI output
+
+ Vidor_GFX(Vidor_NeoPixel& instance)
+	* initialized the IP using a Neopixel matrix as output
+
+== Methods
+
+ int begin()
+	* initializes the IP core; must be called before performing any operation
+	* returns -1 on failure (if IP core is not present or pins can't be assigned)
+
+ void drawPixel(uint16_t x, uint16_t y, uint32_t color, uint8_t alpha=0xff)
+ void drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint32_t    color, uint8_t alpha=0xff)
+ void drawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color, uint8_t alpha=0xff)
+ void fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color, uint8_t alpha=0xff)
+ void drawCircle(uint16_t x0, uint16_t y0, uint16_t r, uint32_t color, uint8_t alpha=0xff)
+ void fillCircle(uint16_t x0, uint16_t y0, uint16_t r, uint32_t color, uint8_t alpha=0xff)
+	* functions to draw the screen at certain coordinates
+
+== Additional functionalities
+
+=== Text manipulation
+
+ Vidor_GFX().text
+	* base object that implements Print class; this object is automatically created by instantiating the parent class
+
+ void setColor(uint32_t color)
+	* set the font color; color is expressed as 24bit RGB; some predefined colors are available via Green(), Red() and similar APIs
+
+ void setFont(uint32_t idx)
+	* set the font by index. Currently only one font is supported (index #0)
+
+ void setSize(uint16_t size)
+	* set the size of the font. 
+
+ void setCursor(uint16_t x, uint16_t y)
+	* set cursor position on screen
+
+=== Video buffer
+
+ Vidor_GFXbuffer(Vidor_GFX& gfx, int x, int y, bool zigzag)
+	* constructor requires a backing Vidor_GFX object, virtual dimensions of framebuffer and "pixels" arrangement
+
+ void begin(bool rotate90 = false, bool mirrorX = false, bool mirrorY = false)
+	* initialized the framebuffer defining toration and mirroring
+ 
+ void scroll(int delay = 100, ScrollDirection direction = LEFT_TO_RIGHT)
+	* starts a framebuffer scrolling; delay between refresh and direction can be specified
+
+ void noScroll()
+	* stops scrolling
