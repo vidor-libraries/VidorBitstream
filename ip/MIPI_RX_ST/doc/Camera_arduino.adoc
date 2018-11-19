@@ -1,0 +1,50 @@
+= VidorTwoWire Arduino library
+
+== Constructor
+
+ VidorCamera()
+	* creates the camera object
+
+== Methods
+
+ int begin()
+ 	* requires the I2C control interface and MIPI pins; must be called before any operation on the library
+	* returns -1 on failure (if IP core is not present or pins can't be assigned)
+
+ int end()
+ 	* shuts down the camera and the stream
+
+ int enableStream()
+ 	* enable streaming the video to default HDMI output
+
+int disableStream()
+ 	* disables streaming the video to default HDMI output
+
+int modelDetect()
+ 	* detect if the connected camera model is supported
+
+== Additional functionalities
+
+=== QR code markers recognition
+
+ VidorCamera().qrrec
+	* base object that implements VidorQr class; automatically created by instantiating VidorCamera()
+
+ int begin()
+ 	* initializes the QR recognition IP
+ 	* returns -1 on failure (if IP core is not present)
+
+ int end()
+ 	*  deconfigures the IP
+
+ void setThr(uint8_t thr)
+ 	* set recognition threshold
+
+ int readQRCode()
+ 	* read QR code markers relative position; results will be stored in an array accessible with
+ 	  vcam.qrrec.qr.pt[index] with index < 12
+ 	  vcam.qrrec.qr.pt[index].valid signals if the point is valid
+ 	  vcam.qrrec.qr.pt[index].{xs,xe,ys,ye} represent the coordinates of the marker
+
+ void draw(bool enabled)
+ 	* if true, allows the IP to directly draw the markers on screen with an overlay
