@@ -1,7 +1,7 @@
 #!/bin/bash
 
-LIB_NAME=$1
-BASE_FOLDER=`dirname $0`
+PROJECT_NAME=${PWD##*/}
+LIB_NAME=$PROJECT_NAME
 
 for (( i=0; ; i++ ));
 do
@@ -20,8 +20,11 @@ declare -a folders=("Vidor_GFX" "VidorSPI" "VidorI2C" "VidorUART" "VidorEncoder"
 mkdir -p ./distrib/$LIB_NAME/
 rm -rf ./distrib/$LIB_NAME/*
 
-#TODO: temporary, the library will be created at runtime
-cp -a projects/precompiled/$LIB_NAME/* ./distrib/$LIB_NAME/.
+cp -a ./projects/$LIB_NAME/software/arduino/* ./distrib/$LIB_NAME/.
+
+# copy app.ttf and signature.h from build folder
+cp ./projects/$LIB_NAME/build/output_files/app.ttf ./distrib/$LIB_NAME/src/
+cp ./projects/$LIB_NAME/build/output_files/signature.h ./distrib/$LIB_NAME/src/
 
 arraylength=${#libs[@]}
 
@@ -34,7 +37,7 @@ done
 
 for (( i=0; i<${arraylength}; i++ ));
 do
-HAS_LIB=`cat projects/precompiled/$LIB_NAME/src/defines.h | grep ${libs[i]}  | expand | tr -s ' ' | cut -f3 -d' ' `
+HAS_LIB=`cat projects/$LIB_NAME/software/arduino/src/defines.h | grep ${libs[i]}  | expand | tr -s ' ' | cut -f3 -d' ' `
 
 if [ x$HAS_LIB != x ] && [ $HAS_LIB != 0 ]
 then

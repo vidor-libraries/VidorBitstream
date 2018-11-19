@@ -22,3 +22,4 @@ source build_sw.sh
 fi
 quartus_sh --flow compile build/$PROJECT_NAME$LITE
 source create_image.sh
+source assemble_library.sh
