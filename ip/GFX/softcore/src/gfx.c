@@ -62,7 +62,7 @@ GFXgc gfxDefaultGc = {
   16,
   GFX_GC_FMT_ARGB16,
   0xffffffff,
-  (void*)(GFX_FB_BASE | 0x80000000),
+  (void*)0,
   wp16,
   rd16,
   0,
@@ -85,7 +85,7 @@ GFXgc gfxCameraGc = {
   16,
   GFX_GC_FMT_ARGB16,
   0xffffffff,
-  (void*)(GFX_CAM_BASE | 0x80000000),
+  (void*)0,
   wp16,
   rd16, //RDP read pixel
   0,
@@ -188,6 +188,11 @@ void gfxRpc(void)
  */
 alt_u32 gfxSetup(alt_u32 cmd)
 {
+  alt_u8    giid = RPC_GIID(cmd);
+
+  gfxDefaultGc.fb = (void*)((psGfxPriv)(fpgaIp[giid].priv))->cam_base;
+  gfxCameraGc.fb  = (void*)((psGfxPriv)(fpgaIp[giid].priv))->fb_base;
+
 #if defined(NP_GFX) && (NP_GFX == 1)
   int i;
   for (i=0; i<NEOPIXEL_0_CHANNELS; i++) {

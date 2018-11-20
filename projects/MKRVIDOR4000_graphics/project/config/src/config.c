@@ -327,6 +327,13 @@ sFpgaIpChn NINA_TSPI_CHN[] = {
 };
 TSPI_DEV(NINA_TSPI);
 
+/**
+ * GFX private structure definition
+ */
+sGfxPriv gfx_priv = {
+  (SDRAM_ARBITER_BASE + SDRAM_ARBITER_CAM_OFFSET_A * sizeof(short)),
+  (SDRAM_ARBITER_BASE + SDRAM_ARBITER_FB_OFFSET * sizeof(short))
+};
 
 /**
  */
@@ -414,7 +421,7 @@ sFpgaIp fpgaIp[] = {
   /**
    * GFX
    */
-  {8, IP_DISC(0, GFX_UID), 0, 0, NULL},
+  {8, IP_DISC(0, GFX_UID), 0, 0, &gfx_priv},
 
   /**
    * QR
