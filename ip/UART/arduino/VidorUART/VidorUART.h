@@ -68,6 +68,7 @@ class VidorUart : public HardwareSerial, public VidorIP
 };
 
 extern VidorUart SerialEx;
+extern VidorUart SerialExFlowControl;
 extern VidorUart SerialFPGA0;
 extern VidorUart SerialFPGA1;
 extern VidorUart SerialFPGA2;

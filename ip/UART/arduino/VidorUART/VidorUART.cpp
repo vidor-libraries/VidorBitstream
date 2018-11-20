@@ -192,6 +192,7 @@ size_t VidorUart::write(const uint8_t* data, size_t len)
 
 #if FPGA_UART_INTERFACES_COUNT > 0
 VidorUart SerialEx(FPGA_NINA_RX, FPGA_NINA_TX, -1, -1, -1, -1);
+VidorUart SerialExFlowControl(FPGA_NINA_RX, FPGA_NINA_TX, FPGA_NINA_RTS, FPGA_NINA_CTS, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 1
 VidorUart SerialFPGA0(A0, A1, -1, -1, -1, -1);
 #if FPGA_UART_INTERFACES_COUNT > 2
