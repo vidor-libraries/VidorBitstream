@@ -103,9 +103,9 @@ sFpgaPin fpgaPin[] = {
   { 2,  9, 0, 0, 0},  // WM_PIO21  NINA UART CTS    NiNa GPIO21 -> FPGA R6
   { 2, 10, 0, 0, 0},  // WM_PIO27  NINA_GPIO0       NiNa GPIO0  -> FPGA N9
   { 2, 11, 0, 0, 0},  // WM_PIO28  NINA SPI SS      NiNa GPIO5  -> FPGA N11
-  { 2, 12, 0, 0, 0},  //
-  { 2, 13, 0, 0, 0},  //
-  { 2, 14, 0, 0, 0},  //
+  { 2, 12, 0, 0, 0},  // WM_PIO31
+  { 2, 13, 0, 0, 0},  // WM_PIO34
+  { 2, 14, 0, 0, 0},  // WM_PIO35
   { 2, 15, 0, 0, 0},  // NINA UART RX         (64 + 15)
   { 2, 16, 0, 0, 0},  // NINA UART TX         (64 + 16)
   { 2, 17, 0, 0, 0},  //

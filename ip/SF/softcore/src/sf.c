@@ -157,6 +157,7 @@ void sfRpc(void)
 alt_u32 sfSetup(alt_u32 cmd)
 {
   int i;
+
   sfSpiGiid = 0;
   for (i=0; i<GIID_MAX; i++) {
     if (fpgaIp[i].base == FLASH_SPI_BASE) {

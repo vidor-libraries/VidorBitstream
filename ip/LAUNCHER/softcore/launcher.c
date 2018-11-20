@@ -1,12 +1,12 @@
 #include "sf.h"
 
+alt_u32 sfSetup(alt_u32 cmd);
+
 /**
  *
  */
 int main(void)
 {
-  int ret;
-
   // enable quad spi access to flash
   sfSetup(0);
   sfEnableQuad();
