@@ -110,6 +110,9 @@ int VidorUart::getData() {
   uint32_t rpc[256];
   rpc[0] = RPC_CMD(info.giid, info.chn, 8);
   int ret = VidorMailbox.sendCommand(rpc, 1);
+  if (ret > rxBuffer.availableForStore()) {
+    ret = rxBuffer.availableForStore();
+  }
   if (ret > 0) {
     rpc[0] = RPC_CMD(info.giid, info.chn, 7);
     rpc[1] = ret;
@@ -161,7 +164,7 @@ int VidorUart::read(uint8_t* data, size_t len)
   }
 
   if ((int)len > avail) {
-    avail = len;
+    len = avail;
   }
 
   for (size_t i = 0; i < len; i++) {
