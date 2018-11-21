@@ -41,6 +41,7 @@ done
 for (( i=0; i<${arraylength}; i++ ));
 do
 HAS_LIB=`cat projects/$LIB_NAME/software/arduino/src/defines.h | grep ${libs[i]}  | expand | tr -s ' ' | cut -f3 -d' ' `
+REAL_LIB_NAME=`cat projects/$LIB_NAME/software/arduino/library.properties  | grep name= | cut -f2 -d=`
 
 if [ x$HAS_LIB != x ] && [ $HAS_LIB != 0 ]
 then
@@ -50,8 +51,8 @@ then
 		cp -a ${folders[i]}/examples/* ./distrib/$LIB_NAME/examples/.
 	fi
 	case "`uname`" in
-		Darwin*) find ./distrib/$LIB_NAME/examples/ -type f -exec sed -i "" -e "s/_INCLUDE_PARENT_LIB_/include \"${LIB_NAME}.h\"/g" {} \; ;;
-		*) find ./distrib/$LIB_NAME/examples/ -type f -exec sed -i "s/_INCLUDE_PARENT_LIB_/include \"${LIB_NAME}.h\"/g" {} \;
+		Darwin*) find ./distrib/$LIB_NAME/examples/ -type f -exec sed -i "" -e "s/_INCLUDE_PARENT_LIB_/include \"${REAL_LIB_NAME}.h\"/g" {} \; ;;
+		*) find ./distrib/$LIB_NAME/examples/ -type f -exec sed -i "s/_INCLUDE_PARENT_LIB_/include \"${REAL_LIB_NAME}.h\"/g" {} \;
 	esac
 fi
 
