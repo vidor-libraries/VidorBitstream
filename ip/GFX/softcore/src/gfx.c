@@ -190,8 +190,8 @@ alt_u32 gfxSetup(alt_u32 cmd)
 {
   alt_u8    giid = RPC_GIID(cmd);
 
-  gfxDefaultGc.fb = (void*)((psGfxPriv)(fpgaIp[giid].priv))->cam_base;
-  gfxCameraGc.fb  = (void*)((psGfxPriv)(fpgaIp[giid].priv))->fb_base;
+  gfxDefaultGc.fb = (void*)(((psGfxPriv)(fpgaIp[giid].priv))->fb_base  | 0x80000000);
+  gfxCameraGc.fb  = (void*)(((psGfxPriv)(fpgaIp[giid].priv))->cam_base | 0x80000000);
 
 #if defined(NP_GFX) && (NP_GFX == 1)
   int i;
