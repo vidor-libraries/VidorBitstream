@@ -1052,7 +1052,7 @@
   <parameter name="instruction_master_high_performance_paddr_size" value="0" />
   <parameter name="instruction_master_paddr_base" value="0" />
   <parameter name="instruction_master_paddr_size" value="0" />
-  <parameter name="internalIrqMaskSystemInfo" value="7" />
+  <parameter name="internalIrqMaskSystemInfo" value="1" />
   <parameter name="io_regionbase" value="0" />
   <parameter name="io_regionsize" value="0" />
   <parameter name="master_addr_map" value="false" />
@@ -1795,20 +1795,6 @@
    start="nios2_gen2_0.irq"
    end="timer_0.irq">
   <parameter name="irqNumber" value="0" />
- </connection>
- <connection
-   kind="interrupt"
-   version="18.0"
-   start="nios2_gen2_0.irq"
-   end="nina_spi.irq">
-  <parameter name="irqNumber" value="1" />
- </connection>
- <connection
-   kind="interrupt"
-   version="18.0"
-   start="nios2_gen2_0.irq"
-   end="NEOPIXEL_0.irq">
-  <parameter name="irqNumber" value="2" />
  </connection>
  <connection
    kind="reset"
