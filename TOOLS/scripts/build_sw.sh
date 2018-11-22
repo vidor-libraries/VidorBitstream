@@ -41,10 +41,11 @@ ELF_NAME=$PROJECT_NAME$LITE.elf
 OPTIMIZATION_LEVEL="-Os"
 if [ "x"$LITE == "x" ]; then
   LDFLAGS_USER="-Wl,-gc-sections"
+  CFLAGS_USER="-fdata-sections -ffunction-sections"
 else
   LDFLAGS_USER="-Wl,-gc-sections -Wl,-ustartup"
+  CFLAGS_USER="-fdata-sections -ffunction-sections -DFREE_VERSION=1"
 fi
-CFLAGS_USER="-fdata-sections -ffunction-sections"
 APP_FLAGS="--set APP_CFLAGS_OPTIMIZATION $OPTIMIZATION_LEVEL --set APP_CFLAGS_USER_FLAGS $CFLAGS_USER --set APP_LDFLAGS_USER $LDFLAGS_USER"
 
 if [ -f scripts/bsp_settings.sh ]; then
