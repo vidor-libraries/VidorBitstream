@@ -24,7 +24,7 @@ BSP_FLAGS=" \
 --set hal.enable_sopc_sysid_check 1 \
 --set hal.enable_sim_optimize $SIMULATION_OPTIMIZED_SUPPORT \
 --set hal.make.bsp_cflags_optimization $OPTIMIZATION_LEVEL \
---set hal.linker.allow_code_at_reset 1 \
+--set hal.linker.allow_code_at_reset 0 \
 --set hal.linker.enable_alt_load 1 \
 --set hal.linker.enable_alt_load_copy_exceptions 1 \
 --set hal.linker.enable_alt_load_copy_rodata 0 \
@@ -61,6 +61,8 @@ BSP_FLAGS=" \
 --cmd add_section_mapping .data qspi_avl_mem \
 --cmd add_section_mapping .stack onchip_memory2_0  \
 "
+
+
 
 if [ "x"$LITE == "x" ]; then
 EXTRA_FLAGS=" \
