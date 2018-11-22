@@ -214,7 +214,12 @@ assign iFLASH_MISO = !wQSPI_OE&wQSPI_DATAOE[1]&!wQSPI_NCS ? wQSPI_DATAOUT[1] : 1
 assign oFLASH_MOSI = !wQSPI_OE&wQSPI_DATAOE[0]&!wQSPI_NCS ? wQSPI_DATAOUT[0] : wFLASH_CS ? 1'bz : wFLASH_MOSI;
 assign oFLASH_CS   = wQSPI_NCS & wFLASH_CS;
 
+`ifndef FREE_VERSION
 MKRVIDOR4000_peripherals_sys u0(
+`else
+MKRVIDOR4000_peripherals_lite_sys u0(
+`endif
+
     .clk_clk                (wMEM_CLK),       //      clk.clk
     .reset_reset_n          (rRESETCNT[5]),   // reset.reset_n
 //    .vid_clk                (wVID_CLK),       //   vid.clk
@@ -272,6 +277,7 @@ MKRVIDOR4000_peripherals_sys u0(
     .encoder_encoder_a      ({bMKR_D[13],bMKR_D[11],bMKR_D[9],bMKR_D[7],bMKR_D[5],bMKR_D[3],bMKR_D[1],bMKR_A[6],bMKR_A[4],bMKR_A[2],bMKR_A[0]}), //    encoder.encoder_a
     .encoder_encoder_b      ({bMKR_D[14],bMKR_D[12],bMKR_D[10],bMKR_D[8],bMKR_D[6],bMKR_D[4],bMKR_D[2],bMKR_D[0],bMKR_A[5],bMKR_A[3],bMKR_A[1]}),		//           .encoder_b
 
+`ifndef FREE_VERSION
     .uart0_ctl_cts_n   (wUART0_CTS),   // uart0_ctl.cts_n
     .uart0_ctl_rts_n   (wUART0_RTS),   //          .rts_n
     .uart0_ctl_dsr_n   (wUART0_DSR),   //          .dsr_n
@@ -335,6 +341,7 @@ MKRVIDOR4000_peripherals_sys u0(
     .uart7_ctl_dtr_n   (wUART7_DTR),   //          .dtr_n
     .uart7_sin         (wUART7_RX),    //     uart1.sin
     .uart7_sout        (wUART7_TX),    //          .sout
+`endif
 
     .i2c0_scl_i        (wI2C0_SCL_I),         //      i2c0.scl_i
     .i2c0_scl_o        (wI2C0_SCL_O),         //          .scl_o
@@ -424,7 +431,7 @@ assign wSAM_OEN2 = { {8{1'b1}},
                             {17{1'b1}},
                             1'b0 };
 
-
+`ifndef FREE_VERSION
 assign {
       wI2C2_SDA_I,wI2C2_SCL_I,
       wI2C1_SDA_I,wI2C1_SCL_I,
@@ -451,6 +458,18 @@ assign wSAM_OUT2[23:1]={
             wUART3_DTR,wUART1_TX,
             wUART1_RTS,wUART0_TX,
             };
+`else
+assign {
+      wI2C2_SDA_I,wI2C2_SCL_I,
+      wI2C1_SDA_I,wI2C1_SCL_I,
+      wI2C0_SDA_I,wI2C0_SCL_I} = wSAM_PIO_IN[23:1];
+
+assign wSAM_OUT2[23:1]={
+            wI2C2_SDA_O,wI2C2_SCL_O,
+            wI2C1_SDA_O,wI2C1_SCL_O,
+            wI2C0_SDA_O,wI2C0_SCL_O
+            };
+`endif
 
 /* assign wSAM_OEN3[2:1] = { wI2C3_SDA_E, wI2C3_SCL_E}; */
 assign wSAM_OEN3={ {29{1'b1}}, wI2C3_SDA_E, wI2C3_SCL_E,1'b0};
