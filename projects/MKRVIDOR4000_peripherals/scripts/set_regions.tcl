@@ -1,0 +1,2 @@
+add_section_mapping .text2 onchip_memory2_0
+add_section_mapping .data2 onchip_memory2_0
