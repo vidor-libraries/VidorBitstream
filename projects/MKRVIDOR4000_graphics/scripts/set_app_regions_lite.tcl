@@ -14,5 +14,7 @@ set new_span [expr $span-$split_span]
 set split_offset [expr $offset+$new_span]
 # Create two memory regions out of the original region.
 add_memory_region reserved $slave_desc $offset $new_span
-add_memory_region qspi_avl_mem $slave_desc $split_offset $split_span
+add_memory_region startup $slave_desc $split_offset 4
+add_memory_region qspi_avl_mem $slave_desc [expr $split_offset +4] [expr $split_span -4]
 delete_section_mapping .data
+add_section_mapping .startup startup

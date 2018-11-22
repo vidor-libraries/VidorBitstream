@@ -51,7 +51,6 @@ BSP_FLAGS=" \
 --set hal.stdin none \
 --set hal.stdout none \
 --set hal.sys_clk_timer none \
---script scripts/set_app_regions.tcl \
 --cmd set_driver none qspi \
 --cmd set_driver none flash_spi \
 --cmd add_section_mapping .rwdata onchip_memory2_0 \
@@ -64,13 +63,17 @@ BSP_FLAGS=" \
 --cmd add_section_mapping .stack onchip_memory2_0  \
 "
 
+
+
 if [ "x"$LITE == "x" ]; then
 EXTRA_FLAGS=" \
+--script scripts/set_app_regions.tcl \
 --set altera_vic_driver.linker_section .rwdata \
 --cmd enable_sw_package UART \
 "
 else
 EXTRA_FLAGS="\
+--script scripts/set_app_regions_lite.tcl \
 --set hal.make.bsp_cflags_user_flags \
 -DFREE_VERSION=1 \
 "

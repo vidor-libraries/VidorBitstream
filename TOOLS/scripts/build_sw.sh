@@ -39,7 +39,11 @@ SOPC_INFO="./build/"$PROJECT_NAME$LITE"_sys.sopcinfo"
 # Various
 ELF_NAME=$PROJECT_NAME$LITE.elf
 OPTIMIZATION_LEVEL="-Os"
-LDFLAGS_USER="-Wl,-gc-sections -Wl,-ustartup"
+if [ "x"$LITE == "x" ]; then
+  LDFLAGS_USER="-Wl,-gc-sections"
+else
+  LDFLAGS_USER="-Wl,-gc-sections -Wl,-ustartup"
+fi
 CFLAGS_USER="-fdata-sections -ffunction-sections"
 APP_FLAGS="--set APP_CFLAGS_OPTIMIZATION $OPTIMIZATION_LEVEL --set APP_CFLAGS_USER_FLAGS $CFLAGS_USER --set APP_LDFLAGS_USER $LDFLAGS_USER"
 
@@ -151,4 +155,3 @@ cmd="make mem_init_generate --directory=$APP_DIR"
 $cmd || {
     echo "make failed"
 }
-
