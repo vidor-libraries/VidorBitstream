@@ -11,7 +11,6 @@ BSP_FLAGS=" \
 --cmd enable_sw_package RPC \
 --cmd enable_sw_package TMR \
 --cmd enable_sw_package GFX \
---cmd enable_sw_package QRCODE_FINDER \
 --set hal.enable_c_plus_plus 0 \
 --set hal.enable_clean_exit 0 \
 --set hal.enable_exit 0 \
@@ -25,7 +24,7 @@ BSP_FLAGS=" \
 --set hal.enable_sopc_sysid_check 1 \
 --set hal.enable_sim_optimize $SIMULATION_OPTIMIZED_SUPPORT \
 --set hal.make.bsp_cflags_optimization $OPTIMIZATION_LEVEL \
---set hal.linker.allow_code_at_reset 1 \
+--set hal.linker.allow_code_at_reset 0 \
 --set hal.linker.enable_alt_load 1 \
 --set hal.linker.enable_alt_load_copy_exceptions 1 \
 --set hal.linker.enable_alt_load_copy_rodata 0 \
@@ -51,7 +50,6 @@ BSP_FLAGS=" \
 --set hal.stdin none \
 --set hal.stdout none \
 --set hal.sys_clk_timer none \
---script scripts/set_app_regions.tcl \
 --cmd set_driver none qspi \
 --cmd set_driver none flash_spi \
 --cmd add_section_mapping .rwdata onchip_memory2_0 \
@@ -64,13 +62,17 @@ BSP_FLAGS=" \
 --cmd add_section_mapping .stack onchip_memory2_0  \
 "
 
+
+
 if [ "x"$LITE == "x" ]; then
 EXTRA_FLAGS=" \
+--script scripts/set_app_regions.tcl \
 --set altera_vic_driver.linker_section .rwdata \
 --cmd enable_sw_package UART \
 "
 else
 EXTRA_FLAGS="\
+--script scripts/set_app_regions_lite.tcl \
 --set hal.make.bsp_cflags_user_flags \
 -DFREE_VERSION=1 \
 "

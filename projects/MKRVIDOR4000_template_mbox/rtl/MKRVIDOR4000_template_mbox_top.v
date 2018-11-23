@@ -179,7 +179,11 @@ assign iFLASH_MISO = !wQSPI_OE&wQSPI_DATAOE[1]&!wQSPI_NCS ? wQSPI_DATAOUT[1] : 1
 assign oFLASH_MOSI = !wQSPI_OE&wQSPI_DATAOE[0]&!wQSPI_NCS ? wQSPI_DATAOUT[0] : wFLASH_CS ? 1'bz : wFLASH_MOSI;
 assign oFLASH_CS   = wQSPI_NCS & wFLASH_CS;
 
+`ifndef FREE_VERSION
 MKRVIDOR4000_template_mbox_sys u0(
+`else
+MKRVIDOR4000_template_mbox_lite_sys u0(
+`endif
 		.clk_clk                (wMEM_CLK),               //      clk.clk
 		.reset_reset_n          (rRESETCNT[5]), // reset.reset_n
 		.clk_0_clk              (wFLASH_CLK),

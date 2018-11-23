@@ -19,6 +19,8 @@
  * @brief FPGA configuration
  */
 
+#include <stdio.h>
+
 #include "config.h"
 #include "fpga.h"
 
@@ -190,6 +192,7 @@ sFpgaIpRpc fpgaIpRpc[] = {
   {pioRpc , PIO_VER     },
   {pwmRpc , PWM_VER     },
 };
+#endif
 
 sFpgaIpLoop fpgaIpLoop[] = {
 };

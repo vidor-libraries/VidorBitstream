@@ -61,6 +61,8 @@
 #include "Vidor_GFX.h"
 #endif
 
+#include "VidorIO.h"
+
 class VidorFPGA : public VidorUtils, public VidorIOContainer {
 	// get all methods from Utils
   // wrap VidorIO so the user can call
