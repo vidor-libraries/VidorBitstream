@@ -312,35 +312,35 @@ sFpgaIpChn NINA_UART_CHN[] = {
 UART_DEV(NINA_UART);
 
 sFpgaIpPin UART_0_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 1)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 2)},
+  {0, UART_PIN_FNC_TX , PIN(2, 0, 1)}, {0, UART_PIN_FNC_RX , PIN(0, 0, 2)},
 };
 sFpgaIpChn UART_0_CHN[] = {
   {NPIN(UART_0_PIN), UART_0_PIN},
 };
 UART_DEV(UART_0);
 sFpgaIpPin UART_1_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 3)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 4)},
-  {1, UART_PIN_FNC_TX , PIN(2, 1, 3)}, {1, UART_PIN_FNC_RX , PIN(0, 1, 4)},
-  {1, UART_PIN_FNC_RTS, PIN(2, 1, 2)}, {1, UART_PIN_FNC_CTS, PIN(0, 1, 1)},
+  {0, UART_PIN_FNC_TX , PIN(2, 0, 3)}, {0, UART_PIN_FNC_RX , PIN(0, 0, 4)},
+  {1, UART_PIN_FNC_TX , PIN(2, 0, 3)}, {1, UART_PIN_FNC_RX , PIN(0, 0, 4)},
+  {1, UART_PIN_FNC_RTS, PIN(2, 0, 2)}, {1, UART_PIN_FNC_CTS, PIN(0, 0, 1)},
 };
 sFpgaIpChn UART_1_CHN[] = {
   {NPIN(UART_1_PIN), UART_1_PIN},
 };
 UART_DEV(UART_1);
 sFpgaIpPin UART_2_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 5)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 6)},
+  {0, UART_PIN_FNC_TX , PIN(2, 0, 5)}, {0, UART_PIN_FNC_RX , PIN(0, 0, 6)},
 };
 sFpgaIpChn UART_2_CHN[] = {
   {NPIN(UART_2_PIN), UART_2_PIN},
 };
 UART_DEV(UART_2);
 sFpgaIpPin UART_3_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 7)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 8)},
-  {1, UART_PIN_FNC_TX , PIN(2, 1, 7)}, {1, UART_PIN_FNC_RX , PIN(0, 1, 8)},
-  {1, UART_PIN_FNC_RTS, PIN(2, 1, 6)}, {1, UART_PIN_FNC_CTS, PIN(0, 1, 5)},
-  {2, UART_PIN_FNC_TX , PIN(2, 1, 7)}, {2, UART_PIN_FNC_RX , PIN(0, 1, 8)},
-  {2, UART_PIN_FNC_RTS, PIN(2, 1, 6)}, {2, UART_PIN_FNC_CTS, PIN(0, 1, 5)},
-  {2, UART_PIN_FNC_DTR, PIN(2, 1, 4)}, {2, UART_PIN_FNC_DSR, PIN(0, 1, 3)},
+  {0, UART_PIN_FNC_TX , PIN(2, 0, 7)}, {0, UART_PIN_FNC_RX , PIN(0, 0, 8)},
+  {1, UART_PIN_FNC_TX , PIN(2, 0, 7)}, {1, UART_PIN_FNC_RX , PIN(0, 0, 8)},
+  {1, UART_PIN_FNC_RTS, PIN(2, 0, 6)}, {1, UART_PIN_FNC_CTS, PIN(0, 0, 5)},
+  {2, UART_PIN_FNC_TX , PIN(2, 0, 7)}, {2, UART_PIN_FNC_RX , PIN(0, 0, 8)},
+  {2, UART_PIN_FNC_RTS, PIN(2, 0, 6)}, {2, UART_PIN_FNC_CTS, PIN(0, 0, 5)},
+  {2, UART_PIN_FNC_DTR, PIN(2, 0, 4)}, {2, UART_PIN_FNC_DSR, PIN(0, 0, 3)},
 };
 sFpgaIpChn UART_3_CHN[] = {
   {NPIN(UART_3_PIN), UART_3_PIN},
@@ -354,28 +354,28 @@ sFpgaIpChn UART_4_CHN[] = {
 };
 UART_DEV(UART_4);
 sFpgaIpPin UART_5_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 11)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 12)},
-  {1, UART_PIN_FNC_TX , PIN(2, 1, 11)}, {1, UART_PIN_FNC_RX , PIN(0, 1, 12)},
-  {1, UART_PIN_FNC_RTS, PIN(2, 1, 10)}, {1, UART_PIN_FNC_CTS, PIN(0, 1,  9)},
+  {0, UART_PIN_FNC_TX , PIN(2, 0, 11)}, {0, UART_PIN_FNC_RX , PIN(0, 0, 12)},
+  {1, UART_PIN_FNC_TX , PIN(2, 0, 11)}, {1, UART_PIN_FNC_RX , PIN(0, 0, 12)},
+  {1, UART_PIN_FNC_RTS, PIN(2, 0, 10)}, {1, UART_PIN_FNC_CTS, PIN(0, 0,  9)},
 };
 sFpgaIpChn UART_5_CHN[] = {
   {NPIN(UART_5_PIN), UART_5_PIN},
 };
 UART_DEV(UART_5);
 sFpgaIpPin UART_6_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 13)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 14)},
+  {0, UART_PIN_FNC_TX , PIN(2, 0, 13)}, {0, UART_PIN_FNC_RX , PIN(0, 0, 14)},
 };
 sFpgaIpChn UART_6_CHN[] = {
   {NPIN(UART_6_PIN), UART_6_PIN},
 };
 UART_DEV(UART_6);
 sFpgaIpPin UART_7_PIN[] = {
-  {0, UART_PIN_FNC_TX , PIN(2, 1, 15)}, {0, UART_PIN_FNC_RX , PIN(0, 1, 16)},
-  {1, UART_PIN_FNC_TX , PIN(2, 1, 15)}, {1, UART_PIN_FNC_RX , PIN(0, 1, 16)},
-  {1, UART_PIN_FNC_RTS, PIN(2, 1, 14)}, {1, UART_PIN_FNC_CTS, PIN(0, 1, 13)},
-  {2, UART_PIN_FNC_TX , PIN(2, 1, 15)}, {2, UART_PIN_FNC_RX , PIN(0, 1, 16)},
-  {2, UART_PIN_FNC_RTS, PIN(2, 1, 14)}, {2, UART_PIN_FNC_CTS, PIN(0, 1, 13)},
-  {2, UART_PIN_FNC_DTR, PIN(2, 1, 12)}, {2, UART_PIN_FNC_DSR, PIN(0, 1, 11)},
+  {0, UART_PIN_FNC_TX , PIN(2, 0, 15)}, {0, UART_PIN_FNC_RX , PIN(0, 0, 16)},
+  {1, UART_PIN_FNC_TX , PIN(2, 0, 15)}, {1, UART_PIN_FNC_RX , PIN(0, 0, 16)},
+  {1, UART_PIN_FNC_RTS, PIN(2, 0, 14)}, {1, UART_PIN_FNC_CTS, PIN(0, 0, 13)},
+  {2, UART_PIN_FNC_TX , PIN(2, 0, 15)}, {2, UART_PIN_FNC_RX , PIN(0, 0, 16)},
+  {2, UART_PIN_FNC_RTS, PIN(2, 0, 14)}, {2, UART_PIN_FNC_CTS, PIN(0, 0, 13)},
+  {2, UART_PIN_FNC_DTR, PIN(2, 0, 12)}, {2, UART_PIN_FNC_DSR, PIN(0, 0, 11)},
 };
 sFpgaIpChn UART_7_CHN[] = {
   {NPIN(UART_7_PIN), UART_7_PIN},
