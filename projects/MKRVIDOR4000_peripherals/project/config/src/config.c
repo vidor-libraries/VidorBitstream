@@ -39,30 +39,30 @@
  * FPGA pins assignment
  */
 sFpgaPin fpgaPin[] = {
-  //port pin giid chn lock
-  { 0,  0, 0, 0, 0},  // AREF
-  { 0,  1, 0, 0, 0},  // DAC0/A0
-  { 0,  2, 0, 0, 0},  // A1
-  { 0,  3, 0, 0, 0},  // A2
-  { 0,  4, 0, 0, 0},  // A3
-  { 0,  5, 0, 0, 0},  // A4
-  { 0,  6, 0, 0, 0},  // A5
-  { 0,  7, 0, 0, 0},  // A6
-  { 0,  8, 0, 0, 0},  //  0
-  { 0,  9, 0, 0, 0},  //  1
-  { 0, 10, 0, 0, 0},  //  2
-  { 0, 11, 0, 0, 0},  //  3
-  { 0, 12, 0, 0, 0},  //  4
-  { 0, 13, 0, 0, 0},  //  5
-  { 0, 14, 0, 0, 0},  //  6
-  { 0, 15, 0, 0, 0},  //  7
-  { 0, 16, 0, 0, 0},  //  8 MOSI
-  { 0, 17, 0, 0, 0},  //  9 SCK
-  { 0, 18, 0, 0, 0},  // 10 MISO
-  { 0, 19, 0, 0, 0},  // 11 SDA
-  { 0, 20, 0, 0, 0},  // 12 SCL
-  { 0, 21, 0, 0, 0},  // 13 RX
-  { 0, 22, 0, 0, 0},  // 14 TX
+  //port pin giid chn lock                OUT 2        OUT 3
+  { 0,  0, 0, 0, 0},        // AREF
+  { 0,  1, 0, 0, 0},        // DAC0/A0    wUART0_TX    wI2C3_SCL_O
+  { 0,  2, 0, 0, 0},        // A1         wUART1_RTS   wI2C3_SDA_O
+  { 0,  3, 0, 0, 0},        // A2         wUART1_TX    wSPI0_MOSI
+  { 0,  4, 0, 0, 0},        // A3         wUART3_DTR   wSPI0_SCK
+  { 0,  5, 0, 0, 0},        // A4         wUART2_TX    wSPI0_CS
+  { 0,  6, 0, 0, 0},        // A5         wUART3_RTS   wSPI1_MOSI
+  { 0,  7, 0, 0, 0},        // A6         wUART3_TX    wNPIX[0]
+  { 0,  8, 0, 0, 0},        //  0         wUART5_DTR   wNPIX[1]
+  { 0,  9, 0, 0, 0},        //  1         wUART4_TX    wSPI1_SCK
+  { 0, 10, 0, 0, 0},        //  2         wUART5_RTS   wSPI1_CS
+  { 0, 11, 0, 0, 0},        //  3         wUART5_TX    wSPI2_MOSI
+  { 0, 12, 0, 0, 0},        //  4         wUART7_DTR   wSPI2_SCK
+  { 0, 13, 0, 0, 0},        //  5         wUART6_TX    wSPI2_CS
+  { 0, 14, 0, 0, 0},        //  6         wUART7_RTS   wSPI3_MOSI
+  { 0, 15, 0, 0, 0},        //  7         wUART7_TX    wNPIX[2]
+  { 0, 16, 0, 0, 0},        //  8 MOSI    wUART1_DTR   wNPIX[3]
+  { 0, 17, 0, 0, 0},        //  9 SCK     wI2C0_SCL_O  wSPI3_SCK
+  { 0, 18, 0, 0, 0},        // 10 MISO    wI2C0_SDA_O  wSPI3_CS
+  { 0, 19, 0, 0, 0},        // 11 SDA     wI2C1_SCL_O  wSPI4_MOSI
+  { 0, 20, 0, 0, 0},        // 12 SCL     wI2C1_SDA_O  wNPIX[4]
+  { 0, 21, 0, 0, 0},        // 13 RX      wI2C2_SCL_O  wSPI4_SCK
+  { 0, 22, 0, 0, 0},        // 14 TX      wI2C2_SDA_O  wSPI4_CS
 
   { 1,  0, 0, 0, 0},
   { 1,  1, 0, 0, 0},
