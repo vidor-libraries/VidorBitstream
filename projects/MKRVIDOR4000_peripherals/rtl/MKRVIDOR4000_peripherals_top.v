@@ -466,9 +466,9 @@ assign wSAM_OUT2[23:1]={
 assign {
       wI2C2_SDA_I,wI2C2_SCL_I,
       wI2C1_SDA_I,wI2C1_SCL_I,
-      wI2C0_SDA_I,wI2C0_SCL_I} = wSAM_PIO_IN[23:1];
+      wI2C0_SDA_I,wI2C0_SCL_I} = wSAM_PIO_IN[23:16];
 
-assign wSAM_OUT2[23:1]={
+assign wSAM_OUT2[23:16]={
             wI2C2_SDA_O,wI2C2_SCL_O,
             wI2C1_SDA_O,wI2C1_SCL_O,
             wI2C0_SDA_O,wI2C0_SCL_O
