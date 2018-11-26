@@ -700,7 +700,7 @@
   <parameter name="instruction_master_high_performance_paddr_size" value="0" />
   <parameter name="instruction_master_paddr_base" value="0" />
   <parameter name="instruction_master_paddr_size" value="0" />
-  <parameter name="internalIrqMaskSystemInfo" value="20" />
+  <parameter name="internalIrqMaskSystemInfo" value="16" />
   <parameter name="io_regionbase" value="10485760" />
   <parameter name="io_regionsize" value="0" />
   <parameter name="master_addr_map" value="false" />
@@ -1113,13 +1113,6 @@
    start="flash_clk.clk"
    end="qspi.clock_sink" />
  <connection kind="clock" version="18.0" start="clk.clk" end="mb.clock_sink" />
- <connection
-   kind="interrupt"
-   version="18.0"
-   start="nios2_gen2_0.irq"
-   end="nina_spi.irq">
-  <parameter name="irqNumber" value="2" />
- </connection>
  <connection
    kind="interrupt"
    version="18.0"
