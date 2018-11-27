@@ -31,12 +31,6 @@
 #define GFX_VER       (((GFX_IP_VER)<<16)|(GFX_DRV_VER))
 
 /**
- * configuration options
- */
-#define GFX_FB_WIDTH    640
-#define GFX_FB_HEIGHT   480
-
-/**
  * private data structure definition
  */
 typedef struct {
@@ -44,6 +38,11 @@ typedef struct {
   alt_u32   fb_base;
 }sGfxPriv, *psGfxPriv;
 
+/**
+ * configuration options
+ */
+#define GFX_FB_WIDTH    640
+#define GFX_FB_HEIGHT   480
 
 #define GFX_FONTS 1
 #define GFX_FONT_FILE   "Org_01.h"
@@ -53,6 +52,8 @@ typedef struct {
 #define GFX_LOGO       0
 #define GFX_LOGO_FILE  "logo.h"
 #define GFX_LOGO_NAME   arduinoLogo
+
+
 
 #define GFX_GC_FMT_ARGB16 1
 #define GFX_GC_FMT_XGRB32 2

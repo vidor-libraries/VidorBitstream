@@ -25,9 +25,7 @@
 
 #include "config.h"
 #include "mb.h"
-#if defined(NP_GFX) && (NP_GFX == 1)
 #include "np.h"
-#endif
 #include "gfx.h"
 
 #define _swap_int16_t(a,b) {int16_t t=a; a=b; b=t;}

@@ -1,23 +1,46 @@
-=GFX IP RPC
+= GFX IP RPC
+
+[%autowidth]
+|=====================================================================================================
+|Type    | software module
+|UID     | 0x84B11
+|Version | 0.0.0.0
+|Channel | specify the graphic context (see Note 1)
+|=====================================================================================================
+
+[Note 1]
+The channel field in RPC command identify graphic context as follow: +
+0 - video out; +
+1 - camera in; +
+the following numbers identify the neopixel graphic context, 2 is first string as assigned in config.
 
 
 == Configuration options
+
+.Private data structure
+[%autowidth]
+|=====================================================================================================
+^|Field ^|Type ^|Description
+
+|cam_base | unsigned 32bit | store camera frame buffer address
+|fb_base  | unsigned 32bit | store video out frame buffer address
+
+|=====================================================================================================
+
 
 .Options
 [%autowidth]
 |=====================================================================================================
 ^|Option ^|Default ^|Description
 
-^|GFX_FB_WIDTH   |640 |
-^|GFX_FB_HEIGHT  |480 |
-^|GFX_CAM_BASE   |SDRAM_ARBITER_BASE + SDRAM_ARBITER_CAM_OFFSET_A * sizeof(short) |
-^|GFX_FB_BASE    |SDRAM_ARBITER_BASE + SDRAM_ARBITER_FB_OFFSET * sizeof(short) |
-^|GFX_FONTS      |1         |
-^|GFX_FONT_FILE  |Org_01.h  |
-^|GFX_FONT_NAME  |Org_01    |
-^|GFX_LOGO       |1         |
-^|GFX_LOGO_FILE  |logo.h    |
-^|GFX_LOGO_NAME  |arduinoLogo |
+|GFX_FB_WIDTH   |640 |
+|GFX_FB_HEIGHT  |480 |
+|GFX_FONTS      |1         |
+|GFX_FONT_FILE  |Org_01.h  |
+|GFX_FONT_NAME  |Org_01    |
+|GFX_LOGO       |0         |
+|GFX_LOGO_FILE  |logo.h    |
+|GFX_LOGO_NAME  |arduinoLogo |
 |=====================================================================================================
 
 
@@ -46,3 +69,7 @@
 ^|18 ^|drawCharAtCursor ^|Char                  |RetCod
 |=====================================================================================================
 
+
+== Setup
+Initialize graphic contexts for camera and video out, if it is defined GFX_LOGO draw the logo specified by GFX_LOGO_NAME and GFX_LOGO_FILE. +
+If it is defined NP_GFX in Neopixel module setup also start a graphic context for each neopixel string defined by NEOPIXEL_0_CHANNELS.
