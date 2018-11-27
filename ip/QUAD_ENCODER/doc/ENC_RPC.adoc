@@ -7,7 +7,7 @@
 |UID         | 0x0D645
 |IP Version  | 0.0
 |DRV Version | 0.0
-|Channel     | specify the pin to send commands to
+|Channel     | specify the encoder to send commands to
 |=====================================================================================================
 
 .Commands

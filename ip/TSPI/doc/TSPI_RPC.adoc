@@ -10,6 +10,7 @@
 |Channel     | unused
 |=====================================================================================================
 
+== Commands
 .Commands
 [%autowidth]
 |=====================================================================================================
@@ -23,7 +24,7 @@
 
 |=====================================================================================================
 
-== tspiModeSet
+=== tspiModeSet
 Set spi mode.
 .Parameters
 [%autowidth]
@@ -36,8 +37,8 @@ Set spi mode.
 |ss_auto   |Set SS manual or auto handling
 |=====================================================================================================
 
-== tspiTrx
+=== tspiTrx
 Start len byte transaction, return bytes read from SPI.
 
-== tspiByte
+=== tspiByte
 Start one byte transaction, return byte read from SPI.

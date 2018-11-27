@@ -44,8 +44,7 @@ the following numbers identify the neopixel graphic context, 2 is first string a
 |GFX_LOGO_NAME  |arduinoLogo |
 |=====================================================================================================
 
-
-== GFX RPC
+== Commands
 
 .Commands
 [%autowidth]
@@ -71,6 +70,6 @@ the following numbers identify the neopixel graphic context, 2 is first string a
 |=====================================================================================================
 
 
-== Setup
+=== Setup
 Initialize graphic contexts for camera and video out, if it is defined GFX_LOGO draw the logo specified by GFX_LOGO_NAME and GFX_LOGO_FILE. +
 If it is defined NP_GFX in Neopixel module setup also start a graphic context for each neopixel string defined by NEOPIXEL_0_CHANNELS.

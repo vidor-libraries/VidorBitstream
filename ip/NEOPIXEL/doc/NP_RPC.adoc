@@ -11,13 +11,7 @@
 |Channel     | specifies the string to send command to
 |=====================================================================================================
 
-.Module configuration
-Dependencies +
-GFX needed to use graphic commands. +
-TMR needed from npSeqSet and npBufScroll. +
-
 == Configuration options
-
 
 .Private data structure
 [%autowidth]
@@ -34,40 +28,45 @@ TMR needed from npSeqSet and npBufScroll. +
 |=====================================================================================================
 ^|Option ^|Default ^|Description
 
-|NP_USE_TMR   |1                             |
-|NP_GFX       |1                             |
-|NP_CLOCK     |ALT_CPU_FREQ / 1G             |
+|NP_USE_TMR   |1                    |Enable scroll and sequence functions
+|NP_GFX       |1                    |Enable graphic to draw
+|NP_CLOCK     |ALT_CPU_FREQ / 1G    |Used to calculate timings
 |=====================================================================================================
 
+== Dependencies
+GFX needed to use graphic commands. +
+TMR needed from npSeqSet and npBufScroll.
+
+== Commands
 .Commands
 [%autowidth]
 |=====================================================================================================
 ^|Cmd ^|Description ^|Parameters ^|Return
 
-^|2  ^|Setup       ^|leds, type, len, zzf, zzl, flg |RetCod
-^|4  ^|End         ^|none                           |RetCod
-^|5  ^|npTmgSet    ^|frq, trst, t0h, t1h, ttot      |RetCod
-^|6  ^|npLedSet    ^|led, r, g, b, w                |RetCod
-^|7  ^|npBrgSet    ^|brightness                     |RetCod
-^|8  ^|npLedShow   ^|offset                         |RetCod
-^|9  ^|npWrapSet   ^|sAdr, wCnt, wAdr               |RetCod
-^|10 ^|npSeqSet    ^|pSeq                           |RetCod
-^|11 ^|npBufScroll ^|flg, buf, time                 |RetCod
+^|2  |Setup       |leds, type, len, zzf, zzl, flg |RetCod
+^|4  |End         |none                           |RetCod
+^|5  |npTmgSet    |frq, trst, t0h, t1h, ttot      |RetCod
+^|6  |npLedSet    |led, r, g, b, w                |RetCod
+^|7  |npBrgSet    |brightness                     |RetCod
+^|8  |npLedShow   |offset                         |RetCod
+^|9  |npWrapSet   |sAdr, wCnt, wAdr               |RetCod
+^|10 |npSeqSet    |pSeq                           |RetCod
+^|11 |npBufScroll |flg, buf, time                 |RetCod
 |=====================================================================================================
 
-== Setup
+=== Setup
 
 .Setup parameters
 [%autowidth]
 |=====================================================================================================
 ^|Parameter      ^|Description
 
-^|leds |Number of Leds
-^|type |Type of Led
-^|len  |Buffer total length, must be greater than or equal of leds number
-^|zzf  |ZigZag flag (1: enable, 0: disable)
-^|zzl  |ZigZag Len, number of leds after which revert addressing
-^|flg  |Flag to pass to gfx for framebuffer
+|leds |Number of Leds
+|type |Type of Led
+|len  |Buffer total length, must be greater than or equal of leds number
+|zzf  |ZigZag flag (1: enable, 0: disable)
+|zzl  |ZigZag Len, number of leds after which revert addressing
+|flg  |Flag to pass to gfx for framebuffer
 |=====================================================================================================
 
 === Type
@@ -90,48 +89,48 @@ If the red offset and the white offest is the same the led strip accept 24bit co
 
 
 
-== NpTmgSet
+=== NpTmgSet
 
 .NpTmgSet Parameters
 [%autowidth]
 |======================================================================================================
 ^|Parameter      ^|Description
 
-^|frq  |Frequecy for which apply followings parameters
-^|trst |Reset time
-^|t0h  |Zero high time
-^|t1h  |One High time
-^|ttot |Total time
+|frq  |Frequecy for which apply followings parameters
+|trst |Reset time
+|t0h  |Zero high time
+|t1h  |One High time
+|ttot |Total time
 |======================================================================================================
 
 [NOTE]
-all time are in ns.
+All time are in ns.
 
-== NpLedSet
+=== NpLedSet
 
 .NpLedSet Parametrs
 [%autowidth]
 |======================================================================================================
 ^|Parameter      ^|Description
 
-^|led |Number of led to set
-^|r   |Red component
-^|g   |Green component
-^|b   |Blu component
-^|w   |White component for Neopixel, Gain for APA
+|led |Number of led to set
+|r   |Red component
+|g   |Green component
+|b   |Blu component
+|w   |White component for Neopixel, Gain for APA
 |======================================================================================================
 
 
-== NpBrgSet
+=== NpBrgSet
 .NpBrgSet Parameters
 [%autowidth]
 |======================================================================================================
 ^|Parameter      ^|Description
 
-^|brightness |Brightness, apply to all subsequent Led Set
+|brightness |Brightness, apply to all subsequent Led Set
 |======================================================================================================
 
-== NpLedShow
+=== NpLedShow
 Refresh Leds
 
 .NpLedShow Parameters
@@ -139,27 +138,27 @@ Refresh Leds
 |======================================================================================================
 ^|Parameter      ^|Description
 
-^| offset |Address from which to start rendering
+| offset |Address from which to start rendering
 |======================================================================================================
 
-== NpWrapSet
+=== NpWrapSet
 .NpWrapSet Parameters
 [%autowidth]
 |======================================================================================================
 ^|Parameter      ^|Description
 
-^|sAdr |Start address
-^|wCnt |Wrap address
-^|wAdr |Address where jump after wCnt
+|sAdr |Start address
+|wCnt |Wrap address
+|wAdr |Address where jump after wCnt
 |======================================================================================================
 
-== NpSeqSet
+=== NpSeqSet
 .NpSeqSet Parameters
 [%autowidth]
 |======================================================================================================
 ^|Parameter      ^|Description
 
-^|pSeq            |Pointer to sequence struct
+|pSeq            |Pointer to sequence struct
 |======================================================================================================
 
 sequence struct
@@ -175,14 +174,27 @@ typedef struct {
   }         seq[64];
 }sNpSeq, *psNpSeq;
 
-== NpBufScroll
+=== NpBufScroll
 .NpBufScroll Parameters
 [%autowidth]
 |======================================================================================================
 ^|Parameter      ^|Description
 
-^|flg  |
-^|buf  |
-^|time |
+|flg  | See table 13
+|buf  | not used
+|time | time in ms between iteraction
 |======================================================================================================
 
+
+.Sequence and scroll Parameters
+[%autowidth]
+|======================================================================================================
+^|Memonic             ^|Value     ^|Description
+
+|NP_SEQ_FLG_START      |0x00000001 | Start a sequence
+|NP_SEQ_FLG_STOP       |0x00000002 | Stop a sequence or scroll
+|NP_SEQ_FLG_SINGLE     |0x00000004 | Perform a sequence only once
+|NP_SEQ_FLG_LOOP       |0x00000008 | Perform a sequence continuosly
+|NP_SEQ_FLG_BUF_LOOP   |0x00000010 | Start a scroll
+|NP_SEQ_FLG_INV_LOOP   |0x00000020 | Invert scroll direction
+|======================================================================================================

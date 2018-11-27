@@ -10,6 +10,7 @@
 |Channel     | unused
 |=====================================================================================================
 
+== Commands
 .Commands
 [%autowidth]
 |=====================================================================================================
@@ -26,7 +27,7 @@
 ^|11 ^|uartFlush ^|none         |RetCod
 |=====================================================================================================
 
-== uartSet
+=== uartSet
 
 .uartSet parameters
 [%autowidth]
@@ -54,20 +55,20 @@
 |DATA_8       |0x400
 |=====================================================================================================
 
-== uartGet
+=== uartGet
 Return first character stored in RX FIFO.
 
-== uartRead
+=== uartRead
 Return up to len characteer from RX FIFO
 
-== uartAvail
+=== uartAvail
 Return number of charcters stored in RX FIFO.
 
-== uartPut
+=== uartPut
 Put a character in TX FIFO.
 
-== uartWrite
+=== uartWrite
 Store len character in TX FIFO, if no space return number of characters copied.
 
-== uartFlush
+=== uartFlush
 Clear RX and TX FIFO.

@@ -10,33 +10,58 @@
 |Channel     | not used
 |=====================================================================================================
 
+The qrLoop read the status register of the ip to check if markers have been found in the analyzed frame if at least one marker has been found read all the stored markers from IP then collct row to calculate vertical value and store them in the structure to return to user.
 
-.Commands
+== Configuration options
+
+.Options
+[%autowidth]
+|=====================================================================================================
+^|Option ^|Default ^|Description
+
+|QR_CNT_MAX    |1000 |Number of IP queries after which give INVALID QRCODE
+|QR_PT_NUM     |100  |Number of points to be evaluated
+|QR_PT_DET_NUM |12   |Number of point to return to User
+|QR_USE_GFX    |1    |Enable use GFX to draw crosses
+|=====================================================================================================
+
+== Dependencies
+GFX needed to draw the crosses.
+
+== Commands
 [%autowidth]
 |=====================================================================================================
 ^|Cmd ^|Description ^|Parameters ^|Return
 
-^|2 ^|Setup    ^|none                   |RetCod
-^|4 ^|End      ^|none                   |RetCod
-^|5 ^|qrEnable ^|1 Enable; 0 Disable    |RetCod
-^|6 ^|qrMode   ^|Display mode           |RetCod
-^|7 ^|qrGet    ^|none                   |RetCod, status and coordinates
-^|8 ^|qrThrSet ^|Treshold               |RetCod
-^|9 ^|qrDraw   ^|1 Enable cross drawing |RetCod
+^|2 |Setup    |none                   |RetCod
+^|4 |End      |none                   |RetCod
+^|5 |qrEnable |1 Enable; 0 Disable    |RetCod
+^|6 |qrMode   |Display mode           |RetCod
+^|7 |qrGet    |none                   |RetCod, status and coordinates
+^|8 |qrThrSet |Treshold Set           |RetCod
+^|9 |qrDraw   |1 Enable cross drawing |RetCod
 |=====================================================================================================
 
+== qrEnable
+Enable qr code detection.
+
+== qrMode
+Set display mode on video out.
 
 .Display mode
 [%autowidth]
 |=====================================================================================================
 ^|Value ^|Description
-^|0     ^|bypass
-^|1     ^|gray scale and enhanced edge
-^|2     ^|test
-^|3     ^|edge
+
+|0      |bypass
+|1      |gray scale and enhanced edge
+|2      |test
+|3      |edge
 |=====================================================================================================
 
 
+== qrGet
+Return a data structure containg acquired data as follow:
 
 Struct returned by qrGet command
 typedef struct{
@@ -50,4 +75,9 @@ typedef struct{
 	}pt[12];
 }sQrDet, *psQrDet;
 
+== qrThrSet
+Set threshold.
+
+== qrDraw
+Enable cross drawing on acquired markers.
 
