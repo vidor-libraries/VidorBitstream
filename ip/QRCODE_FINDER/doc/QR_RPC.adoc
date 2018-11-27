@@ -1,6 +1,15 @@
-=QRCODE FINDER IP RPC
+= QRCODE FINDER IP RPC
 
-== QRCODE FINDER
+.Module Definition
+[%autowidth]
+|=====================================================================================================
+|Type        | driver module
+|UID         | 0xA2C68
+|IP Version  | 0.0
+|DRV Version | 0.0
+|Channel     | not used
+|=====================================================================================================
+
 
 .Commands
 [%autowidth]

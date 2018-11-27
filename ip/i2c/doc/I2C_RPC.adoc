@@ -1,6 +1,14 @@
-=I2C IP RPC
+= I2C RPC
 
-== I2C RPC
+.Module Definition
+[%autowidth]
+|=====================================================================================================
+|Type        | driver module
+|UID         | 0x15540
+|IP Version  | 0.0
+|DRV Version | 0.0
+|Channel     | unused
+|=====================================================================================================
 
 .Commands
 [%autowidth]
@@ -9,7 +17,7 @@
 
 ^|2 ^|i2cSetup ^|baud               |RetCod
 ^|4 ^|i2cEnd   ^|none               |RetCod
-^|5 ^|i2cRead  ^|address, len, data |RetCod, len data read
+^|5 ^|i2cRead  ^|address, len, data |RetCod, len, data read
 ^|6 ^|i2cWrite ^|address, len, data |RetCod
 |=====================================================================================================
 

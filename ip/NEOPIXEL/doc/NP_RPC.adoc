@@ -1,23 +1,39 @@
-=NEOPIXEL IP RPC
+= NEOPIXEL IP RPC
 
-== NEOPIXEL RPC
+
 .Module Definition
-UID 0xa0894
+[%autowidth]
+|=====================================================================================================
+|Type        | driver module
+|UID         | 0xA0894
+|IP Version  | 0.0
+|DRV Version | 0.0
+|Channel     | specifies the string to send command to
+|=====================================================================================================
 
 .Module configuration
-Dependencies
-GFX
-TMR needed from npSeqSet and npBufScroll
+Dependencies +
+GFX needed to use graphic commands. +
+TMR needed from npSeqSet and npBufScroll. +
 
 == Configuration options
+
+
+.Private data structure
+[%autowidth]
+|=====================================================================================================
+^|Field ^|Type ^|Description
+
+|mem_base | unsigned 32bit | memory base address to store LEDs colors
+|mem_size | unsigned 32bit | memory size
+
+|=====================================================================================================
 
 .Options
 [%autowidth]
 |=====================================================================================================
 ^|Option ^|Default ^|Description
 
-|NP_MEM_BASE  |SDRAM_ARBITER_BASE + 0x1C2000 |
-|NP_MEM_SIZE  |SDRAM_ARBITER_SPAN - 0x1C2000 |
 |NP_USE_TMR   |1                             |
 |NP_GFX       |1                             |
 |NP_CLOCK     |ALT_CPU_FREQ / 1G             |
@@ -55,16 +71,23 @@ TMR needed from npSeqSet and npBufScroll
 |=====================================================================================================
 
 === Type
-32bit integer the LSB byte is color format that carry color component offset in a 32bit word color definition as follow
-bit
-0-1 blue offet in byte
-2-3 green offet in byte
-4-5 red offet in byte
-6-7 white offet in byte
-if the red offset and the white offest is the same the led strip accept 24bit commands if these offset are different, the strip has white led and accept the 32bit commands.
+32bit integer the LSB byte is color format that carry color component offset in a 32bit word color definition as follow:
 
-bit 9 is frequency
-bit 16-31 is for APA mode
+[%autowidth]
+|======================================================================================================
+|bit   |description
+
+|0-1   |blue offet in byte
+|2-3   |green offet in byte
+|4-5   |red offet in byte
+|6-7   |white offet in byte
+|9     |frequency: 0-800KHz; 1-400KHz
+|16-31 |APA mode
+|======================================================================================================
+
+[NOTE]
+If the red offset and the white offest is the same the led strip accept 24bit commands if these offset are different, the strip has white led and accept the 32bit commands.
+
 
 
 == NpTmgSet

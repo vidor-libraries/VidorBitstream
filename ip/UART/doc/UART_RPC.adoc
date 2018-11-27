@@ -1,6 +1,14 @@
-=UART IP RPC
+= UART IP RPC
 
-== UART RPC
+.Module Definition
+[%autowidth]
+|=====================================================================================================
+|Type        | driver module
+|UID         | 0x01345
+|IP Version  | 0.0
+|DRV Version | 0.0
+|Channel     | unused
+|=====================================================================================================
 
 .Commands
 [%autowidth]
@@ -25,8 +33,8 @@
 |=====================================================================================================
 ^|Parameter      ^|Description
 
-^|Baud   |
-^|config |bitfield
+^|Baud   |uart speed
+^|config |bitfield configuration (See Table 4)
 |=====================================================================================================
 
 .config
@@ -46,3 +54,20 @@
 |DATA_8       |0x400
 |=====================================================================================================
 
+== uartGet
+Return first character stored in RX FIFO.
+
+== uartRead
+Return up to len characteer from RX FIFO
+
+== uartAvail
+Return number of charcters stored in RX FIFO.
+
+== uartPut
+Put a character in TX FIFO.
+
+== uartWrite
+Store len character in TX FIFO, if no space return number of characters copied.
+
+== uartFlush
+Clear RX and TX FIFO.

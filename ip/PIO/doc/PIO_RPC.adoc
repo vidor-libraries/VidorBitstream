@@ -1,12 +1,20 @@
-=PIO IP RPC
+= PIO IP RPC
 
-== PIO RPC
 .Module Definition
-IO ports UID 0xE0C45
-Fixed porst UID 0xE0C46
+[%autowidth]
+|=====================================================================================================
+|Type        | driver module
+|UID         | 0xE0C45
+|IP Version  | 0.0
+|DRV Version | 0.0
+|Channel     | specify the pin to send commands to
+|=====================================================================================================
 
-Fixed ports are specific for project.
-
+[Note]
+For all devices connected to the FPGA that have fixed pins another
+specific ip is defined with UID 0xE0C46. +
+This device cannot be used from user. +
+Fixed pins are specific for project.
 
 .Commands
 [%autowidth]

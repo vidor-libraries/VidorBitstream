@@ -19,16 +19,11 @@
 #include <string.h>
 #include <system.h>
 
-#define SF_RPC_CMD        1
-#define SF_USE_QSPI       1
-#define SF_SECURITY_CMDS  1
-
+#include "sf.h"
 #if defined(SF_RPC_CMD) && (SF_RPC_CMD == 1)
   #include "mb.h"
 #endif /* defined(SF_RPC_CMD) && (SF_RPC_CMD == 1) */
-
 #include "tspi.h"
-#include "sf.h"
 
 
 #if defined(SF_USE_QSPI) && (SF_USE_QSPI == 1)

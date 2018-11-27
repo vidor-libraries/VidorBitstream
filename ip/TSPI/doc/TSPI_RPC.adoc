@@ -1,17 +1,43 @@
-=TSPI IP RPC
+= TSPI IP RPC
 
-== TSPI RPC
+.Module Definition
+[%autowidth]
+|=====================================================================================================
+|Type        | driver module
+|UID         | 0xEBCE5
+|IP Version  | 0.0
+|DRV Version | 0.0
+|Channel     | unused
+|=====================================================================================================
 
 .Commands
 [%autowidth]
 |=====================================================================================================
 ^|Cmd ^|Description ^|Parameters ^|Return
 
-^|2 ^|Setup ^|none               |RetCod
-^|4 ^|End   ^|none               |RetCod
-^|5 ^|Tspi mode set        ^|Baud, mode, bit_order, ss_auto |RetCod
-^|6 ^|Tspi buffer transfer ^|Len, Buffer                    |RetCod, len, data read
-^|7 ^|Tspi byte transfer   ^|byte                           |Byte read
+^|2 |Setup       |none                           |RetCod
+^|4 |End         |none                           |RetCod
+^|5 |tspiModeSet |Baud, mode, bit_order, ss_auto |RetCod
+^|6 |tspiTrx     |Len, Buffer                    |RetCod, len, data read
+^|7 |tspiByte    |byte                           |Byte read
 
 |=====================================================================================================
 
+== tspiModeSet
+Set spi mode.
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Description
+
+|Baud      |SPI speed
+|mode      |SPI mode, can be 0, 1, 2 or 3.
+|bit_order |not used
+|ss_auto   |Set SS manual or auto handling
+|=====================================================================================================
+
+== tspiTrx
+Start len byte transaction, return bytes read from SPI.
+
+== tspiByte
+Start one byte transaction, return byte read from SPI.

@@ -27,6 +27,14 @@
 #define SF_DRV_VER   0x0000
 #define SF_VER       (((SF_IP_VER)<<16)|(SF_DRV_VER))
 
+/**
+ * configuration options
+ */
+#define SF_RPC_CMD        1
+#define SF_USE_QSPI       1
+#define SF_SECURITY_CMDS  1
+
+
 #include <alt_types.h>
 
 void sfRpc(void);

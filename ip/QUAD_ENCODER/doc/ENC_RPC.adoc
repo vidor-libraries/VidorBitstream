@@ -1,8 +1,14 @@
-=QUAD ENCODER IP RPC
+= QUAD ENCODER IP RPC
 
-== QUAD ENCODER RPC
 .Module Definition
-UID 0x0D645
+[%autowidth]
+|=====================================================================================================
+|Type        | driver module
+|UID         | 0x0D645
+|IP Version  | 0.0
+|DRV Version | 0.0
+|Channel     | specify the pin to send commands to
+|=====================================================================================================
 
 .Commands
 [%autowidth]

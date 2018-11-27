@@ -1,5 +1,6 @@
-= GFX IP RPC
+= GFX SW RPC
 
+.Module Definition
 [%autowidth]
 |=====================================================================================================
 |Type    | software module
