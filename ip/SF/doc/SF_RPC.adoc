@@ -1,0 +1,164 @@
+= SF SW RPC
+
+.Module Definition
+[%autowidth]
+|=====================================================================================================
+|Type    | software module
+|UID     | 0x5A5D6
+|Version | 0.0.0.0
+|Channel | not used
+|=====================================================================================================
+
+== Configuration options
+
+
+.Options
+[%autowidth]
+|=====================================================================================================
+^|Option ^|Default ^|Description
+
+|SF_RPC_CMD       |1 |Enable user RPC commands
+|SF_USE_QSPI      |1 |Use QSPI instead of SPI to access to FLASH
+|SF_SECURITY_CMDS |1 |Enable security commands
+|=====================================================================================================
+
+== Dependencies
+TSPI needed to access to SPI FLASH.
+
+== Commands
+
+.Commands
+[%autowidth]
+|=====================================================================================================
+^|Cmd ^|Description ^|Parameters ^|Return
+
+^| 2 |Setup        |none                  |RetCod
+^| 4 |End          |none                  |RetCod
+^| 5 |sfJedecId    |none                  |RetCod
+^| 6 |sfUniqueId   |none                  |RetCod, uid
+^| 7 |sfErase      |mode, adr             |RetCod
+^| 8 |sfProgram    |adr, len, data        |RetCod
+^| 9 |sfRead       |adr, len              |RetCod, len, data
+^|10 |sfSRErase    |reg                   |RetCod
+^|11 |sfSRProgram  |reg, adr, len, data   |RetCod
+^|12 |sfSRLock     |reg                   |RetCod
+^|13 |sfSRRead     |reg, adr, len         |RetCod, len, data
+^|14 |sfProtect    |none                  |RetCod
+^|15 |sfEnableQuad |none                  |RetCod
+|=====================================================================================================
+
+
+=== Setup
+Search for TSPI that have base address equal to FLASH_SPI_BASE
+and set it as SPI device for module.
+
+=== sfJedecId
+Return Manufacturer ID, Device ID byte 1 and byte 2 in a 32bit word.
+
+=== sfUniqueId
+Return Manufacturer UID 8 byte string.
+
+=== sfErase
+Erase FLASH.
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Description
+
+|mode |2-Erase 64KB sector; 3-Erase chip
+|adr  |used ony for mode=2, any address within the sector to be erased
+|=====================================================================================================
+
+=== sfProgram
+Program FLASH device.
+
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Description
+
+|adr  |Start address
+|len  |Bytes to write
+|data |Data to write
+|=====================================================================================================
+
+=== sfRead
+Read from FLASH device.
+
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Description
+
+|adr  |Start address
+|len  |Bytes to read
+|=====================================================================================================
+.Return
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Description
+
+|adr  |Start address
+|len  |Bytes readed
+|data |Data readed
+|=====================================================================================================
+
+=== sfSRErase
+Erase security register.
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Description
+
+|reg  | Register to erase.
+|=====================================================================================================
+
+=== sfSRProgram
+Program security register.
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Description
+
+|reg  |Register to program
+|adr  |Start address
+|len  |Bytes to write
+|data |Data to write
+|=====================================================================================================
+
+=== sfSRLock
+Lock a security register, Can't be unlocked.
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Description
+
+|reg  |Register to lock.
+|=====================================================================================================
+
+=== sfSRRead
+Read from security register.
+.Parameters
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Description
+
+|reg  |Register to read.
+|adr  |Start address
+|len  |Bytes to read
+|=====================================================================================================
+.Return
+[%autowidth]
+|=====================================================================================================
+^|Parameter      ^|Description
+
+|adr  |Start address
+|len  |Bytes readed
+|data |Data readed
+|=====================================================================================================
+
+=== sfProtect
+Protect first 512KB.
+
+=== sfEnableQuad
+Enable quad mode.

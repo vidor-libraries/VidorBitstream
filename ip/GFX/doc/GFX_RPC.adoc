@@ -9,7 +9,7 @@
 |Channel | specify the graphic context (see Note 1)
 |=====================================================================================================
 
-[Note 1]
+[NOTE]
 The channel field in RPC command identify graphic context as follow: +
 0 - video out; +
 1 - camera in; +

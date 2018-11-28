@@ -10,7 +10,7 @@
 |Channel     | specify the pin to send commands to
 |=====================================================================================================
 
-[Note]
+[NOTE]
 For all devices connected to the FPGA that have fixed pins another
 specific ip is defined with UID 0xE0C46. +
 This device cannot be used from user. +
@@ -28,9 +28,20 @@ Fixed pins are specific for project.
 ^|7 ^|Read    ^|none          |Value of pin
 |=====================================================================================================
 
-== Gpio Mode
+=== PinMode
+Set pin configuration
 
-.Gpio mux mode
+.PinMode Parameters
+[%autowidth]
+|======================================================================================================
+^|Parameter      ^|Description
+
+^|Mux |Mux Mode (See Table 4)
+^|Dir |Direction of pin in GPIO mode: 1-Out; 0-In.
+^|Val |Value to set to pin when in output mode
+|======================================================================================================
+
+.Mux mode
 [%autowidth]
 |=====================================================================================================
 ^|Value     ^|Description
@@ -43,3 +54,9 @@ Fixed pins are specific for project.
 
 [NOTE]
 AUX1 and AUX2 are specific for FPGA release.
+
+=== Write
+Write value on pin.
+
+=== Read
+Return value of pin.
