@@ -1,175 +1,86 @@
-diff -Naur arduino_16550_uart/HAL/inc/arduino_16550_uart.h arduino_16550_uart_mod/HAL/inc/arduino_16550_uart.h
---- arduino_16550_uart/HAL/inc/arduino_16550_uart.h	2018-08-22 23:07:15.466113700 +0200
-+++ arduino_16550_uart_mod/HAL/inc/arduino_16550_uart.h	2018-08-22 23:03:13.419576900 +0200
-@@ -64,7 +64,7 @@
-  * Since the maximun size of HW FIFO available to set is 128, so the ring buffer
-  * size need bigger than HW FIFO size.
-  */
--#define ALT_16550_UART_BUF_LEN (256)
-+#define ALT_16550_UART_BUF_LEN (32)
- 
- /*
-  * ALT_16550_UART_BUF_MSK is used as an internal convenience for detecting
-@@ -77,7 +77,7 @@
-  *
-  * An instance of this structure is created in the auto-generated
-  * alt_sys_init.c file for each UART listed in the systems SOPCINFO file. This is
-- * done using the ALTERA_16550_UART_STATE_INSTANCE macro given below.
-+ * done using the ARDUINO_16550_UART_STATE_INSTANCE macro given below.
-  */
- 
- typedef enum stopbit      { STOPB_1 = 0,STOPB_2 } StopBit;
-@@ -115,7 +115,7 @@
-   alt_u8	temt:1;
-   alt_u8	rfe:1;
- }line_status_reg;
--typedef struct altera_16550_uart_state_s
-+typedef struct arduino_16550_uart_state_s
- {
-  alt_dev               dev;
-  void*                 base;                 /* The base address of the device */
-@@ -128,7 +128,7 @@
-  volatile alt_u32      tx_end;               /* End of the pending transmit data */
-  alt_u32               freq;                 /* Current clock freq rate */
-  UartConfig            config;               /* Uart setting */
-- #ifdef ALTERA_16550_UART_USE_IOCTL
-+ #ifdef ARDUINO_16550_UART_USE_IOCTL
-  struct termios        termios;
-  #endif
-  alt_u32               flags;                /* Configuration flags */
-@@ -139,36 +139,37 @@
-                                               * read buffer in multi-threaded mode */
-  ALT_SEM              (write_lock)           /* Semaphore used to control access to the
-                                               * write buffer in multi-threaded mode */
-- volatile wchar_t      rx_buf[ALT_16550_UART_BUF_LEN]; /* The receive buffer */
-- volatile wchar_t      tx_buf[ALT_16550_UART_BUF_LEN]; /* The transmit buffer */
-+volatile alt_u8       rx_buf[ALT_16550_UART_BUF_LEN]; /* The receive buffer */
-+volatile alt_u8       tx_buf[ALT_16550_UART_BUF_LEN]; /* The transmit buffer */
- line_status_reg	      line_status; /* line register status for the current read byte data of RBR or data at the top of FIFO*/
- alt_u8                error_ignore; /* received data will be discarded
- for the current read byte data of RBR or data at the top of FIFO if pe, fe and bi errors detected after error_ignore is set to '0' */
--} altera_16550_uart_state;
-+} arduino_16550_uart_state;
- 
--alt_u32 alt_16550_uart_config(altera_16550_uart_state* sp, UartConfig *setting);
--int altera_16550_uart_close(altera_16550_uart_state* sp, int flags);
--altera_16550_uart_state* altera_16550_uart_open (const char *name);
--int altera_16550_uart_read(altera_16550_uart_state* sp, wchar_t* ptr, int len, int flags);
--int altera_16550_uart_write(altera_16550_uart_state* sp, const wchar_t* ptr, int len, int flags);
-+alt_u32 alt_16550_uart_config(arduino_16550_uart_state* sp, UartConfig *setting);
-+int arduino_16550_uart_close(arduino_16550_uart_state* sp, int flags);
-+arduino_16550_uart_state* arduino_16550_uart_open (const char *name);
-+int arduino_16550_uart_read(arduino_16550_uart_state* sp, alt_u8* ptr, int len, int flags);
-+int arduino_16550_uart_write(arduino_16550_uart_state* sp, const alt_u8* ptr, int len, int flags);
-+void arduino_16550_uart_flush(arduino_16550_uart_state* sp);
- 
- /*
-- * The macro ALTERA_16550_UART_INSTANCE is used by the auto-generated file
-+ * The macro ARDUINO_16550_UART_INSTANCE is used by the auto-generated file
-  * alt_sys_init.c to create an instance of this device driver state.
-  */
+diff -Naur arduino_16550_uart/arduino_16550_uart_hw.tcl arduino_16550_uart_mod/arduino_16550_uart_hw.tcl
+--- arduino_16550_uart/arduino_16550_uart_hw.tcl	2018-11-29 13:30:10.136770249 +0100
++++ arduino_16550_uart_mod/arduino_16550_uart_hw.tcl	2018-11-29 13:38:58.924765644 +0100
+@@ -16,7 +16,7 @@
+ # ------------------------------------------------------------------------------
+ # Module altera_16550_uart
+ # ------------------------------------------------------------------------------
+-set_module_property NAME                           altera_16550_uart
++set_module_property NAME                           arduino_16550_uart
+ set_module_property VERSION                        18.1
+ set_module_property DISPLAY_NAME                   "16550 Compatible UART Intel FPGA IP"
+ set_module_property DESCRIPTION                    "UART with run-time configurability and 16550 compatible register space"
+diff -Naur arduino_16550_uart/arduino_16550_uart_sw.tcl arduino_16550_uart_mod/arduino_16550_uart_sw.tcl
+--- arduino_16550_uart/arduino_16550_uart_sw.tcl	2018-11-29 13:30:10.136770249 +0100
++++ arduino_16550_uart_mod/arduino_16550_uart_sw.tcl	2018-11-29 13:39:42.708765263 +0100
+@@ -1,25 +1,25 @@
+ # (C) 2001-2018 Intel Corporation. All rights reserved.
+-# Your use of Intel Corporation's design tools, logic functions and other 
+-# software and tools, and its AMPP partner logic functions, and any output 
+-# files from any of the foregoing (including device programming or simulation 
+-# files), and any associated documentation or information are expressly subject 
+-# to the terms and conditions of the Intel Program License Subscription 
+-# Agreement, Intel FPGA IP License Agreement, or other applicable 
+-# license agreement, including, without limitation, that your use is for the 
+-# sole purpose of programming logic devices manufactured by Intel and sold by 
+-# Intel or its authorized distributors.  Please refer to the applicable 
++# Your use of Intel Corporation's design tools, logic functions and other
++# software and tools, and its AMPP partner logic functions, and any output
++# files from any of the foregoing (including device programming or simulation
++# files), and any associated documentation or information are expressly subject
++# to the terms and conditions of the Intel Program License Subscription
++# Agreement, Intel FPGA IP License Agreement, or other applicable
++# license agreement, including, without limitation, that your use is for the
++# sole purpose of programming logic devices manufactured by Intel and sold by
++# Intel or its authorized distributors.  Please refer to the applicable
+ # agreement for further details.
  
  
--typedef int (*ALTERA_16550_UART_OPEN)  (alt_fd* fd, const char* name, int flags, int mode);
--typedef int (*ALTERA_16550_UART_CLOSE) (alt_fd* fd);
-+typedef int (*ARDUINO_16550_UART_OPEN)  (alt_fd* fd, const char* name, int flags, int mode);
-+typedef int (*ARDUINO_16550_UART_CLOSE) (alt_fd* fd);
+ #
+-# altera_16550_uart_driver.tcl
++# arduino_16550_uart_driver.tcl
+ #
  
--#define ALTERA_16550_UART_STATE_INSTANCE(name, state) \
--  altera_16550_uart_state state =            \
-+#define ARDUINO_16550_UART_STATE_INSTANCE(name, state) \
-+  arduino_16550_uart_state state =            \
- {                                   \
-  {                                  \
-        ALT_LLIST_ENTRY,             \
-        name##_NAME,                 \
--       ((ALTERA_16550_UART_OPEN)(altera_16550_uart_open)),      \
--       ((ALTERA_16550_UART_CLOSE)(altera_16550_uart_close)),     \
-+       ((ARDUINO_16550_UART_OPEN)(arduino_16550_uart_open)),      \
-+       ((ARDUINO_16550_UART_CLOSE)(arduino_16550_uart_close)),     \
-        NULL,                        \
-        NULL,                        \
-        NULL,                        \
-@@ -180,19 +181,19 @@
-        name##_FIFO_MODE,            \
- }
- /*
-- * altera_avalon_uart_init() is called by the auto-generated function
-+ * arduino_avalon_uart_init() is called by the auto-generated function
-  * alt_sys_init() for each UART in the system. This is done using the
-- * ALTERA_16550_UART_INIT macro given below.
-+ * ARDUINO_16550_UART_INIT macro given below.
-  *
-  * This function is responsible for performing all the run time initilisation
-  * for a device instance, i.e. registering the interrupt handler, and
-  * regestering the device with the system.
-  */
--extern void altera_16550_uart_init(altera_16550_uart_state* sp,
-+extern void arduino_16550_uart_init(arduino_16550_uart_state* sp,
-  alt_u32 irq_controller_id, alt_u32 irq);
+ # Create a new driver
+-create_driver altera_16550_uart_driver
++create_driver arduino_16550_uart_driver
  
- /*
-- * The macro ALTERA_16550_UART_STATE_INIT is used by the auto-generated file
-+ * The macro ARDUINO_16550_UART_STATE_INIT is used by the auto-generated file
-  * alt_sys_init.c to initialize an instance of the device driver state.
-  *
-  * This macro performs a sanity check to ensure that the interrupt has been
-@@ -200,7 +201,7 @@
-  * generated at build time.
-  */
+-# Associate it with some hardware known as "altera_16550_uart"
+-set_sw_property hw_class_name altera_16550_uart
++# Associate it with some hardware known as "arduino_16550_uart"
++set_sw_property hw_class_name arduino_16550_uart
  
--#define ALTERA_16550_UART_STATE_INIT(name, state)                    \
-+#define ARDUINO_16550_UART_STATE_INIT(name, state)                    \
-  if (name##_IRQ == ALT_IRQ_NOT_CONNECTED)                            \
-  {                                                                   \
-   ALT_LINK_ERROR ("Error: Interrupt not connected for " #name ". "   \
-@@ -214,30 +215,30 @@
-  }                                                                   \
-  else                                                                \
-  {                                                                   \
--  altera_16550_uart_init(&state, name##_IRQ_INTERRUPT_CONTROLLER_ID, \
-+  arduino_16550_uart_init(&state, name##_IRQ_INTERRUPT_CONTROLLER_ID, \
-    name##_IRQ);                                                      \
-  }
+ # The version of this driver
+ set_sw_property version 18.1
+@@ -49,17 +49,17 @@
+ #
  
- /*
-  * Include in case non-direct version of driver required.
-  */
--#include "altera_16550_uart_fd.h"
-+#include "arduino_16550_uart_fd.h"
+ # C/C++ source files
+-add_sw_property c_source HAL/src/altera_16550_uart_fd.c
+-add_sw_property c_source HAL/src/altera_16550_uart_init.c
+-add_sw_property c_source HAL/src/altera_16550_uart_ioctl.c
+-add_sw_property c_source HAL/src/altera_16550_uart_read.c
+-add_sw_property c_source HAL/src/altera_16550_uart_write.c
++add_sw_property c_source HAL/src/arduino_16550_uart_fd.c
++add_sw_property c_source HAL/src/arduino_16550_uart_init.c
++add_sw_property c_source HAL/src/arduino_16550_uart_ioctl.c
++add_sw_property c_source HAL/src/arduino_16550_uart_read.c
++add_sw_property c_source HAL/src/arduino_16550_uart_write.c
  
--#ifdef ALTERA_16550_UART_USE_IOCTL
-+#ifdef ARDUINO_16550_UART_USE_IOCTL
  
--#define ALTERA_16550_UART_INSTANCE(name, dev) \
--   ALTERA_16550_UART_DEV_INSTANCE(name, dev)
--#define ALTERA_16550_UART_INIT(name, dev) \
--   ALTERA_16550_UART_DEV_INIT(name, dev)
-+#define ARDUINO_16550_UART_INSTANCE(name, dev) \
-+   ARDUINO_16550_UART_DEV_INSTANCE(name, dev)
-+#define ARDUINO_16550_UART_INIT(name, dev) \
-+   ARDUINO_16550_UART_DEV_INIT(name, dev)
+ # Include files
+-add_sw_property include_source HAL/inc/altera_16550_uart.h
+-add_sw_property include_source HAL/inc/altera_16550_uart_fd.h
+-add_sw_property include_source inc/altera_16550_uart_regs.h
++add_sw_property include_source HAL/inc/arduino_16550_uart.h
++add_sw_property include_source HAL/inc/arduino_16550_uart_fd.h
++add_sw_property include_source inc/arduino_16550_uart_regs.h
  
--#else /* !ALTERA_16550_UART_USE_IOCTL */
-+#else /* !ARDUINO_16550_UART_USE_IOCTL */
  
--#define ALTERA_16550_UART_INSTANCE(name, state) \
--   ALTERA_16550_UART_STATE_INSTANCE(name, state)
--#define ALTERA_16550_UART_INIT(name, state) \
--   ALTERA_16550_UART_STATE_INIT(name, state)
-+#define ARDUINO_16550_UART_INSTANCE(name, state) \
-+   ARDUINO_16550_UART_STATE_INSTANCE(name, state)
-+#define ARDUINO_16550_UART_INIT(name, state) \
-+   ARDUINO_16550_UART_STATE_INIT(name, state)
- 
--#endif /* ALTERA_16550_UART_USE_IOCTL */
-+#endif /* ARDUINO_16550_UART_USE_IOCTL */
- 
- #ifdef __cplusplus
- }
+ # This driver supports HAL & UCOSII BSP (OS) types
 diff -Naur arduino_16550_uart/HAL/inc/arduino_16550_uart_fd.h arduino_16550_uart_mod/HAL/inc/arduino_16550_uart_fd.h
---- arduino_16550_uart/HAL/inc/arduino_16550_uart_fd.h	2018-08-22 23:07:15.467111000 +0200
-+++ arduino_16550_uart_mod/HAL/inc/arduino_16550_uart_fd.h	2018-08-22 23:03:13.415587400 +0200
+--- arduino_16550_uart/HAL/inc/arduino_16550_uart_fd.h	2018-11-29 13:30:10.140770249 +0100
++++ arduino_16550_uart_mod/HAL/inc/arduino_16550_uart_fd.h	2018-11-29 13:32:28.788769042 +0100
 @@ -41,42 +41,41 @@
  /*
   * Externally referenced routines
@@ -242,9 +153,250 @@ diff -Naur arduino_16550_uart/HAL/inc/arduino_16550_uart_fd.h arduino_16550_uart
                                                         \
      /* make the device available to the system */      \
      alt_dev_reg(&d.dev);                               \
+diff -Naur arduino_16550_uart/HAL/inc/arduino_16550_uart.h arduino_16550_uart_mod/HAL/inc/arduino_16550_uart.h
+--- arduino_16550_uart/HAL/inc/arduino_16550_uart.h	2018-11-29 13:30:10.140770249 +0100
++++ arduino_16550_uart_mod/HAL/inc/arduino_16550_uart.h	2018-11-29 13:32:05.332769246 +0100
+@@ -77,13 +77,13 @@
+  *
+  * An instance of this structure is created in the auto-generated
+  * alt_sys_init.c file for each UART listed in the systems SOPCINFO file. This is
+- * done using the ALTERA_16550_UART_STATE_INSTANCE macro given below.
++ * done using the ARDUINO_16550_UART_STATE_INSTANCE macro given below.
+  */
+ 
+ typedef enum stopbit      { STOPB_1 = 0,STOPB_2 } StopBit;
+ typedef enum paritybit    { ODD_PARITY = 0, EVEN_PARITY, MARK_PARITY, SPACE_PARITY, NO_PARITY } ParityBit;
+ typedef enum databit      { CS_5 = 0, CS_6, CS_7, CS_8, CS_9 = 256} DataBit;
+-typedef enum baud 
++typedef enum baud
+ {
+     BR9600 = B9600,
+     BR19200 = B19200,
+@@ -93,82 +93,85 @@
+ } Baud;
+ typedef enum rx_fifo_level_e { RXONECHAR = 0, RXQUARTER, RXHALF, RXFULL } Rx_FifoLvl;
+ typedef enum tx_fifo_level_e { TXEMPTY = 0, TXTWOCHAR, TXQUARTER, TXHALF } Tx_FifoLvl;
+-typedef struct uart_config_s 
++typedef struct uart_config_s
+ {
+-    StopBit    stop_bit;
+-    ParityBit  parity_bit;
+-    DataBit    data_bit;
+-    Baud       baudrate;
+-    alt_u32    fifo_mode;
+-    Rx_FifoLvl rx_fifo_level;
+-    Tx_FifoLvl tx_fifo_level;
+-    alt_u32    hwfc;
++    StopBit     stop_bit;
++    ParityBit   parity_bit;
++    DataBit     data_bit;
++    Baud        baudrate;
++    alt_u32     fifo_mode;
++    Rx_FifoLvl  rx_fifo_level;
++    Tx_FifoLvl  tx_fifo_level;
++    alt_u32     hwfc;
+ } UartConfig;
+ typedef struct LSR_s
+ {
+-  alt_u8	dr:1;
+-  alt_u8	oe:1;
+-  alt_u8	pe:1;
+-  alt_u8	fe:1;
+-  alt_u8	bi:1;
+-  alt_u8	thre:1;
+-  alt_u8	temt:1;
+-  alt_u8	rfe:1;
++    alt_u8      dr:1;
++    alt_u8      oe:1;
++    alt_u8      pe:1;
++    alt_u8      fe:1;
++    alt_u8      bi:1;
++    alt_u8      thre:1;
++    alt_u8      temt:1;
++    alt_u8      rfe:1;
+ }line_status_reg;
+-typedef struct altera_16550_uart_state_s
++typedef struct arduino_16550_uart_state_s
+ {
+- alt_dev               dev;
+- void*                 base;                 /* The base address of the device */
+- alt_u32               clock;
+- alt_u32               hwfifomode;
+- alt_u32               ctrl;                 /* Shadow value of the LSR register */
+- volatile alt_u32      rx_start;             /* Start of the pending receive data */
+- volatile alt_u32      rx_end;               /* End of the pending receive data */
+- volatile alt_u32      tx_start;             /* Start of the pending transmit data */
+- volatile alt_u32      tx_end;               /* End of the pending transmit data */
+- alt_u32               freq;                 /* Current clock freq rate */
+- UartConfig            config;               /* Uart setting */
+- #ifdef ALTERA_16550_UART_USE_IOCTL
+- struct termios        termios;
+- #endif
+- alt_u32               flags;                /* Configuration flags */
+- ALT_FLAG_GRP         (events)               /* Event flags used for
+-                                              * foreground/background in mult-threaded
+-                                              * mode */
+- ALT_SEM              (read_lock)            /* Semaphore used to control access to the
+-                                              * read buffer in multi-threaded mode */
+- ALT_SEM              (write_lock)           /* Semaphore used to control access to the
+-                                              * write buffer in multi-threaded mode */
+- volatile wchar_t      rx_buf[ALT_16550_UART_BUF_LEN]; /* The receive buffer */
+- volatile wchar_t      tx_buf[ALT_16550_UART_BUF_LEN]; /* The transmit buffer */
+-line_status_reg	      line_status; /* line register status for the current read byte data of RBR or data at the top of FIFO*/
+-alt_u8                error_ignore; /* received data will be discarded
+-for the current read byte data of RBR or data at the top of FIFO if pe, fe and bi errors detected after error_ignore is set to '0' */
+-} altera_16550_uart_state;
+-
+-alt_u32 alt_16550_uart_config(altera_16550_uart_state* sp, UartConfig *setting);
+-int altera_16550_uart_close(altera_16550_uart_state* sp, int flags);
+-altera_16550_uart_state* altera_16550_uart_open (const char *name);
+-int altera_16550_uart_read(altera_16550_uart_state* sp, wchar_t* ptr, int len, int flags);
+-int altera_16550_uart_write(altera_16550_uart_state* sp, const wchar_t* ptr, int len, int flags);
++    alt_dev               dev;
++    void*                 base;                 /* The base address of the device */
++    alt_u32               clock;
++    alt_u32               hwfifomode;
++    alt_u32               ctrl;                 /* Shadow value of the LSR register */
++    volatile alt_u32      rx_start;             /* Start of the pending receive data */
++    volatile alt_u32      rx_end;               /* End of the pending receive data */
++    volatile alt_u32      tx_start;             /* Start of the pending transmit data */
++    volatile alt_u32      tx_end;               /* End of the pending transmit data */
++    alt_u32               freq;                 /* Current clock freq rate */
++    UartConfig            config;               /* Uart setting */
++    #ifdef ARDUINO_16550_UART_USE_IOCTL
++    struct termios        termios;
++    #endif
++    alt_u32               flags;                /* Configuration flags */
++    ALT_FLAG_GRP         (events)               /* Event flags used for
++                                                  * foreground/background in mult-threaded
++                                                  * mode */
++    ALT_SEM              (read_lock)            /* Semaphore used to control access to the
++                                                  * read buffer in multi-threaded mode */
++    ALT_SEM              (write_lock)           /* Semaphore used to control access to the
++                                                  * write buffer in multi-threaded mode */
++    volatile alt_u8       rx_buf[ALT_16550_UART_BUF_LEN]; /* The receive buffer */
++    volatile alt_u8       tx_buf[ALT_16550_UART_BUF_LEN]; /* The transmit buffer */
++    line_status_reg       line_status; /* line register status for the current read byte data of RBR or data at the top of FIFO*/
++    alt_u8                error_ignore; /* received data will be discarded
++                                          for the current read byte data of RBR or data at the top of FIFO if pe, fe and bi errors detected after error_ignore is set to '0' */
++} arduino_16550_uart_state;
++
++alt_u32 alt_16550_uart_config(arduino_16550_uart_state* sp, UartConfig *setting);
++int arduino_16550_uart_close(arduino_16550_uart_state* sp, int flags);
++arduino_16550_uart_state* arduino_16550_uart_open (const char *name);
++int arduino_16550_uart_read(arduino_16550_uart_state* sp, alt_u8* ptr, int len, int flags);
++int arduino_16550_uart_write(arduino_16550_uart_state* sp, const alt_u8* ptr, int len, int flags);
++void arduino_16550_uart_flush(arduino_16550_uart_state* sp);
++
++void arduino_16550_uart_isrrx(void (*pIsr)(void*), void* arg);
+ 
+ /*
+- * The macro ALTERA_16550_UART_INSTANCE is used by the auto-generated file
++ * The macro ARDUINO_16550_UART_INSTANCE is used by the auto-generated file
+  * alt_sys_init.c to create an instance of this device driver state.
+  */
+ 
+ 
+-typedef int (*ALTERA_16550_UART_OPEN)  (alt_fd* fd, const char* name, int flags, int mode);
+-typedef int (*ALTERA_16550_UART_CLOSE) (alt_fd* fd);
++typedef int (*ARDUINO_16550_UART_OPEN)  (alt_fd* fd, const char* name, int flags, int mode);
++typedef int (*ARDUINO_16550_UART_CLOSE) (alt_fd* fd);
+ 
+-#define ALTERA_16550_UART_STATE_INSTANCE(name, state) \
+-  altera_16550_uart_state state =            \
++#define ARDUINO_16550_UART_STATE_INSTANCE(name, state) \
++  arduino_16550_uart_state state =            \
+ {                                   \
+  {                                  \
+        ALT_LLIST_ENTRY,             \
+        name##_NAME,                 \
+-       ((ALTERA_16550_UART_OPEN)(altera_16550_uart_open)),      \
+-       ((ALTERA_16550_UART_CLOSE)(altera_16550_uart_close)),     \
++       ((ARDUINO_16550_UART_OPEN)(arduino_16550_uart_open)),      \
++       ((ARDUINO_16550_UART_CLOSE)(arduino_16550_uart_close)),     \
+        NULL,                        \
+        NULL,                        \
+        NULL,                        \
+@@ -180,19 +183,19 @@
+        name##_FIFO_MODE,            \
+ }
+ /*
+- * altera_avalon_uart_init() is called by the auto-generated function
++ * arduino_avalon_uart_init() is called by the auto-generated function
+  * alt_sys_init() for each UART in the system. This is done using the
+- * ALTERA_16550_UART_INIT macro given below.
++ * ARDUINO_16550_UART_INIT macro given below.
+  *
+  * This function is responsible for performing all the run time initilisation
+  * for a device instance, i.e. registering the interrupt handler, and
+  * regestering the device with the system.
+  */
+-extern void altera_16550_uart_init(altera_16550_uart_state* sp,
++extern void arduino_16550_uart_init(arduino_16550_uart_state* sp,
+  alt_u32 irq_controller_id, alt_u32 irq);
+ 
+ /*
+- * The macro ALTERA_16550_UART_STATE_INIT is used by the auto-generated file
++ * The macro ARDUINO_16550_UART_STATE_INIT is used by the auto-generated file
+  * alt_sys_init.c to initialize an instance of the device driver state.
+  *
+  * This macro performs a sanity check to ensure that the interrupt has been
+@@ -200,7 +203,7 @@
+  * generated at build time.
+  */
+ 
+-#define ALTERA_16550_UART_STATE_INIT(name, state)                    \
++#define ARDUINO_16550_UART_STATE_INIT(name, state)                    \
+  if (name##_IRQ == ALT_IRQ_NOT_CONNECTED)                            \
+  {                                                                   \
+   ALT_LINK_ERROR ("Error: Interrupt not connected for " #name ". "   \
+@@ -214,30 +217,30 @@
+  }                                                                   \
+  else                                                                \
+  {                                                                   \
+-  altera_16550_uart_init(&state, name##_IRQ_INTERRUPT_CONTROLLER_ID, \
++  arduino_16550_uart_init(&state, name##_IRQ_INTERRUPT_CONTROLLER_ID, \
+    name##_IRQ);                                                      \
+  }
+ 
+ /*
+  * Include in case non-direct version of driver required.
+  */
+-#include "altera_16550_uart_fd.h"
++#include "arduino_16550_uart_fd.h"
+ 
+-#ifdef ALTERA_16550_UART_USE_IOCTL
++#ifdef ARDUINO_16550_UART_USE_IOCTL
+ 
+-#define ALTERA_16550_UART_INSTANCE(name, dev) \
+-   ALTERA_16550_UART_DEV_INSTANCE(name, dev)
+-#define ALTERA_16550_UART_INIT(name, dev) \
+-   ALTERA_16550_UART_DEV_INIT(name, dev)
++#define ARDUINO_16550_UART_INSTANCE(name, dev) \
++   ARDUINO_16550_UART_DEV_INSTANCE(name, dev)
++#define ARDUINO_16550_UART_INIT(name, dev) \
++   ARDUINO_16550_UART_DEV_INIT(name, dev)
+ 
+-#else /* !ALTERA_16550_UART_USE_IOCTL */
++#else /* !ARDUINO_16550_UART_USE_IOCTL */
+ 
+-#define ALTERA_16550_UART_INSTANCE(name, state) \
+-   ALTERA_16550_UART_STATE_INSTANCE(name, state)
+-#define ALTERA_16550_UART_INIT(name, state) \
+-   ALTERA_16550_UART_STATE_INIT(name, state)
++#define ARDUINO_16550_UART_INSTANCE(name, state) \
++   ARDUINO_16550_UART_STATE_INSTANCE(name, state)
++#define ARDUINO_16550_UART_INIT(name, state) \
++   ARDUINO_16550_UART_STATE_INIT(name, state)
+ 
+-#endif /* ALTERA_16550_UART_USE_IOCTL */
++#endif /* ARDUINO_16550_UART_USE_IOCTL */
+ 
+ #ifdef __cplusplus
+ }
 diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_fd.c arduino_16550_uart_mod/HAL/src/arduino_16550_uart_fd.c
---- arduino_16550_uart/HAL/src/arduino_16550_uart_fd.c	2018-08-22 23:07:15.468111000 +0200
-+++ arduino_16550_uart_mod/HAL/src/arduino_16550_uart_fd.c	2018-08-22 23:03:13.423590700 +0200
+--- arduino_16550_uart/HAL/src/arduino_16550_uart_fd.c	2018-11-29 13:30:10.140770249 +0100
++++ arduino_16550_uart_mod/HAL/src/arduino_16550_uart_fd.c	2018-11-29 13:33:12.476768661 +0100
 @@ -30,60 +30,58 @@
  
  #include "alt_types.h"
@@ -329,9 +481,9 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_fd.c arduino_16550_uart
 +    return arduino_16550_uart_close(&dev->state, fd->fd_flags);
  }
 diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_uart_mod/HAL/src/arduino_16550_uart_init.c
---- arduino_16550_uart/HAL/src/arduino_16550_uart_init.c	2018-08-22 23:07:15.471100500 +0200
-+++ arduino_16550_uart_mod/HAL/src/arduino_16550_uart_init.c	2018-08-22 23:03:13.426558400 +0200
-@@ -33,19 +33,19 @@
+--- arduino_16550_uart/HAL/src/arduino_16550_uart_init.c	2018-11-29 13:30:10.140770249 +0100
++++ arduino_16550_uart_mod/HAL/src/arduino_16550_uart_init.c	2018-11-29 13:35:27.084767489 +0100
+@@ -33,36 +33,47 @@
  #include "sys/alt_irq.h"
  #include "sys/ioctl.h"
  #include "sys/alt_errno.h"
@@ -343,6 +495,17 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
  
  ALT_LLIST_HEAD(alt_16550_uart_list);
  
++#define SEC_RAM __attribute__((__section__(".rwdata")))
++
++void (*pIsrRx)(void*);
++void *pIsrArg;
++
++void arduino_16550_uart_isrrx(void (*pIsr)(void*), void* arg)
++{
++    pIsrRx  = pIsr;
++    pIsrArg = arg;
++}
++
  /*
 - * altera_16550_uart_rxirq() is called by altera_16550_uart_irq() to
 + * arduino_16550_uart_rxirq() is called by arduino_16550_uart_irq() to
@@ -351,20 +514,38 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
   * that there is data ready to be processed.
   */
 -void altera_16550_uart_rxirq(altera_16550_uart_state* sp)
-+void arduino_16550_uart_rxirq(arduino_16550_uart_state* sp)
++void SEC_RAM arduino_16550_uart_rxirq(arduino_16550_uart_state* sp)
  {
      alt_u32 next;
      alt_u32 regs;
-@@ -58,7 +58,7 @@
-         	sp->line_status.bi)
-     	{
- 		/* discard data from RBR/ 1st byte data at the top of FIFO */
+ 
+     if(!(sp->error_ignore))
+     {
+-    	/* If there was an error, discard the data */
+-    	if (sp->line_status.pe |
+-		sp->line_status.fe |
+-        	sp->line_status.bi)
+-    	{
+-		/* discard data from RBR/ 1st byte data at the top of FIFO */
 -    		IORD_ALTERA_16550_UART_RBR(sp->base); 
-+    		IORD_ARDUINO_16550_UART_RBR(sp->base); 
-     		return;	
-     	}
+-    		return;	
+-    	}
++        /* If there was an error, discard the data */
++        if (sp->line_status.pe |
++            sp->line_status.fe |
++            sp->line_status.bi)
++        {
++            /* discard data from RBR/ 1st byte data at the top of FIFO */
++            IORD_ARDUINO_16550_UART_RBR(sp->base);
++            return;
++        }
      }
-@@ -83,18 +83,18 @@
+-    
++
+     /*
+      * In a multi-threaded environment, set the read event flag to indicate
+      * that there is data ready. This is only done if the circular buffer was
+@@ -83,45 +94,38 @@
          do
          {
              /* Transfer data from the device to the circular buffer */
@@ -387,15 +568,20 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
  
          sp->rx_end = next;
  
-@@ -105,23 +105,17 @@
-      * re-enabled when data is removed from the buffer.
-      */
+         next = (sp->rx_end + 1) & ALT_16550_UART_BUF_MSK;
+     }
+-    /*
+-     * If the cicular buffer was full, disable interrupts. Interrupts will be
+-     * re-enabled when data is removed from the buffer.
+-     */
  
 -    if (next == sp->rx_start)
--    {
++    if (pIsrRx)
+     {
 -        sp->ctrl &= ~ALTERA_16550_UART_IER_ERBFI_MSK;
 -        IOWR_ALTERA_16550_UART_IER(sp->base, sp->ctrl);
--    }
++        pIsrRx(pIsrArg);
+     }
 -
  }
  
@@ -407,13 +593,13 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
   * buffer to the device, and sets the apropriate flags to indicate that
   * there is data ready to be processed.
   */
- void
+-void
 -altera_16550_uart_txirq(altera_16550_uart_state* sp)
-+arduino_16550_uart_txirq(arduino_16550_uart_state* sp)
++void SEC_RAM arduino_16550_uart_txirq(arduino_16550_uart_state* sp)
  {
      alt_u32 regs;
      /* Transfer data if there is some ready to be transfered */
-@@ -141,7 +135,7 @@
+@@ -141,7 +145,7 @@
          }
          /* Write the data to the device */
          /* If fifo enable continuously drain circular buffer to tx fifo */
@@ -422,19 +608,22 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
          if (sp->config.fifo_mode)
          {
              /* Fill up Tx FIFO from circular buffer until TX FIFO FULl
-@@ -149,22 +143,24 @@
+@@ -149,22 +153,24 @@
               */
              do
              {
 -            	if(regs & ALTERA_16550_UART_LSR_THRE_MSK)
-+            	if(regs & ARDUINO_16550_UART_LSR_THRE_MSK)
-             	{
+-            	{
 -            		IOWR_ALTERA_16550_UART_THR(sp->base, sp->tx_buf[sp->tx_start]);
-+            		IOWR_ARDUINO_16550_UART_THR(sp->base, sp->tx_buf[sp->tx_start]);
-             		sp->tx_start = (++sp->tx_start) & ALT_16550_UART_BUF_MSK;
-             	}
+-            		sp->tx_start = (++sp->tx_start) & ALT_16550_UART_BUF_MSK;
+-            	}
 -            	regs = IORD_ALTERA_16550_UART_LSR(sp->base);
-+            	regs = IORD_ARDUINO_16550_UART_LSR(sp->base);
++                if(regs & ARDUINO_16550_UART_LSR_THRE_MSK)
++                {
++                    IOWR_ARDUINO_16550_UART_THR(sp->base, sp->tx_buf[sp->tx_start]);
++                    sp->tx_start = (++sp->tx_start) & ALT_16550_UART_BUF_MSK;
++                }
++                regs = IORD_ARDUINO_16550_UART_LSR(sp->base);
              } while (sp->tx_start != sp->tx_end);
          } else
          {
@@ -452,7 +641,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
          }
  
      }
-@@ -177,32 +173,32 @@
+@@ -177,32 +183,32 @@
  
      if (sp->tx_start == sp->tx_end)
      {
@@ -474,10 +663,10 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
   */
  #ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
 -static void altera_16550_uart_irq(void* context)
-+static void arduino_16550_uart_irq(void* context)
++static void SEC_RAM arduino_16550_uart_irq(void* context)
  #else
 -static void altera_16550_uart_irq(void* context, alt_u32 id)
-+static void arduino_16550_uart_irq(void* context, alt_u32 id)
++static void SEC_RAM arduino_16550_uart_irq(void* context, alt_u32 id)
  #endif
  {
      alt_u32 status = 0;
@@ -494,7 +683,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
      sp->line_status.dr = status;
      sp->line_status.oe = status >> 1;
      sp->line_status.pe = status >> 2;
-@@ -213,18 +209,18 @@
+@@ -213,18 +219,18 @@
      sp->line_status.rfe = status >> 7;
  
      /* Dummy read to ensure IRQ is negated before ISR returns */
@@ -516,7 +705,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
      }
  }
  
-@@ -236,7 +232,7 @@
+@@ -236,7 +242,7 @@
   * descriptor associated with the relevant stream (i.e. stdout) can be closed
   * as well. This routine does not manage file descriptors.
   */
@@ -525,7 +714,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
  {
      /*
       * Wait for all transmit data to be emptied by the UART ISR.
-@@ -251,12 +247,12 @@
+@@ -251,12 +257,12 @@
    return 0;
  }
  
@@ -541,7 +730,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
      if (sp == NULL)
      {
          return NULL;
-@@ -264,16 +260,16 @@
+@@ -264,16 +270,16 @@
      return sp;
  }
  
@@ -561,7 +750,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
          // Formula for calculating the divisor:
          //    baudrate = clock / (16 * divisor)
          // => baudrate * 16 * divisor = clock
-@@ -281,12 +277,12 @@
+@@ -281,12 +287,12 @@
          // => divisor = (clock / 16) / baudrate
          divisor = sp->clock / (16*(setting->baudrate));
  
@@ -578,7 +767,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
          /* Update Device Termios Settings */
          sp->config.baudrate = sp->termios.c_ispeed = sp->termios.c_ospeed = setting->baudrate;
      #endif
-@@ -294,7 +290,7 @@
+@@ -294,7 +300,7 @@
  
      if (sp->config.data_bit != setting->data_bit)
      {
@@ -587,7 +776,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
          LCR |= (setting->data_bit);
          /* Update Device Settings */
          sp->config.data_bit = setting->data_bit;
-@@ -304,11 +300,11 @@
+@@ -304,11 +310,11 @@
      {
          if (setting->parity_bit == NO_PARITY)
          {
@@ -602,7 +791,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
           }
          /* Update Device Settings */
          sp->config.parity_bit = setting->parity_bit;
-@@ -316,19 +312,19 @@
+@@ -316,19 +322,19 @@
  
      if (sp->config.stop_bit != setting->stop_bit)
      {
@@ -625,7 +814,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
          sp->config.fifo_mode = setting->fifo_mode;
  
          if (sp->config.rx_fifo_level != setting->rx_fifo_level)
-@@ -336,7 +332,7 @@
+@@ -336,7 +342,7 @@
              /* Update device setting*/
              sp->config.rx_fifo_level = setting->rx_fifo_level;
          }
@@ -634,7 +823,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
          regs |= sp->config.rx_fifo_level << 6;
  
          if (sp->config.tx_fifo_level != setting->tx_fifo_level)
-@@ -344,25 +340,25 @@
+@@ -344,52 +350,51 @@
              /* Update device setting*/
              sp->config.tx_fifo_level = setting->tx_fifo_level;
          }
@@ -648,26 +837,34 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
          if (sp->config.hwfc != setting->hwfc)
          {
 -		    regs = IORD_ALTERA_16550_UART_MCR(sp->base);
-+		    regs = IORD_ARDUINO_16550_UART_MCR(sp->base);
- 		    if (setting->hwfc)
- 			{
+-		    if (setting->hwfc)
+-			{
 -                regs |= ALTERA_16550_UART_MCR_RTS_MSK;
 -                IOWR_ALTERA_16550_UART_MCR(sp->base, regs);
++            regs = IORD_ARDUINO_16550_UART_MCR(sp->base);
++            if (setting->hwfc)
++            {
 +                regs |= ARDUINO_16550_UART_MCR_RTS_MSK;
 +                IOWR_ARDUINO_16550_UART_MCR(sp->base, regs);
  
                  regs |= ((setting->hwfc)<< 5);
 -                IOWR_ALTERA_16550_UART_MCR(sp->base, regs);
-+                IOWR_ARDUINO_16550_UART_MCR(sp->base, regs);
- 		    } else
- 			{   
- 			    /* Disable Autoflow Control */
+-		    } else
+-			{   
+-			    /* Disable Autoflow Control */
 -			    IOWR_ALTERA_16550_UART_MCR(sp->base, (regs & ~(ALTERA_16550_UART_MCR_AFCE_MSK)));
-+			    IOWR_ARDUINO_16550_UART_MCR(sp->base, (regs & ~(ARDUINO_16550_UART_MCR_AFCE_MSK)));
- 		    }
+-		    }
++                IOWR_ARDUINO_16550_UART_MCR(sp->base, regs);
++            } else
++            {
++                /* Disable Autoflow Control */
++                IOWR_ARDUINO_16550_UART_MCR(sp->base, (regs & ~(ARDUINO_16550_UART_MCR_AFCE_MSK)));
++            }
              /* Update device setting*/
-             sp->config.hwfc = setting->hwfc;				
-@@ -371,24 +367,24 @@
+-            sp->config.hwfc = setting->hwfc;				
++            sp->config.hwfc = setting->hwfc;
+         }
+ 
      } else
      {
          /* Disable Fifo enable and other level trigger */
@@ -692,13 +889,15 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
   * It is responsible for configuring the device and associated software
   * constructs.
   */
-  void
+- void
 -altera_16550_uart_init(altera_16550_uart_state* sp,
-+arduino_16550_uart_init(arduino_16550_uart_state* sp,
-   alt_u32 irq_controller_id,  alt_u32 irq)
+-  alt_u32 irq_controller_id,  alt_u32 irq)
++void arduino_16550_uart_init(arduino_16550_uart_state* sp,
++                             alt_u32 irq_controller_id,  alt_u32 irq)
  {
      extern alt_llist alt_16550_uart_list;
-@@ -399,20 +395,20 @@
+     void* base = sp->base;
+@@ -399,20 +404,20 @@
      error = (alt_dev_llist_insert((alt_dev_llist*) sp, &alt_16550_uart_list));
      /* Initialize UART register */
      /* Flush Tx and Rx FIFO */
@@ -726,32 +925,37 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
 +    IOWR_ARDUINO_16550_UART_LCR(base, ((ODD_PARITY << 4) | ARDUINO_16550_UART_LCR_PEN_MSK
                                        | (STOPB_1 << 2)| CS_8));
 -#ifdef ALTERA_16550_UART_USE_IOCTL                                   
-+#ifdef ARDUINO_16550_UART_USE_IOCTL                                   
++#ifdef ARDUINO_16550_UART_USE_IOCTL
      sp->termios.c_cflag = PAODD | PARENB | CSTOPB | CS8;
      sp->termios.c_ispeed = sp->termios.c_ospeed = B115200;
  #endif
-@@ -430,17 +426,43 @@
+@@ -429,18 +434,43 @@
+     if (!error)
      {
          /* register the interrupt handler */
-     #ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
+-    #ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
 -        alt_ic_isr_register(irq_controller_id, irq, altera_16550_uart_irq, sp, 0x0);
-+        alt_ic_isr_register(irq_controller_id, irq, arduino_16550_uart_irq, sp, 0x0);
-     #else
+-    #else
 -        alt_irq_register (irq, sp, altera_16550_uart_irq);
-+        alt_irq_register (irq, sp, arduino_16550_uart_irq);
-     #endif
- 	
- 	    /* enable interrupts at the device */
+-    #endif
+-	
+-	    /* enable interrupts at the device */
 -        regs = IORD_ALTERA_16550_UART_IER(sp->base);
 -        regs |= ALTERA_16550_UART_IER_ERBFI_MSK  |
 -                ALTERA_16550_UART_IER_ETBEI_MSK;
 -        IOWR_ALTERA_16550_UART_IER(base, sp->ctrl);
++#ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
++        alt_ic_isr_register(irq_controller_id, irq, arduino_16550_uart_irq, sp, 0x0);
++#else
++        alt_irq_register (irq, sp, arduino_16550_uart_irq);
++#endif
+ 
++        /* enable interrupts at the device */
 +        regs = IORD_ARDUINO_16550_UART_IER(sp->base);
 +        regs |= ARDUINO_16550_UART_IER_ERBFI_MSK  |
 +                ARDUINO_16550_UART_IER_ETBEI_MSK;
 +        sp->ctrl = regs;
 +        IOWR_ARDUINO_16550_UART_IER(base, sp->ctrl);
- 
      }
  }
  
@@ -764,8 +968,8 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
 +  /* Flush Tx and Rx FIFO */
 +  IOWR_ARDUINO_16550_UART_FCR(base, ARDUINO_16550_UART_FCR_FIFOE_MSK);
 +  IOWR_ARDUINO_16550_UART_FCR(base, ARDUINO_16550_UART_FCR_FIFOE_MSK |
-+                                   ARDUINO_16550_UART_FCR_FIFOR_MSK |
-+                                   ARDUINO_16550_UART_FCR_XFIFOR_MSK);
++                                    ARDUINO_16550_UART_FCR_FIFOR_MSK |
++                                    ARDUINO_16550_UART_FCR_XFIFOR_MSK);
 +  IOWR_ARDUINO_16550_UART_FCR(base, 0x0);
 +
 +  /* Clear any Error status */
@@ -781,8 +985,8 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_init.c arduino_16550_ua
 +  sp->rx_end   = 0;
 +}
 diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_ioctl.c arduino_16550_uart_mod/HAL/src/arduino_16550_uart_ioctl.c
---- arduino_16550_uart/HAL/src/arduino_16550_uart_ioctl.c	2018-08-22 23:07:15.472131900 +0200
-+++ arduino_16550_uart_mod/HAL/src/arduino_16550_uart_ioctl.c	2018-08-22 23:03:13.503849200 +0200
+--- arduino_16550_uart/HAL/src/arduino_16550_uart_ioctl.c	2018-11-29 13:30:10.140770249 +0100
++++ arduino_16550_uart_mod/HAL/src/arduino_16550_uart_ioctl.c	2018-11-29 13:35:52.644767266 +0100
 @@ -35,12 +35,12 @@
  #include "sys/ioctl.h"
  #include "sys/alt_errno.h"
@@ -873,9 +1077,9 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_ioctl.c arduino_16550_u
 +#endif /* ARDUINO_16550_UART_USE_IOCTL */
 \ No newline at end of file
 diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_read.c arduino_16550_uart_mod/HAL/src/arduino_16550_uart_read.c
---- arduino_16550_uart/HAL/src/arduino_16550_uart_read.c	2018-08-22 23:07:15.473096000 +0200
-+++ arduino_16550_uart_mod/HAL/src/arduino_16550_uart_read.c	2018-08-22 23:03:13.506816500 +0200
-@@ -34,16 +34,16 @@
+--- arduino_16550_uart/HAL/src/arduino_16550_uart_read.c	2018-11-29 13:30:10.140770249 +0100
++++ arduino_16550_uart_mod/HAL/src/arduino_16550_uart_read.c	2018-11-29 13:36:51.060766757 +0100
+@@ -34,20 +34,22 @@
  #include "sys/ioctl.h"
  #include "sys/alt_errno.h"
  
@@ -883,6 +1087,8 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_read.c arduino_16550_ua
 -#include "altera_16550_uart_regs.h"
 +#include "arduino_16550_uart.h"
 +#include "arduino_16550_uart_regs.h"
++
++#define SEC_RAM __attribute__((__section__(".rwdata")))
  
  /*
 - * altera_16550_uart_read() is called by the system read() function in order to
@@ -896,38 +1102,163 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_read.c arduino_16550_ua
   * we know that the file descriptor has been opened with the correct permissions
   * for this operation.
   *
-@@ -55,8 +55,8 @@
+- * The return value is the number of 2 bytes(because supporting CS_9) actually 
++ * The return value is the number of 2 bytes(because supporting CS_9) actually
+  * read.
+  *
+  * This function does not communicate with the device directly. Instead data is
+@@ -55,36 +57,35 @@
   * for copying data from the device into this buffer.
   */
  
 -int 
 -altera_16550_uart_read(altera_16550_uart_state* sp, wchar_t* ptr, int len,
-+int
-+arduino_16550_uart_read(arduino_16550_uart_state* sp, alt_u8* ptr, int len,
-   int flags)
+-  int flags)
++int SEC_RAM arduino_16550_uart_read(arduino_16550_uart_state* sp,
++                                    alt_u8* ptr, int len, int flags)
  {
- 	alt_irq_context context;
-@@ -65,7 +65,7 @@
- 	alt_u8          read_would_block = 0;
- 	int             count = 0;
+-	alt_irq_context context;
+-	int             block;
+-	//alt_u32         next;
+-	alt_u8          read_would_block = 0;
+-	int             count = 0;
++    alt_irq_context context;
++    int             block;
++    //alt_u32         next;
++    alt_u8          read_would_block = 0;
++    int             count = 0;
  
 -	sp->ctrl = IORD_ALTERA_16550_UART_IER(sp->base);
-+	sp->ctrl = IORD_ARDUINO_16550_UART_IER(sp->base);
- 	/*
+-	/*
++    sp->ctrl = IORD_ARDUINO_16550_UART_IER(sp->base);
++    /*
       * Construct a flag to indicate whether the device is being accessed in
       * blocking or non-blocking mode.
-@@ -124,8 +124,8 @@
- 				/* Block waiting for some data to arrive */
- 				/* First, ensure read interrupts are enabled to avoid deadlock */
- 				context = alt_irq_disable_all ();
+      */
+-	block = !(flags & O_NONBLOCK);
++    block = !(flags & O_NONBLOCK);
+ 
+-	/*
++    /*
+      * When running in a multi threaded environment, obtain the "read_lock"
+      * semaphore. This ensures that reading from the device is thread-safe.
+      */
+-	ALT_SEM_PEND (sp->read_lock, 0);
++    ALT_SEM_PEND (sp->read_lock, 0);
+ 
+-	/*
++    /*
+      * Calculate which slot in the circular buffer is the next one to read
+      * data from.
+      */
+-	//next = (sp->rx_start + 1) & ALT_16550_UART_BUF_MSK;
++    //next = (sp->rx_start + 1) & ALT_16550_UART_BUF_MSK;
+ 
+-	/*
++    /*
+      * Loop, copying data from the circular buffer to the destination address
+      * supplied in "ptr". This loop is terminated when the required number of
+      * bytes have been read. If the circular buffer is empty, and no data has
+@@ -94,74 +95,74 @@
+      * transferred, or the device is being accessed in non-blocking mode, then
+      * the loop terminates without necessarily reading all the requested data.
+      */
+-	do
+-	{
+-		/*
+-		 * Read the required amount of data, until the circular buffer runs
++    do
++    {
++        /*
++         * Read the required amount of data, until the circular buffer runs
+          * empty
+          */
+-		while ((count < len) && (sp->rx_start != sp->rx_end))
+-		{
+-			count++;
+-			*ptr++ = sp->rx_buf[sp->rx_start];
+-
+-			sp->rx_start = (++sp->rx_start) & ALT_16550_UART_BUF_MSK;
+-		}
+-		/*
++        while ((count < len) && (sp->rx_start != sp->rx_end))
++        {
++            count++;
++            *ptr++ = sp->rx_buf[sp->rx_start];
++
++            sp->rx_start = (++sp->rx_start) & ALT_16550_UART_BUF_MSK;
++        }
++        /*
+          * If no data has been transferred, the circular buffer is empty, and
+          * this is not a non-blocking access, block waiting for data to arrive.
+          */
+-		if (!count && (sp->rx_start == sp->rx_end))
+-		{
+-			if (!block)
+-			{
+-				/* Set errno to indicate the reason we're not returning any data */
+-				ALT_ERRNO = EWOULDBLOCK;
+-				read_would_block = 1;
+-				break;
+-			} else
+-			{
+-				/* Block waiting for some data to arrive */
+-				/* First, ensure read interrupts are enabled to avoid deadlock */
+-				context = alt_irq_disable_all ();
 -				sp->ctrl |= ALTERA_16550_UART_IER_ERBFI_MSK;
 -				IOWR_ALTERA_16550_UART_IER(sp->base, sp->ctrl);
-+				sp->ctrl |= ARDUINO_16550_UART_IER_ERBFI_MSK;
-+				IOWR_ARDUINO_16550_UART_IER(sp->base, sp->ctrl);
- 				alt_irq_enable_all (context);
+-				alt_irq_enable_all (context);
++        if (!count && (sp->rx_start == sp->rx_end))
++        {
++            if (!block)
++            {
++                /* Set errno to indicate the reason we're not returning any data */
++                ALT_ERRNO = EWOULDBLOCK;
++                read_would_block = 1;
++                break;
++            } else
++            {
++                /* Block waiting for some data to arrive */
++                /* First, ensure read interrupts are enabled to avoid deadlock */
++                context = alt_irq_disable_all ();
++                sp->ctrl |= ARDUINO_16550_UART_IER_ERBFI_MSK;
++                IOWR_ARDUINO_16550_UART_IER(sp->base, sp->ctrl);
++                alt_irq_enable_all (context);
  
- 				/*
-@@ -152,8 +152,8 @@
+-				/*
++                /*
+                  * When running in a multi-threaded mode, we pend on the read event
+                  * flag set in the interrupt service routine. This avoids wasting CPU
+                  * cycles waiting in this thread, when we could be doing something more
+                  * profitable elsewhere.
+                  */
+-				ALT_FLAG_PEND (sp->events,
+-						       ALT_16550_UART_READ_RDY,
+-						       OS_FLAG_WAIT_SET_ANY + OS_FLAG_CONSUME,
+-						       0);
+-			}
+-		}
+-	}
+-	while (!count && len);
+-	/*
+-	 * Now that access to the circular buffer is complete, release the read
+-     * semaphore so that other threads can access the buffer.
+-     */
++                ALT_FLAG_PEND (sp->events,
++                              ALT_16550_UART_READ_RDY,
++                              OS_FLAG_WAIT_SET_ANY + OS_FLAG_CONSUME,
++                              0);
++            }
++        }
++    }
++    while (!count && len);
++    /*
++      * Now that access to the circular buffer is complete, release the read
++      * semaphore so that other threads can access the buffer.
++      */
+     ALT_SEM_POST (sp->read_lock);
+     /*
+      * Ensure that interrupts are enabled, so that the circular buffer can
       * re-fill.
       */
      context = alt_irq_disable_all ();
@@ -938,10 +1269,21 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_read.c arduino_16550_ua
      alt_irq_enable_all (context);
      /* Return the number of bytes read */
      if(read_would_block)
+     {
+-    	return ~EWOULDBLOCK;
+-    }else
++        return ~EWOULDBLOCK;
++    } else
+     {
+-    	return count;
++        return count;
+     }
+ }
+ 
 diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_write.c arduino_16550_uart_mod/HAL/src/arduino_16550_uart_write.c
---- arduino_16550_uart/HAL/src/arduino_16550_uart_write.c	2018-08-22 23:07:15.474093500 +0200
-+++ arduino_16550_uart_mod/HAL/src/arduino_16550_uart_write.c	2018-08-22 23:03:13.508843000 +0200
-@@ -35,16 +35,16 @@
+--- arduino_16550_uart/HAL/src/arduino_16550_uart_write.c	2018-11-29 13:30:10.140770249 +0100
++++ arduino_16550_uart_mod/HAL/src/arduino_16550_uart_write.c	2018-11-29 13:37:07.396766615 +0100
+@@ -35,20 +35,22 @@
  #include "sys/ioctl.h"
  #include "sys/alt_errno.h"
  
@@ -949,11 +1291,14 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_write.c arduino_16550_u
 -#include "altera_16550_uart.h"
 +#include "arduino_16550_uart_regs.h"
 +#include "arduino_16550_uart.h"
++
++#define SEC_RAM __attribute__((__section__(".rwdata")))
  
  /*
 - * altera_16550_uart_write() is called by the system write() function in order
+- * to write a block of data to the UART. "len" is the length of the data to 
 + * arduino_16550_uart_write() is called by the system write() function in order
-  * to write a block of data to the UART. "len" is the length of the data to 
++ * to write a block of data to the UART. "len" is the length of the data to
   * write, and "ptr" indicates the source address. "sp" is the state pointer
   * for the device to be written to.
   *
@@ -962,16 +1307,23 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_write.c arduino_16550_u
   * we know that the file descriptor has been opened with the correct permissions
   * for this operation.
   *
-@@ -57,7 +57,7 @@
+- * The return value is the number of 2 bytes(because supporting CS_9) actually 
++ * The return value is the number of 2 bytes(because supporting CS_9) actually
+  * written.
+  *
+  * This function does not communicate with the device directly. Instead data is
+@@ -56,16 +58,15 @@
+  * for copying data from this buffer into the device.
   */
  
- int
+-int
 -altera_16550_uart_write(altera_16550_uart_state* sp, const wchar_t* ptr, int len,
-+arduino_16550_uart_write(arduino_16550_uart_state* sp, const alt_u8* ptr, int len,
-   int flags)
+-  int flags)
++int SEC_RAM arduino_16550_uart_write(arduino_16550_uart_state* sp,
++                                     const alt_u8* ptr, int len, int flags)
  {
      alt_irq_context context;
-@@ -65,7 +65,7 @@
+     int             no_block;
      alt_u32         next;
      int             count = len;
  
@@ -980,7 +1332,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_write.c arduino_16550_u
      /*
       * Construct a flag to indicate whether the device is being accessed in
       * blocking or non-blocking mode.
-@@ -101,8 +101,8 @@
+@@ -101,8 +102,8 @@
                  /* Block waiting for space in the circular buffer */
                  /* First, ensure transmit interrupts are enabled to avoid deadlock */
                  context = alt_irq_disable_all ();
@@ -991,7 +1343,7 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_write.c arduino_16550_u
                  alt_irq_enable_all (context);
                  /* wait for space to come free */
                  do
-@@ -135,8 +135,8 @@
+@@ -135,8 +136,8 @@
       * drain.
       */
      context = alt_irq_disable_all ();
@@ -1002,69 +1354,9 @@ diff -Naur arduino_16550_uart/HAL/src/arduino_16550_uart_write.c arduino_16550_u
      alt_irq_enable_all (context);
      /* return the number of bytes written */
      return (len - count);
-diff -Naur arduino_16550_uart/arduino_16550_uart_hw.tcl arduino_16550_uart_mod/arduino_16550_uart_hw.tcl
---- arduino_16550_uart/arduino_16550_uart_hw.tcl	2018-08-22 23:07:15.554876700 +0200
-+++ arduino_16550_uart_mod/arduino_16550_uart_hw.tcl	2018-08-22 23:03:13.630511700 +0200
-@@ -16,7 +16,7 @@
- # ------------------------------------------------------------------------------
- # Module altera_16550_uart
- # ------------------------------------------------------------------------------
--set_module_property NAME                           altera_16550_uart
-+set_module_property NAME                           arduino_16550_uart
- set_module_property VERSION                        18.0
- set_module_property DISPLAY_NAME                   "16550 Compatible UART Intel FPGA IP"
- set_module_property DESCRIPTION                    "UART with run-time configurability and 16550 compatible register space"
-diff -Naur arduino_16550_uart/arduino_16550_uart_sw.tcl arduino_16550_uart_mod/arduino_16550_uart_sw.tcl
---- arduino_16550_uart/arduino_16550_uart_sw.tcl	2018-08-22 23:07:15.555874600 +0200
-+++ arduino_16550_uart_mod/arduino_16550_uart_sw.tcl	2018-08-22 23:03:13.688625700 +0200
-@@ -12,14 +12,14 @@
- 
- 
- #
--# altera_16550_uart_driver.tcl
-+# arduino_16550_uart_driver.tcl
- #
- 
- # Create a new driver
--create_driver altera_16550_uart_driver
-+create_driver arduino_16550_uart_driver
- 
--# Associate it with some hardware known as "altera_16550_uart"
--set_sw_property hw_class_name altera_16550_uart
-+# Associate it with some hardware known as "arduino_16550_uart"
-+set_sw_property hw_class_name arduino_16550_uart
- 
- # The version of this driver
- set_sw_property version 18.0
-@@ -49,17 +49,17 @@
- #
- 
- # C/C++ source files
--add_sw_property c_source HAL/src/altera_16550_uart_fd.c
--add_sw_property c_source HAL/src/altera_16550_uart_init.c
--add_sw_property c_source HAL/src/altera_16550_uart_ioctl.c
--add_sw_property c_source HAL/src/altera_16550_uart_read.c
--add_sw_property c_source HAL/src/altera_16550_uart_write.c
-+add_sw_property c_source HAL/src/arduino_16550_uart_fd.c
-+add_sw_property c_source HAL/src/arduino_16550_uart_init.c
-+add_sw_property c_source HAL/src/arduino_16550_uart_ioctl.c
-+add_sw_property c_source HAL/src/arduino_16550_uart_read.c
-+add_sw_property c_source HAL/src/arduino_16550_uart_write.c
- 
- 
- # Include files
--add_sw_property include_source HAL/inc/altera_16550_uart.h
--add_sw_property include_source HAL/inc/altera_16550_uart_fd.h
--add_sw_property include_source inc/altera_16550_uart_regs.h
-+add_sw_property include_source HAL/inc/arduino_16550_uart.h
-+add_sw_property include_source HAL/inc/arduino_16550_uart_fd.h
-+add_sw_property include_source inc/arduino_16550_uart_regs.h
- 
- 
- # This driver supports HAL & UCOSII BSP (OS) types
 diff -Naur arduino_16550_uart/inc/arduino_16550_uart_regs.h arduino_16550_uart_mod/inc/arduino_16550_uart_regs.h
---- arduino_16550_uart/inc/arduino_16550_uart_regs.h	2018-08-22 23:07:15.476087900 +0200
-+++ arduino_16550_uart_mod/inc/arduino_16550_uart_regs.h	2018-08-22 23:03:13.632482800 +0200
+--- arduino_16550_uart/inc/arduino_16550_uart_regs.h	2018-11-29 13:30:10.140770249 +0100
++++ arduino_16550_uart_mod/inc/arduino_16550_uart_regs.h	2018-11-29 13:38:34.644765855 +0100
 @@ -32,86 +32,86 @@
  
  #include <io.h>
@@ -1231,52 +1523,3 @@ diff -Naur arduino_16550_uart/inc/arduino_16550_uart_regs.h arduino_16550_uart_m
  
 -#endif /* __ALTERA_16550_UART_REGS_H__ */
 +#endif /* __ARDUINO_16550_UART_REGS_H__ */
---- altera_components.ipx	2018-08-22 19:41:22.760080600 +0200
-+++ altera_components.ipx	2018-08-22 21:59:13.859814300 +0200
-@@ -9432,6 +9432,46 @@
-    subtype="com.altera.embeddedsw.bsp.elements.IBaseSoftwareElement"
-    factory="EmbeddedSwTclDriverFactory" />
-  <component
-+   name="arduino_16550_uart"
-+   file="arduino_16550_uart/arduino_16550_uart_hw.tcl"
-+   displayName="Arduino 16550 Compatible UART Intel FPGA IP"
-+   version="18.0"
-+   description="UART with run-time configurability and 16550 compatible register space"
-+   tags="AUTHORSHIP=Intel Corporation /// CONNECTION_TYPES=avalon,clock,conduit,interrupt,reset"
-+   categories="Interface Protocols/Serial"
-+   factory="TclModuleFactory">
-+  <tag2 key="ALLOW_GREYBOX_GENERATION" value="true" />
-+  <tag2 key="ANALYZE_HDL" value="false" />
-+  <tag2 key="COMPONENT_EDITABLE" value="true" />
-+  <tag2 key="COMPONENT_HIDE_FROM_QUARTUS" value="true" />
-+  <tag2 key="COMPONENT_HIDE_FROM_SOPC" value="true" />
-+  <tag2 key="ELABORATION_CALLBACK" value="elaboration" />
-+  <tag2 key="INSTANTIATE_IN_SYSTEM_MODULE" value="true" />
-+  <tag2 key="SUPPORTED_FILE_SETS" value="QUARTUS_SYNTH,SIM_VERILOG,SIM_VHDL" />
-+  <tag2 key="TCL_PACKAGE_VERSION" value="12.0" />
-+  <tag2 key="VALIDATION_CALLBACK" value="validation" />
-+  <documentUrl displayName="DATASHEET" type="DATASHEET" url="http://www.altera.com" />
-+  <documentUrl
-+     displayName="User Guide"
-+     type="OTHER"
-+     url="https://documentation.altera.com/#/link/sfo1400787952932/iga1404147076304" />
-+  <documentUrl
-+     displayName="Release Notes"
-+     type="OTHER"
-+     url="https://documentation.altera.com/#/link/hco1416836145555/hco1416836653221" />
-+ </component>
-+ <plugin
-+   name="arduino_16550_uart_driver"
-+   file="arduino_16550_uart/arduino_16550_uart_sw.tcl"
-+   displayName="arduino_16550_uart_driver"
-+   version="18.0"
-+   description=""
-+   tags="SW_DRIVER_OS_TYPE=hal,ucosii /// SW_DRIVER_ASSOCIATED_HW_MODULE=arduino_16550_uart"
-+   categories="driver_element"
-+   type="com.altera.entityinterfaces.IElementClass"
-+   subtype="com.altera.embeddedsw.bsp.elements.IBaseSoftwareElement"
-+   factory="EmbeddedSwTclDriverFactory" />
-+ <component
-    name="altera_CORDIC"
-    file="dsp/altera_CORDIC/source/altera_CORDIC_hw.tcl"
-    displayName="ALTERA_CORDIC"

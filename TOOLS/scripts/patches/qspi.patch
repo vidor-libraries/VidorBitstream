@@ -1,6 +1,6 @@
 diff -Naur pgm/arduino_generic_qspi_controller2/HAL/inc/arduino_generic_quad_spi_controller2.h arduino_generic_qspi_controller2/HAL/inc/arduino_generic_quad_spi_controller2.h
---- pgm/arduino_generic_qspi_controller2/HAL/inc/arduino_generic_quad_spi_controller2.h	2018-08-22 19:45:29.106330900 +0200
-+++ pgm/arduino_generic_qspi_controller2/HAL/inc/arduino_generic_quad_spi_controller2.h	2018-08-22 19:45:06.038615800 +0200
+--- pgm/arduino_generic_qspi_controller2/HAL/inc/arduino_generic_quad_spi_controller2.h	2018.18-22 19:45:29.106330900 +0200
++++ pgm/arduino_generic_qspi_controller2/HAL/inc/arduino_generic_quad_spi_controller2.h	2018.18-22 19:45:06.038615800 +0200
 @@ -68,7 +68,7 @@
  *   Macros used by alt_sys_init.c to create data storage for driver instance
  */
@@ -29,8 +29,8 @@ diff -Naur pgm/arduino_generic_qspi_controller2/HAL/inc/arduino_generic_quad_spi
  #ifdef __cplusplus
  }
 diff -Naur pgm/arduino_generic_qspi_controller2/HAL/src/arduino_generic_quad_spi_controller2.c arduino_generic_qspi_controller2/HAL/src/arduino_generic_quad_spi_controller2.c
---- pgm/arduino_generic_qspi_controller2/HAL/src/arduino_generic_quad_spi_controller2.c	2018-08-22 19:45:29.111316900 +0200
-+++ pgm/arduino_generic_qspi_controller2/HAL/src/arduino_generic_quad_spi_controller2.c	2018-08-22 19:45:06.037599900 +0200
+--- pgm/arduino_generic_qspi_controller2/HAL/src/arduino_generic_quad_spi_controller2.c	2018.18-22 19:45:29.111316900 +0200
++++ pgm/arduino_generic_qspi_controller2/HAL/src/arduino_generic_quad_spi_controller2.c	2018.18-22 19:45:06.037599900 +0200
 @@ -34,8 +34,8 @@
  #include <stddef.h>
  #include "sys/param.h"
@@ -270,8 +270,8 @@ diff -Naur pgm/arduino_generic_qspi_controller2/HAL/src/arduino_generic_quad_spi
          {
              return -ETIME;
 diff -Naur pgm/arduino_generic_qspi_controller2/N25Q016.qprs arduino_generic_qspi_controller2/N25Q016.qprs
---- pgm/arduino_generic_qspi_controller2/N25Q016.qprs	2018-08-22 19:45:29.725676900 +0200
-+++ pgm/arduino_generic_qspi_controller2/N25Q016.qprs	2018-08-22 19:45:06.039594000 +0200
+--- pgm/arduino_generic_qspi_controller2/N25Q016.qprs	2018.18-22 19:45:29.725676900 +0200
++++ pgm/arduino_generic_qspi_controller2/N25Q016.qprs	2018.18-22 19:45:06.039594000 +0200
 @@ -3,7 +3,7 @@
   <presets version="12.1">
    <preset
@@ -291,8 +291,8 @@ diff -Naur pgm/arduino_generic_qspi_controller2/N25Q016.qprs arduino_generic_qsp
   </presets>
  </ip>
 diff -Naur pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface.sv.terp arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface.sv.terp
---- pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface.sv.terp	2018-08-22 19:45:29.483324400 +0200
-+++ pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface.sv.terp	2018-08-22 19:45:06.069514700 +0200
+--- pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface.sv.terp	2018.18-22 19:45:29.483324400 +0200
++++ pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface.sv.terp	2018.18-22 19:45:06.069514700 +0200
 @@ -13,7 +13,7 @@
  
  
@@ -303,15 +303,15 @@ diff -Naur pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface.sv.
      parameter NCS_LENGTH    = 3,            // number of FPGA SPI NCS interfaces
      parameter DATA_LENGTH   = 4,            // number of FPGA SPI Data interfaces
 diff -Naur pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.tcl arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.tcl
---- pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.tcl	2018-08-22 19:45:29.532193400 +0200
-+++ pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.tcl	2018-08-22 19:45:06.061536000 +0200
+--- pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.tcl	2018.18-22 19:45:29.532193400 +0200
++++ pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.tcl	2018.18-22 19:45:06.061536000 +0200
 @@ -33,13 +33,13 @@
  # module altera_asmi2_qspi_interface
  # 
  set_module_property DESCRIPTION ""
 -set_module_property NAME altera_asmi2_qspi_interface
 +set_module_property NAME arduino_asmi2_qspi_interface
- set_module_property VERSION 18.0
+ set_module_property VERSION 18.1
  set_module_property INTERNAL true
  set_module_property OPAQUE_ADDRESS_MAP true
  set_module_property GROUP "Basic Functions/Configuration and Programming"
@@ -376,8 +376,8 @@ diff -Naur pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.
          } else {
              set data_count  2
 diff -Naur pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl
---- pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl	2018-08-22 19:45:29.579068400 +0200
-+++ pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl	2018-08-22 19:45:06.073504300 +0200
+--- pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl	2018.18-22 19:45:29.579068400 +0200
++++ pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl	2018.18-22 19:45:06.073504300 +0200
 @@ -24,7 +24,7 @@
  # +-----------------------------------
  # | module ALTASMI_PARALLEL
@@ -397,8 +397,8 @@ diff -Naur pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl ar
  source altera_asmi_parallel2_ui_configuration.tcl
  
 diff -Naur pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw_proc.tcl arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw_proc.tcl
---- pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw_proc.tcl	2018-08-22 19:45:29.630930100 +0200
-+++ pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw_proc.tcl	2018-08-22 19:45:06.046575500 +0200
+--- pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw_proc.tcl	2018.18-22 19:45:29.630930100 +0200
++++ pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw_proc.tcl	2018.18-22 19:45:06.046575500 +0200
 @@ -251,7 +251,7 @@
      0 {
          add_instance asmi2_cmd_generator_0 altera_asmi2_cmd_generator 
@@ -409,15 +409,15 @@ diff -Naur pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw_proc.t
          set_instance_parameter_value asmi2_qspi_interface_0 {DISABLE_ASMIBLOCK} $disable_asmiblock
          set_instance_parameter_value asmi2_qspi_interface_0 {USE_GPIO} $use_gpio
 diff -Naur pgm/arduino_generic_qspi_controller2/arduino_generic_qspi_controller2_hw.tcl arduino_generic_qspi_controller2/arduino_generic_qspi_controller2_hw.tcl
---- pgm/arduino_generic_qspi_controller2/arduino_generic_qspi_controller2_hw.tcl	2018-08-22 19:45:29.190107000 +0200
-+++ pgm/arduino_generic_qspi_controller2/arduino_generic_qspi_controller2_hw.tcl	2018-08-22 19:45:06.050565400 +0200
+--- pgm/arduino_generic_qspi_controller2/arduino_generic_qspi_controller2_hw.tcl	2018.18-22 19:45:29.190107000 +0200
++++ pgm/arduino_generic_qspi_controller2/arduino_generic_qspi_controller2_hw.tcl	2018.18-22 19:45:06.050565400 +0200
 @@ -17,13 +17,13 @@
  # module altera_trace_wrapper
  # 
  set_module_property DESCRIPTION "This component is a generic QSPI controller which allows user to access any QSPI devices"
 -set_module_property NAME altera_generic_quad_spi_controller2
 +set_module_property NAME arduino_generic_quad_spi_controller2
- set_module_property VERSION 18.0
+ set_module_property VERSION 18.1
  set_module_property INTERNAL false
  set_module_property OPAQUE_ADDRESS_MAP true
  set_module_property GROUP "Memory Interfaces and Controllers/Flash"
@@ -445,9 +445,9 @@ diff -Naur pgm/arduino_generic_qspi_controller2/arduino_generic_qspi_controller2
      set_instance_parameter_value reset {NUM_RESET_OUTPUTS} {1}
      set_instance_parameter_value reset {USE_RESET_REQUEST} {0}
  
--	add_instance	asmi2_inst_qspi_ctrl altera_asmi_parallel2 18.0
-+	add_instance	asmi2_inst_qspi_ctrl arduino_asmi_parallel2 18.0
- 	add_instance	addr_adaption_1 altera_qspi_address_adaption 18.0
+-	add_instance	asmi2_inst_qspi_ctrl altera_asmi_parallel2 18.1
++	add_instance	asmi2_inst_qspi_ctrl arduino_asmi_parallel2 18.1
+ 	add_instance	addr_adaption_1 altera_qspi_address_adaption 18.1
  
  	#--------------------------------------------- settings that exist in all procedure ------------------------------------------------
 @@ -270,7 +277,7 @@
@@ -496,8 +496,8 @@ diff -Naur pgm/arduino_generic_qspi_controller2/arduino_generic_qspi_controller2
                  	set the_ports($port) $port
              	}
 diff -Naur pgm/arduino_generic_qspi_controller2/arduino_generic_quad_spi_controller2_sw.tcl arduino_generic_qspi_controller2/arduino_generic_quad_spi_controller2_sw.tcl
---- pgm/arduino_generic_qspi_controller2/arduino_generic_quad_spi_controller2_sw.tcl	2018-08-22 19:45:29.112314100 +0200
-+++ pgm/arduino_generic_qspi_controller2/arduino_generic_quad_spi_controller2_sw.tcl	2018-08-22 19:45:06.047573800 +0200
+--- pgm/arduino_generic_qspi_controller2/arduino_generic_quad_spi_controller2_sw.tcl	2018.18-22 19:45:29.112314100 +0200
++++ pgm/arduino_generic_qspi_controller2/arduino_generic_quad_spi_controller2_sw.tcl	2018.18-22 19:45:06.047573800 +0200
 @@ -16,10 +16,10 @@
  #
  
@@ -511,7 +511,7 @@ diff -Naur pgm/arduino_generic_qspi_controller2/arduino_generic_quad_spi_control
 +set_sw_property hw_class_name arduino_generic_quad_spi_controller2
  
  # The version of this driver
- set_sw_property version 18.0
+ set_sw_property version 18.1
 @@ -50,11 +50,11 @@
  #
  
@@ -528,8 +528,8 @@ diff -Naur pgm/arduino_generic_qspi_controller2/arduino_generic_quad_spi_control
  # This driver supports HAL & UCOSII BSP (OS) types
  add_sw_property supported_bsp_type HAL 
 diff -Naur pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_controller2_regs.h arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_controller2_regs.h
---- pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_controller2_regs.h	2018-08-22 19:45:29.194096200 +0200
-+++ pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_controller2_regs.h	2018-08-22 19:45:06.054554900 +0200
+--- pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_controller2_regs.h	2018.18-22 19:45:29.194096200 +0200
++++ pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_controller2_regs.h	2018.18-22 19:45:06.054554900 +0200
 @@ -28,8 +28,8 @@
  *                                                                             *
  ******************************************************************************/
@@ -832,8 +832,8 @@ diff -Naur pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_con
  
 -#endif /* __ALTERA_QSPI_CONTROLLER2_REGS_H__ */
 +#endif /* __ARDUINO_QSPI_CONTROLLER2_REGS_H__ */
---- altera_components.ipx	2018-08-22 19:10:11.799634200 +0200
-+++ altera_components.ipx	2018-08-22 19:41:22.760080600 +0200
+--- altera_components.ipx	2018.18-22 19:10:11.799634200 +0200
++++ altera_components.ipx	2018.18-22 19:41:22.760080600 +0200
 @@ -2039,6 +2039,19 @@
    <tag2 key="PRESET_TYPE" value="altera_asmi_parallel2" />
   </plugin>
@@ -861,7 +861,7 @@ diff -Naur pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_con
 +   name="arduino_asmi2_qspi_interface"
 +   file="pgm/arduino_generic_qspi_controller2/arduino_asmi2_qspi_interface_hw.tcl"
 +   displayName="Arduino ASMI2 QSPI Interface"
-+   version="18.0"
++   version="18.1"
 +   description=""
 +   tags="AUTHORSHIP=Intel Corporation /// CONNECTION_TYPES=avalon_streaming,clock,conduit,reset /// INTERNAL_COMPONENT=true"
 +   categories="Basic Functions/Configuration and Programming"
@@ -887,7 +887,7 @@ diff -Naur pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_con
 +   name="arduino_asmi_parallel2"
 +   file="pgm/arduino_generic_qspi_controller2/arduino_asmi_parallel2_hw.tcl"
 +   displayName="Arduino ASMI Parallel II Core"
-+   version="18.0"
++   version="18.1"
 +   description="The Altera ASMI Parallel megafunction provides access to erasable  programmable configurable serial (EPCS) and quad-serial configuration  (EPCQ) devices through parallel data input and output ports."
 +   tags="AUTHORSHIP=Intel Corporation /// INTERNAL_COMPONENT=true"
 +   categories="Basic Functions/Configuration and Programming"
@@ -911,7 +911,7 @@ diff -Naur pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_con
     file="pgm/altera_asmi_parallel2_top/altera_asmi_parallel2_top_hw.tcl"
     displayName="ASMI Parallel II Intel FPGA IP"
 @@ -16138,6 +16193,48 @@
-    version="18.0"
+    version="18.1"
     description="This component is a generic QSPI controller which allows user to access any QSPI devices"
     tags="AUTHORSHIP=Intel Corporation /// INTERNAL_COMPONENT=false"
 +   categories="Memory Interfaces and Controllers/Flash"
@@ -942,7 +942,7 @@ diff -Naur pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_con
 +   name="arduino_generic_quad_spi_controller2"
 +   file="pgm/arduino_generic_qspi_controller2/arduino_generic_quad_spi_controller2_sw.tcl"
 +   displayName="arduino_generic_quad_spi_controller2"
-+   version="18.0"
++   version="18.1"
 +   description=""
 +   tags="SW_DRIVER_OS_TYPE=hal,ucosii /// SW_DRIVER_ASSOCIATED_HW_MODULE=altera_generic_quad_spi_controller2"
 +   categories="driver_element"
@@ -953,7 +953,7 @@ diff -Naur pgm/arduino_generic_qspi_controller2/inc/arduino_generic_quad_spi_con
 +   name="arduino_generic_quad_spi_controller2"
 +   file="pgm/arduino_generic_qspi_controller2/arduino_generic_qspi_controller2_hw.tcl"
 +   displayName="Arduino Generic QUAD SPI controller II Intel FPGA IP"
-+   version="18.0"
++   version="18.1"
 +   description="This component is a generic QSPI controller which allows user to access any QSPI devices"
 +   tags="AUTHORSHIP=Intel Corporation /// INTERNAL_COMPONENT=false"
     categories="Memory Interfaces and Controllers/Flash"

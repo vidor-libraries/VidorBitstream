@@ -9,8 +9,6 @@ BSP_FLAGS=" \
 --cmd enable_sw_package SF \
 --cmd enable_sw_package MAILBOX \
 --cmd enable_sw_package RPC \
---cmd enable_sw_package GFX \
---cmd enable_sw_package QRCODE_FINDER \
 --cmd enable_sw_package TMR \
 --set hal.make.bsp_cflags_defined_symbols -DNO_RPC=1 \
 --set hal.enable_c_plus_plus 0 \
