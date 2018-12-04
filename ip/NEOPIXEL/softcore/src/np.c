@@ -169,9 +169,8 @@ alt_u32   npZzlLen;
 sNpSeq    npSeq;
 alt_u32   npSeqNum;               // sequence number
 
-
 alt_u8    brightness[NEOPIXEL_0_CHANNELS];
-alt_u8    rOffset;       // Index of red byte within each 3- or 4-byte pixel
+alt_u8    rOffset;       // Index of red byte
 alt_u8    gOffset;       // Index of green byte
 alt_u8    bOffset;       // Index of blue byte
 alt_u8    wOffset;       // Index of white byte (same as rOffset if no white)
@@ -299,8 +298,8 @@ alt_u32 npSetup(alt_u32 cmd, alt_u32 led_num, alt_u32 type, alt_u32 buf_len,
     brightness[i] = 0;
   }
 
-  wOffset = ((type >> 6) & 0b11) << 3; // See notes in header file
-  rOffset = ((type >> 4) & 0b11) << 3; // regarding R/G/B/W offsets
+  wOffset = ((type >> 6) & 0b11) << 3;
+  rOffset = ((type >> 4) & 0b11) << 3;
   gOffset = ((type >> 2) & 0b11) << 3;
   bOffset = ( type       & 0b11) << 3;
 
