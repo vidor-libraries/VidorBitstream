@@ -521,14 +521,6 @@
          type = "int";
       }
    }
-   element nina_uart.avalon_slave
-   {
-      datum baseAddress
-      {
-         value = "10507776";
-         type = "String";
-      }
-   }
    element nios2_gen2_0
    {
       datum _sortIndex
@@ -1213,15 +1205,6 @@
    kind="avalon"
    version="18.1"
    start="nios2_gen2_0.data_master"
-   end="nina_uart.avalon_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a05600" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.1"
-   start="nios2_gen2_0.data_master"
    end="csi_i2c.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x00a06000" />
@@ -1462,7 +1445,6 @@
    version="18.1"
    start="clk.clk"
    end="QRCODE_FINDER_0.clock" />
- <connection kind="clock" version="18.1" start="clk.clk" end="nina_uart.clock" />
  <connection kind="clock" version="18.1" start="clk.clk" end="csi_i2c.clock_sink" />
  <connection kind="clock" version="18.1" start="clk.clk" end="sam_pwm.clock_sink" />
  <connection kind="clock" version="18.1" start="clk.clk" end="hdmi_i2c.clock_sink" />
@@ -1505,13 +1487,6 @@
    start="nios2_gen2_0.irq"
    end="timer_0.irq">
   <parameter name="irqNumber" value="4" />
- </connection>
- <connection
-   kind="interrupt"
-   version="18.1"
-   start="nios2_gen2_0.irq"
-   end="nina_uart.irq_sender">
-  <parameter name="irqNumber" value="3" />
  </connection>
  <connection
    kind="reset"
@@ -1590,11 +1565,6 @@
    version="18.1"
    start="clk.clk_reset"
    end="QUAD_ENCODER_0.reset_sink" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk.clk_reset"
-   end="nina_uart.reset_sink" />
  <connection kind="reset" version="18.1" start="clk.clk_reset" end="mb.reset_sink" />
  <connection
    kind="reset"

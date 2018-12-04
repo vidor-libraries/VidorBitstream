@@ -369,14 +369,6 @@
          type = "int";
       }
    }
-   element nina_uart.avalon_slave
-   {
-      datum baseAddress
-      {
-         value = "10532352";
-         type = "String";
-      }
-   }
    element nios2_gen2_0
    {
       datum _sortIndex
@@ -633,28 +625,12 @@
          type = "int";
       }
    }
-   element uart_0.avalon_slave
-   {
-      datum baseAddress
-      {
-         value = "10526720";
-         type = "String";
-      }
-   }
    element uart_1
    {
       datum _sortIndex
       {
          value = "17";
          type = "int";
-      }
-   }
-   element uart_1.avalon_slave
-   {
-      datum baseAddress
-      {
-         value = "10527232";
-         type = "String";
       }
    }
    element uart_2
@@ -665,28 +641,12 @@
          type = "int";
       }
    }
-   element uart_2.avalon_slave
-   {
-      datum baseAddress
-      {
-         value = "10527744";
-         type = "String";
-      }
-   }
    element uart_3
    {
       datum _sortIndex
       {
          value = "19";
          type = "int";
-      }
-   }
-   element uart_3.avalon_slave
-   {
-      datum baseAddress
-      {
-         value = "10528256";
-         type = "String";
       }
    }
    element uart_4
@@ -697,28 +657,12 @@
          type = "int";
       }
    }
-   element uart_4.avalon_slave
-   {
-      datum baseAddress
-      {
-         value = "10528768";
-         type = "String";
-      }
-   }
    element uart_5
    {
       datum _sortIndex
       {
          value = "21";
          type = "int";
-      }
-   }
-   element uart_5.avalon_slave
-   {
-      datum baseAddress
-      {
-         value = "10529280";
-         type = "String";
       }
    }
    element uart_6
@@ -729,28 +673,12 @@
          type = "int";
       }
    }
-   element uart_6.avalon_slave
-   {
-      datum baseAddress
-      {
-         value = "10529792";
-         type = "String";
-      }
-   }
    element uart_7
    {
       datum _sortIndex
       {
          value = "23";
          type = "int";
-      }
-   }
-   element uart_7.avalon_slave
-   {
-      datum baseAddress
-      {
-         value = "10530304";
-         type = "String";
       }
    }
    element vid
@@ -823,7 +751,7 @@
  <parameter name="hideFromIPCatalog" value="false" />
  <parameter name="lockedInterfaceDefinition" value="" />
  <parameter name="maxAdditionalLatency" value="1" />
- <parameter name="projectName">MKRVIDOR4000_peripherals_lite.qpf</parameter>
+ <parameter name="projectName">MKRVIDOR4000_peripherals.qpf</parameter>
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="0" />
  <parameter name="testBenchDutName" value="" />
@@ -1424,87 +1352,6 @@
    kind="avalon"
    version="18.1"
    start="nios2_gen2_0.data_master"
-   end="uart_0.avalon_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a0a000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.1"
-   start="nios2_gen2_0.data_master"
-   end="uart_1.avalon_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a0a200" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.1"
-   start="nios2_gen2_0.data_master"
-   end="uart_2.avalon_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a0a400" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.1"
-   start="nios2_gen2_0.data_master"
-   end="uart_3.avalon_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a0a600" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.1"
-   start="nios2_gen2_0.data_master"
-   end="uart_4.avalon_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a0a800" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.1"
-   start="nios2_gen2_0.data_master"
-   end="uart_5.avalon_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a0aa00" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.1"
-   start="nios2_gen2_0.data_master"
-   end="uart_6.avalon_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a0ac00" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.1"
-   start="nios2_gen2_0.data_master"
-   end="uart_7.avalon_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a0ae00" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.1"
-   start="nios2_gen2_0.data_master"
-   end="nina_uart.avalon_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a0b600" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="18.1"
-   start="nios2_gen2_0.data_master"
    end="sam_pwm.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x00a09480" />
@@ -1765,16 +1612,7 @@
    end="onchip_memory2_0.clk1" />
  <connection kind="clock" version="18.1" start="clk.clk" end="dpram.clk1" />
  <connection kind="clock" version="18.1" start="clk.clk" end="JTAG_BRIDGE.clock" />
- <connection kind="clock" version="18.1" start="clk.clk" end="uart_0.clock" />
- <connection kind="clock" version="18.1" start="clk.clk" end="uart_1.clock" />
- <connection kind="clock" version="18.1" start="clk.clk" end="uart_2.clock" />
- <connection kind="clock" version="18.1" start="clk.clk" end="uart_3.clock" />
- <connection kind="clock" version="18.1" start="clk.clk" end="uart_4.clock" />
- <connection kind="clock" version="18.1" start="clk.clk" end="uart_5.clock" />
- <connection kind="clock" version="18.1" start="clk.clk" end="uart_6.clock" />
- <connection kind="clock" version="18.1" start="clk.clk" end="uart_7.clock" />
  <connection kind="clock" version="18.1" start="clk.clk" end="NEOPIXEL_0.clock" />
- <connection kind="clock" version="18.1" start="clk.clk" end="nina_uart.clock" />
  <connection kind="clock" version="18.1" start="clk.clk" end="sam_pwm.clock_sink" />
  <connection
    kind="clock"
@@ -1871,51 +1709,6 @@
    version="18.1"
    start="clk.clk_reset"
    end="QUAD_ENCODER_0.reset_sink" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk.clk_reset"
-   end="uart_0.reset_sink" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk.clk_reset"
-   end="uart_1.reset_sink" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk.clk_reset"
-   end="uart_2.reset_sink" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk.clk_reset"
-   end="uart_3.reset_sink" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk.clk_reset"
-   end="uart_4.reset_sink" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk.clk_reset"
-   end="uart_5.reset_sink" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk.clk_reset"
-   end="uart_6.reset_sink" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk.clk_reset"
-   end="uart_7.reset_sink" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk.clk_reset"
-   end="nina_uart.reset_sink" />
  <connection kind="reset" version="18.1" start="clk.clk_reset" end="mb.reset_sink" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
