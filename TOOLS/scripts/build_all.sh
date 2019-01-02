@@ -7,7 +7,8 @@ LITE="_lite"
 fi
 fi
 
-PROJECT_NAME=${PWD##*/}$LITE
+STANDARD_PROJECT_NAME=${PWD##*/}
+PROJECT_NAME=${STANDARD_PROJECT_NAME}$LITE
 
 mkdir -p build
 cp -r project/* build/
@@ -20,6 +21,13 @@ fi
 if [ -d software/softcore ]; then
 source build_sw.sh
 fi
-quartus_sh --flow compile build/$PROJECT_NAME$LITE
+
+if [ -f build/${STANDARD_PROJECT_NAME}$LITE.qpf ]; then
+PROJECT_NAME=${STANDARD_PROJECT_NAME}$LITE
+else
+PROJECT_NAME=${STANDARD_PROJECT_NAME}
+fi
+
+quartus_sh --flow compile build/$PROJECT_NAME
 source create_image.sh
 source assemble_library.sh

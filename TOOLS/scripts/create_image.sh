@@ -1,5 +1,7 @@
 FOLDER_NAME=${PWD##*/}
+if [ x$PROJECT_NAME == x ]; then
 PROJECT_NAME=$FOLDER_NAME$LITE
+fi
 
 if [ -d software/softcore ]; then
 echo create ram + flash app.ttf
