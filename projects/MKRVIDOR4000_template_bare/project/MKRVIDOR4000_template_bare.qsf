@@ -77,7 +77,7 @@ set_global_assignment -name GENERATE_JBC_FILE ON
 set_global_assignment -name STRATIXIII_UPDATE_MODE STANDARD
 set_global_assignment -name CYCLONEIII_CONFIGURATION_DEVICE EPCS16
 
-source ../../constraints/MKRVIDOR4000/vidor_s_pins.qsf
+source ../../../constraints/MKRVIDOR4000/vidor_s_pins.qsf
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
