@@ -1,0 +1,238 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2017  Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License 
+# Subscription Agreement, the Intel Quartus Prime License Agreement,
+# the Intel MegaCore Function License Agreement, or other 
+# applicable license agreement, including, without limitation, 
+# that your use is for the sole purpose of programming logic 
+# devices manufactured by Intel and sold by Intel or its 
+# authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus Prime
+# Version 17.0.0 Build 595 04/25/2017 SJ Standard Edition
+# Date created = 13:50:11  February 05, 2018
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#    arduino_c10_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#    assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus Prime software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name DEVICE 10CL016YU256C8G
+set_global_assignment -name FAMILY "Cyclone 10 LP"
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 17.0.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "13:50:11  FEBRUARY 05, 2018"
+set_global_assignment -name LAST_QUARTUS_VERSION "18.1.0 Standard Edition"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name DEVICE_FILTER_PACKAGE UFBGA
+set_global_assignment -name DEVICE_FILTER_PIN_COUNT 256
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name ENABLE_OCT_DONE OFF
+set_global_assignment -name STRATIXV_CONFIGURATION_SCHEME "PASSIVE SERIAL"
+set_global_assignment -name USE_CONFIGURATION_DEVICE ON
+set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
+set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
+set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
+set_global_assignment -name CONFIGURATION_VCCIO_LEVEL AUTO
+set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE 100%
+set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
+set_global_assignment -name SMART_RECOMPILE ON
+set_global_assignment -name IGNORE_PARTITIONS ON
+set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
+set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
+set_global_assignment -name GENERATE_RBF_FILE ON
+set_global_assignment -name GENERATE_TTF_FILE ON
+set_global_assignment -name ON_CHIP_BITSTREAM_DECOMPRESSION OFF
+set_global_assignment -name GENERATE_JAM_FILE ON
+set_global_assignment -name GENERATE_JBC_FILE ON
+set_global_assignment -name STRATIXIII_UPDATE_MODE STANDARD
+set_global_assignment -name CYCLONEIII_CONFIGURATION_DEVICE EPCS16
+
+source ../../../constraints/MKRVIDOR4000/vidor_s_pins.qsf
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+
+set_global_assignment -name TOP_LEVEL_ENTITY MKRVIDOR4000_top
+
+set_global_assignment -name OPTIMIZATION_MODE "AGGRESSIVE PERFORMANCE"
+
+
+
+set_global_assignment -name ENABLE_SIGNALTAP OFF
+
+set_global_assignment -name VERILOG_FILE ../rtl/I2CBRIDGE.v
+set_global_assignment -name SDC_FILE ../../../constraints/MKRVIDOR4000/vidor_s.sdc
+set_global_assignment -name QIP_FILE ../../../ip/SYSTEM_PLL/rtl/SYSTEM_PLL.qip
+set_global_assignment -name VERILOG_FILE ../rtl/MKRVIDOR4000_top.v
+set_instance_assignment -name IO_STANDARD LVDS -to "iMIPI_D[1](n)"
+set_instance_assignment -name IO_STANDARD LVDS -to "iMIPI_CLK(n)"
+set_location_assignment PIN_J2 -to "iMIPI_D[1](n)(n)"
+set_instance_assignment -name IO_STANDARD LVDS -to iMIPI_D[0]
+set_instance_assignment -name IO_STANDARD LVDS -to "iMIPI_D[0](n)(n)"
+set_instance_assignment -name IO_STANDARD LVDS -to oHDMI_TX[2]
+set_instance_assignment -name IO_STANDARD LVDS -to oHDMI_TX[1]
+set_instance_assignment -name IO_STANDARD LVDS -to oHDMI_TX[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to iSAM_INT
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to bWM_PIO1
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO1
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMIPI_GP[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMIPI_GP[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_A[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_A[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_A[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_A[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_A[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_A[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_A[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_AREF
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[14]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[13]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[12]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[11]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[10]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bMKR_D[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN6
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN8
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN10
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN12
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN14
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN16
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN20
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN28
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN30
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN32
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN42
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN44
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN45
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN46
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN47
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN48
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN49
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_PIN51
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bPEX_RST
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[15]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[14]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[13]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[12]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[11]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[10]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bSDRAM_DQ[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO2
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO3
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO4
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO5
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO7
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO8
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO18
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO20
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO21
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO27
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO28
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO29
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO31
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO34
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO35
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iCLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iFLASH_MISO
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iHDMI_HPD
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iPEX_PIN11
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iPEX_PIN13
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iPEX_PIN23
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iPEX_PIN25
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iPEX_PIN31
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iPEX_PIN33
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iRESETn
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iWM_PIO32
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iWM_TX
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oFLASH_CS
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oFLASH_HOLD
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oFLASH_MOSI
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oFLASH_SCK
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oFLASH_WP
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oWM_RX
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO16
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO17
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO24
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to bWM_PIO25
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iWM_RTS
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to iWM_CTS
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_ADDR[11]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_ADDR[10]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_ADDR[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_ADDR[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_ADDR[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_ADDR[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_ADDR[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_ADDR[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_ADDR[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_ADDR[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_ADDR[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_ADDR[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_BA[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_BA[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_CASn
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_CKE
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_CLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_CSn
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_DQM[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_DQM[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_RASn
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to oSDRAM_WEn
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to "iMIPI_D[1](n)(n)"
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to bMKR_D[10]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to bWM_PIO36
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to bWM_PIO29
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to bWM_PIO28
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to bWM_PIO1
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to bMKR_D[8]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to bMKR_D[9]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to oSAM_INT
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
